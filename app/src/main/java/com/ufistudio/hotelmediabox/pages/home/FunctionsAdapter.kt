@@ -24,7 +24,7 @@ class FunctionsAdapter : RecyclerView.Adapter<FunctionsAdapter.ViewHolder>() {
     }
 
     override fun onBindViewHolder(p0: FunctionsAdapter.ViewHolder, p1: Int) {
-        p0.itemView.image_icon.setBackgroundColor(ContextCompat.getColor(context, android.R.color.white))
+//        p0.itemView.image_icon.setBackgroundColor(ContextCompat.getColor(context, android.R.color.white))
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view)

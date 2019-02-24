@@ -12,6 +12,9 @@ import com.ufistudio.hotelmediabox.pages.base.InteractionView
 import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.helper.ExoPlayerHelper
 import kotlinx.android.synthetic.main.fragment_home.*
+import android.util.DisplayMetrics
+import android.util.Log
+
 
 class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(){
 
@@ -38,6 +41,15 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(){
 
     override fun onStart() {
         super.onStart()
+
+        val displayMetrics = DisplayMetrics()
+        activity?.windowManager?.defaultDisplay?.getMetrics(displayMetrics)
+        val height = displayMetrics.heightPixels
+        val width = displayMetrics.widthPixels
+
+        Log.d("neo","h=$height")
+        Log.d("neo","w=$width")
+
 
         list_functions.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         list_functions.adapter = mAdapter

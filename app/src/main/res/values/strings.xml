@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">HotelMediaBox</string>
+
+    <!--Home Page-->
+    <string name="home_today_weather">TODAY WEATHER</string>
+    <string name="home_wifi_id">WIFI ID</string>
+    <string name="home_wifi_password">WIFI PASSWORD</string>
+    <string name="home_channels">Channels</string>
+    <string name="home_navigation">Navigation</string>
+    <string name="home_select">Select</string>
 </resources>
