@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/mainBackground">
+    android:background="@drawable/bg">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/view"
@@ -12,7 +12,9 @@
         android:layout_height="@dimen/_141sdp"
         android:layout_marginStart="@dimen/_24sdp"
         android:layout_marginTop="@dimen/_14sdp"
-        android:background="@color/videoBackground"
+        android:background="@drawable/selector_ip_tv"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 

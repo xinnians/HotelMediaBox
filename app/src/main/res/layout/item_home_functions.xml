@@ -6,7 +6,9 @@
     android:layout_height="@dimen/_77sdp"
     android:layout_marginLeft="@dimen/_5sdp"
     android:layout_marginRight="@dimen/_5sdp"
-    android:background="@drawable/selector_home_icon">
+    android:background="@drawable/selector_home_icon"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
 
     <ImageView
         android:id="@+id/image_icon"
