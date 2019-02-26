@@ -13,4 +13,6 @@
 
 
     <color name="white30">#4DFFFFFF</color>
+    <color name="block40">#66000000</color>
+    <color name="block30">#4D000000</color>
 </resources>
