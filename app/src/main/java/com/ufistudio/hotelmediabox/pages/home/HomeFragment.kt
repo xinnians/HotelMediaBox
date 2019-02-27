@@ -11,11 +11,6 @@ import com.ufistudio.hotelmediabox.pages.base.InteractionView
 import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.helper.ExoPlayerHelper
 import kotlinx.android.synthetic.main.fragment_home.*
-import android.util.DisplayMetrics
-import android.util.Log
-import com.ufistudio.hotelmediabox.pages.MainActivity
-import android.support.v4.content.ContextCompat
-import android.app.Dialog
 import android.content.Intent
 import com.ufistudio.hotelmediabox.pages.FullScreenActivity
 

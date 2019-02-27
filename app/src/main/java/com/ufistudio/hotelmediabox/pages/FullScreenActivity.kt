@@ -13,7 +13,6 @@ class FullScreenActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_fullscreen_video)
         mExoPlayerHelper = ExoPlayerHelper()
-
     }
 
     override fun onStart() {
@@ -24,6 +23,7 @@ class FullScreenActivity : AppCompatActivity() {
         super.onResume()
         mExoPlayerHelper.initPlayer(applicationContext, player_view)
         mExoPlayerHelper.setMp4Source(R.raw.videoplayback)
+        player_view.setOnClickListener { mExoPlayerHelper.changeFullScreenInfo() }
     }
 
     public override fun onPause() {
