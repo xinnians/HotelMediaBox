@@ -1,3 +1,29 @@
 <resources>
     <string name="app_name">HotelMediaBox</string>
+
+    <!--Home Page-->
+    <string name="home_today_weather">TODAY WEATHER</string>
+    <string name="home_wifi_id">WIFI ID</string>
+    <string name="home_wifi_password">WIFI PASSWORD</string>
+    <string name="home_channels">Channels</string>
+    <string name="home_navigation">Navigation</string>
+    <string name="home_select">Select</string>
+    <string name="home_icon_live_tv">LIVE TV\nChannels</string>
+    <string name="home_icon_vod">VOD\nMovies</string>
+    <string name="home_icon_smart_app">Smart\nApps</string>
+    <string name="home_icon_room_service">Room\nService</string>
+    <string name="home_icon_facilities">Hotel\nFacilities</string>
+    <string name="home_icon_near_by">NearBy\nMe</string>
+    <string name="home_icon_tourist">Tourist\nInfo</string>
+    <string name="home_icon_flight">Flight\nInfo</string>
+    <string name="home_icon_weather">Weather\nForecast</string>
+    <string name="home_icon_guest">Guest\nServices</string>
+    <string name="home_icon_setting">Setting</string>
+
+    <!--TV channel fullscreen-->
+    <string name="tv_channel_fullscreen_home">Home</string>
+    <string name="tv_channel_fullscreen_channel">Channel</string>
+    <string name="tv_channel_fullscreen_back">Back to Channel List</string>
+
+
 </resources>

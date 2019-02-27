@@ -4,127 +4,62 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#9922ff">
+    android:background="@drawable/bg">
 
-    <com.google.android.exoplayer2.ui.PlayerView
-        android:id="@+id/videoView"
-        android:layout_width="@dimen/_230sdp"
-        android:layout_height="@dimen/_130sdp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="220dp"
-        app:fastforward_increment="30000"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.06"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/view"
+        android:layout_width="@dimen/_243sdp"
+        android:layout_height="@dimen/_141sdp"
+        android:layout_marginStart="@dimen/_24sdp"
+        android:layout_marginTop="@dimen/_14sdp"
+        android:background="@drawable/selector_ip_tv"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         app:layout_constraintStart_toStartOf="parent"
-        app:resize_mode="fill"
-        app:rewind_increment="30000" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/weather_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="36dp"
-        android:layout_marginTop="44dp"
-        android:text="TODAY WEATHER"
-        android:textColor="@android:color/white"
-        android:textSize="@dimen/_14ssp"
-        app:layout_constraintStart_toEndOf="@+id/videoView"
-        app:layout_constraintTop_toTopOf="parent" />
+        <com.google.android.exoplayer2.ui.PlayerView
+            android:id="@+id/videoView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/_6sdp"
+            android:layout_marginTop="@dimen/_6sdp"
+            android:layout_marginEnd="@dimen/_6sdp"
+            android:layout_marginBottom="@dimen/_6sdp"
+            app:fastforward_increment="30000"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
+            app:resize_mode="fill"
+            app:rewind_increment="30000"
+            app:use_controller="false" />
+    </android.support.constraint.ConstraintLayout>
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="@dimen/_45sdp"
-        android:layout_height="@dimen/_45sdp"
-        android:layout_marginStart="92dp"
-        android:layout_marginTop="28dp"
-        android:background="@android:color/white"
-        app:layout_constraintStart_toEndOf="@+id/videoView"
-        app:layout_constraintTop_toBottomOf="@+id/weather_title" />
-
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="112dp"
-        android:layout_marginTop="8dp"
-        android:text="25C"
-        android:textColor="@android:color/white"
-        android:textSize="@dimen/_14ssp"
-        app:layout_constraintStart_toEndOf="@+id/videoView"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
-
-    <View
-        android:layout_width="1dp"
+    <include
+        android:id="@+id/include2"
+        layout="@layout/view_home_weather"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginEnd="44dp"
-        android:background="@android:color/white"
-        app:layout_constraintBottom_toBottomOf="@+id/videoView"
-        app:layout_constraintEnd_toStartOf="@+id/textView2"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="44dp"
-        android:layout_marginEnd="136dp"
-        android:text="WIFI ID"
-        android:textColor="@android:color/white"
-        android:textSize="@dimen/_12ssp"
+        android:layout_marginEnd="@dimen/_20sdp"
+        app:layout_constraintBottom_toBottomOf="@+id/view"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/view"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="1dp"
-        android:layout_marginEnd="96dp"
-        android:text="HOTEL 123"
-        android:textColor="@android:color/white"
-        android:textSize="@dimen/_12ssp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/textView2"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
-
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        android:layout_marginEnd="48dp"
-        android:text="WIFI PASSWORD"
-        android:textColor="@android:color/white"
-        android:textSize="@dimen/_12ssp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/textView3"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="2dp"
-        android:layout_marginEnd="0dp"
-        android:text="HOTEL123"
-        android:textColor="@android:color/white"
-        android:textSize="@dimen/_12ssp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/textView4"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/list_functions"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_120sdp"
-        android:layout_marginStart="0dp"
-        android:layout_marginEnd="0dp"
-        android:layout_marginBottom="0dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/_45sdp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toEndOf="@+id/include2"
+        app:layout_constraintStart_toStartOf="@+id/view" />
+
+    <include
+        layout="@layout/view_bottom_info"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp" />
 </android.support.constraint.ConstraintLayout>

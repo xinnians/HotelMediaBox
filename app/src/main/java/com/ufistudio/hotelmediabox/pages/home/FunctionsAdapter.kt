@@ -11,20 +11,28 @@ import kotlinx.android.synthetic.main.item_home_functions.view.*
 
 class FunctionsAdapter : RecyclerView.Adapter<FunctionsAdapter.ViewHolder>() {
 
-    private lateinit var context: Context
+    private lateinit var mContext: Context
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): FunctionsAdapter.ViewHolder {
         val view = LayoutInflater.from(p0.context).inflate(R.layout.item_home_functions, p0, false) as View
-        context = p0.context
+        mContext = p0.context
         return ViewHolder(view)
     }
 
     override fun getItemCount(): Int {
-        return 10
+        return HomeFeatherEnum.values().size
     }
 
     override fun onBindViewHolder(p0: FunctionsAdapter.ViewHolder, p1: Int) {
-        p0.itemView.image_icon.setBackgroundColor(ContextCompat.getColor(context, android.R.color.white))
+        p0.itemView.text_title.setText(HomeFeatherEnum.values()[p1].title)
+
+        if (p0.itemView.image_icon.isFocused) {
+            p0.itemView.text_title.setTextColor(ContextCompat.getColor(mContext, R.color.homeIconFrameFocused))
+            p0.itemView.image_icon.background = ContextCompat.getDrawable(mContext, HomeFeatherEnum.values()[p1].focusedIcon)
+        } else {
+            p0.itemView.text_title.setTextColor(ContextCompat.getColor(mContext, android.R.color.white))
+            p0.itemView.image_icon.background = ContextCompat.getDrawable(mContext, HomeFeatherEnum.values()[p1].icon)
+        }
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view)

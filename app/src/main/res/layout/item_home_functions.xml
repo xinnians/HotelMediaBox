@@ -1,13 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_margin="@dimen/_10sdp"
-    android:layout_height="wrap_content">
+    android:layout_width="@dimen/_83sdp"
+    android:layout_height="@dimen/_77sdp"
+    android:layout_marginLeft="@dimen/_5sdp"
+    android:layout_marginRight="@dimen/_5sdp"
+    android:background="@drawable/selector_home_icon"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
 
     <ImageView
         android:id="@+id/image_icon"
-        android:layout_width="@dimen/_150sdp"
-        android:layout_height="@dimen/_150sdp"
-        tools:ignore="MissingConstraints" />
+        android:layout_width="@dimen/_28sdp"
+        android:layout_height="@dimen/_28sdp"
+        android:layout_marginStart="@dimen/_12sdp"
+        android:layout_marginTop="@dimen/_12sdp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/text_title"
+        style="@style/MainPrimaryText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="@dimen/_6sdp"
+        android:text="Live tv ffaasd"
+        android:textSize="@dimen/_11sdp"
+        app:layout_constraintStart_toStartOf="@+id/image_icon"
+        app:layout_constraintTop_toBottomOf="@+id/image_icon" />
 </android.support.constraint.ConstraintLayout>

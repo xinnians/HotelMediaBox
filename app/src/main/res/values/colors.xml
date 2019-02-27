@@ -6,4 +6,17 @@
 
     <color name="colorWhite">#ffffff</color>
     <color name="colorYellow">#f9ff00</color>
+
+    <color name="mainBackground">#0D005B</color>
+    <color name="videoBackground">@color/white30</color>
+
+    <!--Home page-->
+    <color name="homeIconFrame">@color/white30</color>
+    <color name="homeIconFrameFocused">#f9ff00</color>
+
+
+    <color name="white30">#4DFFFFFF</color>
+    <color name="block40">#66000000</color>
+    <color name="block30">#4D000000</color>
+
 </resources>
