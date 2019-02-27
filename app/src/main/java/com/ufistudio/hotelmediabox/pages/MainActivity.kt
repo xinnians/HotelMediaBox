@@ -21,7 +21,8 @@ class MainActivity : PaneViewActivity(), OnPageInteractionListener.Primary {
 //            args = it.getBundleExtra(EX)
 //        }
 //        switchPage(page, args)
-        switchPage(R.id.fragment_container,Page.HOME,Bundle(),true,false)
+
+        switchPage(R.id.fragment_container,Page.CHANNEL,Bundle(),true,false)
     }
 
     private fun init(){

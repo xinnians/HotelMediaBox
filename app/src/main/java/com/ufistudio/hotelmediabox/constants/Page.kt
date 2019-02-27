@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import com.ufistudio.hotelmediabox.pages.home.HomeFragment
 import com.ufistudio.hotelmediabox.pages.TemplateFragment
+import com.ufistudio.hotelmediabox.pages.channel.ChannelFragment
 import java.lang.IllegalArgumentException
 
 object Page {
@@ -15,6 +16,7 @@ object Page {
 
     const val TEMPLATE = 1000
     const val HOME = 1001
+    const val CHANNEL = 1002
 
     /*--------------------------------------------------------------------------------------------*/
     /* Helpers */
@@ -26,6 +28,7 @@ object Page {
         when (page) {
             TEMPLATE -> result = TemplateFragment.newInstance()
             HOME -> result = HomeFragment.newInstance()
+            CHANNEL -> result = ChannelFragment.newInstance()
             else -> throw IllegalArgumentException("No match view! page = $page")
         }
 
