@@ -10,6 +10,6 @@ class SharedPreferencesProvider(
     override fun sharedPreferences() = application.getSharedPreferences(NAME, Context.MODE_PRIVATE)!!
 
     companion object {
-        private const val NAME = "FoodSafeData"
+        private const val NAME = "HotelBoxData"
     }
 }

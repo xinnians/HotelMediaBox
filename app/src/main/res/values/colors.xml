@@ -4,6 +4,9 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
 
+    <color name="colorWhite">#ffffff</color>
+    <color name="colorYellow">#f9ff00</color>
+
     <color name="mainBackground">#0D005B</color>
     <color name="videoBackground">@color/white30</color>
 
@@ -15,4 +18,5 @@
     <color name="white30">#4DFFFFFF</color>
     <color name="block40">#66000000</color>
     <color name="block30">#4D000000</color>
+
 </resources>

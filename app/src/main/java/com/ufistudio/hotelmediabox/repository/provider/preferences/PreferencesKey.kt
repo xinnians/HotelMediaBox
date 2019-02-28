@@ -1,5 +1,5 @@
 package com.ufistudio.hotelmediabox.repository.provider.preferences
 
 object PreferencesKey {
-    const val SEARCH_HISTORY = "search_history"
+    const val CHANNEL_LIST = "channel_list"
 }
