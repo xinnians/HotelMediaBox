@@ -1,6 +1,8 @@
 package com.ufistudio.hotelmediabox.pages.base
 
 import android.content.Context
+import android.util.Log
+import android.view.KeyEvent
 
 abstract class InteractionView<I : OnPageInteractionListener.Base> : BaseView() {
 
@@ -34,4 +36,6 @@ abstract class InteractionView<I : OnPageInteractionListener.Base> : BaseView() 
 
     protected fun getInteractionListener(): I = mInteractionListener
 
+    override fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?) {
+        Log.d(TAG, "keycode = $keyCode  ,event = $event")    }
 }

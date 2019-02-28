@@ -12,6 +12,7 @@ import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.helper.ExoPlayerHelper
 import kotlinx.android.synthetic.main.fragment_home.*
 import android.content.Intent
+import android.view.KeyEvent
 import com.ufistudio.hotelmediabox.pages.FullScreenActivity
 
 
@@ -21,6 +22,9 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>() {
     private var mAdapter = FunctionsAdapter()
 
     private lateinit var mExoPlayerHelper: ExoPlayerHelper
+
+    private val mTestUdpList = ArrayList<String>()
+    private var mChannelIndex = 0
 
     companion object {
         fun newInstance(): HomeFragment = HomeFragment()
@@ -36,7 +40,17 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>() {
         super.onCreate(savedInstanceState)
 
         mExoPlayerHelper = ExoPlayerHelper()
+
+        mTestUdpList.add("udp://239.1.1.1:3990")
+        mTestUdpList.add("udp://239.1.1.2:3990")
+        mTestUdpList.add("udp://239.1.1.3:3990")
+        mTestUdpList.add("udp://239.1.1.4:3990")
+        mTestUdpList.add("udp://239.1.1.5:3990")
+        mTestUdpList.add("udp://239.1.1.6:3990")
+        mTestUdpList.add("udp://239.1.1.7:3990")
+        mTestUdpList.add("udp://239.1.1.8:3990")
     }
+
 
     override fun onStart() {
         super.onStart()
@@ -45,14 +59,41 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>() {
         list_functions.adapter = mAdapter
 
         mExoPlayerHelper.initPlayer(context, videoView)
-        mExoPlayerHelper.setMp4Source(R.raw.videoplayback)
+        mExoPlayerHelper.setUdpSource(mTestUdpList.get(mChannelIndex))
+//        mExoPlayerHelper.setMp4Source(R.raw.videoplayback)
 
         videoView.setOnClickListener { activity?.startActivity(Intent(activity, FullScreenActivity::class.java)) }
 
 
     }
+
+    override fun onResume() {
+        super.onResume()
+
+    }
+
     override fun onStop() {
         super.onStop()
         mExoPlayerHelper.release()
+    }
+
+    override fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?) {
+        super.onFragmentKeyDown(keyCode, event)
+        when (keyCode) {
+            KeyEvent.KEYCODE_CHANNEL_UP -> {
+                if (mChannelIndex != mTestUdpList.size - 1) {
+                    mChannelIndex++
+                    mExoPlayerHelper.stop()
+                    mExoPlayerHelper.setUdpSource(mTestUdpList[mChannelIndex])
+                }
+            }
+            KeyEvent.KEYCODE_CHANNEL_DOWN -> {
+                if (mChannelIndex != 0) {
+                    mChannelIndex--
+                    mExoPlayerHelper.stop()
+                    mExoPlayerHelper.setUdpSource(mTestUdpList[mChannelIndex])
+                }
+            }
+        }
     }
 }

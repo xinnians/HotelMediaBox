@@ -7,8 +7,10 @@ import android.support.v4.app.FragmentManager
 import android.text.TextUtils
 import android.util.Log
 import android.util.SparseArray
+import android.view.KeyEvent
 import com.ufistudio.hotelmediabox.constants.Page
 import com.ufistudio.hotelmediabox.utils.ActivityUtils
+import kotlinx.android.synthetic.main.fragment_home.*
 
 open class PaneViewActivity : BaseActivity(), OnPageInteractionListener.Pane {
 
@@ -111,5 +113,13 @@ open class PaneViewActivity : BaseActivity(), OnPageInteractionListener.Pane {
     private fun createNewPage(@IdRes container: Int, page: Int, args: Bundle): Fragment {
         args.putInt(PaneView.ARG_CONTAINER, container)
         return Page.view(page, args)
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        var container = mTopFragment.keyAt(0)
+        var top = supportFragmentManager.findFragmentById(container)
+        var view: AppBaseView = top as AppBaseView
+        view.onFragmentKeyDown(keyCode,event)
+        return super.onKeyDown(keyCode, event)
     }
 }
