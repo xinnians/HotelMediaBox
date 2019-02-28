@@ -16,7 +16,7 @@ import android.view.KeyEvent
 import com.ufistudio.hotelmediabox.pages.FullScreenActivity
 
 
-class HomeFragment : InteractionView<OnPageInteractionListener.Primary>() {
+class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), FunctionsAdapter.OnItemClickListener {
 
     private lateinit var mViewModel: TemplateViewModel
     private var mAdapter = FunctionsAdapter()
@@ -63,7 +63,7 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>() {
 //        mExoPlayerHelper.setMp4Source(R.raw.videoplayback)
 
         videoView.setOnClickListener { activity?.startActivity(Intent(activity, FullScreenActivity::class.java)) }
-
+        mAdapter.setItemClickListener(this)
 
     }
 
@@ -95,5 +95,9 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>() {
                 }
             }
         }
+    }
+
+    override fun onClick(view: View) {
+        getInteractionListener().switchPage(R.id.fragment_container, view.tag as Int, Bundle(), true, false)
     }
 }

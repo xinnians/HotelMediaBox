@@ -13,6 +13,12 @@ class FunctionsAdapter : RecyclerView.Adapter<FunctionsAdapter.ViewHolder>() {
 
     private lateinit var mContext: Context
 
+    interface OnItemClickListener {
+        fun onClick(view: View)
+    }
+
+    private var mListener: OnItemClickListener? = null
+
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): FunctionsAdapter.ViewHolder {
         val view = LayoutInflater.from(p0.context).inflate(R.layout.item_home_functions, p0, false) as View
         mContext = p0.context
@@ -28,11 +34,20 @@ class FunctionsAdapter : RecyclerView.Adapter<FunctionsAdapter.ViewHolder>() {
 
         if (p0.itemView.image_icon.isFocused) {
             p0.itemView.text_title.setTextColor(ContextCompat.getColor(mContext, R.color.homeIconFrameFocused))
-            p0.itemView.image_icon.background = ContextCompat.getDrawable(mContext, HomeFeatherEnum.values()[p1].focusedIcon)
+            p0.itemView.image_icon.background =
+                ContextCompat.getDrawable(mContext, HomeFeatherEnum.values()[p1].focusedIcon)
         } else {
             p0.itemView.text_title.setTextColor(ContextCompat.getColor(mContext, android.R.color.white))
             p0.itemView.image_icon.background = ContextCompat.getDrawable(mContext, HomeFeatherEnum.values()[p1].icon)
         }
+        p0.itemView.tag = HomeFeatherEnum.values()[p1].page
+        p0.itemView.setOnClickListener {
+            mListener?.onClick(it)
+        }
+    }
+
+    fun setItemClickListener(listener: OnItemClickListener) {
+        mListener = listener
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
