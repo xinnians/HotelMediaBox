@@ -65,6 +65,11 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>(){
         mExoPlayerHelper.initPlayer(context,videoView)
     }
 
+    override fun onStop() {
+        mExoPlayerHelper.release()
+        super.onStop()
+    }
+
     private fun initView() {
         view_genre_list.layoutManager = LinearLayoutManager(context)
         view_genre_list.adapter = mGenreAdapter
@@ -82,6 +87,7 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>(){
             override fun onClick(view: View) {
                 Log.e(TAG,"mChannelListAdapter onClick()")
 //                activity?.startActivity(Intent(activity, FullScreenActivity::class.java))
+                mExoPlayerHelper.fullScreen()
             }
         })
 
@@ -101,6 +107,8 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>(){
     private fun onChannelSelectListener(channelInfo: IPTVChannel, isFocus: Boolean) {
         Log.e(TAG, "[onChannelSelectListener] channelInfo:$channelInfo, isFocus:$isFocus")
         //TODO call player 播放
+        mExoPlayerHelper.setMp4Source(R.raw.videoplayback,true)
+        mExoPlayerHelper.play()
     }
 
     override fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
