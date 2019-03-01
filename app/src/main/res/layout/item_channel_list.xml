@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout_frame"
     android:layout_width="@dimen/_116sdp"
-    android:layout_height="@dimen/_28sdp"
-    android:clickable="true"
-    android:focusable="true"
-    android:focusableInTouchMode="true">
+    android:layout_height="@dimen/_28sdp">
 
     <ImageView
         android:id="@+id/view_icon"
@@ -19,11 +17,11 @@
 
     <TextView
         android:id="@+id/text_channelName"
+        style="@style/MainPrimaryText"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="@dimen/_7sdp"
         android:gravity="center|start"
-        android:textColor="@color/color_genre"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@+id/view_icon"
         app:layout_constraintRight_toRightOf="parent"

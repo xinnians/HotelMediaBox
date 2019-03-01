@@ -16,13 +16,15 @@ import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.repository.data.IPTVChannel
 import kotlinx.android.synthetic.main.fragment_channel.*
 
-class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>(){
+class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
 
     private lateinit var mViewModel: ChannelViewModel
     private lateinit var mExoPlayerHelper: ExoPlayerHelper
 
     private var mGenreAdapter: ChannelGenreAdapter = ChannelGenreAdapter { genreType, isFocus -> onGenreChangeListener(genreType, isFocus) }
     private var mChannelListAdapter: ChannelListAdapter = ChannelListAdapter { channelInfo, isFocus -> onChannelSelectListener(channelInfo, isFocus) }
+    private var mGenreFocus: Boolean = false //Genre list 是否被focus
+    private var mListFocus: Boolean = false //節目list 是否被focus
 
     companion object {
         fun newInstance(): ChannelFragment = ChannelFragment()
@@ -62,7 +64,7 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>(){
 
     override fun onResume() {
         super.onResume()
-        mExoPlayerHelper.initPlayer(context,videoView)
+        mExoPlayerHelper.initPlayer(context, videoView)
     }
 
     override fun onStop() {
@@ -73,9 +75,9 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>(){
     private fun initView() {
         view_genre_list.layoutManager = LinearLayoutManager(context)
         view_genre_list.adapter = mGenreAdapter
-        mGenreAdapter.setItemClickListener(object :ChannelGenreAdapter.OnItemClickListener{
+        mGenreAdapter.setItemClickListener(object : ChannelGenreAdapter.OnItemClickListener {
             override fun onClick(view: View) {
-                Log.e(TAG,"mGenreAdapter onClick()")
+                Log.e(TAG, "mGenreAdapter onClick()")
                 view_channel_list.requestFocus()
             }
         })
@@ -83,9 +85,9 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>(){
 
         view_channel_list.layoutManager = LinearLayoutManager(context)
         view_channel_list.adapter = mChannelListAdapter
-        mChannelListAdapter.setItemClickListener(object :ChannelListAdapter.OnItemClickListener{
+        mChannelListAdapter.setItemClickListener(object : ChannelListAdapter.OnItemClickListener {
             override fun onClick(view: View) {
-                Log.e(TAG,"mChannelListAdapter onClick()")
+                Log.e(TAG, "mChannelListAdapter onClick()")
 //                activity?.startActivity(Intent(activity, FullScreenActivity::class.java))
                 mExoPlayerHelper.fullScreen()
             }
@@ -97,8 +99,11 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>(){
 
     }
 
+
     private fun onGenreChangeListener(genreType: String, isFocus: Boolean) {
+        mGenreFocus = isFocus
         Log.e(TAG, "[onGenreChangeListener] genreType:$genreType, isFocus:$isFocus")
+        mChannelListAdapter.genreFocus(isFocus)
         if (isFocus) {
             mChannelListAdapter.setGenreFilter(genreType)
         }
@@ -106,22 +111,38 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>(){
 
     private fun onChannelSelectListener(channelInfo: IPTVChannel, isFocus: Boolean) {
         Log.e(TAG, "[onChannelSelectListener] channelInfo:$channelInfo, isFocus:$isFocus")
-        //TODO call player 播放
-        mExoPlayerHelper.setMp4Source(R.raw.videoplayback,true)
+        mListFocus = isFocus
+        mExoPlayerHelper.setMp4Source(R.raw.videoplayback, true)
         mExoPlayerHelper.play()
     }
 
     override fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        Log.e(TAG,"event:${event?.characters?:""}, keycode:$keyCode")
+        Log.e(TAG, "event:${event?.characters ?: ""}, keycode:$keyCode")
 
         when (keyCode) {
+            KeyEvent.KEYCODE_DPAD_UP -> {
+                if (mGenreFocus)
+                    mChannelListAdapter.clearSelectPosition()
+            }
+            KeyEvent.KEYCODE_DPAD_DOWN -> {
+                if (mGenreFocus)
+                    mChannelListAdapter.clearSelectPosition()
+            }
+            KeyEvent.KEYCODE_DPAD_LEFT -> {
+                if (mListFocus)
+                    mChannelListAdapter.clearSelectPosition()
+            }
+            KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                if (mGenreFocus)
+                    mChannelListAdapter.clearSelectPosition()
+            }
             KeyEvent.KEYCODE_CHANNEL_UP -> {
             }
             KeyEvent.KEYCODE_CHANNEL_DOWN -> {
             }
         }
 
-        return super.onFragmentKeyDown(keyCode, event)
+        return false
     }
 
     private fun initChannelsSuccess(list: ArrayList<IPTVChannel>) {

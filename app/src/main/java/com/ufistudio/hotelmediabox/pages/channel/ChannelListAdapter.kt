@@ -1,6 +1,8 @@
 package com.ufistudio.hotelmediabox.pages.channel
 
+import android.content.Context
 import android.graphics.Color
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
 import android.util.Log
@@ -13,11 +15,14 @@ import com.ufistudio.hotelmediabox.repository.data.IPTVChannel
 import kotlinx.android.synthetic.main.item_channel_list.view.*
 
 class ChannelListAdapter(private val listener: (IPTVChannel, Boolean) -> Unit) :
-    RecyclerView.Adapter<ChannelListAdapter.ViewHolder>() {
+        RecyclerView.Adapter<ChannelListAdapter.ViewHolder>() {
 
     private var mOriginalItems: ArrayList<IPTVChannel>? = null
     private var mFilterItems: ArrayList<IPTVChannel>? = null
     private var mGenreType: String = ""
+    private lateinit var mContext: Context
+    private var mSelectPosition = 0 //目前被選到的position
+    private var mGenreFocus = false //Genre list是否正在focus
 
     interface OnItemClickListener {
         fun onClick(view: View)
@@ -27,6 +32,7 @@ class ChannelListAdapter(private val listener: (IPTVChannel, Boolean) -> Unit) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_channel_list, parent, false)
+        mContext = view.context
         return ViewHolder(view)
     }
 
@@ -39,8 +45,20 @@ class ChannelListAdapter(private val listener: (IPTVChannel, Boolean) -> Unit) :
             holder.itemView.setOnClickListener { view ->
                 mListener?.onClick(view)
             }
+            if (mGenreFocus && position == mSelectPosition) {
+                holder.itemView.layout_frame.background = ContextCompat.getDrawable(mContext, R.drawable.home_icon_frame_frame_default)
+            } else {
+                holder.itemView.layout_frame.setBackgroundResource(0)
+            }
             holder.itemView.setOnFocusChangeListener { v, hasFocus ->
-                holder.itemView.text_channelName.setTextColor(if (holder.itemView.isFocused) Color.YELLOW else Color.WHITE)
+                if (hasFocus) {
+                    mSelectPosition = position
+                    holder.itemView.layout_frame.background = ContextCompat.getDrawable(mContext, R.drawable.home_icon_frame_frame_focused)
+                    holder.itemView.text_channelName.setTextColor(ContextCompat.getColor(mContext, R.color.colorYellow))
+                } else {
+                    holder.itemView.layout_frame.setBackgroundResource(0)
+                    holder.itemView.text_channelName.setTextColor(ContextCompat.getColor(mContext, android.R.color.white))
+                }
                 listener(channelData, hasFocus)
             }
         }
@@ -53,6 +71,25 @@ class ChannelListAdapter(private val listener: (IPTVChannel, Boolean) -> Unit) :
 
     fun setItemClickListener(listener: ChannelListAdapter.OnItemClickListener) {
         mListener = listener
+    }
+
+    /**
+     * 通知Genre list是否被foucs
+     * @focus:
+     * true:Genre list被focus
+     * false:Genre list沒有focus
+     */
+    fun genreFocus(focus: Boolean) {
+        mGenreFocus = focus
+    }
+
+    /**
+     * 清楚上一個被選擇到的狀態
+     */
+    fun clearSelectPosition() {
+        val int = mSelectPosition
+        mSelectPosition = 0
+        notifyItemChanged(int)
     }
 
     fun setGenreFilter(genreType: String) {
@@ -68,6 +105,7 @@ class ChannelListAdapter(private val listener: (IPTVChannel, Boolean) -> Unit) :
 //            Glide.with(itemView.image.context).load(data.images?.first()).into(itemView.image)
 //            Log.e("ChannelListAdapter", "IPTVChannel:$data")
             itemView.text_channelName.text = data.number + " " + data.name
+            itemView.isFocusable = true
         }
     }
 }
