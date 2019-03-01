@@ -12,11 +12,18 @@ import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.repository.data.IPTVChannel
 import kotlinx.android.synthetic.main.item_channel_list.view.*
 
-class ChannelListAdapter(private val listener: (IPTVChannel, Boolean) -> Unit) : RecyclerView.Adapter<ChannelListAdapter.ViewHolder>() {
+class ChannelListAdapter(private val listener: (IPTVChannel, Boolean) -> Unit) :
+    RecyclerView.Adapter<ChannelListAdapter.ViewHolder>() {
 
     private var mOriginalItems: ArrayList<IPTVChannel>? = null
     private var mFilterItems: ArrayList<IPTVChannel>? = null
     private var mGenreType: String = ""
+
+    interface OnItemClickListener {
+        fun onClick(view: View)
+    }
+
+    private var mListener: OnItemClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_channel_list, parent, false)
@@ -29,13 +36,23 @@ class ChannelListAdapter(private val listener: (IPTVChannel, Boolean) -> Unit) :
         mFilterItems?.get(position)?.let { channelData ->
             holder.bind(channelData, listener)
             holder.itemView.tag = channelData
-
+            holder.itemView.setOnClickListener { view ->
+                mListener?.onClick(view)
+            }
+            holder.itemView.setOnFocusChangeListener { v, hasFocus ->
+                holder.itemView.text_channelName.setTextColor(if (holder.itemView.isFocused) Color.YELLOW else Color.WHITE)
+                listener(channelData, hasFocus)
+            }
         }
     }
 
     fun setItems(items: ArrayList<IPTVChannel>?) {
         this.mOriginalItems = items
         setGenreFilter("")
+    }
+
+    fun setItemClickListener(listener: ChannelListAdapter.OnItemClickListener) {
+        mListener = listener
     }
 
     fun setGenreFilter(genreType: String) {
@@ -51,10 +68,6 @@ class ChannelListAdapter(private val listener: (IPTVChannel, Boolean) -> Unit) :
 //            Glide.with(itemView.image.context).load(data.images?.first()).into(itemView.image)
 //            Log.e("ChannelListAdapter", "IPTVChannel:$data")
             itemView.text_channelName.text = data.number + " " + data.name
-            itemView.setOnFocusChangeListener { v, hasFocus ->
-                itemView.text_channelName.setTextColor(if (itemView.isFocused) Color.YELLOW else Color.WHITE)
-                listener(data, hasFocus)
-            }
         }
     }
 }

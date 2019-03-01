@@ -24,18 +24,16 @@ import com.ufistudio.hotelmediabox.R
 open class ExoPlayerHelper {
     private lateinit var mPlayer: SimpleExoPlayer
     private lateinit var mVideoView: PlayerView
-    private var mVideoViewFullscreen: PlayerView? = null
     private var mContext: Context? = null
     private var mVideoFrameParams: ConstraintLayout.LayoutParams? = null
     private var mVideoParams: ConstraintLayout.LayoutParams? = null
     private var mIsFullscreen: Boolean = false
 
-    fun initPlayer(context: Context?, videoView: PlayerView, fullscreenVideoView: PlayerView? = null) {
+    fun initPlayer(context: Context?, videoView: PlayerView) {
         mContext = context
         val trackSelector = DefaultTrackSelector()
         mPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector)
         mVideoView = videoView
-        mVideoViewFullscreen = fullscreenVideoView
         mVideoView.player = mPlayer
     }
 
