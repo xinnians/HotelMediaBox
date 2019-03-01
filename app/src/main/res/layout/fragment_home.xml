@@ -6,8 +6,33 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg">
 
+    <include
+        android:id="@+id/include2"
+        layout="@layout/view_home_weather"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="@dimen/_20sdp"
+        app:layout_constraintBottom_toBottomOf="@+id/videoView_frame"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/videoView_frame"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/list_functions"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/_45sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/include2"
+        app:layout_constraintStart_toStartOf="@+id/videoView_frame" />
+
+    <include
+        layout="@layout/view_bottom_info"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp" />
+
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/view"
+        android:id="@+id/videoView_frame"
         android:layout_width="@dimen/_243sdp"
         android:layout_height="@dimen/_141sdp"
         android:layout_marginStart="@dimen/_24sdp"
@@ -37,29 +62,4 @@
             app:rewind_increment="30000"
             app:use_controller="false" />
     </android.support.constraint.ConstraintLayout>
-
-    <include
-        android:id="@+id/include2"
-        layout="@layout/view_home_weather"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginEnd="@dimen/_20sdp"
-        app:layout_constraintBottom_toBottomOf="@+id/view"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/view"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/list_functions"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/_45sdp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/include2"
-        app:layout_constraintStart_toStartOf="@+id/view" />
-
-    <include
-        layout="@layout/view_bottom_info"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp" />
 </android.support.constraint.ConstraintLayout>

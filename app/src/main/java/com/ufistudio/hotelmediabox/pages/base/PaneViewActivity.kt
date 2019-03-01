@@ -116,10 +116,14 @@ open class PaneViewActivity : BaseActivity(), OnPageInteractionListener.Pane {
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        var container = mTopFragment.keyAt(0)
-        var top = supportFragmentManager.findFragmentById(container)
-        var view: AppBaseView = top as AppBaseView
-        view.onFragmentKeyDown(keyCode,event)
+        Log.d(TAG, "keycode = $keyCode  ,event = $event")
+        val container = mTopFragment.keyAt(0)
+        val top = supportFragmentManager.findFragmentById(container)
+        if (top is AppBaseView) {
+            val view: AppBaseView = top as AppBaseView
+            if (view.onFragmentKeyDown(keyCode, event))
+                return true
+        }
         return super.onKeyDown(keyCode, event)
     }
 }

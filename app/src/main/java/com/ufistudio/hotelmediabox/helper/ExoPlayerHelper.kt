@@ -3,8 +3,8 @@ package com.ufistudio.hotelmediabox.helper
 import android.content.Context
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
+import android.support.constraint.ConstraintLayout
 import android.support.v4.content.ContextCompat
-import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
@@ -24,16 +24,19 @@ import com.ufistudio.hotelmediabox.R
 open class ExoPlayerHelper {
     private lateinit var mPlayer: SimpleExoPlayer
     private lateinit var mVideoView: PlayerView
+    private var mVideoViewFullscreen: PlayerView? = null
     private var mContext: Context? = null
+    private var mVideoFrameParams: ConstraintLayout.LayoutParams? = null
+    private var mVideoParams: ConstraintLayout.LayoutParams? = null
+    private var mIsFullscreen: Boolean = false
 
-    fun initPlayer(context: Context?, videoView: PlayerView) {
+    fun initPlayer(context: Context?, videoView: PlayerView, fullscreenVideoView: PlayerView? = null) {
         mContext = context
         val trackSelector = DefaultTrackSelector()
         mPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector)
         mVideoView = videoView
+        mVideoViewFullscreen = fullscreenVideoView
         mVideoView.player = mPlayer
-
-        Log.d("neo", "videoView.isControllerVisible = $videoView.isControllerVisible")
     }
 
     /**
@@ -87,15 +90,15 @@ open class ExoPlayerHelper {
         //TODO("應該還要加上傳入的Object")
         mVideoView.findViewById<TextView>(R.id.text_bottom_title).text = "TV 2"
         Glide.with(mContext!!)
-            .load(ColorDrawable(ContextCompat.getColor(mContext!!, android.R.color.holo_blue_dark)))
-            .apply(RequestOptions.circleCropTransform())
-            .into(mVideoView.findViewById<ImageView>(R.id.image_channel_center))
+                .load(ColorDrawable(ContextCompat.getColor(mContext!!, android.R.color.holo_blue_dark)))
+                .apply(RequestOptions.circleCropTransform())
+                .into(mVideoView.findViewById<ImageView>(R.id.image_channel_center))
         var requestOptions = RequestOptions()
         requestOptions = requestOptions.transform(CenterCrop(), RoundedCorners(16))
         Glide.with(mContext!!)
-            .load(ColorDrawable(ContextCompat.getColor(mContext!!, android.R.color.holo_blue_dark)))
-            .apply(requestOptions)
-            .into(mVideoView.findViewById<ImageView>(R.id.image_bottom_channel))
+                .load(ColorDrawable(ContextCompat.getColor(mContext!!, android.R.color.holo_blue_dark)))
+                .apply(requestOptions)
+                .into(mVideoView.findViewById<ImageView>(R.id.image_bottom_channel))
     }
 
     /**
@@ -112,7 +115,47 @@ open class ExoPlayerHelper {
         mPlayer.playWhenReady = true
     }
 
+    /**
+     * When you stop the page.
+     * You have to call this Method.
+     */
     fun release() {
         mPlayer.release()
+        mIsFullscreen = false
+    }
+
+    /**
+     * Switch the fullscreen and normal screen
+     */
+    fun fullScreen() {
+        val parent: ConstraintLayout = mVideoView.parent as ConstraintLayout
+        if (!isFullscreen()) {
+
+            val parentParams = parent.layoutParams as ConstraintLayout.LayoutParams
+
+            mVideoFrameParams = ConstraintLayout.LayoutParams(parentParams)
+            mVideoParams = ConstraintLayout.LayoutParams(mVideoView.layoutParams as ConstraintLayout.LayoutParams)
+
+            parentParams.height = ConstraintLayout.LayoutParams.MATCH_PARENT
+            parentParams.width = ConstraintLayout.LayoutParams.MATCH_PARENT
+            parentParams.marginStart = 0
+            parentParams.topMargin = 0
+            parentParams.bottomMargin = 0
+            parentParams.marginEnd = 0
+            parent.layoutParams = parentParams
+            mVideoView.layoutParams = parentParams
+            mIsFullscreen = true
+        } else {
+            parent.layoutParams = mVideoFrameParams
+            mVideoView.layoutParams = mVideoParams
+            mIsFullscreen = false
+        }
+    }
+
+    /**
+     * Check is fullscreen or not
+     */
+    fun isFullscreen(): Boolean {
+        return mIsFullscreen
     }
 }

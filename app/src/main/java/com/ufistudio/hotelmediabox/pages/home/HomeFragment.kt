@@ -11,9 +11,7 @@ import com.ufistudio.hotelmediabox.pages.base.InteractionView
 import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.helper.ExoPlayerHelper
 import kotlinx.android.synthetic.main.fragment_home.*
-import android.content.Intent
 import android.view.KeyEvent
-import com.ufistudio.hotelmediabox.pages.FullScreenActivity
 
 
 class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), FunctionsAdapter.OnItemClickListener {
@@ -59,10 +57,13 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
         list_functions.adapter = mAdapter
 
         mExoPlayerHelper.initPlayer(context, videoView)
-        mExoPlayerHelper.setUdpSource(mTestUdpList.get(mChannelIndex))
-//        mExoPlayerHelper.setMp4Source(R.raw.videoplayback)
+//        mExoPlayerHelper.setUdpSource(mTestUdpList.get(mChannelIndex))
+        mExoPlayerHelper.setMp4Source(R.raw.videoplayback)
 
-        videoView.setOnClickListener { activity?.startActivity(Intent(activity, FullScreenActivity::class.java)) }
+        videoView.setOnClickListener {
+            mExoPlayerHelper.fullScreen()
+
+        }
         mAdapter.setItemClickListener(this)
 
     }
@@ -77,8 +78,7 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
         mExoPlayerHelper.release()
     }
 
-    override fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?) {
-        super.onFragmentKeyDown(keyCode, event)
+    override fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         when (keyCode) {
             KeyEvent.KEYCODE_CHANNEL_UP -> {
                 if (mChannelIndex != mTestUdpList.size - 1) {
@@ -86,6 +86,7 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                     mExoPlayerHelper.stop()
                     mExoPlayerHelper.setUdpSource(mTestUdpList[mChannelIndex])
                 }
+                return true
             }
             KeyEvent.KEYCODE_CHANNEL_DOWN -> {
                 if (mChannelIndex != 0) {
@@ -93,8 +94,19 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                     mExoPlayerHelper.stop()
                     mExoPlayerHelper.setUdpSource(mTestUdpList[mChannelIndex])
                 }
+                return true
+            }
+            KeyEvent.KEYCODE_DPAD_CENTER -> {
+                mExoPlayerHelper.fullScreen()
+                return true
+            }
+            KeyEvent.KEYCODE_BACK -> {
+                if (mExoPlayerHelper.isFullscreen())
+                    mExoPlayerHelper.fullScreen()
+                return true
             }
         }
+        return false
     }
 
     override fun onClick(view: View) {

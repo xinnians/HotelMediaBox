@@ -36,6 +36,7 @@ abstract class InteractionView<I : OnPageInteractionListener.Base> : BaseView() 
 
     protected fun getInteractionListener(): I = mInteractionListener
 
-    override fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?) {
-        Log.d(TAG, "keycode = $keyCode  ,event = $event")    }
+    override fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        return false
+    }
 }
