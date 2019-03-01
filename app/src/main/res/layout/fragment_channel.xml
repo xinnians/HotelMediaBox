@@ -1,153 +1,155 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/bg">
+                                             xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             xmlns:tools="http://schemas.android.com/tools"
+                                             android:layout_width="match_parent"
+                                             android:layout_height="match_parent"
+                                             android:background="@drawable/bg">
 
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/layout_menu"
-        android:layout_width="@dimen/_89sdp"
-        android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <android.support.constraint.ConstraintLayout
-            android:id="@+id/layout_back"
+            android:id="@+id/layout_menu"
             android:layout_width="@dimen/_89sdp"
-            android:layout_height="@dimen/_48sdp"
+            android:layout_height="match_parent"
+            android:background="@color/channelListBackground"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageView
-                android:id="@+id/view_back"
-                android:layout_width="@dimen/_17sdp"
-                android:layout_height="@dimen/_17sdp"
-                android:layout_marginStart="@dimen/_15sdp"
-                android:layout_marginTop="@dimen/_14sdp"
-                android:src="@drawable/ic_return"
-                app:layout_constraintBottom_toBottomOf="parent"
+        <android.support.constraint.ConstraintLayout
+                android:id="@+id/layout_back"
+                android:layout_width="@dimen/_89sdp"
+                android:layout_height="@dimen/_48sdp"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                    android:id="@+id/view_back"
+                    android:layout_width="@dimen/_17sdp"
+                    android:layout_height="@dimen/_17sdp"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_14sdp"
+                    android:src="@drawable/ic_return"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
 
             <TextView
-                android:id="@+id/text_back"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginTop="@dimen/_14sdp"
-                android:gravity="center"
-                android:text="Live TV"
-                android:textColor="@android:color/white"
-                android:textSize="@dimen/_11ssp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toRightOf="@id/view_back"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                    android:id="@+id/text_back"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="@dimen/_14sdp"
+                    android:gravity="center"
+                    android:text="Live TV"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/_11ssp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toRightOf="@id/view_back"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
 
         </android.support.constraint.ConstraintLayout>
 
         <RelativeLayout
-            android:id="@+id/view_horizontal_line"
-            android:layout_width="@dimen/_89sdp"
-            android:layout_height="1dp"
-            android:background="#7f7fb5"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/layout_back" />
+                android:id="@+id/view_horizontal_line"
+                android:layout_width="@dimen/_89sdp"
+                android:layout_height="1dp"
+                android:background="#7f7fb5"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/layout_back"/>
 
         <ImageView
-            android:id="@+id/view_menu_up_arrow"
-            android:layout_width="@dimen/_13sdp"
-            android:layout_height="@dimen/_8sdp"
-            android:layout_marginTop="@dimen/_14sdp"
-            android:src="@drawable/ic_uparrow"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/view_horizontal_line" />
+                android:id="@+id/view_menu_up_arrow"
+                android:layout_width="@dimen/_13sdp"
+                android:layout_height="@dimen/_8sdp"
+                android:layout_marginTop="@dimen/_14sdp"
+                android:src="@drawable/ic_uparrow"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/view_horizontal_line"/>
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/view_genre_list"
-            android:layout_width="@dimen/_89sdp"
-            android:layout_height="0dp"
-            android:layout_marginTop="@dimen/_8sdp"
-            android:layout_marginBottom="@dimen/_8sdp"
-            app:layout_constraintBottom_toTopOf="@id/view_menu_down_arrow"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/view_menu_up_arrow" />
+                android:id="@+id/view_genre_list"
+                android:layout_width="@dimen/_89sdp"
+                android:layout_height="0dp"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:layout_marginBottom="@dimen/_8sdp"
+                app:layout_constraintBottom_toTopOf="@id/view_menu_down_arrow"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/view_menu_up_arrow"/>
 
         <ImageView
-            android:id="@+id/view_menu_down_arrow"
-            android:layout_width="@dimen/_13sdp"
-            android:layout_height="@dimen/_8sdp"
-            android:layout_marginBottom="@dimen/_14sdp"
-            android:src="@drawable/ic_downarrow"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/view_genre_list" />
+                android:id="@+id/view_menu_down_arrow"
+                android:layout_width="@dimen/_13sdp"
+                android:layout_height="@dimen/_8sdp"
+                android:layout_marginBottom="@dimen/_14sdp"
+                android:src="@drawable/ic_downarrow"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/view_genre_list"/>
 
     </android.support.constraint.ConstraintLayout>
 
     <RelativeLayout
-        android:id="@+id/view_vertical_line"
-        android:layout_width="1dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="@dimen/_14sdp"
-        android:layout_marginBottom="@dimen/_14sdp"
-        android:background="#7f7fb5"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toRightOf="@id/layout_menu"
-        app:layout_constraintTop_toTopOf="parent" />
+            android:id="@+id/view_vertical_line"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/_14sdp"
+            android:layout_marginBottom="@dimen/_14sdp"
+            android:background="#7f7fb5"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/layout_menu"
+            app:layout_constraintTop_toTopOf="parent"/>
 
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/layout_list"
-        android:layout_width="@dimen/_135sdp"
-        android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toRightOf="@id/view_vertical_line"
-        app:layout_constraintTop_toTopOf="parent">
+            android:id="@+id/layout_list"
+            android:layout_width="@dimen/_135sdp"
+            android:layout_height="match_parent"
+            android:background="@color/channelListBackground"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/view_vertical_line"
+            app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/view_list_up_arrow"
-            android:layout_width="@dimen/_13sdp"
-            android:layout_height="@dimen/_8sdp"
-            android:layout_marginTop="@dimen/_14sdp"
-            android:src="@drawable/ic_uparrow"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+                android:id="@+id/view_list_up_arrow"
+                android:layout_width="@dimen/_13sdp"
+                android:layout_height="@dimen/_8sdp"
+                android:layout_marginTop="@dimen/_14sdp"
+                android:src="@drawable/ic_uparrow"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/view_channel_list"
-            android:layout_width="@dimen/_135sdp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@id/view_list_down_arrow"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/view_list_up_arrow" />
+                android:id="@+id/view_channel_list"
+                android:layout_width="@dimen/_135sdp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toTopOf="@id/view_list_down_arrow"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/view_list_up_arrow"/>
 
         <ImageView
-            android:id="@+id/view_list_down_arrow"
-            android:layout_width="@dimen/_13sdp"
-            android:layout_height="@dimen/_8sdp"
-            android:layout_marginBottom="@dimen/_14sdp"
-            android:src="@drawable/ic_downarrow"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/view_channel_list" />
+                android:id="@+id/view_list_down_arrow"
+                android:layout_width="@dimen/_13sdp"
+                android:layout_height="@dimen/_8sdp"
+                android:layout_marginBottom="@dimen/_14sdp"
+                android:src="@drawable/ic_downarrow"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/view_channel_list"/>
 
     </android.support.constraint.ConstraintLayout>
 
     <com.google.android.exoplayer2.ui.PlayerView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="@dimen/_14sdp"
-        android:layout_marginTop="@dimen/_65sdp"
-        android:layout_marginEnd="@dimen/_23sdp"
-        android:layout_marginBottom="@dimen/_82sdp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/layout_list"
-        app:layout_constraintTop_toTopOf="parent" />
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/_14sdp"
+            android:layout_marginTop="@dimen/_65sdp"
+            android:layout_marginEnd="@dimen/_23sdp"
+            android:layout_marginBottom="@dimen/_82sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/layout_list"
+            app:layout_constraintTop_toTopOf="parent"/>
 </android.support.constraint.ConstraintLayout>

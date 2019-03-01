@@ -14,6 +14,9 @@
     <color name="homeIconFrame">@color/white30</color>
     <color name="homeIconFrameFocused">#f9ff00</color>
 
+    <!--Channel page-->
+    <color name="channelListBackground">#4c00006b</color>
+
 
     <color name="white30">#4DFFFFFF</color>
     <color name="block40">#66000000</color>
