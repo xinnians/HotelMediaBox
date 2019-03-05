@@ -25,5 +25,9 @@
     <string name="tv_channel_fullscreen_channel">Channel</string>
     <string name="tv_channel_fullscreen_back">Back to Channel List</string>
 
+    <!--TV channel-->
+    <string name="tv_channel_back">Back</string>
+    <string name="tv_channel_watch_channel">Watch Channel</string>
+
 
 </resources>
