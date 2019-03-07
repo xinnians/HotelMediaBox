@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.ufistudio.hotelmediabox.R
-import com.ufistudio.hotelmediabox.pages.TemplateViewModel
 import com.ufistudio.hotelmediabox.pages.base.InteractionView
 import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.helper.ExoPlayerHelper
@@ -16,7 +15,7 @@ import android.view.KeyEvent
 
 class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), FunctionsAdapter.OnItemClickListener {
 
-    private lateinit var mViewModel: TemplateViewModel
+    private lateinit var mViewModel:HomeViewModel
     private var mAdapter = FunctionsAdapter()
 
     private lateinit var mExoPlayerHelper: ExoPlayerHelper

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="@dimen/_68sdp"
+    android:layout_height="match_parent"
+    android:background="@color/channelListBackground">
+
+    <ImageView
+        android:id="@+id/view_list_up_arrow"
+        android:layout_width="@dimen/_13sdp"
+        android:layout_height="@dimen/_8sdp"
+        android:layout_marginTop="@dimen/_14sdp"
+        android:src="@drawable/ic_uparrow"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/icon_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/view_list_down_arrow"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/view_list_up_arrow" />
+
+    <ImageView
+        android:id="@+id/view_list_down_arrow"
+        android:layout_width="@dimen/_13sdp"
+        android:layout_height="@dimen/_8sdp"
+        android:layout_marginBottom="@dimen/_14sdp"
+        android:src="@drawable/ic_downarrow"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/view_channel_list" />
+</android.support.constraint.ConstraintLayout>

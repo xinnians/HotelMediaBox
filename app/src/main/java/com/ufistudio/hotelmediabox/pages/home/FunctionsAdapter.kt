@@ -26,21 +26,21 @@ class FunctionsAdapter : RecyclerView.Adapter<FunctionsAdapter.ViewHolder>() {
     }
 
     override fun getItemCount(): Int {
-        return HomeFeatherEnum.values().size
+        return HomeFeatureEnum.values().size
     }
 
     override fun onBindViewHolder(p0: FunctionsAdapter.ViewHolder, p1: Int) {
-        p0.itemView.text_title.setText(HomeFeatherEnum.values()[p1].title)
+        p0.itemView.text_title.setText(HomeFeatureEnum.values()[p1].title)
 
         if (p0.itemView.image_icon.isFocused) {
             p0.itemView.text_title.setTextColor(ContextCompat.getColor(mContext, R.color.homeIconFrameFocused))
             p0.itemView.image_icon.background =
-                ContextCompat.getDrawable(mContext, HomeFeatherEnum.values()[p1].focusedIcon)
+                ContextCompat.getDrawable(mContext, HomeFeatureEnum.values()[p1].focusedIcon)
         } else {
             p0.itemView.text_title.setTextColor(ContextCompat.getColor(mContext, android.R.color.white))
-            p0.itemView.image_icon.background = ContextCompat.getDrawable(mContext, HomeFeatherEnum.values()[p1].icon)
+            p0.itemView.image_icon.background = ContextCompat.getDrawable(mContext, HomeFeatureEnum.values()[p1].icon)
         }
-        p0.itemView.tag = HomeFeatherEnum.values()[p1].page
+        p0.itemView.tag = HomeFeatureEnum.values()[p1].page
         p0.itemView.setOnClickListener {
             mListener?.onClick(it)
         }

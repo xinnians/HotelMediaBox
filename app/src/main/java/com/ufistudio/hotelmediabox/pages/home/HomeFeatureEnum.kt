@@ -3,10 +3,10 @@ package com.ufistudio.hotelmediabox.pages.home
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.constants.Page
 
-enum class HomeFeatherEnum(title: Int, page: Int, focusedIcon: Int, icon: Int) {
+enum class HomeFeatureEnum(title: Int, page: Int, focusedIcon: Int, icon: Int) {
     LIVE_TV(R.string.home_icon_live_tv, Page.CHANNEL, R.drawable.ic_live_tv_1, R.drawable.ic_live_tv),
     VOD(R.string.home_icon_vod, Page.CHANNEL, R.drawable.ic_vod_1, R.drawable.ic_vod),
-    SMART_APP(R.string.home_icon_smart_app, Page.CHANNEL, R.drawable.ic_smart_apps_1, R.drawable.ic_smart_apps),
+    SMART_APP(R.string.home_icon_smart_app, Page.SMART_APPS, R.drawable.ic_smart_apps_1, R.drawable.ic_smart_apps),
     ROOM_SERVICE(
         R.string.home_icon_room_service,
         Page.CHANNEL,
