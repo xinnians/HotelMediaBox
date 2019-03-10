@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg">
 
-    <com.ufistudio.hotelmediabox.views.SideViewFeature
+    <com.ufistudio.hotelmediabox.views.SideView
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         tools:ignore="MissingConstraints" />

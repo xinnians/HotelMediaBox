@@ -9,7 +9,7 @@ enum class HomeFeatureEnum(title: Int, page: Int, focusedIcon: Int, icon: Int) {
     SMART_APP(R.string.home_icon_smart_app, Page.SMART_APPS, R.drawable.ic_smart_apps_1, R.drawable.ic_smart_apps),
     ROOM_SERVICE(
         R.string.home_icon_room_service,
-        Page.CHANNEL,
+        Page.ROOM_SERVICE,
         R.drawable.ic_room_service_1,
         R.drawable.ic_room_service
     ),

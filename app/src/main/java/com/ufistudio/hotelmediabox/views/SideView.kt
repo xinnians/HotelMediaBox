@@ -8,7 +8,7 @@ import android.view.LayoutInflater
 import com.ufistudio.hotelmediabox.R
 import kotlinx.android.synthetic.main.view_left_side.view.*
 
-class SideViewFeature : ConstraintLayout {
+class SideView : ConstraintLayout {
     private var mAdapter: SideViewAdapter? = null
 
     constructor(context: Context?) : super(context)

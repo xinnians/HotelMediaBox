@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg">
+
+    <com.ufistudio.hotelmediabox.views.SideView
+        android:id="@+id/sideView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <RelativeLayout
+        android:id="@+id/view_line"
+        android:layout_width="@dimen/_1sdp"
+        android:visibility="gone"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/_14sdp"
+        android:layout_marginBottom="@dimen/_14sdp"
+        android:background="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/view_service"
+        app:layout_constraintStart_toEndOf="@+id/sideView"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/view_service"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@color/channelListBackground"
+        app:layout_constraintStart_toEndOf="@+id/view_line">
+
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/layout_back"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_48sdp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/view_back"
+                android:layout_width="@dimen/_17sdp"
+                android:layout_height="@dimen/_17sdp"
+                android:layout_marginStart="@dimen/_15sdp"
+                android:layout_marginTop="@dimen/_14sdp"
+                android:src="@drawable/ic_return"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/text_back"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="@dimen/_14sdp"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="Room Service"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/_11ssp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/view_back"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_1sdp"
+                android:background="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="parent" />
+        </android.support.constraint.ConstraintLayout>
+
+        <ImageView
+            android:id="@+id/view_list_up_arrow"
+            android:layout_width="@dimen/_13sdp"
+            android:layout_height="@dimen/_8sdp"
+            android:layout_marginTop="@dimen/_14sdp"
+            android:src="@drawable/ic_uparrow"
+            app:layout_constraintLeft_toLeftOf="@id/recyclerView_service"
+            app:layout_constraintRight_toRightOf="@id/recyclerView_service"
+            app:layout_constraintTop_toBottomOf="@+id/layout_back" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView_service"
+            android:layout_width="@dimen/_117sdp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/view_list_down_arrow"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view_list_up_arrow" />
+
+        <ImageView
+            android:id="@+id/view_list_down_arrow"
+            android:layout_width="@dimen/_13sdp"
+            android:layout_height="@dimen/_8sdp"
+            android:layout_marginBottom="@dimen/_14sdp"
+            android:src="@drawable/ic_downarrow"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="@id/recyclerView_service"
+            app:layout_constraintRight_toRightOf="@id/recyclerView_service" />
+    </android.support.constraint.ConstraintLayout>
+</android.support.constraint.ConstraintLayout>
