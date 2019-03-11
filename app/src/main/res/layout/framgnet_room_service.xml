@@ -17,11 +17,11 @@
     <RelativeLayout
         android:id="@+id/view_line"
         android:layout_width="@dimen/_1sdp"
-        android:visibility="gone"
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/_14sdp"
         android:layout_marginBottom="@dimen/_14sdp"
         android:background="@android:color/white"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/view_service"
         app:layout_constraintStart_toEndOf="@+id/sideView"
@@ -107,4 +107,13 @@
             app:layout_constraintLeft_toLeftOf="@id/recyclerView_service"
             app:layout_constraintRight_toRightOf="@id/recyclerView_service" />
     </android.support.constraint.ConstraintLayout>
+
+    <FrameLayout
+        android:id="@+id/fragment_sub_content"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/view_service"
+        app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>

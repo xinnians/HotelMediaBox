@@ -6,6 +6,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import com.ufistudio.hotelmediabox.R
+import com.ufistudio.hotelmediabox.interfaces.OnItemClickListener
 import kotlinx.android.synthetic.main.view_left_side.view.*
 
 class SideView : ConstraintLayout {
@@ -23,7 +24,15 @@ class SideView : ConstraintLayout {
         icon_list.adapter = mAdapter
     }
 
-    fun setOnItemClickListener(listener: SideViewAdapter.OnItemCLickListener) {
+    fun setOnItemClickListener(listener: OnItemClickListener) {
         mAdapter?.setOnItemClickListener(listener)
+    }
+
+    /**
+     * Set you need to focus's position
+     * @position: the position which you want to focus
+     */
+    fun setLastPosition(position: Int) {
+        mAdapter?.setLastPosition(position)
     }
 }

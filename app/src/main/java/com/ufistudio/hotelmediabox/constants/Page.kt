@@ -2,10 +2,8 @@ package com.ufistudio.hotelmediabox.constants
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import com.ufistudio.hotelmediabox.pages.RoomServiceFragment
-import com.ufistudio.hotelmediabox.pages.SmartAppsFragment
+import com.ufistudio.hotelmediabox.pages.*
 import com.ufistudio.hotelmediabox.pages.home.HomeFragment
-import com.ufistudio.hotelmediabox.pages.TemplateFragment
 import com.ufistudio.hotelmediabox.pages.channel.ChannelFragment
 import java.lang.IllegalArgumentException
 
@@ -21,6 +19,8 @@ object Page {
     const val CHANNEL = 1002
     const val SMART_APPS = 1003
     const val ROOM_SERVICE = 1004
+    const val HOUSE_KEEPING = 1005
+    const val FOOD_BEVERAGE = 1006
 
     /*--------------------------------------------------------------------------------------------*/
     /* Helpers */
@@ -35,6 +35,8 @@ object Page {
             CHANNEL -> result = ChannelFragment.newInstance()
             SMART_APPS -> result = SmartAppsFragment.newInstance()
             ROOM_SERVICE -> result = RoomServiceFragment.newInstance()
+            HOUSE_KEEPING -> result = TemplateType1Fragment.newInstance()
+            FOOD_BEVERAGE -> result = TemplateType2Fragment.newInstance()
             else -> throw IllegalArgumentException("No match view! page = $page")
         }
 

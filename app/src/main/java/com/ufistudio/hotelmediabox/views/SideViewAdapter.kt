@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.ufistudio.hotelmediabox.R
+import com.ufistudio.hotelmediabox.interfaces.OnItemClickListener
+import com.ufistudio.hotelmediabox.pages.home.FunctionsAdapter
 import com.ufistudio.hotelmediabox.pages.home.HomeFeatureEnum
 import kotlinx.android.synthetic.main.item_side.view.*
 
@@ -16,12 +18,7 @@ class SideViewAdapter : RecyclerView.Adapter<SideViewAdapter.ViewHolder>() {
     private var mLastIndex = 0
     private var mIsInit = true //若為第一次進來
 
-    private var mListener: OnItemCLickListener? = null
-
-    interface OnItemCLickListener {
-        fun OnClicklistener(view: View)
-        fun OnClicklistener()
-    }
+    private var mListener: OnItemClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_side, parent, false) as View
@@ -38,32 +35,35 @@ class SideViewAdapter : RecyclerView.Adapter<SideViewAdapter.ViewHolder>() {
 
 
         holder.itemView.image_icon.background =
-            ContextCompat.getDrawable(mContext, HomeFeatureEnum.values()[position].icon)
+                ContextCompat.getDrawable(mContext, HomeFeatureEnum.values()[position].icon)
 
-        holder.itemView.setOnClickListener { mListener?.OnClicklistener() }
+        holder.itemView.setOnClickListener { mListener?.onClick() }
 
         holder.itemView.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
             mIsInit = false
             if (hasFocus) {
                 holder.itemView.text_title.visibility = View.VISIBLE
-                holder.itemView.image_icon.background =
-                    ContextCompat.getDrawable(mContext, HomeFeatureEnum.values()[position].focusedIcon)
+                holder.itemView.image_icon.background = ContextCompat.getDrawable(mContext, HomeFeatureEnum.values()[position].focusedIcon)
                 holder.itemView.text_title.text = mContext.getString(HomeFeatureEnum.values()[position].title)
             } else {
                 holder.itemView.text_title.visibility = View.GONE
-                holder.itemView.image_icon.background =
-                    ContextCompat.getDrawable(mContext, HomeFeatureEnum.values()[position].icon)
+                holder.itemView.image_icon.background = ContextCompat.getDrawable(mContext, HomeFeatureEnum.values()[position].icon)
             }
         }
-        if (mIsInit && position == 0)
+        if (mLastIndex == position)
             holder.itemView.requestFocus()
         else {
             holder.itemView.clearFocus()
         }
     }
 
-    fun setOnItemClickListener(listener: OnItemCLickListener) {
+    fun setOnItemClickListener(listener: OnItemClickListener) {
         mListener = listener
+    }
+
+    fun setLastPosition(position: Int) {
+        mLastIndex = position
+        notifyItemChanged(position)
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

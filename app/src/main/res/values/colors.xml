@@ -17,6 +17,10 @@
     <!--Channel page-->
     <color name="channelListBackground">#4c00006b</color>
 
+    <!--Room service-->
+    <color name="roomServicePrice">#78777c</color>
+    <color name="roomServiceLine">#cf2622</color>
+
 
     <color name="white30">#4DFFFFFF</color>
     <color name="block40">#66000000</color>
