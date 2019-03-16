@@ -30,6 +30,9 @@ data class DTVChannel(
         override var icon: String
 ) : BaseChannel(), Parcelable
 
+/*
+Hotel Facilities
+ */
 @Parcelize
 data class HotelFacilitiesContent(
         var title: String,
@@ -51,4 +54,31 @@ data class HotelFacilitiesCategories(
 @Parcelize
 data class HotelFacilities(
         val categories: ArrayList<HotelFacilitiesCategories>
+) : Parcelable
+
+/*
+Room Service
+ */
+@Parcelize
+data class RoomServices(
+        val categories: ArrayList<RoomServiceCategories>
+) : Parcelable
+
+@Parcelize
+data class RoomServiceCategories(
+        val title: String,
+        val content_type: Int,
+        val description: String,
+        val total: Int,
+        val contents: ArrayList<RoomServiceContent>
+) : Parcelable
+
+@Parcelize
+data class RoomServiceContent(
+        var title: String,
+        var price: String,
+        var type: String,
+        var file_type: String,
+        var content: String,
+        var image: String
 ) : Parcelable

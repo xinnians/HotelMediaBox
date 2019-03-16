@@ -1,191 +1,122 @@
 {
   "categories": [
     {
-      "title": "House Promo",
+      "title": "House Keeping",
       "content_type": 1,
-      "description": "content type 1 with image/video",
-      "total": 4,
-      "contents": [
-        {
-          "title": "Fried chicken",
-          "file_type": "image",
-          "file_name": "fried_chicken.png"
-        },
-        {
-          "title": "Pasta",
-          "file_type": "image",
-          "file_name": "pasta.mpg"
-        },
-        {
-          "title": "Pasta3",
-          "file_type": "image",
-          "file_name": "pasta.mpg"
-        },
-        {
-          "title": "Pasta100",
-          "file_type": "image",
-          "file_name": "pasta.mpg"
-        }
-      ]
-    },
-    {
-      "title": "Rooms",
-      "content_type": 2,
-      "description": "content type 2 with video/image & title & contents",
-      "total": 5,
+      "description": "content type 1 with video/image & title & contents",
+      "total": 3,
       "contents": [
         {
           "title": "Extra Pillows",
           "file_type": "image",
-          "content": "荷蘭皇家飛利浦電子公司，簡稱飛利浦，是荷蘭的跨國電子公司，總部設在阿姆斯特丹。由赫拉德·飛利浦和父親弗雷德里克·飛利浦於1891年在荷蘭恩荷芬創建。飛利浦在2010年254.2億歐元的收入，使它成為世界上最大的電子公司之一。它在60多個國家雇用約114500名員工。 ",
+          "content": "Please call the operator \"0\" and we will provide you pillows of your choice. sample 1",
           "file_name": "sample.png"
         },
         {
           "title": "Extra Pillows 2",
-          "file_type": "image",
-          "content": "歌林是台灣家電品牌，創立於1963年，已經有超過50年歷史。歌林所經營製造販售的家電商品，涵蓋液晶電視、電冰箱、洗衣機、移動式冷氣以及各種生活、廚房、美容、健康小家電。 歌林品牌過去是由歌林股份有限公司建立於1963年8月8日，曾有多款商品外銷，包括北美、東南亞。",
+          "file_type": "video",
+          "content": "Please call the operator \"0\" and we will provide you pillows of your choice. sample 2",
           "file_name": "extra_pillows.mpg"
         },
         {
           "title": "Extra Pillows 3",
           "file_type": "image",
-          "content": "LG電子／樂金電子，是LG集團的一部分，負責生產電子產品，其業務可分為四個部門——家庭娛樂，移動通訊，家電與空調解決方案、車輛部件。2011年成為全球第二大電視製造商。 ",
-          "file_name": "sample4.png"
-        },
-        {
-          "title": "Extra Pillows 4",
-          "file_type": "image",
-          "content": "大同股份有限公司創立於民國七年，是臺灣一間以電子工業為業務核心之綜合企業，事業版圖橫跨半導體、通路、營造，及貿易等領域，為台灣首批上市企業之一。集團總部位於台北。 ",
-          "file_name": "sample2.png"
-        },
-        {
-          "title": "Extra Pillows 5",
-          "file_type": "image",
-          "content": "東元電機股份有限公司是台灣的家電及重電製造商，總部位於台北市南港區，創辦人是林長城、林和引、偕林波士、錢水木及孫炳輝等五人，現任董事長為邱純枝。 2006年11月時營收為馬達及電控等重電業務貢獻超過七成、家電佔二成。",
-          "file_name": "sample3.png"
+          "content": "Please call the operator \"0\" and we will provide you pillows of your choice. sample 3",
+          "file_name": "sample.png"
         }
       ]
     },
     {
-      "title": "Swimming Pool",
-      "content_type": 3,
-      "description": "content type 3 with image and content",
-      "total": 4,
-      "contents": [
-        {
-          "file_type": "image",
-          "content": "Please call the operator \"0\" to order the items. fried chicken",
-          "file_name": "fried_chicken.png"
-        },
-        {
-          "file_type": "image",
-          "content": "Please call the operator \"0\" to order the items. Pasta",
-          "file_name": "pasta.mpg"
-        },
-        {
-          "file_type": "image",
-          "content": "Please call the operator \"0\" to order the items. Pasta",
-          "file_name": "pasta.mpg"
-        },
-        {
-          "file_type": "image",
-          "content": "Please call the operator \"0\" to order the items. Pasta",
-          "file_name": "pasta.mpg"
-        }
-      ]
-    },
-    {
-      "title": "Fitness Center",
-      "content_type": 1,
-      "description": "content type 1 with image/video",
-      "total": 4,
+      "title": "Food & Beverage",
+      "content_type": 12,
+      "_description": "content type 2 with image and content",
+      "total": 2,
       "contents": [
         {
           "title": "Fried chicken",
-          "file_type": "image",
-          "file_name": "fried_chicken.png"
+          "type":"cake",
+          "price":"100.30",
+          "content": "Learn a skill for life with our foolproof crêpe recipe that ensures perfect pancakes every time - elaborate flip optional.",
+          "image": "fried_chicken.jpg"
+        },{
+          "title": "Fried chicken",
+          "type":"cake",
+          "price":"100.30",
+          "content": "Learn a skill for life with our foolproof crêpe recipe that ensures perfect pancakes every time - elaborate flip optional.",
+          "image": "fried_chicken.jpg"
+        },{
+          "title": "Fried chicken",
+          "type":"cake",
+          "price":"100.30",
+          "content": "Learn a skill for life with our foolproof crêpe recipe that ensures perfect pancakes every time - elaborate flip optional.",
+          "image": "fried_chicken.jpg"
+        },{
+          "title": "Fried chicken",
+          "type":"cake",
+          "price":"100.30",
+          "content": "Learn a skill for life with our foolproof crêpe recipe that ensures perfect pancakes every time - elaborate flip optional.",
+          "image": "fried_chicken.jpg"
+        },{
+          "title": "Fried chicken",
+          "type":"cake",
+          "price":"100.30",
+          "content": "Learn a skill for life with our foolproof crêpe recipe that ensures perfect pancakes every time - elaborate flip optional.",
+          "image": "fried_chicken.jpg"
+        },{
+          "title": "Fried chicken",
+          "type":"cake",
+          "price":"100.30",
+          "content": "Learn a skill for life with our foolproof crêpe recipe that ensures perfect pancakes every time - elaborate flip optional.",
+          "image": "fried_chicken.jpg"
+        },{
+          "title": "Fried chicken",
+          "type":"cake",
+          "price":"100.30",
+          "content": "Learn a skill for life with our foolproof crêpe recipe that ensures perfect pancakes every time - elaborate flip optional.",
+          "image": "fried_chicken.jpg"
+        },{
+          "title": "eeeFried chickend44",
+          "type":"cake",
+          "price":"100.30",
+          "content": "Learn a skill for life with our foolproof crêpe recipe that ensures perfect pancakes every time - elaborate flip optional.",
+          "image": "fried_chicken.jpg"
+        },{
+          "title": "Fried chicken",
+          "type":"cake",
+          "price":"100.30",
+          "content": "Learn a skill for life with our foolproof crêpe recipe that ensures perfect pancakes every time - elaborate flip optional.",
+          "image": "fried_chicken.jpg"
+        },{
+          "title": "Fried chicken",
+          "type":"cake",
+          "price":"100.30",
+          "content": "Learn a skill for life with our foolproof crêpe recipe that ensures perfect pancakes every time - elaborate flip optional.",
+          "image": "fried_chicken.jpg"
+        },{
+          "title": "Fried chicken",
+          "type":"cake",
+          "price":"100.30",
+          "content": "Learn a skill for life with our foolproof crêpe recipe that ensures perfect pancakes every time - elaborate flip optional.",
+          "image": "fried_chicken.jpg"
+        },{
+          "title": "Fried chicken",
+          "type":"cake",
+          "price":"100.30",
+          "content": "Learn a skill for life with our foolproof crêpe recipe that ensures perfect pancakes every time - elaborate flip optional.",
+          "image": "fried_chicken.jpg"
+        },{
+          "title": "Fried chicken",
+          "type":"cake",
+          "price":"100.30",
+          "content": "Learn a skill for life with our foolproof crêpe recipe that ensures perfect pancakes every time - elaborate flip optional.",
+          "image": "fried_chicken.jpg"
+        },{
+          "title": "123Fried chicken123",
+          "type":"cake",
+          "price":"100.30",
+          "content": "Learn a skill for life with our foolproof crêpe recipe that ensures perfect pancakes every time - elaborate flip optional.",
+          "image": "fried_chicken.jpg"
         },
-        {
-          "title": "Pasta",
-          "file_type": "image",
-          "file_name": "pasta.mpg"
-        },
-        {
-          "title": "Pasta3",
-          "file_type": "image",
-          "file_name": "pasta.mpg"
-        },
-        {
-          "title": "Pasta100",
-          "file_type": "image",
-          "file_name": "pasta.mpg"
-        }
-      ]
-    },
-    {
-      "title": "Business Center",
-      "content_type": 2,
-      "description": "content type 2 with video/image & title & contents",
-      "total": 5,
-      "contents": [
-        {
-          "title": "Apple",
-          "file_type": "image",
-          "content": "蘋果公司，是總部位於美國加州庫比蒂諾的跨國科技公司。公司最初由史蒂夫·賈伯斯、史蒂夫·沃茲尼克、羅納德·韋恩創立於1976年4月1日，次年1月3日確定正式名稱為蘋果電腦公司，主業是開發和銷售個人電腦，至2007年1月9日在舊金山Macworld Expo上宣布改名 ",
-          "file_name": "sample.png"
-        },
-        {
-          "title": "Microsoft",
-          "file_type": "image",
-          "content": "微軟是美國一家跨國電腦科技公司，以研發、製造、授權和提供廣泛的電腦軟體服務為主。總部位於美國華盛頓州的雷德蒙德，最為著名和暢銷的產品為Microsoft Windows作業系統和Microsoft Office辦公室軟體，以及Xbox的遊戲業務",
-          "file_name": "extra_pillows.mpg"
-        },
-        {
-          "title": "Extra Pillows 3",
-          "file_type": "image",
-          "content": "LG電子／樂金電子，是LG集團的一部分，負責生產電子產品，其業務可分為四個部門——家庭娛樂，移動通訊，家電與空調解決方案、車輛部件。2011年成為全球第二大電視製造商。 ",
-          "file_name": "sample4.png"
-        },
-        {
-          "title": "Extra Pillows 4",
-          "file_type": "image",
-          "content": "大同股份有限公司創立於民國七年，是臺灣一間以電子工業為業務核心之綜合企業，事業版圖橫跨半導體、通路、營造，及貿易等領域，為台灣首批上市企業之一。集團總部位於台北。 ",
-          "file_name": "sample2.png"
-        },
-        {
-          "title": "Extra Pillows 5",
-          "file_type": "image",
-          "content": "東元電機股份有限公司是台灣的家電及重電製造商，總部位於台北市南港區，創辦人是林長城、林和引、偕林波士、錢水木及孫炳輝等五人，現任董事長為邱純枝。 2006年11月時營收為馬達及電控等重電業務貢獻超過七成、家電佔二成。",
-          "file_name": "sample3.png"
-        }
-      ]
-    },
-    {
-      "title": "Concierge",
-      "content_type": 3,
-      "description": "content type 3 with image and content",
-      "total": 4,
-      "contents": [
-        {
-          "file_type": "image",
-          "content": "Please call the operator \"0\" to order the items. fried chicken",
-          "file_name": "fried_chicken.png"
-        },
-        {
-          "file_type": "image",
-          "content": "Please call the operator \"0\" to order the items. Pasta",
-          "file_name": "pasta.mpg"
-        },
-        {
-          "file_type": "image",
-          "content": "Please call the operator \"0\" to order the items. Pasta",
-          "file_name": "pasta.mpg"
-        },
-        {
-          "file_type": "image",
-          "content": "Please call the operator \"0\" to order the items. Pasta",
-          "file_name": "pasta.mpg"
-        }
       ]
     }
   ]

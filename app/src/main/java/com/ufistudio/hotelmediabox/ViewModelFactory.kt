@@ -3,6 +3,7 @@ package com.ufistudio.hotelmediabox
 import android.app.Application
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
+import com.ufistudio.hotelmediabox.pages.RoomServiceViewModel
 import com.ufistudio.hotelmediabox.pages.TemplateFragment
 import com.ufistudio.hotelmediabox.pages.TemplateViewModel
 import com.ufistudio.hotelmediabox.pages.channel.ChannelFragment
@@ -29,6 +30,7 @@ class ViewModelFactory(private val application: Application,
                 isAssignableFrom(TemplateViewModel::class.java) -> TemplateViewModel(application, CompositeDisposable(), repository)
                 isAssignableFrom(ChannelViewModel::class.java) -> ChannelViewModel(application,CompositeDisposable(),repository)
                 isAssignableFrom(HotelFacilitiesViewModel::class.java) -> HotelFacilitiesViewModel(application,CompositeDisposable(),repository)
+                isAssignableFrom(RoomServiceViewModel::class.java) -> RoomServiceViewModel(application,CompositeDisposable(),repository)
                 else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
             } as T
         }

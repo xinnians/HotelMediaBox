@@ -9,18 +9,19 @@ import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import com.ufistudio.hotelmediabox.R
+import com.ufistudio.hotelmediabox.repository.data.RoomServiceCategories
+import com.ufistudio.hotelmediabox.repository.data.RoomServiceContent
 
 
 open class TemplateType2PagerAdapter : PagerAdapter {
 
     private var mListViews: ArrayList<View> = ArrayList<View>()
-    private lateinit var mData: ArrayList<Array<String>>
+    private lateinit var mData: ArrayList<RoomServiceContent>
 
-    constructor(context: Context, data: ArrayList<Array<String>>) {
-        mData = data
-        for (i in 1..data.size) {
+    constructor(context: Context, data: RoomServiceCategories) {
+        mData = data.contents
+        for (i in 1..data.contents.size) {
             if (i % 3 == 0) {
-                Log.d("neo", "QQ = $i")
                 val mInflater = LayoutInflater.from(context)
                 val v1 = mInflater.inflate(R.layout.item_room_service_type2, null)
                 mListViews.add(v1)
@@ -38,12 +39,13 @@ open class TemplateType2PagerAdapter : PagerAdapter {
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
         val view: View = mListViews[position]
-        val d = ArrayList<Array<String>>()
+        val listData = ArrayList<RoomServiceContent>()
         Log.d("neo", "instantiateItem")
-        d.add(mData[0 + position])
-        d.add(mData[1 + position])
-        d.add(mData[2 + position])
-        val adapter: TemplateType2RecyclerViewAdapter = TemplateType2RecyclerViewAdapter(d)
+        for (i in 0..2) {
+            if (mData.size >= i + position * 3)
+                listData.add(mData[i + position * 3])
+        }
+        val adapter: TemplateType2RecyclerViewAdapter = TemplateType2RecyclerViewAdapter(listData)
 
         val recyclerView: RecyclerView = view.findViewById<RecyclerView>(R.id.recyclerview_content)
         recyclerView.layoutManager = LinearLayoutManager(container.context, LinearLayoutManager.HORIZONTAL, false)

@@ -1,18 +1,23 @@
 package com.ufistudio.hotelmediabox.pages
 
+import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.ufistudio.hotelmediabox.AppInjector
 import com.ufistudio.hotelmediabox.R
+import com.ufistudio.hotelmediabox.constants.Page
 import com.ufistudio.hotelmediabox.interfaces.OnItemClickListener
 import com.ufistudio.hotelmediabox.interfaces.OnItemFocusListener
 import com.ufistudio.hotelmediabox.pages.base.InteractionView
 import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.pages.home.HomeFeatureEnum
 import com.ufistudio.hotelmediabox.pages.roomService.RoomServiceAdapter
+import com.ufistudio.hotelmediabox.repository.data.RoomServiceCategories
+import com.ufistudio.hotelmediabox.repository.data.RoomServices
 import kotlinx.android.synthetic.main.fragment_room_service.*
 
 class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItemClickListener,
@@ -21,10 +26,22 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
     private var mAdapter: RoomServiceAdapter = RoomServiceAdapter(this, this)
     private var mInSubContent: Boolean = false //判斷目前focus是否在右邊的view
     private var mLastSelectIndex: Int = 0 //上一次List的選擇
+    private lateinit var mData: RoomServices
 
     companion object {
         fun newInstance(): RoomServiceFragment = RoomServiceFragment()
         private val TAG = RoomServiceFragment::class.simpleName
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        mViewModel = AppInjector.obtainViewModel(this)
+
+        mViewModel.initRoomServiceProgress.observe(this, Observer { })
+        mViewModel.initRoomServiceSuccess.observe(this, Observer {
+            onSuccess(it)
+        })
+        mViewModel.initRoomServiceError.observe(this, Observer { })
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -109,7 +126,17 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
 
 
     override fun onFoucsed(view: View?) {
-        mLastSelectIndex = view?.getTag(RoomServiceAdapter.TAG_INDEX) as Int
-        getInteractionListener().switchPage(R.id.fragment_sub_content, view.getTag(RoomServiceAdapter.TAG_PAGE) as Int, Bundle(), false, false)
+        val item = view?.getTag(RoomServiceAdapter.TAG_ITEM) as RoomServiceCategories
+        val bundle = Bundle()
+        mLastSelectIndex = view.getTag(RoomServiceAdapter.TAG_INDEX) as Int
+        bundle.putParcelable(Page.ARG_BUNDLE, item)
+        val itemData = view.getTag(RoomServiceAdapter.TAG_ITEM) as RoomServiceCategories
+        if (!mInSubContent)
+            getInteractionListener().switchPage(R.id.fragment_sub_content, if (itemData.content_type == 1) Page.ROOM_SERVICE_TYPE1 else Page.ROOM_SERVICE_TYPE2, bundle, false, false)
+    }
+
+    private fun onSuccess(it: RoomServices?) {
+        mData = it!!
+        mAdapter.setData(mData.categories)
     }
 }

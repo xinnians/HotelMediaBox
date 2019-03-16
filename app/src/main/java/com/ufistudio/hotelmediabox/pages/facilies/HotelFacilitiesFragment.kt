@@ -3,7 +3,6 @@ package com.ufistudio.hotelmediabox.pages.facilies
 import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
-import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -135,10 +134,10 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
     }
 
     override fun onFoucsed(view: View?) {
-        val tag = view?.getTag(HotelFacilitiesAdapter.TAG_ITEM) as HotelFacilitiesCategories
+        val item = view?.getTag(HotelFacilitiesAdapter.TAG_ITEM) as HotelFacilitiesCategories
         val bundle = Bundle()
         mLastSelectIndex = view.getTag(HotelFacilitiesAdapter.TAG_INDEX) as Int
-        bundle.putParcelable(Page.ARG_BUNDLE, tag)
+        bundle.putParcelable(Page.ARG_BUNDLE, item)
         if (!mInSubContent) {
             getInteractionListener().switchPage(R.id.fragment_sub_content, Page.HOTEL_FACILITIES_CONTENT, bundle, false, false, true)
         }

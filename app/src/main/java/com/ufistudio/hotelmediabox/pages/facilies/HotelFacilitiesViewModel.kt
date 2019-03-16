@@ -6,11 +6,10 @@ import com.google.gson.Gson
 import com.ufistudio.hotelmediabox.repository.Repository
 import com.ufistudio.hotelmediabox.repository.data.HotelFacilities
 import com.ufistudio.hotelmediabox.repository.viewModel.BaseViewModel
+import com.ufistudio.hotelmediabox.utils.MiscUtils
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import java.io.IOException
-import java.nio.charset.Charset
 
 class HotelFacilitiesViewModel(
         application: Application,
@@ -23,20 +22,8 @@ class HotelFacilitiesViewModel(
 
 
     init {
-        var gson = Gson()
-        var jsonString = ""
-        try {
-            val inputStream = application.assets.open("room_service.json")
-            val size = inputStream.available()
-            val buffer = ByteArray(size)
-            inputStream.read(buffer)
-            inputStream.close()
-            jsonString = String(buffer, Charset.forName("UTF-8"))
-
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-        var jsonModel = gson.fromJson(jsonString, HotelFacilities::class.java)
+        val gson = Gson()
+        val jsonModel = gson.fromJson(MiscUtils.parseJsonFile(application, "hotel_facilities.json"), HotelFacilities::class.java)
 
         compositeDisposable.add(Single.just(jsonModel)
                 .observeOn(AndroidSchedulers.mainThread())
