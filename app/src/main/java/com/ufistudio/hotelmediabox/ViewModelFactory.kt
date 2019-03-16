@@ -7,6 +7,7 @@ import com.ufistudio.hotelmediabox.pages.TemplateFragment
 import com.ufistudio.hotelmediabox.pages.TemplateViewModel
 import com.ufistudio.hotelmediabox.pages.channel.ChannelFragment
 import com.ufistudio.hotelmediabox.pages.channel.ChannelViewModel
+import com.ufistudio.hotelmediabox.pages.facilies.HotelFacilitiesViewModel
 import com.ufistudio.hotelmediabox.repository.Repository
 import com.ufistudio.hotelmediabox.repository.provider.preferences.SharedPreferencesProvider
 import com.ufistudio.hotelmediabox.repository.provider.resource.ResourceProvider
@@ -27,6 +28,7 @@ class ViewModelFactory(private val application: Application,
             when {
                 isAssignableFrom(TemplateViewModel::class.java) -> TemplateViewModel(application, CompositeDisposable(), repository)
                 isAssignableFrom(ChannelViewModel::class.java) -> ChannelViewModel(application,CompositeDisposable(),repository)
+                isAssignableFrom(HotelFacilitiesViewModel::class.java) -> HotelFacilitiesViewModel(application,CompositeDisposable(),repository)
                 else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
             } as T
         }

@@ -10,7 +10,7 @@ import com.ufistudio.hotelmediabox.pages.base.InteractionView
 import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.pages.roomService.template.TemplateType2PagerAdapter
 import kotlinx.android.synthetic.main.fragment_room_service_content.*
-import kotlinx.android.synthetic.main.framgnet_room_service.*
+import kotlinx.android.synthetic.main.fragment_room_service.*
 
 class TemplateType2Fragment : InteractionView<OnPageInteractionListener.Primary>() {
 

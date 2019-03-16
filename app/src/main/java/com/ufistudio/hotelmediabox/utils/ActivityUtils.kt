@@ -32,6 +32,8 @@ object ActivityUtils {
         if (manager.backStackEntryCount == 0 || addToBackStack)
             transaction.addToBackStack(tag)
         try {
+            transaction.detach(fragment)
+            transaction.attach(fragment)
             transaction.commit()
         } catch (e: IllegalStateException) {
             Log.e(TAG, "[replcaeFragment] ${e.message}")

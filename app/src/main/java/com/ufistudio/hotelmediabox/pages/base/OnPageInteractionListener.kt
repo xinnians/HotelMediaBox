@@ -12,9 +12,13 @@ interface OnPageInteractionListener {
     }
 
     interface Pane : Base {
-        fun switchPage(@IdRes container: Int, page: Int, args: Bundle, addToBackStack: Boolean, withAnimation: Boolean)
+        fun switchPage(@IdRes container: Int, page: Int, args: Bundle, addToBackStack: Boolean, withAnimation: Boolean, createNewFragment: Boolean = false)
         fun addPage(@IdRes container: Int, page: Int, args: Bundle, addToBackStack: Boolean, withAnimation: Boolean)
     }
 
-    interface Primary : Pane
+    interface Primary : Pane {
+        fun setFragmentCacheData(data: Any?)
+        fun getFragmentCacheData(): Any?
+        fun clearFragmentCacheData()
+    }
 }

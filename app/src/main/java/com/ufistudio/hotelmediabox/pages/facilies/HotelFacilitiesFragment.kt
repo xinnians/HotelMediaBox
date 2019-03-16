@@ -1,30 +1,49 @@
-package com.ufistudio.hotelmediabox.pages
+package com.ufistudio.hotelmediabox.pages.facilies
 
+import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.ufistudio.hotelmediabox.AppInjector
 import com.ufistudio.hotelmediabox.R
+import com.ufistudio.hotelmediabox.constants.Page
 import com.ufistudio.hotelmediabox.interfaces.OnItemClickListener
 import com.ufistudio.hotelmediabox.interfaces.OnItemFocusListener
 import com.ufistudio.hotelmediabox.pages.base.InteractionView
 import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.pages.home.HomeFeatureEnum
-import com.ufistudio.hotelmediabox.pages.roomService.RoomServiceAdapter
+import com.ufistudio.hotelmediabox.repository.data.HotelFacilities
+import com.ufistudio.hotelmediabox.repository.data.HotelFacilitiesCategories
 import kotlinx.android.synthetic.main.fragment_room_service.*
 
-class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItemClickListener,
+class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItemClickListener,
         OnItemFocusListener {
-    private lateinit var mViewModel: RoomServiceViewModel
-    private var mAdapter: RoomServiceAdapter = RoomServiceAdapter(this, this)
+    private lateinit var mViewModel: HotelFacilitiesViewModel
+    private var mAdapter: HotelFacilitiesAdapter = HotelFacilitiesAdapter(this, this)
     private var mInSubContent: Boolean = false //判斷目前focus是否在右邊的view
     private var mLastSelectIndex: Int = 0 //上一次List的選擇
 
+    private lateinit var mData: HotelFacilities
+
     companion object {
-        fun newInstance(): RoomServiceFragment = RoomServiceFragment()
-        private val TAG = RoomServiceFragment::class.simpleName
+        fun newInstance(): HotelFacilitiesFragment = HotelFacilitiesFragment()
+        private val TAG = HotelFacilitiesFragment::class.simpleName
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        mViewModel = AppInjector.obtainViewModel(this)
+
+        mViewModel.initHotelFacilitiesProgress.observe(this, Observer { })
+        mViewModel.initHotelFacilitiesSuccess.observe(this, Observer {
+            mData = it!!
+            mAdapter.setData(mData.categories)
+        })
+        mViewModel.initHotelFacilitiesError.observe(this, Observer { })
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -50,6 +69,14 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
 
     override fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         when (keyCode) {
+            KeyEvent.KEYCODE_DPAD_DOWN,
+            KeyEvent.KEYCODE_DPAD_UP -> {
+                if (mInSubContent) {
+                    return true
+                } else {
+
+                }
+            }
             KeyEvent.KEYCODE_DPAD_RIGHT -> {
                 if (sideView.visibility == View.VISIBLE) {
                     displaySideView(false)
@@ -107,9 +134,13 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
     override fun onClick(view: View?) {
     }
 
-
     override fun onFoucsed(view: View?) {
-        mLastSelectIndex = view?.getTag(RoomServiceAdapter.TAG_INDEX) as Int
-        getInteractionListener().switchPage(R.id.fragment_sub_content, view.getTag(RoomServiceAdapter.TAG_PAGE) as Int, Bundle(), false, false)
+        val tag = view?.getTag(HotelFacilitiesAdapter.TAG_ITEM) as HotelFacilitiesCategories
+        val bundle = Bundle()
+        mLastSelectIndex = view.getTag(HotelFacilitiesAdapter.TAG_INDEX) as Int
+        bundle.putParcelable(Page.ARG_BUNDLE, tag)
+        if (!mInSubContent) {
+            getInteractionListener().switchPage(R.id.fragment_sub_content, Page.HOTEL_FACILITIES_CONTENT, bundle, false, false, true)
+        }
     }
 }

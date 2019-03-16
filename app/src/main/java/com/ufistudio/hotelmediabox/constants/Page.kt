@@ -5,12 +5,15 @@ import android.support.v4.app.Fragment
 import com.ufistudio.hotelmediabox.pages.*
 import com.ufistudio.hotelmediabox.pages.home.HomeFragment
 import com.ufistudio.hotelmediabox.pages.channel.ChannelFragment
+import com.ufistudio.hotelmediabox.pages.facilies.HotelFacilitiesFragment
+import com.ufistudio.hotelmediabox.pages.facilies.template.FacilitiesContentFragment
 import java.lang.IllegalArgumentException
 
 object Page {
 
     const val PAGE = "page"
     const val ARG_PAGE = "com.ufistudio.hotelmediabox.constants.Page.ARG_PAGE"
+    const val ARG_BUNDLE = "com.ufistudio.hotelmediabox.constants.Page.ARG_BUNDLE"
 
     const val INVALID_PAGE = -1
 
@@ -19,8 +22,10 @@ object Page {
     const val CHANNEL = 1002
     const val SMART_APPS = 1003
     const val ROOM_SERVICE = 1004
-    const val HOUSE_KEEPING = 1005
-    const val FOOD_BEVERAGE = 1006
+    const val ROOM_SERVICE_TYPE1 = 1005
+    const val ROOM_SERVICE_TYPE2 = 1006
+    const val HOTEL_FACILITIES = 1007
+    const val HOTEL_FACILITIES_CONTENT = 1008
 
     /*--------------------------------------------------------------------------------------------*/
     /* Helpers */
@@ -35,8 +40,10 @@ object Page {
             CHANNEL -> result = ChannelFragment.newInstance()
             SMART_APPS -> result = SmartAppsFragment.newInstance()
             ROOM_SERVICE -> result = RoomServiceFragment.newInstance()
-            HOUSE_KEEPING -> result = TemplateType1Fragment.newInstance()
-            FOOD_BEVERAGE -> result = TemplateType2Fragment.newInstance()
+            ROOM_SERVICE_TYPE1 -> result = TemplateType1Fragment.newInstance()
+            ROOM_SERVICE_TYPE2 -> result = TemplateType2Fragment.newInstance()
+            HOTEL_FACILITIES -> result = HotelFacilitiesFragment.newInstance()
+            HOTEL_FACILITIES_CONTENT -> result = FacilitiesContentFragment.newInstance()
             else -> throw IllegalArgumentException("No match view! page = $page")
         }
 

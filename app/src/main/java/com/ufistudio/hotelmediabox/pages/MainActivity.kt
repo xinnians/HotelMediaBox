@@ -7,6 +7,7 @@ import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.pages.base.PaneViewActivity
 
 class MainActivity : PaneViewActivity(), OnPageInteractionListener.Primary {
+    private var mFragmentCacheData: Any? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,14 +22,14 @@ class MainActivity : PaneViewActivity(), OnPageInteractionListener.Primary {
 //            args = it.getBundleExtra(EX)
 //        }
 //        switchPage(page, args)
-        switchPage(R.id.fragment_container,Page.HOME,Bundle(),true,false)
+        switchPage(R.id.fragment_container, Page.HOME, Bundle(), true, false)
     }
 
-    private fun init(){
+    private fun init() {
 
     }
 
-//    /**
+    //    /**
 //     * 切換頁面
 //     * @page 傳進來的page代號
 //     * @bundle 需要傳遞的bundle
@@ -52,6 +53,16 @@ class MainActivity : PaneViewActivity(), OnPageInteractionListener.Primary {
 //
 //        switchPage(R.id.fragment_container, page, bundle, true, false)
 //    }
+    override fun setFragmentCacheData(data: Any?) {
+        mFragmentCacheData = data
+    }
 
+    override fun getFragmentCacheData(): Any? {
+        return mFragmentCacheData
+    }
+
+    override fun clearFragmentCacheData() {
+        mFragmentCacheData = null
+    }
 }
 

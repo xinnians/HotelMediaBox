@@ -10,7 +10,6 @@ import android.util.SparseArray
 import android.view.KeyEvent
 import com.ufistudio.hotelmediabox.constants.Page
 import com.ufistudio.hotelmediabox.utils.ActivityUtils
-import kotlinx.android.synthetic.main.fragment_home.*
 
 open class PaneViewActivity : BaseActivity(), OnPageInteractionListener.Pane {
 
@@ -64,12 +63,12 @@ open class PaneViewActivity : BaseActivity(), OnPageInteractionListener.Pane {
         super.onBackPressed()
     }
 
-    override fun switchPage(@IdRes container: Int, page: Int, args: Bundle, addToBackStack: Boolean, withAnimation: Boolean) {
+    override fun switchPage(@IdRes container: Int, page: Int, args: Bundle, addToBackStack: Boolean, withAnimation: Boolean, createNewFragment: Boolean) {
         if (isActivityDestroying())
             return
         Log.d(TAG, "[switchPage] page = $page")
         var nextView = findViewByPage(page)
-        if (nextView == null)
+        if (nextView == null || createNewFragment)
             nextView = createNewPage(container, page, args)
 
         var tag = Page.tag(page)
