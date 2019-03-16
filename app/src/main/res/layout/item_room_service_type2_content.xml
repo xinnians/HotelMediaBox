@@ -24,7 +24,7 @@
         android:layout_marginStart="@dimen/_6sdp"
         android:layout_marginTop="@dimen/_70sdp"
         android:layout_marginEnd="@dimen/_6sdp"
-        android:background="@android:color/white"
+        android:background="@drawable/ic_roomservice_f_b_descbg"
         app:layout_constraintEnd_toEndOf="@+id/image_top"
         app:layout_constraintStart_toStartOf="@+id/image_top"
         app:layout_constraintTop_toTopOf="@+id/image_top">
