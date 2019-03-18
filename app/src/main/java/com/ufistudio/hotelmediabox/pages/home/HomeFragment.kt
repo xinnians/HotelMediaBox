@@ -1,7 +1,10 @@
 package com.ufistudio.hotelmediabox.pages.home
 
+import android.arch.lifecycle.Observer
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,16 +14,22 @@ import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.helper.ExoPlayerHelper
 import kotlinx.android.synthetic.main.fragment_home.*
 import android.view.KeyEvent
+import android.widget.ImageView
+import com.ufistudio.hotelmediabox.AppInjector
+import com.ufistudio.hotelmediabox.repository.data.Home
 
 
 class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), FunctionsAdapter.OnItemClickListener {
 
-    private lateinit var mViewModel:HomeViewModel
+    private val TAG_TYPE_1 = 1//Weather Information
+    private val TAG_TYPE_2 = 2//Promo Banner
+
+    private lateinit var mViewModel: HomeViewModel
     private var mAdapter = FunctionsAdapter()
 
     private lateinit var mExoPlayerHelper: ExoPlayerHelper
 
-    private val mTestUdpList = ArrayList<String>()
+    private var mData: Home? = null
     private var mChannelIndex = 0
 
     companion object {
@@ -35,17 +44,17 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+//        mTestUdpList.add("udp://239.1.1.1:3990")
+
+        mViewModel = AppInjector.obtainViewModel(this)
+
+        mViewModel.initHomeProgress.observe(this, Observer { })
+        mViewModel.initHomeSuccess.observe(this, Observer {
+            onSuccess(it)
+        })
+        mViewModel.initHomeError.observe(this, Observer { })
 
         mExoPlayerHelper = ExoPlayerHelper()
-
-        mTestUdpList.add("udp://239.1.1.1:3990")
-        mTestUdpList.add("udp://239.1.1.2:3990")
-        mTestUdpList.add("udp://239.1.1.3:3990")
-        mTestUdpList.add("udp://239.1.1.4:3990")
-        mTestUdpList.add("udp://239.1.1.5:3990")
-        mTestUdpList.add("udp://239.1.1.6:3990")
-        mTestUdpList.add("udp://239.1.1.7:3990")
-        mTestUdpList.add("udp://239.1.1.8:3990")
     }
 
 
@@ -80,19 +89,19 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
     override fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         when (keyCode) {
             KeyEvent.KEYCODE_CHANNEL_UP -> {
-                if (mChannelIndex != mTestUdpList.size - 1) {
-                    mChannelIndex++
-                    mExoPlayerHelper.stop()
-                    mExoPlayerHelper.setUdpSource(mTestUdpList[mChannelIndex])
-                }
+//                if (mChannelIndex != mTestUdpList.size - 1) {
+//                    mChannelIndex++
+//                    mExoPlayerHelper.stop()
+//                    mExoPlayerHelper.setUdpSource(mTestUdpList[mChannelIndex])
+//                }
                 return true
             }
             KeyEvent.KEYCODE_CHANNEL_DOWN -> {
-                if (mChannelIndex != 0) {
-                    mChannelIndex--
-                    mExoPlayerHelper.stop()
-                    mExoPlayerHelper.setUdpSource(mTestUdpList[mChannelIndex])
-                }
+//                if (mChannelIndex != 0) {
+//                    mChannelIndex--
+//                    mExoPlayerHelper.stop()
+//                    mExoPlayerHelper.setUdpSource(mTestUdpList[mChannelIndex])
+//                }
                 return true
             }
             KeyEvent.KEYCODE_DPAD_CENTER -> {
@@ -111,4 +120,27 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
     override fun onClick(view: View) {
         getInteractionListener().switchPage(R.id.fragment_container, view.tag as Int, Bundle(), true, false)
     }
+
+    private fun onSuccess(data: Home?) {
+        mData = data
+        mAdapter.setData(mData?.home?.icons)
+
+        switchWedge(mData?.home?.stage_type?.type)
+    }
+
+    private fun switchWedge(type: Int?) {
+        when (type) {
+            TAG_TYPE_1 -> {
+                view_wedge.layoutResource = R.layout.view_home_weather
+            }
+            TAG_TYPE_2 -> {
+                view_wedge.layoutResource = R.layout.view_home_banner
+                val view = view_wedge.inflate()
+
+//                val banner: ImageView = view.findViewById(R.id.image_banner)
+//                banner.setBackgroundColor(ContextCompat.getColor(context!!, android.R.color.holo_blue_bright))
+            }
+        }
+    }
+
 }

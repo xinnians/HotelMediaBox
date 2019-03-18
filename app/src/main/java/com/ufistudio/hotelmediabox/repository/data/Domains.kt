@@ -31,6 +31,44 @@ data class DTVChannel(
 ) : BaseChannel(), Parcelable
 
 /*
+Home
+ */
+@Parcelize
+data class Home(
+        val home: HomeContent
+) : Parcelable
+
+@Parcelize
+data class HomeContent(
+    val stage_type: HomeStageType,
+    val icons: ArrayList<HomeIcons>,
+    val promo_banner: ArrayList<HomePromoBanner>
+) : Parcelable
+
+@Parcelize
+data class HomeStageType(
+        val type: Int,
+        val description: String
+) : Parcelable
+
+@Parcelize
+data class HomeIcons(
+        val name: String,
+        val enable: Int
+) : Parcelable
+
+@Parcelize
+data class HomePromoBanner(
+        val image: String
+) : Parcelable
+
+@Parcelize
+data class HomeVodMovie(
+        val server_ip: String,
+        val port: Int
+) : Parcelable
+
+/*
 Hotel Facilities
  */
 @Parcelize

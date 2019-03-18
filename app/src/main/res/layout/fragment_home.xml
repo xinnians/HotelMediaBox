@@ -6,9 +6,8 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg">
 
-    <include
-        android:id="@+id/include2"
-        layout="@layout/view_home_weather"
+    <ViewStub
+        android:id="@+id/view_wedge"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginEnd="@dimen/_20sdp"
@@ -23,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/_45sdp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/include2"
+        app:layout_constraintEnd_toEndOf="@+id/view_wedge"
         app:layout_constraintStart_toStartOf="@+id/videoView_frame" />
 
     <include
