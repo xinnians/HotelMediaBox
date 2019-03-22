@@ -1,8 +1,9 @@
 package com.ufistudio.hotelmediabox.pages.home
 
+import android.app.AlertDialog
 import android.arch.lifecycle.Observer
+import android.content.DialogInterface
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,12 +15,15 @@ import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.helper.ExoPlayerHelper
 import kotlinx.android.synthetic.main.fragment_home.*
 import android.view.KeyEvent
-import android.widget.ImageView
 import com.ufistudio.hotelmediabox.AppInjector
+import com.ufistudio.hotelmediabox.interfaces.OnSaveFileStatusListener
 import com.ufistudio.hotelmediabox.repository.data.Home
+import com.ufistudio.hotelmediabox.utils.MiscUtils
+import okhttp3.ResponseBody
+import java.io.IOException
 
 
-class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), FunctionsAdapter.OnItemClickListener {
+class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), FunctionsAdapter.OnItemClickListener, OnSaveFileStatusListener {
 
     private val TAG_TYPE_1 = 1//Weather Information
     private val TAG_TYPE_2 = 2//Promo Banner
@@ -31,6 +35,8 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
 
     private var mData: Home? = null
     private var mChannelIndex = 0
+    private var mDownloadDialog: AlertDialog? = null
+    private var mSpecialCount: Int = 0
 
     companion object {
         fun newInstance(): HomeFragment = HomeFragment()
@@ -48,15 +54,26 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
 
         mViewModel = AppInjector.obtainViewModel(this)
 
-        mViewModel.initHomeProgress.observe(this, Observer { })
-        mViewModel.initHomeSuccess.observe(this, Observer {
-            onSuccess(it)
+        mViewModel.initHomeProgress.observe(this, Observer {
+
         })
-        mViewModel.initHomeError.observe(this, Observer { })
+        mViewModel.initHomeSuccess.observe(this, Observer {
+            onLocalJsonSuccess(it)
+        })
+        mViewModel.initHomeError.observe(this, Observer { onLocalJsonFailed(it) })
+
+        mViewModel.fileDownloadProgress.observe(this, Observer {
+            downloadFileProgress(it)
+        })
+        mViewModel.fileDownloadError.observe(this, Observer {
+            downloadFileFailed(it)
+        })
+        mViewModel.fileDownloadSuccess.observe(this, Observer {
+            downloadFileSuccess(it!!)
+        })
 
         mExoPlayerHelper = ExoPlayerHelper()
     }
-
 
     override fun onStart() {
         super.onStart()
@@ -113,6 +130,24 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                     mExoPlayerHelper.fullScreen()
                 return true
             }
+            KeyEvent.KEYCODE_DPAD_LEFT -> {
+                mSpecialCount++
+            }
+        }
+
+        if (mSpecialCount == 10) {
+            mSpecialCount = 0
+            AlertDialog.Builder(context)
+                    .setTitle("是否下載更新欓")
+                    .setPositiveButton(android.R.string.ok, object : DialogInterface.OnClickListener {
+                        override fun onClick(dialog: DialogInterface?, which: Int) {
+                            mViewModel.downloadFileWithUrl("https://drive.google.com/uc?authuser=0&id=11m95GpoQms-lbcdSXGgrWnJdePGZD59M&export=download")
+                        }
+                    })
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .setCancelable(false)
+                    .create()
+                    .show()
         }
         return false
     }
@@ -121,11 +156,38 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
         getInteractionListener().switchPage(R.id.fragment_container, view.tag as Int, Bundle(), true, false)
     }
 
-    private fun onSuccess(data: Home?) {
+    private fun onLocalJsonFailed(it: Throwable?) {
+        Log.d(TAG, "onLocalJsonFailed => $it")
+    }
+
+    private fun onLocalJsonSuccess(data: Home?) {
         mData = data
         mAdapter.setData(mData?.home?.icons)
 
         switchWedge(mData?.home?.stage_type?.type)
+    }
+
+    private fun downloadFileSuccess(it: ResponseBody) {
+        MiscUtils.writeResponseBodyToDisk(it, "hotelbox.apk", listener = this)
+    }
+
+    private fun downloadFileFailed(it: Throwable?) {
+        Log.d(TAG, "downloadFileFailed => $it")
+    }
+
+    private fun downloadFileProgress(it: Boolean?) {
+        if (it == true) {
+            if (mDownloadDialog == null)
+                mDownloadDialog = AlertDialog.Builder(context)
+                        .setTitle("下載中")
+                        .setView(R.layout.view_progress)
+                        .setCancelable(false)
+                        .create()
+
+            mDownloadDialog?.show()
+        } else {
+            Log.d("neo", "cancel")
+        }
     }
 
     private fun switchWedge(type: Int?) {
@@ -143,4 +205,24 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
         }
     }
 
+    override fun savingFileStart() {
+        Log.d(TAG, "savingFileStart")
+    }
+
+    override fun savingFile(progress: Long) {
+        Log.d(TAG, "progress =  $progress")
+    }
+
+    override fun savingFileEnd() {
+    }
+
+    override fun savingFileError(e: IOException) {
+        Log.d(TAG, "savingFileError + $e")
+        mDownloadDialog?.cancel()
+    }
+
+    override fun savingFileSuccess(path: String, name: String) {
+        mDownloadDialog?.cancel()
+        MiscUtils.installApk(context!!, name)
+    }
 }

@@ -6,6 +6,8 @@ import android.util.Log
 import okhttp3.ConnectionPool
 import okhttp3.ConnectionSpec
 import okhttp3.OkHttpClient
+import retrofit2.http.GET
+import retrofit2.http.Url
 import java.lang.Exception
 import java.lang.ref.WeakReference
 import java.util.concurrent.TimeUnit
@@ -59,5 +61,10 @@ abstract class RemoteAPI {
             }
             return builder
         }
+    }
+
+
+    fun downloadFileWithUrl(url:String){
+        ApiClient
     }
 }
