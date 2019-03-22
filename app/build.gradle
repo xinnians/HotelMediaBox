@@ -30,6 +30,23 @@ android {
     androidExtensions {
         experimental = true
     }
+
+    signingConfigs {
+
+        release {
+            storeFile file("../signature/demo.jks")
+            storePassword '00000000'
+            keyAlias 'demo'
+            keyPassword '00000000'
+        }
+
+        debug {
+            storeFile file("../signature/demo.jks")
+            storePassword '00000000'
+            keyAlias 'demo'
+            keyPassword '00000000'
+        }
+    }
 }
 
 dependencies {
