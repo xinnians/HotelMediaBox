@@ -10,6 +10,10 @@
     <color name="mainBackground">#0D005B</color>
     <color name="videoBackground">@color/white30</color>
 
+    <!--Welcome page-->
+    <color name="welcomeName">#fff200</color>
+    <color name="welcomeBackground">#BD00006B</color>
+
     <!--Home page-->
     <color name="homeIconFrame">@color/white30</color>
     <color name="homeIconFrameFocused">#f9ff00</color>

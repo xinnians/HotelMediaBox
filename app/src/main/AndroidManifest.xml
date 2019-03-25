@@ -18,8 +18,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".pages.MainActivity"
-            android:screenOrientation="landscape">
-        </activity>
+            android:screenOrientation="landscape"></activity>
         <activity
             android:name=".pages.SplashActivity"
             android:screenOrientation="landscape">
@@ -29,6 +28,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".pages.welcome.WelcomeActivity"
+            android:screenOrientation="landscape" />
 
         <service android:name=".services.UdpReceiver" />
 

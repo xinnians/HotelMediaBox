@@ -40,9 +40,9 @@ data class Home(
 
 @Parcelize
 data class HomeContent(
-    val stage_type: HomeStageType,
-    val icons: ArrayList<HomeIcons>,
-    val promo_banner: ArrayList<HomePromoBanner>
+        val stage_type: HomeStageType,
+        val icons: ArrayList<HomeIcons>,
+        val promo_banner: ArrayList<HomePromoBanner>
 ) : Parcelable
 
 @Parcelize
@@ -119,4 +119,25 @@ data class RoomServiceContent(
         var file_type: String,
         var content: String,
         var image: String
+) : Parcelable
+
+/*
+    Welcome
+ */
+@Parcelize
+data class Welcome(
+        var welcome: WelcomeContent
+) : Parcelable
+
+@Parcelize
+data class WelcomeContent(
+        var room: String,
+        var description: String,
+        var title: String,
+        var name: String,
+        var time: String,
+        var titleImage: String,
+        var background: String,
+        var music: String,
+        var entryButton: String
 ) : Parcelable

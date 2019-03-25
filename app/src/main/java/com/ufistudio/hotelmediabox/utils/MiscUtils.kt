@@ -43,6 +43,13 @@ object MiscUtils {
             return ArrayList()
     }
 
+    /**
+     * Parse Json file from assets
+     * @application: Application
+     * @jsonName: json file name
+     *
+     * @return: json string
+     */
     fun parseJsonFile(application: Application, jsonName: String): String {
         var jsonString = ""
         try {
@@ -58,6 +65,49 @@ object MiscUtils {
         }
 
         return jsonString
+    }
+
+    /**
+     * Get Json String from storage
+     * @path: the file path, Base is /sdcard/hotelBox/........
+     * @fileName: This is your file name, ex: welcome.json
+     */
+    fun getJsonFronStorage(path: String, fileName: String): String {
+        return parseJsonFileByInputStream(FileInputStream(getFileFromStorage(path, fileName)))
+    }
+
+    /**
+     * Parse Json file By InputStream
+     * @inputStream: Json file be convert by InputStream
+     */
+    fun parseJsonFileByInputStream(inputStream: FileInputStream?): String {
+        var jsonString = ""
+        if (inputStream != null) {
+            try {
+                val size = inputStream.available()
+                val buffer = ByteArray(size)
+                inputStream.read(buffer)
+                inputStream.close()
+                jsonString = String(buffer, Charset.forName("UTF-8"))
+
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+        return jsonString
+    }
+
+    /**
+     * Get File from Storage
+     * @path: the file path, Base is /sdcard/hotelBox/........
+     * @fileName: This is your file name, ex: welcome.json
+     */
+    fun getFileFromStorage(path: String, fileName: String): File? {
+        val file: File = File(String.format("%s%s%s", Environment.getExternalStorageDirectory(), TAG_DEFAULT_LOCAL_PATH, path), fileName)
+        if (file.exists()) {
+            return file
+        }
+        return null
     }
 
     @Throws(IOException::class)
