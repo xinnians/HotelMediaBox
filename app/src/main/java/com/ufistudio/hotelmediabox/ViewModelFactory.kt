@@ -3,13 +3,11 @@ package com.ufistudio.hotelmediabox
 import android.app.Application
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
-import com.ufistudio.hotelmediabox.pages.RoomServiceViewModel
-import com.ufistudio.hotelmediabox.pages.TemplateFragment
 import com.ufistudio.hotelmediabox.pages.TemplateViewModel
-import com.ufistudio.hotelmediabox.pages.channel.ChannelFragment
 import com.ufistudio.hotelmediabox.pages.channel.ChannelViewModel
 import com.ufistudio.hotelmediabox.pages.facilies.HotelFacilitiesViewModel
 import com.ufistudio.hotelmediabox.pages.home.HomeViewModel
+import com.ufistudio.hotelmediabox.pages.roomService.RoomServiceViewModel
 import com.ufistudio.hotelmediabox.pages.welcome.WelcomeViewModel
 import com.ufistudio.hotelmediabox.repository.Repository
 import com.ufistudio.hotelmediabox.repository.provider.preferences.SharedPreferencesProvider

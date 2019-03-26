@@ -72,7 +72,7 @@ object MiscUtils {
      * @path: the file path, Base is /sdcard/hotelBox/........
      * @fileName: This is your file name, ex: welcome.json
      */
-    fun getJsonFronStorage(path: String, fileName: String): String {
+    fun getJsonFromStorage(path: String, fileName: String): String {
         return parseJsonFileByInputStream(FileInputStream(getFileFromStorage(path, fileName)))
     }
 

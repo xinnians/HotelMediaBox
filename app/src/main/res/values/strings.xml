@@ -29,10 +29,5 @@
     <string name="tv_channel_back">Back</string>
     <string name="tv_channel_watch_channel">Watch Channel</string>
 
-    <!--Room Service-->
-    <string name="room_service_title_house_keeping">House Keeping</string>
-    <string name="room_service_title_food_beverage">Food &amp; Beverage</string>
-    <string name="room_service_under_notify">Please call the operator “0” to order the items.</string>
-
 
 </resources>

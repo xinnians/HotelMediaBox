@@ -45,6 +45,7 @@
         android:layout_height="@dimen/_111sdp"
         android:layout_marginTop="@dimen/_9sdp"
         android:background="@android:color/darker_gray"
+        android:scaleType="fitXY"
         app:layout_constraintStart_toStartOf="@id/text_title"
         app:layout_constraintTop_toBottomOf="@id/text_title" />
 

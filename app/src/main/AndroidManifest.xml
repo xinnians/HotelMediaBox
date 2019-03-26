@@ -31,6 +31,9 @@
         <activity
             android:name=".pages.welcome.WelcomeActivity"
             android:screenOrientation="landscape" />
+        <activity
+            android:name=".pages.factory.FactoryActivity"
+            android:screenOrientation="landscape" />
 
         <service android:name=".services.UdpReceiver" />
 

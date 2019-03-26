@@ -5,10 +5,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.content.Context
 import android.view.LayoutInflater
+import android.widget.ImageView
 import android.widget.TextView
+import com.bumptech.glide.Glide
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.repository.data.RoomServiceCategories
 import com.ufistudio.hotelmediabox.repository.data.RoomServiceContent
+import com.ufistudio.hotelmediabox.utils.MiscUtils
 
 
 open class TemplateType1PagerAdapter(context: Context, data: RoomServiceCategories) : PagerAdapter() {
@@ -40,6 +43,10 @@ open class TemplateType1PagerAdapter(context: Context, data: RoomServiceCategori
         view.findViewById<TextView>(R.id.text_content).text = item.content
         view.findViewById<TextView>(R.id.text_current_page).text = (position + 1).toString()
         view.findViewById<TextView>(R.id.text_total_page).text = String.format("/%d", mListViews.size)
+        Glide.with(view.context)
+                .load(MiscUtils.getFileFromStorage("/image", item.file_name))
+                .into(view.findViewById<ImageView>(R.id.image_content))
+
 
         container.addView(view)
         return view

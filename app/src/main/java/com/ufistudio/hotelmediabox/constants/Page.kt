@@ -7,6 +7,7 @@ import com.ufistudio.hotelmediabox.pages.home.HomeFragment
 import com.ufistudio.hotelmediabox.pages.channel.ChannelFragment
 import com.ufistudio.hotelmediabox.pages.facilies.HotelFacilitiesFragment
 import com.ufistudio.hotelmediabox.pages.facilies.template.FacilitiesContentFragment
+import com.ufistudio.hotelmediabox.pages.roomService.RoomServiceFragment
 import java.lang.IllegalArgumentException
 
 object Page {

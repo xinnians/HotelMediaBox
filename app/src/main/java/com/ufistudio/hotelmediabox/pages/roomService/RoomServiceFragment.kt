@@ -1,8 +1,9 @@
-package com.ufistudio.hotelmediabox.pages
+package com.ufistudio.hotelmediabox.pages.roomService
 
 import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -12,16 +13,16 @@ import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.constants.Page
 import com.ufistudio.hotelmediabox.interfaces.OnItemClickListener
 import com.ufistudio.hotelmediabox.interfaces.OnItemFocusListener
+import com.ufistudio.hotelmediabox.interfaces.ViewModelsCallback
 import com.ufistudio.hotelmediabox.pages.base.InteractionView
 import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.pages.home.HomeFeatureEnum
-import com.ufistudio.hotelmediabox.pages.roomService.RoomServiceAdapter
 import com.ufistudio.hotelmediabox.repository.data.RoomServiceCategories
 import com.ufistudio.hotelmediabox.repository.data.RoomServices
 import kotlinx.android.synthetic.main.fragment_room_service.*
 
 class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItemClickListener,
-        OnItemFocusListener {
+        OnItemFocusListener, ViewModelsCallback {
     private lateinit var mViewModel: RoomServiceViewModel
     private var mAdapter: RoomServiceAdapter = RoomServiceAdapter(this, this)
     private var mInSubContent: Boolean = false //判斷目前focus是否在右邊的view
@@ -37,11 +38,11 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
         super.onCreate(savedInstanceState)
         mViewModel = AppInjector.obtainViewModel(this)
 
-        mViewModel.initRoomServiceProgress.observe(this, Observer { })
+        mViewModel.initRoomServiceProgress.observe(this, Observer { onProgress(it!!) })
         mViewModel.initRoomServiceSuccess.observe(this, Observer {
             onSuccess(it)
         })
-        mViewModel.initRoomServiceError.observe(this, Observer { })
+        mViewModel.initRoomServiceError.observe(this, Observer { onError(it) })
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -135,8 +136,15 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
             getInteractionListener().switchPage(R.id.fragment_sub_content, if (itemData.content_type == 1) Page.ROOM_SERVICE_TYPE1 else Page.ROOM_SERVICE_TYPE2, bundle, false, false)
     }
 
-    private fun onSuccess(it: RoomServices?) {
-        mData = it!!
+    override fun onSuccess(it: Any?) {
+        mData = it as RoomServices
         mAdapter.setData(mData.categories)
+    }
+
+    override fun onError(t: Throwable?) {
+        Log.d(TAG, "Error = ${t?.message}")
+    }
+
+    override fun onProgress(b: Boolean) {
     }
 }

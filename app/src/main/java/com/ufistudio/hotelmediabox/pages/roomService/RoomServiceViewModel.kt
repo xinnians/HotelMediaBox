@@ -1,4 +1,4 @@
-package com.ufistudio.hotelmediabox.pages
+package com.ufistudio.hotelmediabox.pages.roomService
 
 import android.app.Application
 import android.arch.lifecycle.MutableLiveData
@@ -12,9 +12,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 
 class RoomServiceViewModel(
-    application: Application,
-    private val compositeDisposable: CompositeDisposable,
-    private val repository: Repository
+        application: Application,
+        private val compositeDisposable: CompositeDisposable,
+        private val repository: Repository
 ) : BaseViewModel(application, compositeDisposable) {
 
     val initRoomServiceSuccess = MutableLiveData<RoomServices>()
@@ -23,7 +23,7 @@ class RoomServiceViewModel(
 
     init {
         val gson = Gson()
-        val jsonModel = gson.fromJson(MiscUtils.parseJsonFile(application, "room_service.json"), RoomServices::class.java)
+        val jsonModel = gson.fromJson(MiscUtils.getJsonFromStorage("/json/roomService", "room_service_en.json"), RoomServices::class.java)
 
         compositeDisposable.add(Single.just(jsonModel)
                 .observeOn(AndroidSchedulers.mainThread())

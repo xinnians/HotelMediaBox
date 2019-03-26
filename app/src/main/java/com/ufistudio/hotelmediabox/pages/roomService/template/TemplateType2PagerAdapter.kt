@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
+import android.widget.TextView
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.repository.data.RoomServiceCategories
 import com.ufistudio.hotelmediabox.repository.data.RoomServiceContent
@@ -17,15 +18,15 @@ open class TemplateType2PagerAdapter : PagerAdapter {
 
     private var mListViews: ArrayList<View> = ArrayList<View>()
     private lateinit var mData: ArrayList<RoomServiceContent>
+    private var mBottomNote = ""
 
     constructor(context: Context, data: RoomServiceCategories) {
+        mBottomNote = data.bottomNote
         mData = data.contents
-        for (i in 1..data.contents.size) {
-            if (i % 3 == 0) {
-                val mInflater = LayoutInflater.from(context)
-                val v1 = mInflater.inflate(R.layout.item_room_service_type2, null)
-                mListViews.add(v1)
-            }
+        for (i in 1..data.contents.size / 3 + 1) {
+            val mInflater = LayoutInflater.from(context)
+            val v1 = mInflater.inflate(R.layout.item_room_service_type2, null)
+            mListViews.add(v1)
         }
     }
 
@@ -40,17 +41,16 @@ open class TemplateType2PagerAdapter : PagerAdapter {
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
         val view: View = mListViews[position]
         val listData = ArrayList<RoomServiceContent>()
-        Log.d("neo", "instantiateItem")
         for (i in 0..2) {
-            if (mData.size >= i + position * 3)
+            if (mData.size - 1 >= i + position * 3)
                 listData.add(mData[i + position * 3])
         }
         val adapter: TemplateType2RecyclerViewAdapter = TemplateType2RecyclerViewAdapter(listData)
-
         val recyclerView: RecyclerView = view.findViewById<RecyclerView>(R.id.recyclerview_content)
         recyclerView.layoutManager = LinearLayoutManager(container.context, LinearLayoutManager.HORIZONTAL, false)
         recyclerView.adapter = adapter
 
+        view.findViewById<TextView>(R.id.textview_bottom_note).text = mBottomNote
         container.addView(view)
         return view
     }

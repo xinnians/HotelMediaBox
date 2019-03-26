@@ -12,6 +12,7 @@
         android:layout_width="@dimen/_105sdp"
         android:layout_height="@dimen/_86sdp"
         android:background="@android:color/darker_gray"
+        android:scaleType="fitXY"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

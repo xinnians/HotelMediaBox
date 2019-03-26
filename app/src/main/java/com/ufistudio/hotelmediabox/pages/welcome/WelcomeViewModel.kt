@@ -4,7 +4,6 @@ import android.app.Application
 import android.arch.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.ufistudio.hotelmediabox.repository.Repository
-import com.ufistudio.hotelmediabox.repository.data.RoomServices
 import com.ufistudio.hotelmediabox.repository.data.Welcome
 import com.ufistudio.hotelmediabox.repository.viewModel.BaseViewModel
 import com.ufistudio.hotelmediabox.utils.MiscUtils
@@ -24,7 +23,7 @@ class WelcomeViewModel(
 
     init {
         val gson = Gson()
-        val jsonModel = gson.fromJson(MiscUtils.getJsonFronStorage("/json/welcome", "welcome_en.json"), Welcome::class.java)
+        val jsonModel = gson.fromJson(MiscUtils.getJsonFromStorage("/json/welcome", "welcome_en.json"), Welcome::class.java)
 
         if (jsonModel == null) {
             initWelcomeError.value = Throwable("Data in not exists")

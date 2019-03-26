@@ -108,6 +108,7 @@ data class RoomServiceCategories(
         val content_type: Int,
         val description: String,
         val total: Int,
+        val bottomNote: String,
         val contents: ArrayList<RoomServiceContent>
 ) : Parcelable
 
@@ -117,6 +118,7 @@ data class RoomServiceContent(
         var price: String,
         var type: String,
         var file_type: String,
+        var file_name: String,
         var content: String,
         var image: String
 ) : Parcelable

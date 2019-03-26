@@ -23,7 +23,7 @@ class HotelFacilitiesViewModel(
 
     init {
         val gson = Gson()
-        val jsonModel = gson.fromJson(MiscUtils.parseJsonFile(application, "hotel_facilities.json"), HotelFacilities::class.java)
+        val jsonModel = gson.fromJson(MiscUtils.getJsonFromStorage("/json/hotelFacilities", "hotel_facilities_en.json"), HotelFacilities::class.java)
 
         compositeDisposable.add(Single.just(jsonModel)
                 .observeOn(AndroidSchedulers.mainThread())

@@ -3,6 +3,7 @@ package com.ufistudio.hotelmediabox.pages.facilies
 import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,7 @@ import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.constants.Page
 import com.ufistudio.hotelmediabox.interfaces.OnItemClickListener
 import com.ufistudio.hotelmediabox.interfaces.OnItemFocusListener
+import com.ufistudio.hotelmediabox.interfaces.ViewModelsCallback
 import com.ufistudio.hotelmediabox.pages.base.InteractionView
 import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.pages.home.HomeFeatureEnum
@@ -20,7 +22,7 @@ import com.ufistudio.hotelmediabox.repository.data.HotelFacilitiesCategories
 import kotlinx.android.synthetic.main.fragment_room_service.*
 
 class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItemClickListener,
-        OnItemFocusListener {
+        OnItemFocusListener, ViewModelsCallback {
     private lateinit var mViewModel: HotelFacilitiesViewModel
     private var mAdapter: HotelFacilitiesAdapter = HotelFacilitiesAdapter(this, this)
     private var mInSubContent: Boolean = false //判斷目前focus是否在右邊的view
@@ -37,12 +39,13 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
         super.onCreate(savedInstanceState)
         mViewModel = AppInjector.obtainViewModel(this)
 
-        mViewModel.initHotelFacilitiesProgress.observe(this, Observer { })
+        mViewModel.initHotelFacilitiesProgress.observe(this, Observer { onProgress(it!!) })
         mViewModel.initHotelFacilitiesSuccess.observe(this, Observer {
-            mData = it!!
-            mAdapter.setData(mData.categories)
+            onSuccess(it)
         })
-        mViewModel.initHotelFacilitiesError.observe(this, Observer { })
+        mViewModel.initHotelFacilitiesError.observe(this, Observer {
+            onError(it)
+        })
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -141,5 +144,17 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
         if (!mInSubContent) {
             getInteractionListener().switchPage(R.id.fragment_sub_content, Page.HOTEL_FACILITIES_CONTENT, bundle, false, false, true)
         }
+    }
+
+    override fun onSuccess(it: Any?) {
+        mData = it as HotelFacilities
+        mAdapter.setData(mData.categories)
+    }
+
+    override fun onError(t: Throwable?) {
+        Log.d(TAG, "error: ${t?.message}")
+    }
+
+    override fun onProgress(b: Boolean) {
     }
 }

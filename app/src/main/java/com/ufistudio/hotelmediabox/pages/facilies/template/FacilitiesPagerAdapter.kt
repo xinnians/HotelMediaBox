@@ -5,10 +5,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.content.Context
 import android.view.LayoutInflater
+import android.widget.ImageView
 import android.widget.TextView
+import com.bumptech.glide.Glide
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.repository.data.HotelFacilitiesCategories
 import com.ufistudio.hotelmediabox.repository.data.HotelFacilitiesContent
+import com.ufistudio.hotelmediabox.utils.MiscUtils
 
 private const val TAG_TYPE_1 = 1
 private const val TAG_TYPE_2 = 2
@@ -56,17 +59,25 @@ class HotelFacilitiesPagerAdapter(context: Context, data: HotelFacilitiesCategor
         when (mViewType) {
             TAG_TYPE_1 -> {
                 view.findViewById<TextView>(R.id.text_total_page).text = String.format("/%d", mData.size)
-                view.findViewById<TextView>(R.id.text_current_page).text = (position+1).toString()
-
+                view.findViewById<TextView>(R.id.text_current_page).text = (position + 1).toString()
+                Glide.with(view.context)
+                        .load(MiscUtils.getFileFromStorage("/image", item.file_name))
+                        .into(view.findViewById<ImageView>(R.id.image_photo))
             }
             TAG_TYPE_2 -> {
                 view.findViewById<TextView>(R.id.text_total_page).text = String.format("/%d", mData.size)
-                view.findViewById<TextView>(R.id.text_current_page).text = (position+1).toString()
+                view.findViewById<TextView>(R.id.text_current_page).text = (position + 1).toString()
                 view.findViewById<TextView>(R.id.text_title).text = item.title
                 view.findViewById<TextView>(R.id.text_description).text = item.content
+                Glide.with(view.context)
+                        .load(MiscUtils.getFileFromStorage("/image", item.file_name))
+                        .into(view.findViewById<ImageView>(R.id.image_photo))
             }
             TAG_TYPE_3 -> {
                 view.findViewById<TextView>(R.id.text_description).text = item.content
+                Glide.with(view.context)
+                        .load(MiscUtils.getFileFromStorage("/image", item.file_name))
+                        .into(view.findViewById<ImageView>(R.id.image_photo))
             }
         }
         container.addView(view)
