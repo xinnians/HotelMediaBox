@@ -29,5 +29,13 @@
     <string name="tv_channel_back">Back</string>
     <string name="tv_channel_watch_channel">Watch Channel</string>
 
+    <!--Factory-->
+    <string name="factory_import_json_files">Import json files</string>
+    <string name="factory_export_json_files">Export json files</string>
+    <string name="factory_check_upgrade_from_url">check upgrade from url</string>
+    <string name="factory_check_upgrade_from_usb">check upgrade from usb</string>
+    <string name="factory_open_setting">Open Setting</string>
+    <string name="factory_open_default_launcher">Open Default Launcher</string>
+
 
 </resources>
