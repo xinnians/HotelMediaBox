@@ -69,8 +69,21 @@ object MiscUtils {
      * @path: the file path, Base is /sdcard/hotelBox/........
      * @fileName: This is your file name, ex: welcome.json
      */
+//    fun getJsonFromStorage(fileName: String, path: String = ""): String {
+//        try {
+//            return parseJsonFileByInputStream(FileInputStream(FileUtils.getFileFromStorage(path, fileName)))
+//        } catch (e: java.lang.NullPointerException) {
+////
+//            Log.e("parseJsonFile", "Error ${e}")
+//        }
+//        return ""
+//    }
     fun getJsonFromStorage(fileName: String, path: String = ""): String {
-        return parseJsonFileByInputStream(FileInputStream(FileUtils.getFileFromStorage(path, fileName)))
+
+        return FileUtils.getFileFromStorage(path, fileName)?.let { file -> parseJsonFileByInputStream(FileInputStream(file)) }
+                ?: ""
+
+//        return parseJsonFileByInputStream(FileInputStream(FileUtils.getFileFromStorage(path, fileName)))
     }
 
     /**
@@ -88,7 +101,9 @@ object MiscUtils {
                 jsonString = String(buffer, Charset.forName("UTF-8"))
 
             } catch (e: IOException) {
-                e.printStackTrace()
+                Log.e("parseJsonFile", "Error ${e}")
+            } catch (e: NullPointerException) {
+                Log.e("parseJsonFile", "Error ${e}")
             }
         }
         return jsonString
@@ -157,18 +172,24 @@ object MiscUtils {
      * @apkName: apk名字 ex: xxx.apk
      * @apkPath: apk存在的檔案路徑
      */
-    fun installApk(context: Context, apkName: String, apkPath: String = TAG_DEFAULT_LOCAL_PATH) {
-        val file: File = File(FileUtils.fileIsExist(apkPath), apkName)
-        var fileUri: Uri = Uri.fromFile(file) //for Build.VERSION.SDK_INT <= 24
-        if (Build.VERSION.SDK_INT >= 24) {
-            fileUri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", file)
+    fun installApk(context: Context, apkName: String, apkPath: String = TAG_DEFAULT_LOCAL_PATH): Boolean {
+        var haveFile: Boolean = true
+        if (File(apkPath, apkName).exists()) {
+            val file: File = File(apkPath, apkName)
+            var fileUri: Uri = Uri.fromFile(file) //for Build.VERSION.SDK_INT <= 24
+            if (Build.VERSION.SDK_INT >= 24) {
+                fileUri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", file)
+            }
+            val intent: Intent = Intent(Intent.ACTION_VIEW, fileUri)
+            intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
+            intent.setDataAndType(fileUri, "application/vnd.android.package-archive")
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK;
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            context.startActivity(intent)
+        } else {
+            haveFile = false
         }
-        val intent: Intent = Intent(Intent.ACTION_VIEW, fileUri)
-        intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
-        intent.setDataAndType(fileUri, "application/vnd.android.package-archive")
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK;
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        context.startActivity(intent)
+        return haveFile
     }
 
 

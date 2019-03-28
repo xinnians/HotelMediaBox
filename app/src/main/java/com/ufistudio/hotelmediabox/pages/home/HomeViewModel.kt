@@ -31,13 +31,16 @@ class HomeViewModel(
 
     init {
         val gson = Gson()
-        compositeDisposable.add(Single.just(gson.fromJson(MiscUtils.getJsonFromStorage("home_en.json"), Home::class.java))
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { initHomeProgress.value = true }
-                .doFinally { initHomeProgress.value = false }
-                .subscribe({ initHomeSuccess.value = it }
-                        , { initHomeError.value = it })
-        )
+        val jsonObject = gson.fromJson(MiscUtils.getJsonFromStorage("home_en.json"), Home::class.java)
+        if (jsonObject != null) {
+            compositeDisposable.add(Single.just(jsonObject)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSubscribe { initHomeProgress.value = true }
+                    .doFinally { initHomeProgress.value = false }
+                    .subscribe({ initHomeSuccess.value = it }
+                            , { initHomeError.value = it })
+            )
+        }
     }
 
     fun downloadFileWithUrl(url: String) {

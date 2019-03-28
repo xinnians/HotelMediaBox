@@ -23,13 +23,15 @@ class RoomServiceViewModel(
 
     init {
         val gson = Gson()
-
-        compositeDisposable.add(Single.just(gson.fromJson(MiscUtils.getJsonFromStorage("room_service_en.json"), RoomServices::class.java))
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { initRoomServiceProgress.value = true }
-                .doFinally { initRoomServiceProgress.value = false }
-                .subscribe({ initRoomServiceSuccess.value = it }
-                        , { initRoomServiceError.value = it })
-        )
+        val jsonObject = gson.fromJson(MiscUtils.getJsonFromStorage("room_service_en.json"), RoomServices::class.java)
+        if (jsonObject != null) {
+            compositeDisposable.add(Single.just(jsonObject)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSubscribe { initRoomServiceProgress.value = true }
+                    .doFinally { initRoomServiceProgress.value = false }
+                    .subscribe({ initRoomServiceSuccess.value = it }
+                            , { initRoomServiceError.value = it })
+            )
+        }
     }
 }
