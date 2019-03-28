@@ -2,7 +2,7 @@ package com.ufistudio.hotelmediabox.pages.home
 
 import android.app.AlertDialog
 import android.arch.lifecycle.Observer
-import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
@@ -17,13 +17,16 @@ import kotlinx.android.synthetic.main.fragment_home.*
 import android.view.KeyEvent
 import com.ufistudio.hotelmediabox.AppInjector
 import com.ufistudio.hotelmediabox.interfaces.OnSaveFileStatusListener
+import com.ufistudio.hotelmediabox.pages.factory.FactoryActivity
 import com.ufistudio.hotelmediabox.repository.data.Home
+import com.ufistudio.hotelmediabox.utils.FileUtils
 import com.ufistudio.hotelmediabox.utils.MiscUtils
 import okhttp3.ResponseBody
 import java.io.IOException
 
 
-class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), FunctionsAdapter.OnItemClickListener, OnSaveFileStatusListener {
+class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), FunctionsAdapter.OnItemClickListener,
+    OnSaveFileStatusListener {
 
     private val TAG_TYPE_1 = 1//Weather Information
     private val TAG_TYPE_2 = 2//Promo Banner
@@ -137,17 +140,18 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
 
         if (mSpecialCount == 10) {
             mSpecialCount = 0
-            AlertDialog.Builder(context)
-                    .setTitle("是否下載更新欓")
-                    .setPositiveButton(android.R.string.ok, object : DialogInterface.OnClickListener {
-                        override fun onClick(dialog: DialogInterface?, which: Int) {
-                            mViewModel.downloadFileWithUrl("https://drive.google.com/uc?authuser=0&id=11m95GpoQms-lbcdSXGgrWnJdePGZD59M&export=download")
-                        }
-                    })
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .setCancelable(false)
-                    .create()
-                    .show()
+            startActivity(Intent(context, FactoryActivity::class.java))
+//            AlertDialog.Builder(context)
+//                    .setTitle("是否下載更新欓")
+//                    .setPositiveButton(android.R.string.ok, object : DialogInterface.OnClickListener {
+//                        override fun onClick(dialog: DialogInterface?, which: Int) {
+//                            mViewModel.downloadFileWithUrl("https://drive.google.com/uc?authuser=0&id=11m95GpoQms-lbcdSXGgrWnJdePGZD59M&export=download")
+//                        }
+//                    })
+//                    .setNegativeButton(android.R.string.cancel, null)
+//                    .setCancelable(false)
+//                    .create()
+//                    .show()
         }
         return false
     }
@@ -168,7 +172,7 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
     }
 
     private fun downloadFileSuccess(it: ResponseBody) {
-        MiscUtils.writeResponseBodyToDisk(it, "hotelbox.apk", listener = this)
+        FileUtils.writeResponseBodyToDisk(it, "hotelbox.apk", listener = this)
     }
 
     private fun downloadFileFailed(it: Throwable?) {
@@ -179,10 +183,10 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
         if (it == true) {
             if (mDownloadDialog == null)
                 mDownloadDialog = AlertDialog.Builder(context)
-                        .setTitle("下載中")
-                        .setView(R.layout.view_progress)
-                        .setCancelable(false)
-                        .create()
+                    .setTitle("下載中")
+                    .setView(R.layout.view_progress)
+                    .setCancelable(false)
+                    .create()
 
             mDownloadDialog?.show()
         } else {
