@@ -23,13 +23,15 @@ class HotelFacilitiesViewModel(
 
     init {
         val gson = Gson()
-
-        compositeDisposable.add(Single.just(gson.fromJson(MiscUtils.getJsonFromStorage("hotel_facilities_en.json"), HotelFacilities::class.java))
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { initHotelFacilitiesProgress.value = true }
-                .doFinally { initHotelFacilitiesProgress.value = false }
-                .subscribe({ initHotelFacilitiesSuccess.value = it }
-                        , { initHotelFacilitiesError.value = it })
-        )
+        val jsonObject = gson.fromJson(MiscUtils.getJsonFromStorage("hotel_facilities_en.json"), HotelFacilities::class.java)
+        if (jsonObject != null) {
+            compositeDisposable.add(Single.just(jsonObject)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSubscribe { initHotelFacilitiesProgress.value = true }
+                    .doFinally { initHotelFacilitiesProgress.value = false }
+                    .subscribe({ initHotelFacilitiesSuccess.value = it }
+                            , { initHotelFacilitiesError.value = it })
+            )
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.ufistudio.hotelmediabox.pages.welcome
 
 import android.app.Application
 import android.arch.lifecycle.MutableLiveData
+import android.text.TextUtils
 import com.google.gson.Gson
 import com.ufistudio.hotelmediabox.repository.Repository
 import com.ufistudio.hotelmediabox.repository.data.Welcome
@@ -23,12 +24,17 @@ class WelcomeViewModel(
 
     init {
         val gson = Gson()
-        compositeDisposable.add(Single.just(gson.fromJson(MiscUtils.getJsonFromStorage("welcome_en.json"), Welcome::class.java))
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { initWelcomeProgress.value = true }
-                .doFinally { initWelcomeProgress.value = false }
-                .subscribe({ initWelcomeSuccess.value = it }
-                        , { initWelcomeError.value = it })
-        )
+        val jsonObject = gson.fromJson(MiscUtils.getJsonFromStorage("welcome_en.json"), Welcome::class.java)
+        if (jsonObject != null) {
+            compositeDisposable.add(Single.just(jsonObject)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSubscribe { initWelcomeProgress.value = true }
+                    .doFinally { initWelcomeProgress.value = false }
+                    .subscribe({ initWelcomeSuccess.value = it }
+                            , { initWelcomeError.value = it })
+            )
+        }else{
+            initWelcomeError.value = Throwable("jsonObject is null")
+        }
     }
 }
