@@ -73,7 +73,7 @@ object MiscUtils {
     /**
      * 將檔案寫入SD card 預設路徑為sdcard/hotelBox
      * @body: url responseBody stream
-     * @name: 欲存檔的檔名，ex: xxx.apk
+     * @chName: 欲存檔的檔名，ex: xxx.apk
      * @filePath:欲存檔案的目錄，ex: /xxx ，xxx為sdcard底下之目錄
      */
     fun writeResponseBodyToDisk(body: ResponseBody, name: String, filePath: String = TAG_DEFAULT_LOCAL_PATH, listener: OnSaveFileStatusListener): Boolean {

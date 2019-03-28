@@ -29,7 +29,7 @@ interface OnSaveFileStatusListener {
     /**
      * 儲存成功
      * @path:檔案位置
-     * @name:檔案名稱
+     * @chName:檔案名稱
      */
     fun savingFileSuccess(path: String, name: String)
 }

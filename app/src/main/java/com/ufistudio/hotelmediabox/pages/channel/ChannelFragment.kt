@@ -1,19 +1,22 @@
 package com.ufistudio.hotelmediabox.pages.channel
 
 import android.arch.lifecycle.Observer
+import android.graphics.PixelFormat
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
-import android.view.KeyEvent
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import com.ufistudio.hotelmediabox.AppInjector
+import com.ufistudio.hotelmediabox.DVBHelper
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.helper.ExoPlayerHelper
 import com.ufistudio.hotelmediabox.pages.base.InteractionView
 import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
-import com.ufistudio.hotelmediabox.repository.data.IPTVChannel
+import com.ufistudio.hotelmediabox.repository.data.TVChannel
+import io.reactivex.Scheduler
+import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.activity_dvb_test.*
 import kotlinx.android.synthetic.main.fragment_channel.*
 
 class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
@@ -33,6 +36,7 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        DVBHelper.getDVBPlayer().initPlayer(965,580,860,210)
 
         mViewModel = AppInjector.obtainViewModel(this)
 
@@ -69,10 +73,23 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
 
     override fun onStop() {
         mExoPlayerHelper.release()
+        DVBHelper.getDVBPlayer().closePlayer()
         super.onStop()
     }
 
     private fun initView() {
+        dvbView.holder.addCallback(object : SurfaceHolder.Callback {
+            override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
+            }
+
+            override fun surfaceDestroyed(holder: SurfaceHolder?) {
+            }
+
+            override fun surfaceCreated(holder: SurfaceHolder?) {
+                holder?.setFormat(PixelFormat.TRANSPARENT)
+            }
+        })
+
         view_genre_list.layoutManager = LinearLayoutManager(context)
         view_genre_list.adapter = mGenreAdapter
         mGenreAdapter.setItemClickListener(object : ChannelGenreAdapter.OnItemClickListener {
@@ -89,7 +106,7 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
             override fun onClick(view: View) {
                 Log.e(TAG, "mChannelListAdapter onClick()")
 //                activity?.startActivity(Intent(activity, FullScreenActivity::class.java))
-                mExoPlayerHelper.fullScreen()
+//                mExoPlayerHelper.fullScreen()
             }
         })
 
@@ -109,11 +126,26 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
         }
     }
 
-    private fun onChannelSelectListener(channelInfo: IPTVChannel, isFocus: Boolean) {
+    private fun onChannelSelectListener(channelInfo: TVChannel, isFocus: Boolean) {
         Log.e(TAG, "[onChannelSelectListener] channelInfo:$channelInfo, isFocus:$isFocus")
         mListFocus = isFocus
-        mExoPlayerHelper.setMp4Source(R.raw.videoplayback, true)
-        mExoPlayerHelper.play()
+
+        if(isFocus){
+            if(channelInfo.chType == "DVBT"){
+                Single.just(true)
+                    .map { DVBHelper.getDVBPlayer().scanChannel("${channelInfo.chIp.frequency} ${channelInfo.chIp.bandwidth}") }
+                    .map { DVBHelper.getDVBPlayer().playChannel(channelInfo.chIp.dvbParameter) }
+                    .subscribeOn(Schedulers.io())
+                    .subscribe()
+
+            }else{
+                mExoPlayerHelper.setMp4Source(R.raw.videoplayback, true)
+                mExoPlayerHelper.play()
+            }
+        }
+
+
+
     }
 
     override fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
@@ -145,7 +177,7 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
         return false
     }
 
-    private fun initChannelsSuccess(list: ArrayList<IPTVChannel>) {
+    private fun initChannelsSuccess(list: ArrayList<TVChannel>) {
         mChannelListAdapter.setItems(list)
     }
 
