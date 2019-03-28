@@ -27,7 +27,10 @@ class SplashActivity : AppCompatActivity() {
 //        val intent = Intent(this, MainActivity::class.java)
 //        val intent = Intent(this, DVBTestActivity::class.java)
         val timer: Timer = Timer()
-        timer.schedule(3000L) { startActivity(intent) }
+        timer.schedule(3000L) {
+            startActivity(intent)
+            finish()
+        }
 //        startActivity(intent)
     }
 }

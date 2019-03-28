@@ -1,5 +1,6 @@
 package com.ufistudio.hotelmediabox.pages.factory
 
+import android.arch.lifecycle.Observer
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
@@ -11,19 +12,27 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import com.ufistudio.hotelmediabox.AppInjector
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.interfaces.OnItemClickListener
 import com.ufistudio.hotelmediabox.interfaces.OnSaveFileStatusListener
+import com.ufistudio.hotelmediabox.interfaces.ViewModelsCallback
+import com.ufistudio.hotelmediabox.pages.home.HomeFragment
+import com.ufistudio.hotelmediabox.pages.welcome.WelcomeActivity
+import com.ufistudio.hotelmediabox.repository.data.Config
+import com.ufistudio.hotelmediabox.repository.data.Welcome
 import com.ufistudio.hotelmediabox.utils.FileUtils
 import com.ufistudio.hotelmediabox.utils.MiscUtils
 import kotlinx.android.synthetic.main.activity_factory.*
+import okhttp3.ResponseBody
 import java.io.File
 import java.io.IOException
 
-class FactoryActivity : AppCompatActivity(), OnItemClickListener, OnSaveFileStatusListener {
-
+class FactoryActivity : AppCompatActivity(), OnItemClickListener, OnSaveFileStatusListener, ViewModelsCallback {
     private val mAdapter: FactoryAdapter = FactoryAdapter()
     private lateinit var mViewModel: FactoryViewModel
+    private var mDownloadDialog: android.app.AlertDialog? = null
+    private var mData: Config? = null
 
     companion object {
         private val TAG = FactoryActivity::class.simpleName
@@ -33,6 +42,25 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, OnSaveFileStat
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_factory)
 
+        mViewModel = AppInjector.obtainViewModel(this)
+
+        mViewModel.initConfigProgress.observe(this, Observer {
+            onProgress(it!!)
+        })
+        mViewModel.initConfigSuccess.observe(this, Observer {
+            onSuccess(it)
+        })
+        mViewModel.initConfigError.observe(this, Observer { onError(it) })
+
+        mViewModel.fileDownloadProgress.observe(this, Observer {
+            downloadFileProgress(it)
+        })
+        mViewModel.fileDownloadError.observe(this, Observer {
+            downloadFileFailed(it)
+        })
+        mViewModel.fileDownloadSuccess.observe(this, Observer {
+            downloadFileSuccess(it!!)
+        })
     }
 
     override fun onStart() {
@@ -53,21 +81,28 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, OnSaveFileStat
     override fun onClick(view: View?) {
         when (view?.tag as FactoryFeature) {
             FactoryFeature.CHECK_UPGRADE_FROM_URL -> {
-                AlertDialog.Builder(this)
-                    .setTitle("是否下載更新欓")
-                    .setPositiveButton(android.R.string.ok, object : DialogInterface.OnClickListener {
-                        override fun onClick(dialog: DialogInterface?, which: Int) {
-                            mViewModel.downloadFileWithUrl("https://drive.google.com/uc?authuser=0&id=11m95GpoQms-lbcdSXGgrWnJdePGZD59M&export=download")
-                        }
-                    })
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .setCancelable(false)
-                    .create()
-                    .show()
+                Toast.makeText(this, "暫未完成", Toast.LENGTH_SHORT).show()
+//                if (TextUtils.isEmpty(mData?.config?.upgradeUrl!!)) {
+//                    Toast.makeText(this, "無法解析url", Toast.LENGTH_SHORT).show()
+//                    return
+//                }
+//                AlertDialog.Builder(this)
+//                        .setTitle("是否下載更新欓")
+//                        .setPositiveButton(android.R.string.ok, object : DialogInterface.OnClickListener {
+//                            override fun onClick(dialog: DialogInterface?, which: Int) {
+//                                mViewModel.downloadFileWithUrl(mData?.config?.upgradeUrl!!)
+//                            }
+//                        })
+//                        .setNegativeButton(android.R.string.cancel, null)
+//                        .setCancelable(false)
+//                        .create()
+//                        .show()
 
             }
             FactoryFeature.CHECK_UPGRADE_FROM_USB -> {
-
+                if (!MiscUtils.installApk(this, "hotelbox.apk")) {
+                    Toast.makeText(this, "找不到檔案", Toast.LENGTH_SHORT).show()
+                }
             }
             FactoryFeature.EXPORT_JSON_FILE -> {
                 exportFile()
@@ -101,13 +136,23 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, OnSaveFileStat
 
     override fun savingFileError(e: IOException) {
         Log.d(TAG, "savingFileError + $e")
-//        mDownloadDialog?.cancel()
+        mDownloadDialog?.cancel()
     }
 
     override fun savingFileSuccess(path: String, name: String) {
-//        mDownloadDialog?.cancel()
-//        MiscUtils.installApk(context!!, name)
+        mDownloadDialog?.cancel()
+        MiscUtils.installApk(this, name)
+    }
 
+    override fun onSuccess(it: Any?) {
+        mData = it as Config?
+    }
+
+    override fun onError(t: Throwable?) {
+        Log.e(TAG, "Error = ${t?.message}")
+    }
+
+    override fun onProgress(b: Boolean) {
     }
 
     /**
@@ -126,8 +171,8 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, OnSaveFileStat
             for (item in File("/mnt/media_rw/$usbDir").list()) {
                 Log.d("importFile", "item = $item")
                 FileUtils.copyFile(
-                    File("/mnt/media_rw/$usbDir/$item"),
-                    File("${Environment.getExternalStorageDirectory().path}/hotel/$item")
+                        File("/mnt/media_rw/$usbDir/$item"),
+                        File("${Environment.getExternalStorageDirectory().path}/hotel/$item")
                 )
             }
         } catch (e: IOException) {
@@ -157,8 +202,8 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, OnSaveFileStat
                 Log.d("exportFile", "item = $item")
 
                 FileUtils.copyFile(
-                    File("${Environment.getExternalStorageDirectory().path}/hotel/$item"),
-                    File("/mnt/media_rw/$usbDir/$item")
+                        File("${Environment.getExternalStorageDirectory().path}/hotel/$item"),
+                        File("/mnt/media_rw/$usbDir/$item")
                 )
             }
         } catch (e: IOException) {
@@ -169,5 +214,42 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, OnSaveFileStat
 
 
         Toast.makeText(this, "export Finish", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun downloadFileProgress(it: Boolean?) {
+        if (it == true) {
+            if (mDownloadDialog == null)
+                mDownloadDialog = android.app.AlertDialog.Builder(this)
+                        .setTitle("下載中")
+                        .setView(R.layout.view_progress)
+                        .setCancelable(false)
+                        .create()
+
+            mDownloadDialog?.show()
+        } else {
+            Log.d("neo", "cancel")
+        }
+    }
+
+    private fun downloadFileFailed(it: Throwable?) {
+        mDownloadDialog?.cancel()
+        if (mDownloadDialog == null)
+            mDownloadDialog = android.app.AlertDialog.Builder(this)
+                    .setTitle("下載失敗")
+                    .setMessage(it?.message)
+                    .setView(R.layout.view_progress)
+                    .setCancelable(false)
+                    .create()
+
+        mDownloadDialog?.show()
+    }
+
+    private fun downloadFileSuccess(it: ResponseBody) {
+        FileUtils.writeResponseBodyToDisk(it, "hotelbox.apk", listener = this)
+    }
+
+    override fun onBackPressed() {
+        startActivity(Intent(this, WelcomeActivity::class.java))
+        finish()
     }
 }

@@ -32,13 +32,16 @@ class FactoryViewModel(
     init {
         val gson = Gson()
 
-        compositeDisposable.add(Single.just(gson.fromJson(MiscUtils.getJsonFromStorage("config.json"), Config::class.java))
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { initConfigProgress.value = true }
-                .doFinally { initConfigProgress.value = false }
-                .subscribe({ initConfigSuccess.value = it }
-                        , { initConfigError.value = it })
-        )
+        val jsonObject = gson.fromJson(MiscUtils.getJsonFromStorage("config_en.json"), Config::class.java)
+        if (jsonObject != null) {
+            compositeDisposable.add(Single.just(jsonObject)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSubscribe { initConfigProgress.value = true }
+                    .doFinally { initConfigProgress.value = false }
+                    .subscribe({ initConfigSuccess.value = it }
+                            , { initConfigError.value = it })
+            )
+        }
     }
 
     fun downloadFileWithUrl(url: String) {

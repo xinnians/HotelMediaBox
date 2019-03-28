@@ -19,6 +19,7 @@ import com.ufistudio.hotelmediabox.AppInjector
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.interfaces.ViewModelsCallback
 import com.ufistudio.hotelmediabox.pages.MainActivity
+import com.ufistudio.hotelmediabox.pages.factory.FactoryActivity
 import com.ufistudio.hotelmediabox.repository.data.Welcome
 import com.ufistudio.hotelmediabox.repository.data.WelcomeContent
 import com.ufistudio.hotelmediabox.utils.FileUtils
@@ -164,6 +165,8 @@ class WelcomeActivity : AppCompatActivity(), ViewModelsCallback, View.OnClickLis
 
     override fun onError(t: Throwable?) {
         Log.d(TAG, "onError = ${t?.message}")
+        startActivity(Intent(this, FactoryActivity::class.java))
+        finish()
     }
 
     override fun onProgress(b: Boolean) {
@@ -172,6 +175,7 @@ class WelcomeActivity : AppCompatActivity(), ViewModelsCallback, View.OnClickLis
     override fun onClick(v: View?) {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
+        finish()
     }
 
     override fun onBackPressed() {
