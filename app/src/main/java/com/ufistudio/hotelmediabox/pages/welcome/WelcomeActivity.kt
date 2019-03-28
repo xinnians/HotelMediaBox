@@ -144,11 +144,11 @@ class WelcomeActivity : AppCompatActivity(), ViewModelsCallback, View.OnClickLis
 
         mWelcomeContent.let {
             Glide.with(this)
-                .load(FileUtils.getFileFromStorage("/image", it?.titleImage!!))
+                .load(FileUtils.getFileFromStorage(it?.titleImage!!))
                 .into(imageView_title)
 
             view_frame.background =
-                Drawable.createFromPath(FileUtils.getFileFromStorage("/image", it.background)?.absolutePath)
+                Drawable.createFromPath(FileUtils.getFileFromStorage(it.background)?.absolutePath)
 
             button_ok.text = it.entryButton
             text_name.text = it.name
@@ -156,7 +156,7 @@ class WelcomeActivity : AppCompatActivity(), ViewModelsCallback, View.OnClickLis
             text_room.text = it.room
             text_description.text = it.description
 
-            mPlayer = MediaPlayer.create(this, Uri.fromFile(FileUtils.getFileFromStorage("/other", it.music)))
+            mPlayer = MediaPlayer.create(this, Uri.fromFile(FileUtils.getFileFromStorage(it.music)))
             mPlayer?.start()
         }
 

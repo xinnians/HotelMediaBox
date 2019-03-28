@@ -143,3 +143,17 @@ data class WelcomeContent(
         var music: String,
         var entryButton: String
 ) : Parcelable
+
+/*
+    Config
+ */
+@Parcelize
+data class Config(
+        var config: ConfigContent
+) : Parcelable
+
+@Parcelize
+data class ConfigContent(
+        var language: String,
+        var upgradeUrl: String
+) : Parcelable

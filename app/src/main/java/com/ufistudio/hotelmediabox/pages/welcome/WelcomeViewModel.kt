@@ -23,18 +23,12 @@ class WelcomeViewModel(
 
     init {
         val gson = Gson()
-        val jsonModel = gson.fromJson(MiscUtils.getJsonFromStorage("/json/welcome", "welcome_en.json"), Welcome::class.java)
-
-        if (jsonModel == null) {
-            initWelcomeError.value = Throwable("Data in not exists")
-        } else {
-            compositeDisposable.add(Single.just(jsonModel)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnSubscribe { initWelcomeProgress.value = true }
-                    .doFinally { initWelcomeProgress.value = false }
-                    .subscribe({ initWelcomeSuccess.value = it }
-                            , { initWelcomeError.value = it })
-            )
-        }
+        compositeDisposable.add(Single.just(gson.fromJson(MiscUtils.getJsonFromStorage("welcome_en.json"), Welcome::class.java))
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { initWelcomeProgress.value = true }
+                .doFinally { initWelcomeProgress.value = false }
+                .subscribe({ initWelcomeSuccess.value = it }
+                        , { initWelcomeError.value = it })
+        )
     }
 }

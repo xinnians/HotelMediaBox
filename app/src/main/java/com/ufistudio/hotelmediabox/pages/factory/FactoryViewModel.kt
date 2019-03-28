@@ -1,10 +1,11 @@
-package com.ufistudio.hotelmediabox.pages.home
+package com.ufistudio.hotelmediabox.pages.factory
 
 import android.app.Application
 import android.arch.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.ufistudio.hotelmediabox.repository.Repository
-import com.ufistudio.hotelmediabox.repository.data.Home
+import com.ufistudio.hotelmediabox.repository.data.Config
+import com.ufistudio.hotelmediabox.repository.data.Welcome
 import com.ufistudio.hotelmediabox.repository.viewModel.BaseViewModel
 import com.ufistudio.hotelmediabox.utils.MiscUtils
 import io.reactivex.Single
@@ -14,16 +15,15 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
 
-
-class HomeViewModel(
+class FactoryViewModel(
         application: Application,
         private val compositeDisposable: CompositeDisposable,
         private val repository: Repository
 ) : BaseViewModel(application, compositeDisposable) {
 
-    val initHomeSuccess = MutableLiveData<Home>()
-    val initHomeProgress = MutableLiveData<Boolean>()
-    val initHomeError = MutableLiveData<Throwable>()
+    val initConfigSuccess = MutableLiveData<Config>()
+    val initConfigProgress = MutableLiveData<Boolean>()
+    val initConfigError = MutableLiveData<Throwable>()
 
     val fileDownloadSuccess = MutableLiveData<ResponseBody>()
     val fileDownloadProgress = MutableLiveData<Boolean>()
@@ -31,12 +31,13 @@ class HomeViewModel(
 
     init {
         val gson = Gson()
-        compositeDisposable.add(Single.just(gson.fromJson(MiscUtils.getJsonFromStorage("home_en.json"), Home::class.java))
+
+        compositeDisposable.add(Single.just(gson.fromJson(MiscUtils.getJsonFromStorage("config.json"), Config::class.java))
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { initHomeProgress.value = true }
-                .doFinally { initHomeProgress.value = false }
-                .subscribe({ initHomeSuccess.value = it }
-                        , { initHomeError.value = it })
+                .doOnSubscribe { initConfigProgress.value = true }
+                .doFinally { initConfigProgress.value = false }
+                .subscribe({ initConfigSuccess.value = it }
+                        , { initConfigError.value = it })
         )
     }
 

@@ -11,7 +11,7 @@ import com.bumptech.glide.Glide
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.repository.data.HotelFacilitiesCategories
 import com.ufistudio.hotelmediabox.repository.data.HotelFacilitiesContent
-import com.ufistudio.hotelmediabox.utils.MiscUtils
+import com.ufistudio.hotelmediabox.utils.FileUtils
 
 private const val TAG_TYPE_1 = 1
 private const val TAG_TYPE_2 = 2
@@ -61,7 +61,7 @@ class HotelFacilitiesPagerAdapter(context: Context, data: HotelFacilitiesCategor
                 view.findViewById<TextView>(R.id.text_total_page).text = String.format("/%d", mData.size)
                 view.findViewById<TextView>(R.id.text_current_page).text = (position + 1).toString()
                 Glide.with(view.context)
-                        .load(MiscUtils.getFileFromStorage("/image", item.file_name))
+                        .load(FileUtils.getFileFromStorage(item.file_name))
                         .into(view.findViewById<ImageView>(R.id.image_photo))
             }
             TAG_TYPE_2 -> {
@@ -70,13 +70,13 @@ class HotelFacilitiesPagerAdapter(context: Context, data: HotelFacilitiesCategor
                 view.findViewById<TextView>(R.id.text_title).text = item.title
                 view.findViewById<TextView>(R.id.text_description).text = item.content
                 Glide.with(view.context)
-                        .load(MiscUtils.getFileFromStorage("/image", item.file_name))
+                        .load(FileUtils.getFileFromStorage(item.file_name))
                         .into(view.findViewById<ImageView>(R.id.image_photo))
             }
             TAG_TYPE_3 -> {
                 view.findViewById<TextView>(R.id.text_description).text = item.content
                 Glide.with(view.context)
-                        .load(MiscUtils.getFileFromStorage("/image", item.file_name))
+                        .load(FileUtils.getFileFromStorage(item.file_name))
                         .into(view.findViewById<ImageView>(R.id.image_photo))
             }
         }

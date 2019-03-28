@@ -23,9 +23,8 @@ class HotelFacilitiesViewModel(
 
     init {
         val gson = Gson()
-        val jsonModel = gson.fromJson(MiscUtils.getJsonFromStorage("/json/hotelFacilities", "hotel_facilities_en.json"), HotelFacilities::class.java)
 
-        compositeDisposable.add(Single.just(jsonModel)
+        compositeDisposable.add(Single.just(gson.fromJson(MiscUtils.getJsonFromStorage("hotel_facilities_en.json"), HotelFacilities::class.java))
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe { initHotelFacilitiesProgress.value = true }
                 .doFinally { initHotelFacilitiesProgress.value = false }

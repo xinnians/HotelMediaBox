@@ -11,7 +11,7 @@ import com.bumptech.glide.Glide
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.repository.data.RoomServiceCategories
 import com.ufistudio.hotelmediabox.repository.data.RoomServiceContent
-import com.ufistudio.hotelmediabox.utils.MiscUtils
+import com.ufistudio.hotelmediabox.utils.FileUtils
 
 
 open class TemplateType1PagerAdapter(context: Context, data: RoomServiceCategories) : PagerAdapter() {
@@ -44,7 +44,7 @@ open class TemplateType1PagerAdapter(context: Context, data: RoomServiceCategori
         view.findViewById<TextView>(R.id.text_current_page).text = (position + 1).toString()
         view.findViewById<TextView>(R.id.text_total_page).text = String.format("/%d", mListViews.size)
         Glide.with(view.context)
-                .load(MiscUtils.getFileFromStorage("/image", item.file_name))
+                .load(FileUtils.getFileFromStorage(item.file_name))
                 .into(view.findViewById<ImageView>(R.id.image_content))
 
 

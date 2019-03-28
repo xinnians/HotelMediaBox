@@ -23,9 +23,8 @@ class RoomServiceViewModel(
 
     init {
         val gson = Gson()
-        val jsonModel = gson.fromJson(MiscUtils.getJsonFromStorage("/json/roomService", "room_service_en.json"), RoomServices::class.java)
 
-        compositeDisposable.add(Single.just(jsonModel)
+        compositeDisposable.add(Single.just(gson.fromJson(MiscUtils.getJsonFromStorage("room_service_en.json"), RoomServices::class.java))
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe { initRoomServiceProgress.value = true }
                 .doFinally { initRoomServiceProgress.value = false }
