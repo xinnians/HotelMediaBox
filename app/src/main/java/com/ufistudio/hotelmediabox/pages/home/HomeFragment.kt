@@ -15,6 +15,7 @@ import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.helper.ExoPlayerHelper
 import kotlinx.android.synthetic.main.fragment_home.*
 import android.view.KeyEvent
+import android.widget.Toast
 import com.ufistudio.hotelmediabox.AppInjector
 import com.ufistudio.hotelmediabox.interfaces.OnSaveFileStatusListener
 import com.ufistudio.hotelmediabox.pages.factory.FactoryActivity
@@ -26,7 +27,7 @@ import java.io.IOException
 
 
 class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), FunctionsAdapter.OnItemClickListener,
-    OnSaveFileStatusListener {
+        OnSaveFileStatusListener {
 
     private val TAG_TYPE_1 = 1//Weather Information
     private val TAG_TYPE_2 = 2//Promo Banner
@@ -157,6 +158,10 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
     }
 
     override fun onClick(view: View) {
+        if (view.tag as Int == -100) {
+            Toast.makeText(context, "尚未實作", Toast.LENGTH_SHORT).show()
+            return
+        }
         getInteractionListener().switchPage(R.id.fragment_container, view.tag as Int, Bundle(), true, false)
     }
 
@@ -183,10 +188,10 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
         if (it == true) {
             if (mDownloadDialog == null)
                 mDownloadDialog = AlertDialog.Builder(context)
-                    .setTitle("下載中")
-                    .setView(R.layout.view_progress)
-                    .setCancelable(false)
-                    .create()
+                        .setTitle("下載中")
+                        .setView(R.layout.view_progress)
+                        .setCancelable(false)
+                        .create()
 
             mDownloadDialog?.show()
         } else {
