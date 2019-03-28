@@ -25,7 +25,10 @@ class SplashActivity : AppCompatActivity() {
         super.onResume()
         val intent = Intent(this, WelcomeActivity::class.java)
         val timer: Timer = Timer()
-        timer.schedule(3000L) { startActivity(intent) }
+        timer.schedule(3000L) {
+            startActivity(intent)
+            finish()
+        }
 //        startActivity(intent)
     }
 }

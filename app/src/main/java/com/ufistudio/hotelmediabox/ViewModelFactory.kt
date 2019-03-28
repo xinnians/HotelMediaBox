@@ -6,6 +6,8 @@ import android.arch.lifecycle.ViewModelProvider
 import com.ufistudio.hotelmediabox.pages.TemplateViewModel
 import com.ufistudio.hotelmediabox.pages.channel.ChannelViewModel
 import com.ufistudio.hotelmediabox.pages.facilies.HotelFacilitiesViewModel
+import com.ufistudio.hotelmediabox.pages.factory.FactoryFeature
+import com.ufistudio.hotelmediabox.pages.factory.FactoryViewModel
 import com.ufistudio.hotelmediabox.pages.home.HomeViewModel
 import com.ufistudio.hotelmediabox.pages.roomService.RoomServiceViewModel
 import com.ufistudio.hotelmediabox.pages.welcome.WelcomeViewModel
@@ -33,6 +35,7 @@ class ViewModelFactory(private val application: Application,
                 isAssignableFrom(RoomServiceViewModel::class.java) -> RoomServiceViewModel(application,CompositeDisposable(),repository)
                 isAssignableFrom(HomeViewModel::class.java) -> HomeViewModel(application,CompositeDisposable(),repository)
                 isAssignableFrom(WelcomeViewModel::class.java) -> WelcomeViewModel(application,CompositeDisposable(),repository)
+                isAssignableFrom(FactoryViewModel::class.java) -> FactoryViewModel(application,CompositeDisposable(),repository)
                 else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
             } as T
         }
