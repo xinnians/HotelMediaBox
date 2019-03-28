@@ -15,10 +15,34 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
+
+    signingConfigs {
+
+        release {
+            storeFile file("../signature/demo.jks")
+            storePassword '00000000'
+            keyAlias 'demo'
+            keyPassword '00000000'
+        }
+
+        debug {
+            storeFile file("../signature/demo.jks")
+            storePassword '00000000'
+            keyAlias 'demo'
+            keyPassword '00000000'
+        }
+    }
+
     buildTypes {
+        debug{
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 
@@ -30,6 +54,7 @@ android {
     androidExtensions {
         experimental = true
     }
+
 }
 
 dependencies {
