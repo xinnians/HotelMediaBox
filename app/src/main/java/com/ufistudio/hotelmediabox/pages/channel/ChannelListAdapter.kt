@@ -1,24 +1,20 @@
 package com.ufistudio.hotelmediabox.pages.channel
 
 import android.content.Context
-import android.graphics.Color
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
-import android.text.TextUtils
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.bumptech.glide.Glide
 import com.ufistudio.hotelmediabox.R
-import com.ufistudio.hotelmediabox.repository.data.IPTVChannel
+import com.ufistudio.hotelmediabox.repository.data.TVChannel
 import kotlinx.android.synthetic.main.item_channel_list.view.*
 
-class ChannelListAdapter(private val listener: (IPTVChannel, Boolean) -> Unit) :
+class ChannelListAdapter(private val listener: (TVChannel, Boolean) -> Unit) :
         RecyclerView.Adapter<ChannelListAdapter.ViewHolder>() {
 
-    private var mOriginalItems: ArrayList<IPTVChannel>? = null
-    private var mFilterItems: ArrayList<IPTVChannel>? = null
+    private var mOriginalItems: ArrayList<TVChannel>? = null
+    private var mFilterItems: ArrayList<TVChannel>? = null
     private var mGenreType: String = ""
     private lateinit var mContext: Context
     private var mSelectPosition = 0 //目前被選到的position
@@ -64,7 +60,7 @@ class ChannelListAdapter(private val listener: (IPTVChannel, Boolean) -> Unit) :
         }
     }
 
-    fun setItems(items: ArrayList<IPTVChannel>?) {
+    fun setItems(items: ArrayList<TVChannel>?) {
         this.mOriginalItems = items
         setGenreFilter("")
     }
@@ -96,15 +92,15 @@ class ChannelListAdapter(private val listener: (IPTVChannel, Boolean) -> Unit) :
         mGenreType = genreType
         mFilterItems = if (genreType == "All" || genreType == "") {
             ArrayList(mOriginalItems)
-        } else ArrayList(mOriginalItems?.filter { it.genre == genreType })
+        } else ArrayList(mOriginalItems?.filter { it.chType == genreType })
         notifyDataSetChanged()
     }
 
     class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-        fun bind(data: IPTVChannel, listener: (IPTVChannel, Boolean) -> Unit) {
+        fun bind(data: TVChannel, listener: (TVChannel, Boolean) -> Unit) {
 //            Glide.with(itemView.image.context).load(data.images?.first()).into(itemView.image)
-//            Log.e("ChannelListAdapter", "IPTVChannel:$data")
-            itemView.text_channelName.text = data.number + " " + data.name
+//            Log.e("ChannelListAdapter", "TVChannel:$data")
+            itemView.text_channelName.text = data.chNum + " " + data.chName
             itemView.isFocusable = true
         }
     }

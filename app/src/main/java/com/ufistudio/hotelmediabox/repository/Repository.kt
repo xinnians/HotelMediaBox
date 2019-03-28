@@ -36,4 +36,6 @@ class Repository(
         val jsonString = MiscUtils.toJSONString(list)
         sharedPreferencesProvider.sharedPreferences().edit().putString(CHANNEL_LIST, jsonString).apply()
     }
+
+
 }

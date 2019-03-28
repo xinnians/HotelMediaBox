@@ -25,7 +25,6 @@
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -35,6 +34,10 @@
         <activity
             android:name=".pages.factory.FactoryActivity"
             android:screenOrientation="landscape" />
+        <activity android:name=".pages.DVBTestActivity"
+                  android:screenOrientation="landscape">
+
+        </activity>
 
         <service android:name=".services.UdpReceiver" />
 
