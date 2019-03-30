@@ -1,6 +1,7 @@
 package com.ufistudio.hotelmediabox.repository
 
 import android.app.Application
+import android.util.Log
 import com.ufistudio.hotelmediabox.repository.data.BaseChannel
 import com.ufistudio.hotelmediabox.repository.provider.preferences.PreferencesKey.CHANNEL_LIST
 import com.ufistudio.hotelmediabox.repository.provider.preferences.SharedPreferencesProvider
@@ -22,8 +23,8 @@ class Repository(
         RemoteAPI.init(application)
     }
 
-    fun downloadFileWithUrl(url: String): Call<ResponseBody>? {
-        return ApiClient.getInstance()?.downloadFileWithUrl(url)
+    fun downloadFileWithUrl(url: String): Single<ResponseBody> {
+        return ApiClient.getInstance()!!.downloadFileWithUrl(url)
     }
     // local
 

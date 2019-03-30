@@ -1,14 +1,37 @@
 package com.ufistudio.hotelmediabox.utils
 
 import android.os.Environment
+import android.text.TextUtils
 import android.util.Log
 import com.ufistudio.hotelmediabox.interfaces.OnSaveFileStatusListener
+import com.ufistudio.hotelmediabox.interfaces.OnSimpleListener
 import okhttp3.ResponseBody
 import java.io.*
 import java.lang.NullPointerException
 import java.nio.channels.FileChannel
 
 object FileUtils {
+
+    /**
+     * 取得裝置內的Hotel資料夾
+     * @return: all of the hotel directory in device directory
+     */
+    fun getInsideHotel(): File? {
+        return if (File("${Environment.getExternalStorageDirectory().path}$TAG_DEFAULT_LOCAL_PATH").exists()) File("${Environment.getExternalStorageDirectory().path}$TAG_DEFAULT_LOCAL_PATH") else null
+    }
+
+    /**
+     * 取得USB的整個儲存體內容
+     * @return: all of the usb directory
+     */
+    fun getUSBFiles(): File? {
+        for (file in File("/storage/").listFiles()) {
+            if (!TextUtils.equals(file.name, "self") && !TextUtils.equals(file.name, "emulated")) {
+                return file
+            }
+        }
+        return null
+    }
 
     /**
      * Get File from Storage
@@ -56,9 +79,9 @@ object FileUtils {
             body: ResponseBody,
             name: String,
             filePath: String = TAG_DEFAULT_LOCAL_PATH,
-            listener: OnSaveFileStatusListener
+            listener: OnSaveFileStatusListener? = null
     ): Boolean {
-        listener.savingFileStart()
+        listener?.savingFileStart()
         try {
             val path: String = fileIsExist(filePath)
             val file: File = File(path, name)
@@ -77,26 +100,25 @@ object FileUtils {
                     if (read == -1) {
                         break
                     }
-
                     outputStream.write(filReader, 0, read)
                     fileSizeDownloaded += read
 
-                    listener.savingFile(fileSizeDownloaded)
+                    listener?.savingFile(fileSizeDownloaded)
                 }
 
                 outputStream.flush()
-                listener.savingFileSuccess(path, name)
+                listener?.savingFileSuccess(path, name)
                 return true
             } catch (e: IOException) {
-                listener.savingFileError(e)
+                listener?.savingFileError(e)
                 return false
             } finally {
                 inputStream?.close()
                 outputStream?.close()
-                listener.savingFileEnd()
+                listener?.savingFileEnd()
             }
         } catch (e: IOException) {
-            listener.savingFileError(e)
+            listener?.savingFileError(e)
             return false
         }
 
@@ -170,5 +192,70 @@ object FileUtils {
         } catch (e: NoSuchFileException) {
             Log.e("copyFileOrDirectory", "$e")
         }
+    }
+
+    /**
+     * 從USB根目錄Import hotel資料
+     */
+    fun importFile(listener: OnSimpleListener? = null) {
+        listener?.callback("start import")
+        val usbDir = getUSBFiles()
+        if (usbDir == null) {
+            listener?.callback("can't find usb")
+            return
+        }
+        listener?.callback("usb = ${usbDir.name}")
+        try {
+            for (item in File("/mnt/media_rw/${usbDir.name}").list()) {
+                Log.d("importFile", "item = $item")
+                listener?.callback("coping file -> $item")
+                FileUtils.copyFile(
+                        File("/mnt/media_rw/${usbDir.name}/$item"),
+                        File("${Environment.getExternalStorageDirectory().path}/hotel/$item")
+                )
+            }
+        } catch (e: IOException) {
+            Log.e("importFile", "Error = $e")
+            listener?.callback("error occur -> $e")
+        } catch (e: NullPointerException) {
+            Log.e("importFile", "Error = $e")
+            listener?.callback("error occur -> $e")
+        }
+        listener?.callback("import finish")
+    }
+
+    /**
+     * 輸出hotel資料夾至Usb
+     */
+    fun exportFile(listener: OnSimpleListener?) {
+        listener?.callback("start export")
+        val usbDir = getUSBFiles()
+        if (usbDir == null) {
+            listener?.callback("can't find usb")
+            return
+        }
+        listener?.callback("usb = ${usbDir.name}")
+
+        try {
+
+            for (item in File("${Environment.getExternalStorageDirectory().path}/hotel").list()) {
+                Log.d("exportFile", "item = $item")
+                listener?.callback("coping file -> $item")
+
+                FileUtils.copyFile(
+                        File("${Environment.getExternalStorageDirectory().path}/hotel/$item"),
+                        File("/mnt/media_rw/$usbDir/$item")
+                )
+            }
+        } catch (e: IOException) {
+            Log.e("exportFile", "Error = $e")
+            listener?.callback("error occur -> $e")
+        } catch (e: NullPointerException) {
+            Log.e("exportFile", "Error = $e")
+            listener?.callback("error occur -> $e")
+        }
+
+
+        listener?.callback("export finish")
     }
 }

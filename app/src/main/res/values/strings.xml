@@ -36,6 +36,9 @@
     <string name="factory_check_upgrade_from_usb">check upgrade from usb</string>
     <string name="factory_open_setting">Open Setting</string>
     <string name="factory_open_default_launcher">Open Default Launcher</string>
+    <string name="factory_show_inside_hotel_files">Show Inside hotel Files</string>
+    <string name="factory_show_usb_files">Show USB Files</string>
+    <string name="factory_clear_info_text">Clear Info Text</string>
 
 
 </resources>

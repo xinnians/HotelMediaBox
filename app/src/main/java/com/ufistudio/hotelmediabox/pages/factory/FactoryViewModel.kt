@@ -2,18 +2,16 @@ package com.ufistudio.hotelmediabox.pages.factory
 
 import android.app.Application
 import android.arch.lifecycle.MutableLiveData
+import android.util.Log
 import com.google.gson.Gson
 import com.ufistudio.hotelmediabox.repository.Repository
 import com.ufistudio.hotelmediabox.repository.data.Config
-import com.ufistudio.hotelmediabox.repository.data.Welcome
 import com.ufistudio.hotelmediabox.repository.viewModel.BaseViewModel
+import com.ufistudio.hotelmediabox.utils.FileUtils
 import com.ufistudio.hotelmediabox.utils.MiscUtils
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import okhttp3.ResponseBody
-import retrofit2.Call
-import retrofit2.Response
 
 class FactoryViewModel(
         application: Application,
@@ -21,11 +19,12 @@ class FactoryViewModel(
         private val repository: Repository
 ) : BaseViewModel(application, compositeDisposable) {
 
+    val mApplication = application
     val initConfigSuccess = MutableLiveData<Config>()
     val initConfigProgress = MutableLiveData<Boolean>()
     val initConfigError = MutableLiveData<Throwable>()
 
-    val fileDownloadSuccess = MutableLiveData<ResponseBody>()
+    val fileDownloadSuccess = MutableLiveData<String>()
     val fileDownloadProgress = MutableLiveData<Boolean>()
     val fileDownloadError = MutableLiveData<Throwable>()
 
@@ -46,16 +45,28 @@ class FactoryViewModel(
 
     fun downloadFileWithUrl(url: String) {
         fileDownloadProgress.value = true
-        repository.downloadFileWithUrl(url)?.enqueue(object : retrofit2.Callback<ResponseBody> {
-            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                fileDownloadProgress.value = false
-                fileDownloadError.value = t
-            }
 
-            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                fileDownloadProgress.value = false
-                fileDownloadSuccess.value = response.body()
-            }
-        })
+        compositeDisposable.add(repository.downloadFileWithUrl(url)
+                .map {
+                    Single.just(FileUtils.writeResponseBodyToDisk(it, "hotelbox.apk"))
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe({
+                                Log.d("neo", "save file finish $it")
+
+                            }, {
+                                Log.d("neo", "save file error $it")
+                            })
+                }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    Log.d("neo", " save success = $it")
+                    fileDownloadProgress.value = false
+                    fileDownloadSuccess.value = "hotelbox.apk"
+                }, {
+                    Log.d("neo", " save error = $it")
+                    fileDownloadProgress.value = false
+                    fileDownloadError.value = it
+                })
+        !!)
     }
 }
