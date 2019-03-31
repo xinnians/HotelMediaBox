@@ -18,12 +18,15 @@ class FunctionsAdapter : RecyclerView.Adapter<FunctionsAdapter.ViewHolder>() {
 
     private lateinit var mContext: Context
     private var mItem: ArrayList<HomeFeatureEnum> = ArrayList()
+    private var mListener: OnItemClickListener? = null
 
     interface OnItemClickListener {
         fun onClick(view: View)
     }
 
-    private var mListener: OnItemClickListener? = null
+    companion object {
+        val TAG = FunctionsAdapter::class.simpleName
+    }
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): FunctionsAdapter.ViewHolder {
         val view = LayoutInflater.from(p0.context).inflate(R.layout.item_home_functions, p0, false) as View
@@ -52,11 +55,11 @@ class FunctionsAdapter : RecyclerView.Adapter<FunctionsAdapter.ViewHolder>() {
     }
 
     fun setData(data: ArrayList<HomeIcons>?) {
+        mItem.clear()
         if (data != null) {
             for (item in data) {
                 if (item.enable == TAG_ENABLE) {
                     val enumItem = HomeFeatureEnum.findItemByTag(item.name)
-                    Log.d("neo", "adapter ${enumItem?.name}")
                     if (enumItem != null)
                         mItem.add(enumItem)
                 }
