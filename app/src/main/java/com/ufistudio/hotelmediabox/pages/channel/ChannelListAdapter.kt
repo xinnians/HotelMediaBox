@@ -11,7 +11,7 @@ import com.ufistudio.hotelmediabox.repository.data.TVChannel
 import kotlinx.android.synthetic.main.item_channel_list.view.*
 
 class ChannelListAdapter(private val listener: (TVChannel, Boolean) -> Unit) :
-        RecyclerView.Adapter<ChannelListAdapter.ViewHolder>() {
+    RecyclerView.Adapter<ChannelListAdapter.ViewHolder>() {
 
     private var mOriginalItems: ArrayList<TVChannel>? = null
     private var mFilterItems: ArrayList<TVChannel>? = null
@@ -42,18 +42,42 @@ class ChannelListAdapter(private val listener: (TVChannel, Boolean) -> Unit) :
                 mListener?.onClick(view)
             }
             if (mGenreFocus && position == mSelectPosition) {
-                holder.itemView.layout_frame.background = ContextCompat.getDrawable(mContext, R.drawable.home_icon_frame_frame_default)
+                holder.itemView.layout_frame.background =
+                    ContextCompat.getDrawable(mContext, R.drawable.home_icon_frame_frame_default)
             } else {
                 holder.itemView.layout_frame.setBackgroundResource(0)
             }
+
+//            if (!mGenreFocus && position == mSelectPosition) {
+//                holder.itemView.requestFocus()
+//                holder.itemView.layout_frame.background =
+//                    ContextCompat.getDrawable(mContext, R.drawable.home_icon_frame_frame_focused)
+//                holder.itemView.text_channelName.setTextColor(ContextCompat.getColor(mContext, R.color.colorYellow))
+//            } else {
+//                holder.itemView.clearFocus()
+//                holder.itemView.layout_frame.setBackgroundResource(0)
+//                holder.itemView.text_channelName.setTextColor(
+//                    ContextCompat.getColor(
+//                        mContext,
+//                        android.R.color.white
+//                    )
+//                )
+//            }
+
             holder.itemView.setOnFocusChangeListener { v, hasFocus ->
                 if (hasFocus) {
                     mSelectPosition = position
-                    holder.itemView.layout_frame.background = ContextCompat.getDrawable(mContext, R.drawable.home_icon_frame_frame_focused)
+                    holder.itemView.layout_frame.background =
+                        ContextCompat.getDrawable(mContext, R.drawable.home_icon_frame_frame_focused)
                     holder.itemView.text_channelName.setTextColor(ContextCompat.getColor(mContext, R.color.colorYellow))
                 } else {
                     holder.itemView.layout_frame.setBackgroundResource(0)
-                    holder.itemView.text_channelName.setTextColor(ContextCompat.getColor(mContext, android.R.color.white))
+                    holder.itemView.text_channelName.setTextColor(
+                        ContextCompat.getColor(
+                            mContext,
+                            android.R.color.white
+                        )
+                    )
                 }
                 listener(channelData, hasFocus)
             }
@@ -67,6 +91,24 @@ class ChannelListAdapter(private val listener: (TVChannel, Boolean) -> Unit) :
 
     fun setItemClickListener(listener: ChannelListAdapter.OnItemClickListener) {
         mListener = listener
+    }
+
+    fun selectUPItem() {
+        if (mSelectPosition == 0) {
+            return
+        }
+        mSelectPosition -= 1
+        notifyDataSetChanged()
+    }
+
+    fun selectDownItem() {
+        mFilterItems?.let { mFilterItems ->
+            if (mSelectPosition == mFilterItems.size - 1) {
+                return
+            }
+            mSelectPosition += 1
+            notifyDataSetChanged()
+        }
     }
 
     /**

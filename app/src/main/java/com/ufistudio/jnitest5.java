@@ -22,6 +22,14 @@ public class jnitest5 {
 
     public native String getchannels(String c);
 
+    public native int initDev();
+
+    public synchronized int initDevice(){
+        synchronized (this){
+            return initDev();
+        }
+    }
+
     public synchronized int initPlayer(int width,int height,int x,int y){
         synchronized (this){
             return init(width, height, x, y);

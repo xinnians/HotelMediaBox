@@ -36,7 +36,7 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
     }
 
     override fun run() {
-        Log.d("neo", "run")
+//        Log.d("neo", "run")
         registerToServer()
         receiveBroadcast()
     }
@@ -65,7 +65,7 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
 
     private fun receiveBroadcast() {
         while (true) {
-            Log.d("Neo", "receiveBroadcast")
+//            Log.d("Neo", "receiveBroadcast")
             val recBuf: ByteArray = ByteArray(255)
             mPacket = null
             mPacket = DatagramPacket(recBuf, recBuf.size)
@@ -75,9 +75,9 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                 Log.e(TAG, e.toString())
             }
 
-            Log.i(TAG, "Server: Message received = ${String(mPacket!!.data)}")
+//            Log.i(TAG, "Server: Message received = ${String(mPacket!!.data)}")
             //TODO(收到資料後存成Local json file)
-            Log.i(TAG, "Server: IP = ${mPacket!!.address}")
+//            Log.i(TAG, "Server: IP = ${mPacket!!.address}")
         }
     }
 }

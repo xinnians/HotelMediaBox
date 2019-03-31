@@ -13,8 +13,8 @@ data class Logo(
 data class ConnectDetail(
     var ip: String = "",
     var port: String = "",
-    var frequency: Int = 0,
-    var bandwidth: Int = 0,
+    var frequency: String = "",
+    var bandwidth: String = "",
     var dvbParameter: String = ""
 ) : Parcelable
 
@@ -22,19 +22,31 @@ abstract class BaseChannel {
     abstract var chNum: String
     abstract var chName: String
     abstract var chType: String
+    abstract var chGenre: String
     abstract var chIp: ConnectDetail
     abstract var chLogo: Logo
 }
 
+enum class TVType{
+    IP,DVB
+}
+
 @Parcelize
 data class TVChannel(
-    override var chNum: String = "",
-    override var chName: String = "",
+    override var chNum: String = "cNumber",
+    override var chName: String = "CName",
     override var chType: String = "",
+    override var chGenre: String = "",
     override var chIp: ConnectDetail = ConnectDetail(),
     override var chLogo: Logo = Logo()
 ) : BaseChannel(), Parcelable
 
+
+@Parcelize
+data class DVBInfo(
+    var Frequency: String = "",
+    var Bandwidth: String = ""
+) : Parcelable
 
 /*
 Home

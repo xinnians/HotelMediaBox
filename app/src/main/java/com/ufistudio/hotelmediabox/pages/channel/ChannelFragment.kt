@@ -2,10 +2,13 @@ package com.ufistudio.hotelmediabox.pages.channel
 
 import android.arch.lifecycle.Observer
 import android.graphics.PixelFormat
+import android.os.Build
 import android.os.Bundle
+import android.support.annotation.RequiresApi
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.*
+import android.view.View.*
 import com.ufistudio.hotelmediabox.AppInjector
 import com.ufistudio.hotelmediabox.DVBHelper
 import com.ufistudio.hotelmediabox.R
@@ -14,23 +17,30 @@ import com.ufistudio.hotelmediabox.helper.ExoPlayerHelper
 import com.ufistudio.hotelmediabox.pages.base.InteractionView
 import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.repository.data.TVChannel
+import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import com.ufistudio.hotelmediabox.pages.home.HomeFeatureEnum
 import com.ufistudio.hotelmediabox.repository.data.HomeIcons
 import kotlinx.android.synthetic.main.fragment_channel.*
+import java.util.concurrent.TimeUnit
 
 class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
 
     private lateinit var mViewModel: ChannelViewModel
     private lateinit var mExoPlayerHelper: ExoPlayerHelper
 
-    private var mGenreAdapter: ChannelGenreAdapter = ChannelGenreAdapter { genreType, isFocus -> onGenreChangeListener(genreType, isFocus) }
-    private var mChannelListAdapter: ChannelListAdapter = ChannelListAdapter { channelInfo, isFocus -> onChannelSelectListener(channelInfo, isFocus) }
+    private var mGenreAdapter: ChannelGenreAdapter =
+        ChannelGenreAdapter { genreType, isFocus -> onGenreChangeListener(genreType, isFocus) }
+    private var mChannelListAdapter: ChannelListAdapter =
+        ChannelListAdapter { channelInfo, isFocus -> onChannelSelectListener(channelInfo, isFocus) }
     private var mGenreFocus: Boolean = false //Genre list 是否被focus
     private var mListFocus: Boolean = false //節目list 是否被focus
     private var mHomeIcons: ArrayList<HomeIcons>? = null //SideView List
     private var mLastGenreSelectIndex: Int = 0
+    private var mDisposable: Disposable? = null
 
     companion object {
         fun newInstance(): ChannelFragment = ChannelFragment()
@@ -39,7 +49,6 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        DVBHelper.getDVBPlayer().initPlayer(965,580,860,210)
 
         mViewModel = AppInjector.obtainViewModel(this)
 
@@ -138,20 +147,45 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
         Log.e(TAG, "[onChannelSelectListener] channelInfo:$channelInfo, isFocus:$isFocus")
         mListFocus = isFocus
 
-        if(isFocus){
-            if(channelInfo.chType == "DVBT"){
-                Single.just(true)
-                    .map { DVBHelper.getDVBPlayer().scanChannel("${channelInfo.chIp.frequency} ${channelInfo.chIp.bandwidth}") }
-                    .map { DVBHelper.getDVBPlayer().playChannel(channelInfo.chIp.dvbParameter) }
-                    .subscribeOn(Schedulers.io())
-                    .subscribe()
-
-            }else{
-                mExoPlayerHelper.setMp4Source(R.raw.videoplayback, true)
-                mExoPlayerHelper.play()
-            }
+        if (mDisposable != null && !mDisposable!!.isDisposed) {
+            mDisposable?.dispose()
         }
 
+        mDisposable = Observable.timer(2, TimeUnit.SECONDS)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {}, { onError -> Log.e(TAG, "error:$onError") }, {
+                    if (isFocus) {
+                        if (channelInfo.chType == "DVBT") {
+
+//                        videoView_frame.visibility = View.GONE
+//                        dvbView.visibility = View.VISIBLE
+                            mExoPlayerHelper.stop()
+                            videoView_frame.visibility = View.GONE
+                            DVBHelper.getDVBPlayer().closePlayer()
+                            DVBHelper.getDVBPlayer().initPlayer(980, 555, 857, 233)//1836,784
+
+                            Single.just(true)
+                                .map {
+                                    DVBHelper.getDVBPlayer()
+                                        .scanChannel("${channelInfo.chIp.frequency} ${channelInfo.chIp.bandwidth}")
+                                }
+                                .map { DVBHelper.getDVBPlayer().playChannel(channelInfo.chIp.dvbParameter) }
+                                .subscribeOn(Schedulers.io())
+                                .subscribe()
+
+                        } else {
+
+//                        dvbView.visibility = View.GONE
+//                        videoView_frame.visibility = View.VISIBLE
+                            DVBHelper.getDVBPlayer().closePlayer()
+                            videoView_frame.visibility = View.VISIBLE
+                            mExoPlayerHelper.setMp4Source(R.raw.videoplayback, true)
+                            mExoPlayerHelper.play()
+                        }
+                    }
+                })
 
 
     }
@@ -194,11 +228,12 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
             }
         }
 
-        return false
+        return super.onFragmentKeyDown(keyCode, event)
     }
 
     private fun initChannelsSuccess(list: ArrayList<TVChannel>) {
         mChannelListAdapter.setItems(list)
+        view_channel_list.requestFocus(FOCUS_UP)
     }
 
     private fun initChannelsProgress(isProgress: Boolean) {
