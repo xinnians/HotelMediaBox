@@ -17,6 +17,7 @@ import com.ufistudio.hotelmediabox.interfaces.ViewModelsCallback
 import com.ufistudio.hotelmediabox.pages.base.InteractionView
 import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.pages.home.HomeFeatureEnum
+import com.ufistudio.hotelmediabox.repository.data.HomeIcons
 import com.ufistudio.hotelmediabox.repository.data.HotelFacilities
 import com.ufistudio.hotelmediabox.repository.data.HotelFacilitiesCategories
 import kotlinx.android.synthetic.main.fragment_room_service.*
@@ -27,8 +28,11 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
     private var mAdapter: HotelFacilitiesAdapter = HotelFacilitiesAdapter(this, this)
     private var mInSubContent: Boolean = false //判斷目前focus是否在右邊的view
     private var mLastSelectIndex: Int = 0 //上一次List的選擇
+    private var mCurrentSideIndex: Int = -1 //當前頁面side view index
+    private var mIsRendered: Boolean = false //判斷是否已經塞資料
 
-    private lateinit var mData: HotelFacilities
+    private var mData: HotelFacilities? = null
+    private var mHomeIcons: ArrayList<HomeIcons>? = null //SideView List
 
     companion object {
         fun newInstance(): HotelFacilitiesFragment = HotelFacilitiesFragment()
@@ -46,6 +50,19 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
         mViewModel.initHotelFacilitiesError.observe(this, Observer {
             onError(it)
         })
+
+        mHomeIcons = arguments?.getParcelableArrayList(Page.ARG_BUNDLE)
+        if (mHomeIcons != null) {
+            for (i in 0 until mHomeIcons!!.size) {
+                mCurrentSideIndex++
+                if (mHomeIcons!![i].name == HomeFeatureEnum.FACILITIES.tag) {
+                    break
+                }
+                if (mHomeIcons!![i].enable == 0) {
+                    mCurrentSideIndex--
+                }
+            }
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -56,12 +73,15 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         displaySideView(false)
+        sideView.setAdapterList(mHomeIcons)
+        sideView.setInteractionListener(getInteractionListener())
     }
 
     override fun onStart() {
         super.onStart()
         recyclerView_service.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recyclerView_service.adapter = mAdapter
+        renderView()
         mAdapter.selectLast(mLastSelectIndex)
     }
 
@@ -125,11 +145,23 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
             layout_back.visibility = View.GONE
             view_line.visibility = View.VISIBLE
             mAdapter.selectLast(-1)
-            sideView.setLastPosition(HomeFeatureEnum.ROOM_SERVICE.ordinal)
+            sideView.setLastPosition(mCurrentSideIndex)
         } else {
             sideView.visibility = View.GONE
             layout_back.visibility = View.VISIBLE
             view_line.visibility = View.GONE
+        }
+    }
+
+    /**
+     * 塞資料
+     */
+    private fun renderView() {
+        if (!mIsRendered) {
+            if (mData?.categories != null) {
+                mIsRendered = true
+                mAdapter.setData(mData?.categories!!)
+            }
         }
     }
 
@@ -148,7 +180,7 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
 
     override fun onSuccess(it: Any?) {
         mData = it as HotelFacilities
-        mAdapter.setData(mData.categories)
+        renderView()
     }
 
     override fun onError(t: Throwable?) {

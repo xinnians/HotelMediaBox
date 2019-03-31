@@ -17,6 +17,7 @@ import com.ufistudio.hotelmediabox.interfaces.ViewModelsCallback
 import com.ufistudio.hotelmediabox.pages.base.InteractionView
 import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.pages.home.HomeFeatureEnum
+import com.ufistudio.hotelmediabox.repository.data.HomeIcons
 import com.ufistudio.hotelmediabox.repository.data.RoomServiceCategories
 import com.ufistudio.hotelmediabox.repository.data.RoomServices
 import kotlinx.android.synthetic.main.fragment_room_service.*
@@ -27,7 +28,11 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
     private var mAdapter: RoomServiceAdapter = RoomServiceAdapter(this, this)
     private var mInSubContent: Boolean = false //判斷目前focus是否在右邊的view
     private var mLastSelectIndex: Int = 0 //上一次List的選擇
-    private lateinit var mData: RoomServices
+    private var mCurrentSideIndex: Int = -1 //當前SideView index
+    private var mData: RoomServices? = null
+    private var mHomeIcons: ArrayList<HomeIcons>? = null //SideView List
+    private var mIsRendered: Boolean = false //判斷是否已經塞資料
+
 
     companion object {
         fun newInstance(): RoomServiceFragment = RoomServiceFragment()
@@ -43,6 +48,20 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
             onSuccess(it)
         })
         mViewModel.initRoomServiceError.observe(this, Observer { onError(it) })
+
+        mHomeIcons = arguments?.getParcelableArrayList(Page.ARG_BUNDLE)
+
+        if (mHomeIcons != null) {
+            for (i in 0 until mHomeIcons!!.size) {
+                mCurrentSideIndex++
+                if (mHomeIcons!![i].name == HomeFeatureEnum.ROOM_SERVICE.tag) {
+                    break
+                }
+                if (mHomeIcons!![i].enable == 0) {
+                    mCurrentSideIndex--
+                }
+            }
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -53,12 +72,15 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         displaySideView(false)
+        sideView.setAdapterList(mHomeIcons)
+        sideView.setInteractionListener(getInteractionListener())
     }
 
     override fun onStart() {
         super.onStart()
         recyclerView_service.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recyclerView_service.adapter = mAdapter
+        renderView()
         mAdapter.selectLast(mLastSelectIndex)
     }
 
@@ -114,11 +136,23 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
             layout_back.visibility = View.GONE
             view_line.visibility = View.VISIBLE
             mAdapter.selectLast(-1)
-            sideView.setLastPosition(HomeFeatureEnum.ROOM_SERVICE.ordinal)
+            sideView.setLastPosition(mCurrentSideIndex)
         } else {
             sideView.visibility = View.GONE
             layout_back.visibility = View.VISIBLE
             view_line.visibility = View.GONE
+        }
+    }
+
+    /**
+     * 塞資料
+     */
+    private fun renderView() {
+        if (!mIsRendered) {
+            if (mData?.categories != null) {
+                mIsRendered = true
+                mAdapter.setData(mData?.categories!!)
+            }
         }
     }
 
@@ -138,7 +172,7 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
 
     override fun onSuccess(it: Any?) {
         mData = it as RoomServices
-        mAdapter.setData(mData.categories)
+        renderView()
     }
 
     override fun onError(t: Throwable?) {

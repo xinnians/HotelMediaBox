@@ -8,9 +8,9 @@
         android:id="@+id/image_channel"
         android:layout_width="@dimen/_44sdp"
         android:layout_height="@dimen/_26sdp"
-        android:background="@android:color/holo_green_dark"
         android:layout_marginStart="@dimen/_21sdp"
         android:layout_marginTop="@dimen/_58sdp"
+        android:background="@android:color/holo_green_dark"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -30,10 +30,11 @@
         android:id="@+id/image_banner"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@android:color/holo_red_dark"
         android:layout_marginStart="@dimen/_20sdp"
         android:layout_marginTop="@dimen/_13sdp"
         android:layout_marginBottom="0dp"
+        android:background="@android:color/holo_red_dark"
+        android:scaleType="fitXY"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

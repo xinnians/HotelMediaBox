@@ -1,38 +1,34 @@
 package com.ufistudio.hotelmediabox.pages.factory
 
 import android.arch.lifecycle.Observer
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.os.Environment
-import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.GridLayoutManager
 import android.text.TextUtils
+import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import com.ufistudio.hotelmediabox.AppInjector
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.interfaces.OnItemClickListener
-import com.ufistudio.hotelmediabox.interfaces.OnSaveFileStatusListener
+import com.ufistudio.hotelmediabox.interfaces.OnSimpleListener
 import com.ufistudio.hotelmediabox.interfaces.ViewModelsCallback
-import com.ufistudio.hotelmediabox.pages.home.HomeFragment
 import com.ufistudio.hotelmediabox.pages.welcome.WelcomeActivity
 import com.ufistudio.hotelmediabox.repository.data.Config
-import com.ufistudio.hotelmediabox.repository.data.Welcome
 import com.ufistudio.hotelmediabox.utils.FileUtils
 import com.ufistudio.hotelmediabox.utils.MiscUtils
 import kotlinx.android.synthetic.main.activity_factory.*
-import okhttp3.ResponseBody
-import java.io.File
-import java.io.IOException
+import java.lang.StringBuilder
 
-class FactoryActivity : AppCompatActivity(), OnItemClickListener, OnSaveFileStatusListener, ViewModelsCallback {
+class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCallback {
     private val mAdapter: FactoryAdapter = FactoryAdapter()
     private lateinit var mViewModel: FactoryViewModel
     private var mDownloadDialog: android.app.AlertDialog? = null
     private var mData: Config? = null
+
+    private val mInfo1: StringBuilder = StringBuilder()
+    private val mInfo2: StringBuilder = StringBuilder()
 
     companion object {
         private val TAG = FactoryActivity::class.simpleName
@@ -65,9 +61,13 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, OnSaveFileStat
 
     override fun onStart() {
         super.onStart()
-        recyclerview_content.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        recyclerview_content.layoutManager = GridLayoutManager(this, 3, GridLayoutManager.HORIZONTAL, false)
         recyclerview_content.adapter = mAdapter
         mAdapter.setOnClickListener(this)
+
+        textView_info1.movementMethod = ScrollingMovementMethod()
+        textView_info2.movementMethod = ScrollingMovementMethod()
+
     }
 
     override fun onResume() {
@@ -81,34 +81,43 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, OnSaveFileStat
     override fun onClick(view: View?) {
         when (view?.tag as FactoryFeature) {
             FactoryFeature.CHECK_UPGRADE_FROM_URL -> {
-                Toast.makeText(this, "暫未完成", Toast.LENGTH_SHORT).show()
-//                if (TextUtils.isEmpty(mData?.config?.upgradeUrl!!)) {
-//                    Toast.makeText(this, "無法解析url", Toast.LENGTH_SHORT).show()
-//                    return
-//                }
-//                AlertDialog.Builder(this)
-//                        .setTitle("是否下載更新欓")
-//                        .setPositiveButton(android.R.string.ok, object : DialogInterface.OnClickListener {
-//                            override fun onClick(dialog: DialogInterface?, which: Int) {
-//                                mViewModel.downloadFileWithUrl(mData?.config?.upgradeUrl!!)
-//                            }
-//                        })
-//                        .setNegativeButton(android.R.string.cancel, null)
-//                        .setCancelable(false)
-//                        .create()
-//                        .show()
-
+                mInfo1.setLength(0)
+                if (TextUtils.isEmpty(mData?.config?.upgradeUrl!!)) {
+                    mInfo1.append("找不到url")
+                    textView_info1.text = mInfo1
+                    return
+                }
+                mInfo1.append("檢查更新網址：${mData?.config?.upgradeUrl}\n")
+                textView_info1.text = mInfo1
+                mViewModel.downloadFileWithUrl(mData?.config?.upgradeUrl!!)
             }
             FactoryFeature.CHECK_UPGRADE_FROM_USB -> {
-                if (!MiscUtils.installApk(this, "hotelbox.apk")) {
-                    Toast.makeText(this, "找不到檔案", Toast.LENGTH_SHORT).show()
+                if (!MiscUtils.installApk(this, "hotelbox.apk", "${FileUtils.getUSBFiles()?.path}")) {
+                    mInfo1.setLength(0)
+                    mInfo1.append("找不到 hotelbox.apk 安裝檔")
+
+                    Log.d("neo", "找不到裝置")
                 }
+                textView_info1.text = mInfo1
+                Log.d("neo", "找得到裝置")
             }
             FactoryFeature.EXPORT_JSON_FILE -> {
-                exportFile()
+                mInfo1.setLength(0)
+                FileUtils.exportFile(object : OnSimpleListener {
+                    override fun callback(msg: String?) {
+                        mInfo1.append("$msg\n")
+                        textView_info1.text = mInfo1
+                    }
+                })
             }
             FactoryFeature.IMPORT_JSON_FILE -> {
-                importFile()
+                mInfo1.setLength(0)
+                FileUtils.importFile(object : OnSimpleListener {
+                    override fun callback(msg: String?) {
+                        mInfo1.append("$msg\n")
+                        textView_info1.text = mInfo1
+                    }
+                })
             }
             FactoryFeature.OPEN_SETTING -> {
                 MiscUtils.openSetting(this)
@@ -118,30 +127,44 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, OnSaveFileStat
                 val startMain: Intent = Intent(Intent.ACTION_MAIN)
                 startMain.addCategory(Intent.CATEGORY_HOME)
                 startMain.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                startActivity(startMain);
+                startActivity(startMain)
+            }
+            FactoryFeature.SHOW_INSIDE_HOTEL -> {
+                mInfo1.setLength(0)
+                val hotelFile = FileUtils.getInsideHotel()
+                if (hotelFile != null) {
+                    mInfo1.append("${hotelFile.absolutePath} ( ${hotelFile.list().size} )\n")
+                    for (file in hotelFile.list()) {
+                        mInfo1.append("$file\n")
+                    }
+                } else {
+                    mInfo1.append("Can not read hotel directory of inside storage")
+                }
+
+                textView_info1.text = mInfo1
+
+            }
+            FactoryFeature.SHOW_OUTSIDE_USB -> {
+                mInfo2.setLength(0)
+                val usbFile = FileUtils.getUSBFiles()
+                if (usbFile != null && usbFile.exists()) {
+                    mInfo2.append("${usbFile.absolutePath} ( ${usbFile.list().size} )\n")
+                    for (file in usbFile.list()) {
+                        mInfo2.append("$file\n")
+                    }
+                } else {
+                    mInfo2.append("Can not read usb storage")
+                }
+
+                textView_info2.text = mInfo2
+            }
+            FactoryFeature.CLEAR_INFO -> {
+                textView_info1.text = ""
+                textView_info2.text = ""
+                mInfo1.setLength(0)
+                mInfo2.setLength(0)
             }
         }
-    }
-
-    override fun savingFileStart() {
-        Log.d(TAG, "savingFileStart")
-    }
-
-    override fun savingFile(progress: Long) {
-        Log.d(TAG, "progress =  $progress")
-    }
-
-    override fun savingFileEnd() {
-    }
-
-    override fun savingFileError(e: IOException) {
-        Log.d(TAG, "savingFileError + $e")
-        mDownloadDialog?.cancel()
-    }
-
-    override fun savingFileSuccess(path: String, name: String) {
-        mDownloadDialog?.cancel()
-        MiscUtils.installApk(this, name)
     }
 
     override fun onSuccess(it: Any?) {
@@ -155,68 +178,9 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, OnSaveFileStat
     override fun onProgress(b: Boolean) {
     }
 
-    /**
-     * Import hotel資料
-     */
-    private fun importFile() {
-        var usbDir = ""
-        for (dir in File("/storage/").list()) {
-            if (!TextUtils.equals(dir, "self") && !TextUtils.equals(dir, "emulated")) {
-                usbDir = dir
-                break
-            }
-        }
-
-        try {
-            for (item in File("/mnt/media_rw/$usbDir").list()) {
-                Log.d("importFile", "item = $item")
-                FileUtils.copyFile(
-                        File("/mnt/media_rw/$usbDir/$item"),
-                        File("${Environment.getExternalStorageDirectory().path}/hotel/$item")
-                )
-            }
-        } catch (e: IOException) {
-            Log.e("export", "Error = $e")
-        } catch (e: NullPointerException) {
-            Log.e("export", "Error = $e")
-        }
-
-        Toast.makeText(this, "import Finish", Toast.LENGTH_SHORT).show()
-    }
-
-    /**
-     * 輸出hotel資料
-     */
-    private fun exportFile() {
-        var usbDir = ""
-        for (dir in File("/storage/").list()) {
-            if (!TextUtils.equals(dir, "self") && !TextUtils.equals(dir, "emulated")) {
-                usbDir = dir
-                break
-            }
-        }
-
-        try {
-
-            for (item in File("${Environment.getExternalStorageDirectory().path}/hotel").list()) {
-                Log.d("exportFile", "item = $item")
-
-                FileUtils.copyFile(
-                        File("${Environment.getExternalStorageDirectory().path}/hotel/$item"),
-                        File("/mnt/media_rw/$usbDir/$item")
-                )
-            }
-        } catch (e: IOException) {
-            Log.e("export", "Error = $e")
-        } catch (e: NullPointerException) {
-            Log.e("export", "Error = $e")
-        }
-
-
-        Toast.makeText(this, "export Finish", Toast.LENGTH_SHORT).show()
-    }
-
     private fun downloadFileProgress(it: Boolean?) {
+        mInfo1.append("下載中 = $it\n")
+        textView_info1.text = mInfo1
         if (it == true) {
             if (mDownloadDialog == null)
                 mDownloadDialog = android.app.AlertDialog.Builder(this)
@@ -233,6 +197,8 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, OnSaveFileStat
 
     private fun downloadFileFailed(it: Throwable?) {
         mDownloadDialog?.cancel()
+        mInfo1.append("下載失敗：$it\n")
+        textView_info1.text = mInfo1
         if (mDownloadDialog == null)
             mDownloadDialog = android.app.AlertDialog.Builder(this)
                     .setTitle("下載失敗")
@@ -244,8 +210,17 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, OnSaveFileStat
         mDownloadDialog?.show()
     }
 
-    private fun downloadFileSuccess(it: ResponseBody) {
-        FileUtils.writeResponseBodyToDisk(it, "hotelbox.apk", listener = this)
+    private fun downloadFileSuccess(it: String) {
+        mInfo1.append("下載成功：$it\n")
+        textView_info1.text = mInfo1
+        mDownloadDialog?.cancel()
+
+        if (MiscUtils.installApk(this, it, FileUtils.getInsideHotel()?.path!!)) {
+            mInfo1.append("Find apk：$it\n")
+        } else {
+            mInfo1.append("Can not find apk：$it\n")
+        }
+        textView_info1.text = mInfo1
     }
 
     override fun onBackPressed() {

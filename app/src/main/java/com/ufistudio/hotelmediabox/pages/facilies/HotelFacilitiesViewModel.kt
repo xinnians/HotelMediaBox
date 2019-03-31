@@ -10,6 +10,7 @@ import com.ufistudio.hotelmediabox.utils.MiscUtils
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 
 class HotelFacilitiesViewModel(
         application: Application,
@@ -22,16 +23,23 @@ class HotelFacilitiesViewModel(
 
 
     init {
+        compositeDisposable.add(Single.just(getJsonObject())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { initHotelFacilitiesProgress.value = true }
+                .doFinally { initHotelFacilitiesProgress.value = false }
+                .subscribe({ initHotelFacilitiesSuccess.value = it }
+                        , { initHotelFacilitiesError.value = it })
+        )
+    }
+
+    private fun getJsonObject(): HotelFacilities? {
         val gson = Gson()
         val jsonObject = gson.fromJson(MiscUtils.getJsonFromStorage("hotel_facilities_en.json"), HotelFacilities::class.java)
         if (jsonObject != null) {
-            compositeDisposable.add(Single.just(jsonObject)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnSubscribe { initHotelFacilitiesProgress.value = true }
-                    .doFinally { initHotelFacilitiesProgress.value = false }
-                    .subscribe({ initHotelFacilitiesSuccess.value = it }
-                            , { initHotelFacilitiesError.value = it })
-            )
+            return jsonObject
         }
+
+        return null
     }
 }

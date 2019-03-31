@@ -9,14 +9,15 @@ import android.view.*
 import com.ufistudio.hotelmediabox.AppInjector
 import com.ufistudio.hotelmediabox.DVBHelper
 import com.ufistudio.hotelmediabox.R
+import com.ufistudio.hotelmediabox.constants.Page
 import com.ufistudio.hotelmediabox.helper.ExoPlayerHelper
 import com.ufistudio.hotelmediabox.pages.base.InteractionView
 import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.repository.data.TVChannel
-import io.reactivex.Scheduler
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_dvb_test.*
+import com.ufistudio.hotelmediabox.pages.home.HomeFeatureEnum
+import com.ufistudio.hotelmediabox.repository.data.HomeIcons
 import kotlinx.android.synthetic.main.fragment_channel.*
 
 class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
@@ -28,6 +29,8 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
     private var mChannelListAdapter: ChannelListAdapter = ChannelListAdapter { channelInfo, isFocus -> onChannelSelectListener(channelInfo, isFocus) }
     private var mGenreFocus: Boolean = false //Genre list 是否被focus
     private var mListFocus: Boolean = false //節目list 是否被focus
+    private var mHomeIcons: ArrayList<HomeIcons>? = null //SideView List
+    private var mLastGenreSelectIndex: Int = 0
 
     companion object {
         fun newInstance(): ChannelFragment = ChannelFragment()
@@ -54,6 +57,8 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
         mViewModel.initGenreError.observe(this, Observer { throwable -> throwable?.let { initGenreError(it) } })
 
         mExoPlayerHelper = ExoPlayerHelper()
+
+        mHomeIcons = arguments?.getParcelableArrayList(Page.ARG_BUNDLE)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -64,6 +69,9 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
+        displaySideView(false)
+        sideView.setAdapterList(mHomeIcons)
+        sideView.setInteractionListener(getInteractionListener())
     }
 
     override fun onResume() {
@@ -165,12 +173,24 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
                     mChannelListAdapter.clearSelectPosition()
             }
             KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                if (sideView.isShown) {
+                    return true
+                }
                 if (mGenreFocus)
                     mChannelListAdapter.clearSelectPosition()
             }
             KeyEvent.KEYCODE_CHANNEL_UP -> {
             }
             KeyEvent.KEYCODE_CHANNEL_DOWN -> {
+            }
+            KeyEvent.KEYCODE_BACK -> {
+                if (!sideView.isShown) {
+                    mGenreFocus = false
+                    mListFocus = false
+                    displaySideView(true)
+//                    mGenreAdapter.selectLast(mLastGenreSelectIndex)
+                    return true
+                }
             }
         }
 
@@ -201,4 +221,22 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
         Log.e(TAG, "initGenreError call. ${throwable.message}")
     }
 
+    /**
+     * Set SideView show or hide
+     * @show: True : Show
+     *        False: Hide
+     */
+    private fun displaySideView(show: Boolean) {
+        if (show) {
+            sideView.visibility = View.VISIBLE
+//            layout_back.visibility = View.GONE
+//            view_line.visibility = View.VISIBLE
+//            mGenreAdapter.selectLast(-1)
+            sideView.setLastPosition(HomeFeatureEnum.LIVE_TV.ordinal)
+        } else {
+            sideView.visibility = View.GONE
+//            layout_back.visibility = View.VISIBLE
+//            view_line.visibility = View.GONE
+        }
+    }
 }

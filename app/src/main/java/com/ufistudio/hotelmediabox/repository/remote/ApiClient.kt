@@ -1,6 +1,7 @@
 package com.ufistudio.hotelmediabox.repository.remote
 
 import com.ufistudio.hotelmediabox.repository.remote.RemoteAPI.Companion.getOkHttpClient
+import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -47,6 +48,6 @@ class ApiClient {
     /*--------------------------------------------------------------------------------------------*/
     /* APIs */
 
-    fun downloadFileWithUrl(url: String): Call<ResponseBody> = mService.download(url)
+    fun downloadFileWithUrl(url: String): Single<ResponseBody> = mService.download(url)
 
 }

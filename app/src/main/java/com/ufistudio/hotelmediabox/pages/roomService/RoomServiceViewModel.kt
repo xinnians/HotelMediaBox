@@ -10,6 +10,7 @@ import com.ufistudio.hotelmediabox.utils.MiscUtils
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 
 class RoomServiceViewModel(
         application: Application,
@@ -22,16 +23,23 @@ class RoomServiceViewModel(
     val initRoomServiceError = MutableLiveData<Throwable>()
 
     init {
+        compositeDisposable.add(Single.just(getJsonObject())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { initRoomServiceProgress.value = true }
+                .doFinally { initRoomServiceProgress.value = false }
+                .subscribe({ initRoomServiceSuccess.value = it }
+                        , { initRoomServiceError.value = it })
+        )
+    }
+
+    private fun getJsonObject(): RoomServices? {
         val gson = Gson()
         val jsonObject = gson.fromJson(MiscUtils.getJsonFromStorage("room_service_en.json"), RoomServices::class.java)
         if (jsonObject != null) {
-            compositeDisposable.add(Single.just(jsonObject)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnSubscribe { initRoomServiceProgress.value = true }
-                    .doFinally { initRoomServiceProgress.value = false }
-                    .subscribe({ initRoomServiceSuccess.value = it }
-                            , { initRoomServiceError.value = it })
-            )
+            return jsonObject
         }
+
+        return null
     }
 }
