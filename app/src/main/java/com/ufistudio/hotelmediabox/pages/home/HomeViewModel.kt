@@ -38,14 +38,14 @@ class HomeViewModel(
                         , { initHomeError.value = it })
         )
     }
-}
 
-fun getJsonObject(): Home? {
-    val gson = Gson()
-    val jsonObject = gson.fromJson(MiscUtils.getJsonFromStorage("home_en.json"), Home::class.java)
-    if (jsonObject != null) {
-        return jsonObject
+    private fun getJsonObject(): Home? {
+        val gson = Gson()
+        val jsonObject = gson.fromJson(MiscUtils.getJsonFromStorage("home_en.json"), Home::class.java)
+        if (jsonObject != null) {
+            return jsonObject
+        }
+
+        return null
     }
-
-    return null
 }

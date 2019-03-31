@@ -17,6 +17,7 @@ import com.ufistudio.hotelmediabox.interfaces.ViewModelsCallback
 import com.ufistudio.hotelmediabox.pages.base.InteractionView
 import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.pages.home.HomeFeatureEnum
+import com.ufistudio.hotelmediabox.repository.data.HomeIcons
 import com.ufistudio.hotelmediabox.repository.data.RoomServiceCategories
 import com.ufistudio.hotelmediabox.repository.data.RoomServices
 import kotlinx.android.synthetic.main.fragment_room_service.*
@@ -28,6 +29,7 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
     private var mInSubContent: Boolean = false //判斷目前focus是否在右邊的view
     private var mLastSelectIndex: Int = 0 //上一次List的選擇
     private lateinit var mData: RoomServices
+    private var mHomeIcons: ArrayList<HomeIcons>? = null //SideView List
 
     companion object {
         fun newInstance(): RoomServiceFragment = RoomServiceFragment()
@@ -43,6 +45,8 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
             onSuccess(it)
         })
         mViewModel.initRoomServiceError.observe(this, Observer { onError(it) })
+
+        mHomeIcons = arguments?.getParcelableArrayList(Page.ARG_BUNDLE)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -53,6 +57,8 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         displaySideView(false)
+        sideView.setAdapterList(mHomeIcons)
+        sideView.setInteractionListener(getInteractionListener())
     }
 
     override fun onStart() {

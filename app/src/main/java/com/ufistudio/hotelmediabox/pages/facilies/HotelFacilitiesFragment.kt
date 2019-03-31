@@ -17,6 +17,7 @@ import com.ufistudio.hotelmediabox.interfaces.ViewModelsCallback
 import com.ufistudio.hotelmediabox.pages.base.InteractionView
 import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.pages.home.HomeFeatureEnum
+import com.ufistudio.hotelmediabox.repository.data.HomeIcons
 import com.ufistudio.hotelmediabox.repository.data.HotelFacilities
 import com.ufistudio.hotelmediabox.repository.data.HotelFacilitiesCategories
 import kotlinx.android.synthetic.main.fragment_room_service.*
@@ -29,6 +30,7 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
     private var mLastSelectIndex: Int = 0 //上一次List的選擇
 
     private lateinit var mData: HotelFacilities
+    private var mHomeIcons: ArrayList<HomeIcons>? = null //SideView List
 
     companion object {
         fun newInstance(): HotelFacilitiesFragment = HotelFacilitiesFragment()
@@ -46,6 +48,8 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
         mViewModel.initHotelFacilitiesError.observe(this, Observer {
             onError(it)
         })
+
+        mHomeIcons = arguments?.getParcelableArrayList(Page.ARG_BUNDLE)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -56,6 +60,8 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         displaySideView(false)
+        sideView.setAdapterList(mHomeIcons)
+        sideView.setInteractionListener(getInteractionListener())
     }
 
     override fun onStart() {
@@ -125,7 +131,7 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
             layout_back.visibility = View.GONE
             view_line.visibility = View.VISIBLE
             mAdapter.selectLast(-1)
-            sideView.setLastPosition(HomeFeatureEnum.ROOM_SERVICE.ordinal)
+            sideView.setLastPosition(HomeFeatureEnum.FACILITIES.ordinal)
         } else {
             sideView.visibility = View.GONE
             layout_back.visibility = View.VISIBLE
