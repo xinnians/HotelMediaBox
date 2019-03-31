@@ -1,16 +1,26 @@
 package com.ufistudio.hotelmediabox.views
 
 import android.content.Context
+import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
+import android.widget.Toast
 import com.ufistudio.hotelmediabox.R
+import com.ufistudio.hotelmediabox.constants.Page
 import com.ufistudio.hotelmediabox.interfaces.OnItemClickListener
+import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
+import com.ufistudio.hotelmediabox.repository.data.HomeIcons
 import kotlinx.android.synthetic.main.view_left_side.view.*
 
-class SideView : ConstraintLayout {
+class SideView : ConstraintLayout, OnItemClickListener {
+
     private var mAdapter: SideViewAdapter? = null
+    private var mOutsideListener: OnItemClickListener? = null
+    private var mInteractionListener: OnPageInteractionListener.Pane? = null
+    private var mFeatureIcons: ArrayList<HomeIcons>? = null
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
@@ -22,10 +32,26 @@ class SideView : ConstraintLayout {
         mAdapter = SideViewAdapter()
         icon_list.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         icon_list.adapter = mAdapter
+
+        mAdapter?.setOnItemClickListener(this)
     }
 
+    fun setAdapterList(data: ArrayList<HomeIcons>?) {
+        mFeatureIcons = data
+        mAdapter?.setData(mFeatureIcons)
+    }
+
+    fun setInteractionListener(listener: Any) {
+        mInteractionListener = listener as OnPageInteractionListener.Pane
+    }
+
+    /**
+     * If your fragment want listen the click of side view.
+     * you have call this function
+     * @listener: Item click listener
+     */
     fun setOnItemClickListener(listener: OnItemClickListener) {
-        mAdapter?.setOnItemClickListener(listener)
+        mOutsideListener = listener
     }
 
     /**
@@ -34,5 +60,17 @@ class SideView : ConstraintLayout {
      */
     fun setLastPosition(position: Int) {
         mAdapter?.setLastPosition(position)
+    }
+
+    override fun onClick(view: View?) {
+        mOutsideListener?.onClick(view)
+
+        if (view?.tag as Int == -100) {
+            Toast.makeText(context, "尚未實作", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val b = Bundle()
+        b.putParcelableArrayList(Page.ARG_BUNDLE, mFeatureIcons)
+        mInteractionListener?.switchPage(R.id.fragment_container, view?.tag as Int, b, false, false)
     }
 }
