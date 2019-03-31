@@ -15,6 +15,17 @@ import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.repository.data.HomeIcons
 import kotlinx.android.synthetic.main.view_left_side.view.*
 
+/**
+ * Guild
+ *
+ * Step 1. Add SideView on your xml file
+ * Step 2. setAdapterList from your icon list data
+ * Step 3. You have to set InteractionListener by "setInteractionListener()" to switch fragment
+ * Now the SideView can switchPage automatically
+ * Step 4. You can set a index for you show sideView by "setLastPosition()"
+ * Step 5. If you want to listener click item of SideView, you can call setOnItemClickListener() to listen.
+ *
+ */
 class SideView : ConstraintLayout, OnItemClickListener {
 
     private var mAdapter: SideViewAdapter? = null
@@ -71,6 +82,6 @@ class SideView : ConstraintLayout, OnItemClickListener {
         }
         val b = Bundle()
         b.putParcelableArrayList(Page.ARG_BUNDLE, mFeatureIcons)
-        mInteractionListener?.switchPage(R.id.fragment_container, view?.tag as Int, b, false, false)
+        mInteractionListener?.switchPage(R.id.fragment_container, view.tag as Int, b, false, false)
     }
 }
