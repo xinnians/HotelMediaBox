@@ -70,7 +70,6 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
     override fun onStart() {
         super.onStart()
 
-        renderView()
 
         list_functions.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         list_functions.adapter = mAdapter
@@ -84,7 +83,7 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
 
         }
         mAdapter.setItemClickListener(this)
-
+        renderView()
     }
 
     override fun onResume() {
@@ -144,7 +143,7 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
         }
         val b = Bundle()
         b.putParcelableArrayList(Page.ARG_BUNDLE, mFeatureIcons)
-        getInteractionListener().switchPage(R.id.fragment_container, view.tag as Int, b, true, false)
+        getInteractionListener().switchPage(R.id.fragment_container, view.tag as Int, b, true, false, true)
     }
 
     override fun onSuccess(it: Any?) {

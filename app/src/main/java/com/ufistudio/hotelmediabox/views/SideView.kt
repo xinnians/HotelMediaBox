@@ -82,6 +82,6 @@ class SideView : ConstraintLayout, OnItemClickListener {
         }
         val b = Bundle()
         b.putParcelableArrayList(Page.ARG_BUNDLE, mFeatureIcons)
-        mInteractionListener?.switchPage(R.id.fragment_container, view.tag as Int, b, false, false)
+        mInteractionListener?.switchPage(R.id.fragment_container, view.tag as Int, b, false, false,true)
     }
 }

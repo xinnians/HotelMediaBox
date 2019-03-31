@@ -147,7 +147,7 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
             FactoryFeature.SHOW_OUTSIDE_USB -> {
                 mInfo2.setLength(0)
                 val usbFile = FileUtils.getUSBFiles()
-                if (usbFile != null) {
+                if (usbFile != null && usbFile.exists()) {
                     mInfo2.append("${usbFile.absolutePath} ( ${usbFile.list().size} )\n")
                     for (file in usbFile.list()) {
                         mInfo2.append("$file\n")
