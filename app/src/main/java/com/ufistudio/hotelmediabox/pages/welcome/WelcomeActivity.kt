@@ -51,9 +51,9 @@ class WelcomeActivity : AppCompatActivity(), ViewModelsCallback, View.OnClickLis
         super.onResume()
 
         if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
+                        this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
         ) {
 
             // Permission is not granted
@@ -66,9 +66,9 @@ class WelcomeActivity : AppCompatActivity(), ViewModelsCallback, View.OnClickLis
             } else {
                 // No explanation needed, we can request the permission.
                 ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                    TAG_WRITE_PERMISSION_CODE
+                        this,
+                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                        TAG_WRITE_PERMISSION_CODE
                 )
 
                 // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
@@ -88,10 +88,10 @@ class WelcomeActivity : AppCompatActivity(), ViewModelsCallback, View.OnClickLis
 
     private fun showGoToSetting() {
         AlertDialog.Builder(this)
-            .setTitle("Error")
-            .setMessage("open permission")
-            .setPositiveButton(android.R.string.ok) { dialog, which -> MiscUtils.openSetting(baseContext) }
-            .show()
+                .setTitle("Error")
+                .setMessage("open permission")
+                .setPositiveButton(android.R.string.ok) { dialog, which -> MiscUtils.openSetting(baseContext) }
+                .show()
     }
 
     private fun renderUI() {
@@ -111,12 +111,14 @@ class WelcomeActivity : AppCompatActivity(), ViewModelsCallback, View.OnClickLis
             }
         }
 
-        button_ok.requestFocusFromTouch()
+        button_ok.isFocusable = true
+        button_ok.isFocusableInTouchMode = true
+        button_ok.requestFocus()
     }
 
     override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>, grantResults: IntArray
+            requestCode: Int,
+            permissions: Array<String>, grantResults: IntArray
     ) {
         when (requestCode) {
             TAG_WRITE_PERMISSION_CODE -> {
@@ -147,11 +149,11 @@ class WelcomeActivity : AppCompatActivity(), ViewModelsCallback, View.OnClickLis
 
         mWelcomeContent.let {
             Glide.with(this)
-                .load(FileUtils.getFileFromStorage(it?.titleImage!!))
-                .into(imageView_title)
+                    .load(FileUtils.getFileFromStorage(it?.titleImage!!))
+                    .into(imageView_title)
 
             view_frame.background =
-                Drawable.createFromPath(FileUtils.getFileFromStorage(it.background)?.absolutePath)
+                    Drawable.createFromPath(FileUtils.getFileFromStorage(it.background)?.absolutePath)
 
             button_ok.text = it.entryButton
             text_name.text = it.name
@@ -161,6 +163,7 @@ class WelcomeActivity : AppCompatActivity(), ViewModelsCallback, View.OnClickLis
 
             mPlayer = MediaPlayer.create(this, Uri.fromFile(FileUtils.getFileFromStorage(it.music)))
             mPlayer?.start()
+            mPlayer?.isLooping = true
         }
 
     }
