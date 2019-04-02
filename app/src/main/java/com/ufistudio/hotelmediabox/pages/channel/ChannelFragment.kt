@@ -202,6 +202,7 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
                     mChannelListAdapter.setGenreFilter(mGenreAdapter.selectDown().name)
                 } else if(mListFocus){
                     mChannelListAdapter.selectDownItem()?.let { channel -> onChannelSelectListener(channel) }
+                    view_channel_list.smoothScrollToPosition(mChannelListAdapter.getSelectPosition())
                 }
             }
             KeyEvent.KEYCODE_DPAD_DOWN -> {
@@ -209,6 +210,7 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
                     mChannelListAdapter.setGenreFilter(mGenreAdapter.selectUp().name)
                 } else if(mListFocus){
                     mChannelListAdapter.selectUPItem()?.let { channel -> onChannelSelectListener(channel) }
+                    view_channel_list.smoothScrollToPosition(mChannelListAdapter.getSelectPosition())
                 }
             }
             KeyEvent.KEYCODE_DPAD_LEFT -> {

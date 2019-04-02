@@ -133,6 +133,10 @@ class ChannelListAdapter :
         }
     }
 
+    fun getSelectPosition(): Int{
+        return mSelectPosition
+    }
+
     /**
      * 通知是否被foucs
      * @focus:
