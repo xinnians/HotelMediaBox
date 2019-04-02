@@ -110,6 +110,8 @@ class WelcomeActivity : AppCompatActivity(), ViewModelsCallback, View.OnClickLis
                 button_ok.setTextColor(ContextCompat.getColor(this, android.R.color.white))
             }
         }
+
+        button_ok.requestFocusFromTouch()
     }
 
     override fun onRequestPermissionsResult(
