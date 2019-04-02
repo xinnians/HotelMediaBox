@@ -156,10 +156,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_14sdp"
-        android:layout_marginTop="@dimen/_2sdp"
+        android:layout_marginTop="@dimen/_4sdp"
         android:text="01 xbox"
         app:layout_constraintStart_toEndOf="@+id/layout_list"
-        app:layout_constraintTop_toBottomOf="@+id/videoView_frame" />
+        app:layout_constraintTop_toBottomOf="@+id/dvbView" />
 
     <TextView
         android:id="@+id/textView11"

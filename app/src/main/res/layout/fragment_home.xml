@@ -61,4 +61,13 @@
             app:rewind_increment="30000"
             app:use_controller="false" />
     </android.support.constraint.ConstraintLayout>
+
+    <SurfaceView
+            android:id="@+id/dvbView"
+            android:layout_width="@dimen/_243sdp"
+            android:layout_height="@dimen/_141sdp"
+            android:layout_marginStart="@dimen/_24sdp"
+            android:layout_marginTop="@dimen/_14sdp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 </android.support.constraint.ConstraintLayout>

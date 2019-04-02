@@ -19,10 +19,7 @@ import com.ufistudio.hotelmediabox.interfaces.OnItemClickListener
 import com.ufistudio.hotelmediabox.interfaces.OnSimpleListener
 import com.ufistudio.hotelmediabox.interfaces.ViewModelsCallback
 import com.ufistudio.hotelmediabox.pages.welcome.WelcomeActivity
-import com.ufistudio.hotelmediabox.repository.data.Config
-import com.ufistudio.hotelmediabox.repository.data.ConnectDetail
-import com.ufistudio.hotelmediabox.repository.data.DVBInfo
-import com.ufistudio.hotelmediabox.repository.data.TVChannel
+import com.ufistudio.hotelmediabox.repository.data.*
 import com.ufistudio.hotelmediabox.utils.FileUtils
 import com.ufistudio.hotelmediabox.utils.MiscUtils
 import kotlinx.android.synthetic.main.activity_factory.*
@@ -177,7 +174,10 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
                 //TODO 確認有頻點表 然後再掃台將結果寫入channels.json
 
                 if (FileUtils.fileIsExists("DvbScanConfig.json")) {
-                    Log.e(TAG, "file 存在")
+                    Log.e(TAG, "load DvbScanConfig.json")
+                    mInfo1.setLength(0)
+                    mInfo1.append("load DvbScanConfig.json\n")
+                    textView_info1.text = mInfo1
 
                     DVBHelper.getDVBPlayer().initDevice()
 
@@ -186,12 +186,19 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
                     val jsonArray: Array<DVBInfo> =
                         Gson().fromJson(MiscUtils.getJsonFromStorage("DvbScanConfig.json"), Array<DVBInfo>::class.java)
 
+                    var count = 1
+
                     for (i in 0 until jsonArray.size) {
+
+                        mInfo1.append("scan ${jsonArray[i].Frequency} ${jsonArray[i].Bandwidth}\n")
+                        textView_info1.text = mInfo1
 
                         var scanResult = DVBHelper.getDVBPlayer()
                             .getChannelList("${jsonArray[i].Frequency} ${jsonArray[i].Bandwidth}")
 
                         Log.e(TAG, "[scan result] = $scanResult")
+                        mInfo1.append("scanResult $scanResult\n")
+                        textView_info1.text = mInfo1
 
                         var scanList = scanResult?.split(",")?.filter { it != "" }
 
@@ -200,13 +207,17 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
 
                         for (j in scanList) {
                             jsonList += TVChannel(
+                                chNum = count.toString(),
+                                chName = "CH $count",
                                 chType = "DVBT",
                                 chIp = ConnectDetail(
                                     frequency = jsonArray[i].Frequency,
                                     bandwidth = jsonArray[i].Bandwidth,
                                     dvbParameter = j
-                                )
+                                ),
+                                chLogo = Logo(fileName = "channel_default.png")
                             )
+                            count++
                         }
                     }
 
@@ -217,6 +228,9 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
                     writeToFile(channelFile, Gson().toJson(jsonList))
 
                     DVBHelper.getDVBPlayer().closePlayer()
+
+                    mInfo1.append("scan finish.")
+                    textView_info1.text = mInfo1
 
                 } else {
                     Log.e(TAG, "file not exist,Please import DvbScanConfig.json file")

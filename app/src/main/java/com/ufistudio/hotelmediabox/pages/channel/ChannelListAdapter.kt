@@ -6,11 +6,13 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.bumptech.glide.Glide
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.repository.data.TVChannel
+import com.ufistudio.hotelmediabox.utils.FileUtils
 import kotlinx.android.synthetic.main.item_channel_list.view.*
 
-class ChannelListAdapter(private val listener: (TVChannel, Boolean) -> Unit) :
+class ChannelListAdapter :
     RecyclerView.Adapter<ChannelListAdapter.ViewHolder>() {
 
     private var mOriginalItems: ArrayList<TVChannel>? = null
@@ -18,7 +20,7 @@ class ChannelListAdapter(private val listener: (TVChannel, Boolean) -> Unit) :
     private var mGenreType: String = ""
     private lateinit var mContext: Context
     private var mSelectPosition = 0 //目前被選到的position
-    private var mGenreFocus = false //Genre list是否正在focus
+    private var mIsFocus = false
 
     interface OnItemClickListener {
         fun onClick(view: View)
@@ -36,42 +38,20 @@ class ChannelListAdapter(private val listener: (TVChannel, Boolean) -> Unit) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         mFilterItems?.get(position)?.let { channelData ->
-            holder.bind(channelData, listener)
+            holder.bind(channelData)
             holder.itemView.tag = channelData
             holder.itemView.setOnClickListener { view ->
                 mListener?.onClick(view)
             }
-            if (mGenreFocus && position == mSelectPosition) {
-                holder.itemView.layout_frame.background =
-                    ContextCompat.getDrawable(mContext, R.drawable.home_icon_frame_frame_default)
-            } else {
-                holder.itemView.layout_frame.setBackgroundResource(0)
-            }
 
-//            if (!mGenreFocus && position == mSelectPosition) {
-//                holder.itemView.requestFocus()
-//                holder.itemView.layout_frame.background =
-//                    ContextCompat.getDrawable(mContext, R.drawable.home_icon_frame_frame_focused)
-//                holder.itemView.text_channelName.setTextColor(ContextCompat.getColor(mContext, R.color.colorYellow))
-//            } else {
-//                holder.itemView.clearFocus()
-//                holder.itemView.layout_frame.setBackgroundResource(0)
-//                holder.itemView.text_channelName.setTextColor(
-//                    ContextCompat.getColor(
-//                        mContext,
-//                        android.R.color.white
-//                    )
-//                )
-//            }
-
-            holder.itemView.setOnFocusChangeListener { v, hasFocus ->
-                if (hasFocus) {
-                    mSelectPosition = position
+            if (position == mSelectPosition) {
+                if (mIsFocus) {
                     holder.itemView.layout_frame.background =
                         ContextCompat.getDrawable(mContext, R.drawable.home_icon_frame_frame_focused)
                     holder.itemView.text_channelName.setTextColor(ContextCompat.getColor(mContext, R.color.colorYellow))
                 } else {
-                    holder.itemView.layout_frame.setBackgroundResource(0)
+                    holder.itemView.layout_frame.background =
+                        ContextCompat.getDrawable(mContext, R.drawable.home_icon_frame_frame_default)
                     holder.itemView.text_channelName.setTextColor(
                         ContextCompat.getColor(
                             mContext,
@@ -79,8 +59,33 @@ class ChannelListAdapter(private val listener: (TVChannel, Boolean) -> Unit) :
                         )
                     )
                 }
-                listener(channelData, hasFocus)
+            } else {
+                holder.itemView.layout_frame.setBackgroundResource(0)
+                holder.itemView.text_channelName.setTextColor(
+                    ContextCompat.getColor(
+                        mContext,
+                        android.R.color.white
+                    )
+                )
             }
+
+//            holder.itemView.setOnFocusChangeListener { v, hasFocus ->
+//                if (hasFocus) {
+//                    mSelectPosition = position
+//                    holder.itemView.layout_frame.background =
+//                        ContextCompat.getDrawable(mContext, R.drawable.home_icon_frame_frame_focused)
+//                    holder.itemView.text_channelName.setTextColor(ContextCompat.getColor(mContext, R.color.colorYellow))
+//                } else {
+//                    holder.itemView.layout_frame.setBackgroundResource(0)
+//                    holder.itemView.text_channelName.setTextColor(
+//                        ContextCompat.getColor(
+//                            mContext,
+//                            android.R.color.white
+//                        )
+//                    )
+//                }
+//                listener(channelData, hasFocus)
+//            }
         }
     }
 
@@ -93,41 +98,57 @@ class ChannelListAdapter(private val listener: (TVChannel, Boolean) -> Unit) :
         mListener = listener
     }
 
-    fun selectUPItem() {
-        if (mSelectPosition == 0) {
-            return
+    fun selectDownItem(): TVChannel? {
+        if (mFilterItems?.size ?: 0 == 0) {
+            return null
+        }
+        if (mSelectPosition == 0 && mFilterItems?.size ?: 0 > 0) {
+            return mFilterItems?.get(0)
         }
         mSelectPosition -= 1
         notifyDataSetChanged()
+        return mFilterItems?.get(mSelectPosition)
     }
 
-    fun selectDownItem() {
-        mFilterItems?.let { mFilterItems ->
-            if (mSelectPosition == mFilterItems.size - 1) {
-                return
-            }
-            mSelectPosition += 1
-            notifyDataSetChanged()
+    fun selectUPItem(): TVChannel? {
+        if (mFilterItems?.size ?: 0 == 0) {
+            return null
+        }
+        if ((mFilterItems?.size ?: 0) - 1 == mSelectPosition) {
+            return mFilterItems?.get(mSelectPosition)
+        }
+        mSelectPosition++
+        notifyDataSetChanged()
+        return mFilterItems?.get(mSelectPosition)
+    }
+
+    fun getCurrentTVChannel(): TVChannel? {
+        if (mFilterItems?.size ?: 0 == 0) {
+            return null
+        }
+        if ((mFilterItems?.size ?: 0) - 1 >= mSelectPosition && mSelectPosition >= 0) {
+            return mFilterItems?.get(mSelectPosition)
+        }else{
+            return null
         }
     }
 
     /**
-     * 通知Genre list是否被foucs
+     * 通知是否被foucs
      * @focus:
-     * true:Genre list被focus
-     * false:Genre list沒有focus
+     * true:list被focus
+     * false:list沒有focus
      */
-    fun genreFocus(focus: Boolean) {
-        mGenreFocus = focus
+    fun setFocus(isFocus: Boolean) {
+        mIsFocus = isFocus
+        notifyDataSetChanged()
     }
 
     /**
      * 清楚上一個被選擇到的狀態
      */
     fun clearSelectPosition() {
-        val int = mSelectPosition
         mSelectPosition = 0
-        notifyItemChanged(int)
     }
 
     fun setGenreFilter(genreType: String) {
@@ -135,15 +156,18 @@ class ChannelListAdapter(private val listener: (TVChannel, Boolean) -> Unit) :
         mFilterItems = if (genreType == "All" || genreType == "") {
             ArrayList(mOriginalItems)
         } else ArrayList(mOriginalItems?.filter { it.chType == genreType })
+        clearSelectPosition()
         notifyDataSetChanged()
     }
 
     class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-        fun bind(data: TVChannel, listener: (TVChannel, Boolean) -> Unit) {
+        fun bind(data: TVChannel) {
 //            Glide.with(itemView.image.context).load(data.images?.first()).into(itemView.image)
 //            Log.e("ChannelListAdapter", "TVChannel:$data")
             itemView.text_channelName.text = data.chNum + " " + data.chName
-            itemView.isFocusable = true
+            Glide.with(itemView.context)
+                .load(FileUtils.getFileFromStorage(data.chLogo.fileName))
+                .into(itemView.view_icon)
         }
     }
 }

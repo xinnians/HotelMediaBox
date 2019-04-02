@@ -41,5 +41,12 @@
     <string name="factory_clear_info_text">Clear Info Text</string>
     <string name="factory_scan_dvb_channels">Scan DVB T/T2 Channels</string>
 
+    <!--GenreType-->
+    <string name="genre_all">All</string>
+    <string name="genre_movie">Movie</string>
+    <string name="genre_mtv">MTV</string>
+    <string name="genre_news">News</string>
+    <string name="genre_sport">Sport</string>
+
 
 </resources>

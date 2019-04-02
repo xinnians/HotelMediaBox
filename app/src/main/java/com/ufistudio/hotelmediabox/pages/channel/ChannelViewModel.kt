@@ -51,21 +51,4 @@ class ChannelViewModel(
 
     }
 
-    val initGenreSuccess = MutableLiveData<ArrayList<String>>()
-    val initGenreProgress = MutableLiveData<Boolean>()
-    val initGenreError = MutableLiveData<Throwable>()
-
-    fun initGenre() {
-        val genreList: ArrayList<String> =
-                arrayListOf("All", "Movie", "MTV", "News", "Sport")
-
-        compositeDisposable.add(Single.just(genreList)
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { initGenreProgress.value = true }
-                .doFinally { initGenreProgress.value = false }
-                .subscribe({ initGenreSuccess.value = it }
-                        , { initGenreError.value = it })
-        )
-    }
-
 }

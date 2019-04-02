@@ -8,6 +8,7 @@ import com.ufistudio.hotelmediabox.pages.channel.ChannelViewModel
 import com.ufistudio.hotelmediabox.pages.facilies.HotelFacilitiesViewModel
 import com.ufistudio.hotelmediabox.pages.factory.FactoryFeature
 import com.ufistudio.hotelmediabox.pages.factory.FactoryViewModel
+import com.ufistudio.hotelmediabox.pages.fullScreen.FullScreenViewModel
 import com.ufistudio.hotelmediabox.pages.home.HomeViewModel
 import com.ufistudio.hotelmediabox.pages.roomService.RoomServiceViewModel
 import com.ufistudio.hotelmediabox.pages.welcome.WelcomeViewModel
@@ -36,6 +37,7 @@ class ViewModelFactory(private val application: Application,
                 isAssignableFrom(HomeViewModel::class.java) -> HomeViewModel(application,CompositeDisposable(),repository)
                 isAssignableFrom(WelcomeViewModel::class.java) -> WelcomeViewModel(application,CompositeDisposable(),repository)
                 isAssignableFrom(FactoryViewModel::class.java) -> FactoryViewModel(application,CompositeDisposable(),repository)
+                isAssignableFrom(FullScreenViewModel::class.java) -> FullScreenViewModel(application,CompositeDisposable(),repository)
                 else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
             } as T
         }
