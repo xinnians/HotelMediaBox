@@ -42,7 +42,8 @@ data class Home(
 data class HomeContent(
         val stage_type: HomeStageType,
         val icons: ArrayList<HomeIcons>,
-        val promo_banner: ArrayList<HomePromoBanner>
+        val promo_banner: ArrayList<HomePromoBanner>,
+        val weather: HomeWeather
 ) : Parcelable
 
 @Parcelize
@@ -60,6 +61,17 @@ data class HomeIcons(
 @Parcelize
 data class HomePromoBanner(
         val image: String
+) : Parcelable
+
+@Parcelize
+data class HomeWeather(
+        val wifi_id_title: String,
+        val wifi_id: String,
+        val wifi_password_title: String,
+        val wifi_password: String,
+        val weather_value: String,
+        val weather_type: String,
+        val weather_title: String
 ) : Parcelable
 
 @Parcelize
@@ -156,4 +168,29 @@ data class Config(
 data class ConfigContent(
         var language: String,
         var upgradeUrl: String
+) : Parcelable
+
+/*
+    Nearby me
+ */
+@Parcelize
+data class NearbyMe(
+        val categories: ArrayList<NearbyMeCategories>
+) : Parcelable
+
+@Parcelize
+data class NearbyMeCategories(
+        val title: String,
+        val content_type: Int,
+        val description: String,
+        val total: Int,
+        val contents: ArrayList<NearbyMeContent>
+) : Parcelable
+
+@Parcelize
+data class NearbyMeContent(
+        var title: String,
+        var file_type: String,
+        var content: String,
+        var file_name: String
 ) : Parcelable

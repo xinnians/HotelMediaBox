@@ -14,6 +14,7 @@ import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.helper.ExoPlayerHelper
 import kotlinx.android.synthetic.main.fragment_home.*
 import android.view.KeyEvent
+import android.widget.TextView
 import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.ufistudio.hotelmediabox.AppInjector
@@ -22,6 +23,7 @@ import com.ufistudio.hotelmediabox.interfaces.ViewModelsCallback
 import com.ufistudio.hotelmediabox.pages.factory.FactoryActivity
 import com.ufistudio.hotelmediabox.repository.data.Home
 import com.ufistudio.hotelmediabox.repository.data.HomeIcons
+import com.ufistudio.hotelmediabox.repository.data.HomeWeather
 import com.ufistudio.hotelmediabox.utils.FileUtils
 
 class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), FunctionsAdapter.OnItemClickListener, ViewModelsCallback {
@@ -173,10 +175,62 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
         }
     }
 
+    /**
+     * 切換天氣or廣告欄
+     * @type: TAG_TYPE_1:天氣
+     *        TAG_TYPE_2:廣告欄
+     */
     private fun switchWedge(type: Int?) {
         when (type) {
             TAG_TYPE_1 -> {
                 view_wedge.layoutResource = R.layout.view_home_weather
+                val view = view_wedge.inflate()
+                val weather: HomeWeather? = mData?.home?.weather
+
+                val textViewWifiId: TextView = view.findViewById<TextView>(R.id.textView_wifi_id)
+                textViewWifiId.text = weather?.wifi_id
+                val textViewWifiIdTitle: TextView = view.findViewById<TextView>(R.id.textView_wifiIdTitle)
+                textViewWifiIdTitle.text = weather?.wifi_id_title
+                val textViewWifiIdPassword: TextView = view.findViewById<TextView>(R.id.textView_wifi_password)
+                textViewWifiIdPassword.text = weather?.wifi_password
+                val textViewWifiPasswordTitle: TextView = view.findViewById<TextView>(R.id.textView_wifiPasswordTitle)
+                textViewWifiPasswordTitle.text = weather?.wifi_password_title
+                val textViewValue: TextView = view.findViewById<TextView>(R.id.textView_value)
+                textViewValue.text = weather?.weather_value
+                val textViewWeatherTitle: TextView = view.findViewById<TextView>(R.id.weather_title)
+                textViewWeatherTitle.text = weather?.weather_title
+                when (weather?.weather_type) {
+                    "1" -> {
+                        Glide.with(this)
+                                .load(R.drawable.ic_weather_1)
+                                .into(view.findViewById(R.id.imageView))
+                    }
+                    "2" -> {
+                        Glide.with(this)
+                                .load(R.drawable.ic_weather_cloudy)
+                                .into(view.findViewById(R.id.imageView))
+                    }
+                    "3" -> {
+                        Glide.with(this)
+                                .load(R.drawable.ic_weather_partlycloudy)
+                                .into(view.findViewById(R.id.imageView))
+                    }
+                    "4" -> {
+                        Glide.with(this)
+                                .load(R.drawable.ic_weather_raining)
+                                .into(view.findViewById(R.id.imageView))
+                    }
+                    "5" -> {
+                        Glide.with(this)
+                                .load(R.drawable.ic_weather_shower)
+                                .into(view.findViewById(R.id.imageView))
+                    }
+                    "6" -> {
+                        Glide.with(this)
+                                .load(R.drawable.ic_weather_sunny)
+                                .into(view.findViewById(R.id.imageView))
+                    }
+                }
             }
             TAG_TYPE_2 -> {
                 view_wedge.layoutResource = R.layout.view_home_banner
