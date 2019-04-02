@@ -11,7 +11,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 
-class FullScreenViewModel (
+class FullScreenViewModel(
     application: Application,
     private val compositeDisposable: CompositeDisposable,
     private val repository: Repository
@@ -21,9 +21,10 @@ class FullScreenViewModel (
     val initChannelsProgress = MutableLiveData<Boolean>()
     val initChannelsError = MutableLiveData<Throwable>()
 
-    fun initChannels(){
+    fun initChannels() {
 
-        val jsonObject: Array<TVChannel> = Gson().fromJson(MiscUtils.getJsonFromStorage("channels.json"), Array<TVChannel>::class.java)
+        val jsonObject: Array<TVChannel> =
+            Gson().fromJson(MiscUtils.getJsonFromStorage("channels.json"), Array<TVChannel>::class.java) ?: return
         compositeDisposable.add(
             Single.just(jsonObject)
                 .observeOn(AndroidSchedulers.mainThread())

@@ -56,7 +56,8 @@ class HomeViewModel(
 
     fun initChannels(){
 
-        val jsonObject: Array<TVChannel> = Gson().fromJson(MiscUtils.getJsonFromStorage("channels.json"), Array<TVChannel>::class.java)
+        val jsonObject: Array<TVChannel> =
+            Gson().fromJson(MiscUtils.getJsonFromStorage("channels.json"), Array<TVChannel>::class.java) ?: return
         compositeDisposable.add(Single.just(jsonObject)
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe { initChannelsProgress.value = true }

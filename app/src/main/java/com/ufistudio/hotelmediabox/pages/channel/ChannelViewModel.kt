@@ -14,9 +14,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 
 class ChannelViewModel(
-        application: Application,
-        private val compositeDisposable: CompositeDisposable,
-        private val repository: Repository
+    application: Application,
+    private val compositeDisposable: CompositeDisposable,
+    private val repository: Repository
 ) : BaseViewModel(application, compositeDisposable) {
 
     val initChannelsSuccess = MutableLiveData<ArrayList<TVChannel>>()
@@ -25,7 +25,8 @@ class ChannelViewModel(
 
     fun initChannels() {
 
-        val jsonObject: Array<TVChannel> = Gson().fromJson(MiscUtils.getJsonFromStorage("channels.json"), Array<TVChannel>::class.java)
+        val jsonObject: Array<TVChannel> =
+            Gson().fromJson(MiscUtils.getJsonFromStorage("channels.json"), Array<TVChannel>::class.java) ?: return
 
 //        var iptv1 = TVChannel("1", "頻道1", "DVBT", ConnectDetail("","","581000","6000","fa1 fa2 4 1"))
 //        var iptv2 = TVChannel("2", "頻道2", "DVBT", ConnectDetail("","","581000","6000","fab fac 4 1"))
@@ -42,11 +43,11 @@ class ChannelViewModel(
 //                arrayListOf(iptv1,iptv5, iptv2, iptv6,iptv3,iptv7, iptv4,    iptv8)
 
         compositeDisposable.add(Single.just(jsonObject)
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { initChannelsProgress.value = true }
-                .doFinally { initChannelsProgress.value = false }
-                .subscribe({ initChannelsSuccess.value = jsonObject.toCollection(ArrayList()) }
-                        , { initChannelsError.value = it })
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { initChannelsProgress.value = true }
+            .doFinally { initChannelsProgress.value = false }
+            .subscribe({ initChannelsSuccess.value = jsonObject.toCollection(ArrayList()) }
+                , { initChannelsError.value = it })
         )
 
     }
