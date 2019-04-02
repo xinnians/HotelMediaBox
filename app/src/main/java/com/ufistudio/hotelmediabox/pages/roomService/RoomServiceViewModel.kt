@@ -23,23 +23,23 @@ class RoomServiceViewModel(
     val initRoomServiceError = MutableLiveData<Throwable>()
 
     init {
-        compositeDisposable.add(Single.just(getJsonObject())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { initRoomServiceProgress.value = true }
-                .doFinally { initRoomServiceProgress.value = false }
-                .subscribe({ initRoomServiceSuccess.value = it }
-                        , { initRoomServiceError.value = it })
-        )
+        val json = getJsonObject()
+        if (json != null) {
+            compositeDisposable.add(Single.just(getJsonObject())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSubscribe { initRoomServiceProgress.value = true }
+                    .doFinally { initRoomServiceProgress.value = false }
+                    .subscribe({ initRoomServiceSuccess.value = it }
+                            , { initRoomServiceError.value = it })
+            )
+        } else {
+            initRoomServiceError.value = Throwable("jsonObject is null")
+        }
     }
 
     private fun getJsonObject(): RoomServices? {
         val gson = Gson()
-        val jsonObject = gson.fromJson(MiscUtils.getJsonFromStorage("room_service_en.json"), RoomServices::class.java)
-        if (jsonObject != null) {
-            return jsonObject
-        }
-
-        return null
+        return gson.fromJson(MiscUtils.getJsonFromStorage("room_service_en.json"), RoomServices::class.java)
     }
 }

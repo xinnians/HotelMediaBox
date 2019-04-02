@@ -40,6 +40,8 @@ class FactoryViewModel(
                     .subscribe({ initConfigSuccess.value = it }
                             , { initConfigError.value = it })
             )
+        }else{
+            initConfigError.value = Throwable("jsonObject is null")
         }
     }
 
