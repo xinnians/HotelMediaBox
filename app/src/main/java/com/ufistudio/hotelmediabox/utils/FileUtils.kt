@@ -46,8 +46,9 @@ object FileUtils {
             Log.d("getFileFromStorage", "file pagh = ${file.absolutePath}")
         } catch (e: NullPointerException) {
             Log.e("getFileFromStorage", "error = $e")
+        } catch (e: FileNotFoundException) {
+            Log.e("FileNotFoundException", "error = $e")
         }
-
         if (file?.exists()!!) {
             return file
         }
