@@ -24,28 +24,27 @@ class HomeViewModel(
     val initHomeError = MutableLiveData<Throwable>()
 
     init {
-
-        compositeDisposable.add(Single.just(getJsonObject())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe {
-                    initHomeProgress.value = true
-                }
-                .doFinally {
-                    initHomeProgress.value = false
-                }
-                .subscribe({ initHomeSuccess.value = it }
-                        , { initHomeError.value = it })
-        )
+        val json = getJsonObject()
+        if (json != null) {
+            compositeDisposable.add(Single.just(json)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSubscribe {
+                        initHomeProgress.value = true
+                    }
+                    .doFinally {
+                        initHomeProgress.value = false
+                    }
+                    .subscribe({ initHomeSuccess.value = it }
+                            , { initHomeError.value = it })
+            )
+        } else {
+            initHomeError.value = Throwable("jsonObject is null")
+        }
     }
 
     private fun getJsonObject(): Home? {
         val gson = Gson()
-        val jsonObject = gson.fromJson(MiscUtils.getJsonFromStorage("home_en.json"), Home::class.java)
-        if (jsonObject != null) {
-            return jsonObject
-        }
-
-        return null
+        return gson.fromJson(MiscUtils.getJsonFromStorage("home_en.json"), Home::class.java)
     }
 }
