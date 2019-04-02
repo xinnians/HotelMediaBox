@@ -295,7 +295,7 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
 //                        videoView_frame.visibility = View.GONE
 //                        dvbView.visibility = View.VISIBLE
                         mExoPlayerHelper.stop()
-//                        videoView_frame?.visibility = View.GONE
+                        videoView_frame?.visibility = View.GONE
                         DVBHelper.getDVBPlayer().closePlayer()
                         DVBHelper.getDVBPlayer().initPlayer(832, 464, 108, 72)//940,536
 
@@ -313,7 +313,7 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
 //                        dvbView.visibility = View.GONE
 //                        videoView_frame.visibility = View.VISIBLE
                         DVBHelper.getDVBPlayer().closePlayer()
-//                        videoView_frame?.visibility = View.VISIBLE
+                        videoView_frame?.visibility = View.VISIBLE
                         mExoPlayerHelper.setMp4Source(R.raw.videoplayback, true)
                         mExoPlayerHelper.play()
                     }

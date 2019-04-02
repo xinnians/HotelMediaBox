@@ -11,10 +11,11 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginEnd="@dimen/_20sdp"
-        app:layout_constraintBottom_toBottomOf="@+id/videoView_frame"
+        app:layout_constraintBottom_toBottomOf="@+id/dvbView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/videoView_frame"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/dvbView"
+        app:layout_constraintTop_toTopOf="parent"
+    android:visibility="invisible"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/list_functions"
@@ -23,7 +24,7 @@
         android:layout_marginBottom="@dimen/_45sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/view_wedge"
-        app:layout_constraintStart_toStartOf="@+id/videoView_frame" />
+        app:layout_constraintStart_toStartOf="@+id/dvbView" />
 
     <include
         layout="@layout/view_bottom_info"
