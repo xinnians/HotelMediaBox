@@ -9,6 +9,7 @@ import com.ufistudio.hotelmediabox.pages.facilies.HotelFacilitiesViewModel
 import com.ufistudio.hotelmediabox.pages.factory.FactoryFeature
 import com.ufistudio.hotelmediabox.pages.factory.FactoryViewModel
 import com.ufistudio.hotelmediabox.pages.home.HomeViewModel
+import com.ufistudio.hotelmediabox.pages.nearby.NearbyMeViewModel
 import com.ufistudio.hotelmediabox.pages.roomService.RoomServiceViewModel
 import com.ufistudio.hotelmediabox.pages.welcome.WelcomeViewModel
 import com.ufistudio.hotelmediabox.repository.Repository
@@ -36,6 +37,7 @@ class ViewModelFactory(private val application: Application,
                 isAssignableFrom(HomeViewModel::class.java) -> HomeViewModel(application,CompositeDisposable(),repository)
                 isAssignableFrom(WelcomeViewModel::class.java) -> WelcomeViewModel(application,CompositeDisposable(),repository)
                 isAssignableFrom(FactoryViewModel::class.java) -> FactoryViewModel(application,CompositeDisposable(),repository)
+                isAssignableFrom(NearbyMeViewModel::class.java) -> NearbyMeViewModel(application,CompositeDisposable(),repository)
                 else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
             } as T
         }
