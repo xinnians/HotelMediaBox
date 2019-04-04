@@ -3,11 +3,13 @@ package com.ufistudio.hotelmediabox.pages
 import android.os.Bundle
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.constants.Page
+import com.ufistudio.hotelmediabox.interfaces.OnFragmentKeyListener
 import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.pages.base.PaneViewActivity
 
 class MainActivity : PaneViewActivity(), OnPageInteractionListener.Primary {
     private var mFragmentCacheData: Any? = null
+    private var fragmentKeyListener: OnFragmentKeyListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +65,14 @@ class MainActivity : PaneViewActivity(), OnPageInteractionListener.Primary {
 
     override fun clearFragmentCacheData() {
         mFragmentCacheData = null
+    }
+
+    override fun setOnKeyListener(listener: OnFragmentKeyListener?) {
+        fragmentKeyListener = listener
+    }
+
+    override fun getOnKeyListener(): OnFragmentKeyListener? {
+        return fragmentKeyListener
     }
 }
 

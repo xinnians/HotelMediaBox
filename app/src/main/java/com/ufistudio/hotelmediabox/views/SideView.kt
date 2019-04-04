@@ -73,6 +73,10 @@ class SideView : ConstraintLayout, OnItemClickListener {
         mAdapter?.setLastPosition(position)
     }
 
+    fun scrollToPosition(position: Int) {
+        icon_list.scrollToPosition(position)
+    }
+
     override fun onClick(view: View?) {
         mOutsideListener?.onClick(view)
 
@@ -82,6 +86,6 @@ class SideView : ConstraintLayout, OnItemClickListener {
         }
         val b = Bundle()
         b.putParcelableArrayList(Page.ARG_BUNDLE, mFeatureIcons)
-        mInteractionListener?.switchPage(R.id.fragment_container, view.tag as Int, b, false, false,true)
+        mInteractionListener?.switchPage(R.id.fragment_container, view.tag as Int, b, false, false, true)
     }
 }

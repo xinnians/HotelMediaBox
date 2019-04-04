@@ -2,6 +2,7 @@ package com.ufistudio.hotelmediabox.pages.base
 
 import android.os.Bundle
 import android.support.annotation.IdRes
+import com.ufistudio.hotelmediabox.interfaces.OnFragmentKeyListener
 
 interface OnPageInteractionListener {
 
@@ -20,5 +21,7 @@ interface OnPageInteractionListener {
         fun setFragmentCacheData(data: Any?)
         fun getFragmentCacheData(): Any?
         fun clearFragmentCacheData()
+        fun setOnKeyListener(listener:OnFragmentKeyListener?)
+        fun getOnKeyListener():OnFragmentKeyListener?
     }
 }

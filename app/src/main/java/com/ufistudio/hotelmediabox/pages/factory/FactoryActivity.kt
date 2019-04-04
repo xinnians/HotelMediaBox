@@ -96,10 +96,10 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
                     mInfo1.setLength(0)
                     mInfo1.append("找不到 hotelbox.apk 安裝檔")
 
-                    Log.d("neo", "找不到裝置")
+                    Log.d(TAG, "找不到裝置")
                 }
                 textView_info1.text = mInfo1
-                Log.d("neo", "找得到裝置")
+                Log.d(TAG, "找得到裝置")
             }
             FactoryFeature.EXPORT_JSON_FILE -> {
                 mInfo1.setLength(0)
@@ -191,7 +191,7 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
 
             mDownloadDialog?.show()
         } else {
-            Log.d("neo", "cancel")
+            Log.d(TAG, "cancel")
         }
     }
 

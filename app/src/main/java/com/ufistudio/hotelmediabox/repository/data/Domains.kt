@@ -194,3 +194,31 @@ data class NearbyMeContent(
         var content: String,
         var file_name: String
 ) : Parcelable
+
+/*
+    Setting
+ */
+@Parcelize
+data class Setting(
+        var categories: ArrayList<SettingCategories>
+) : Parcelable
+
+@Parcelize
+data class SettingCategories(
+        var title: String,
+        var type: String,
+        var contents: SettingContent
+) : Parcelable
+
+@Parcelize
+data class SettingContent(
+        var content_title: String,
+        var image: String,
+        var content: List<SettingSubContent>
+) : Parcelable
+
+@Parcelize
+data class SettingSubContent(
+        var title: String,
+        var code: String
+) : Parcelable

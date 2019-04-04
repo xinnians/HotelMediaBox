@@ -35,7 +35,7 @@ object FileUtils {
 
     /**
      * Get File from Storage
-     * @path: the file path, Base is /sdcard/hotelBox/........
+     * @path: the file path, Base is /sdcard/hotel/........
      * @fileName: This is your file name, ex: welcome.json
      */
     fun getFileFromStorage(fileName: String, path: String = ""): File? {

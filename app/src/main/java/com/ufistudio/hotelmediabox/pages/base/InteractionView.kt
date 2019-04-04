@@ -39,4 +39,8 @@ abstract class InteractionView<I : OnPageInteractionListener.Base> : BaseView() 
     override fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         return false
     }
+
+    override fun onFragmentToFragmentKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        return false
+    }
 }

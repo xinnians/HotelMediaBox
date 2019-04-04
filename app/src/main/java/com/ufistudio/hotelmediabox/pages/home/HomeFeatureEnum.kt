@@ -15,7 +15,7 @@ enum class HomeFeatureEnum(tag: String, title: Int, page: Int, focusedIcon: Int,
     FLIGHT_INFO("flight_info", R.string.home_icon_flight, -100, R.drawable.ic_flight_info_1, R.drawable.ic_flight_info),
     WEATHER("weather_forecast", R.string.home_icon_weather, -100, R.drawable.ic_weather_1, R.drawable.ic_weather),
     GUEST("guest", R.string.home_icon_guest, -100, R.drawable.ic_guest_services_1, R.drawable.ic_guest_services),
-    SETTING("settings", R.string.home_icon_setting, -100, R.drawable.ic_settings_1, R.drawable.ic_settings);
+    SETTING("settings", R.string.home_icon_setting, Page.SETTING, R.drawable.ic_settings_1, R.drawable.ic_settings);
 
 
     companion object {
