@@ -7,6 +7,7 @@ import com.ufistudio.hotelmediabox.pages.home.HomeFragment
 import com.ufistudio.hotelmediabox.pages.channel.ChannelFragment
 import com.ufistudio.hotelmediabox.pages.facilies.HotelFacilitiesFragment
 import com.ufistudio.hotelmediabox.pages.facilies.template.FacilitiesContentFragment
+import com.ufistudio.hotelmediabox.pages.nearby.NearbyMeFragment
 import com.ufistudio.hotelmediabox.pages.roomService.RoomServiceFragment
 import com.ufistudio.hotelmediabox.pages.setting.SettingFragment
 import com.ufistudio.hotelmediabox.pages.setting.content.LanguageFragment
@@ -33,6 +34,7 @@ object Page {
     const val SETTING = 1009
     const val LANGUAGE_SETTING = 1010
     const val USER_GUIDE = 1011
+    const val NEARBY_ME = 1012
 
     /*--------------------------------------------------------------------------------------------*/
     /* Helpers */
@@ -54,6 +56,7 @@ object Page {
             SETTING -> result = SettingFragment.newInstance()
             LANGUAGE_SETTING -> result = LanguageFragment.newInstance()
             USER_GUIDE -> result = UserGuideFragment.newInstance()
+            NEARBY_ME -> result = NearbyMeFragment.newInstance()
             else -> throw IllegalArgumentException("No match view! page = $page")
         }
 
