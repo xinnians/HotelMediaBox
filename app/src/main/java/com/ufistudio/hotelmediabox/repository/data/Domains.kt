@@ -167,7 +167,8 @@ data class Config(
 @Parcelize
 data class ConfigContent(
         var language: String,
-        var upgradeUrl: String
+        var upgradeUrl: String,
+        var room: String
 ) : Parcelable
 
 /*
@@ -181,8 +182,7 @@ data class NearbyMe(
 @Parcelize
 data class NearbyMeCategories(
         val title: String,
-        val content_type: Int,
-        val description: String,
+        val category_id: String,
         val total: Int,
         val contents: ArrayList<NearbyMeContent>
 ) : Parcelable

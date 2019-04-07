@@ -21,7 +21,7 @@ interface OnPageInteractionListener {
         fun setFragmentCacheData(data: Any?)
         fun getFragmentCacheData(): Any?
         fun clearFragmentCacheData()
-        fun setOnKeyListener(listener:OnFragmentKeyListener?)
-        fun getOnKeyListener():OnFragmentKeyListener?
+        fun setOnKeyListener(listener: OnFragmentKeyListener?)
+        fun getOnKeyListener(): OnFragmentKeyListener?
     }
 }

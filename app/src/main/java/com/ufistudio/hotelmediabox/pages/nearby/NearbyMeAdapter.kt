@@ -2,22 +2,21 @@ package com.ufistudio.hotelmediabox.pages.nearby
 
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.interfaces.OnItemClickListener
 import com.ufistudio.hotelmediabox.interfaces.OnItemFocusListener
-import com.ufistudio.hotelmediabox.repository.data.HotelFacilitiesCategories
 import com.ufistudio.hotelmediabox.repository.data.NearbyMeCategories
-import kotlinx.android.synthetic.main.item_room_service.view.*
+import kotlinx.android.synthetic.main.item_nearby_me.view.*
 
 class NearbyMeAdapter(private var mClickListener: OnItemClickListener, private var mFocusListener: OnItemFocusListener) : RecyclerView.Adapter<NearbyMeAdapter.ViewHolder>() {
 
     private var mSideViewIsDisplay: Boolean = false
     private var mSelectIndex: Int = 0
     private var mSideViewIsShow = false
+    private var mClearFocus: Boolean = false
     private var mData: ArrayList<NearbyMeCategories> = ArrayList()
 
     companion object {
@@ -40,6 +39,19 @@ class NearbyMeAdapter(private var mClickListener: OnItemClickListener, private v
      */
     fun selectLast(selectIndex: Int = 0) {
         mSelectIndex = selectIndex
+        mClearFocus = false
+        notifyItemChanged(selectIndex)
+    }
+
+    fun fromSideViewBack(selectIndex: Int) {
+        mSideViewIsShow = false
+        mSelectIndex = selectIndex
+        mClearFocus = false
+        notifyDataSetChanged()
+    }
+
+    fun clearFocus(selectIndex: Int) {
+        mClearFocus = true
         notifyItemChanged(selectIndex)
     }
 
@@ -64,24 +76,29 @@ class NearbyMeAdapter(private var mClickListener: OnItemClickListener, private v
             holder.itemView.onFocusChangeListener = null
             holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.white30))
         } else {
-            holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
-            holder.itemView.setTag(TAG_ITEM, item)
-            holder.itemView.setTag(TAG_INDEX, position)
-
-            holder.itemView.setOnClickListener { mClickListener.onClick(holder.itemView) }
-            holder.itemView.setOnFocusChangeListener { v, hasFocus ->
-                mFocusListener.onFoucsed(holder.itemView)
-                if (hasFocus) {
-                    holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.colorYellow))
-                } else {
-                    holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
-                }
-            }
-
-            if (mSelectIndex == position) {
-                holder.itemView.requestFocus()
-            } else {
+            if (mClearFocus) {
+                holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
                 holder.itemView.clearFocus()
+            } else {
+                holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
+                holder.itemView.setTag(TAG_ITEM, item)
+                holder.itemView.setTag(TAG_INDEX, position)
+
+                holder.itemView.setOnClickListener { mClickListener.onClick(holder.itemView) }
+                holder.itemView.setOnFocusChangeListener { v, hasFocus ->
+                    mFocusListener.onFoucsed(holder.itemView)
+                    if (hasFocus) {
+                        holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.colorYellow))
+                    } else {
+                        holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
+                    }
+                }
+
+                if (mSelectIndex == position) {
+                    holder.itemView.requestFocus()
+                } else {
+                    holder.itemView.clearFocus()
+                }
             }
         }
     }

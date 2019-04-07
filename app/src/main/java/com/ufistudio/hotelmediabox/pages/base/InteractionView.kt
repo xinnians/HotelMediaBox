@@ -1,8 +1,10 @@
 package com.ufistudio.hotelmediabox.pages.base
 
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.view.KeyEvent
+import com.ufistudio.hotelmediabox.pages.MainActivity
 
 abstract class InteractionView<I : OnPageInteractionListener.Base> : BaseView() {
 
@@ -37,6 +39,13 @@ abstract class InteractionView<I : OnPageInteractionListener.Base> : BaseView() 
     protected fun getInteractionListener(): I = mInteractionListener
 
     override fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        //todo 改成Ian預設好的home鍵key code
+        when(keyCode){
+            KeyEvent.KEYCODE_F1->{
+                activity?.startActivity(Intent(activity,MainActivity::class.java))
+                activity?.finish()
+            }
+        }
         return false
     }
 
