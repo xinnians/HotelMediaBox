@@ -3,6 +3,8 @@ package com.ufistudio.hotelmediabox.pages.home
 import android.app.Application
 import android.arch.lifecycle.MutableLiveData
 import com.google.gson.Gson
+import com.ufistudio.hotelmediabox.MyApplication
+import com.ufistudio.hotelmediabox.helper.TVHelper
 import com.ufistudio.hotelmediabox.repository.Repository
 import com.ufistudio.hotelmediabox.repository.data.Home
 import com.ufistudio.hotelmediabox.repository.data.TVChannel
@@ -23,10 +25,6 @@ class HomeViewModel(
     val initHomeSuccess = MutableLiveData<Home>()
     val initHomeProgress = MutableLiveData<Boolean>()
     val initHomeError = MutableLiveData<Throwable>()
-
-    val initChannelsSuccess = MutableLiveData<ArrayList<TVChannel>>()
-    val initChannelsProgress = MutableLiveData<Boolean>()
-    val initChannelsError = MutableLiveData<Throwable>()
 
     init {
         val json = getJsonObject()
@@ -53,16 +51,8 @@ class HomeViewModel(
         return gson.fromJson(MiscUtils.getJsonFromStorage("home_en.json"), Home::class.java)
     }
 
-    fun initChannels(){
-
-        val jsonObject: Array<TVChannel> =
-            Gson().fromJson(MiscUtils.getJsonFromStorage("channels.json"), Array<TVChannel>::class.java) ?: return
-        compositeDisposable.add(Single.just(jsonObject)
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe { initChannelsProgress.value = true }
-            .doFinally { initChannelsProgress.value = false }
-            .subscribe({ initChannelsSuccess.value = jsonObject.toCollection(ArrayList()) }
-                , { initChannelsError.value = it })
-        )
+    fun getTVHelper(): TVHelper {
+        return getApplication<MyApplication>().getTVHelper()
     }
+
 }

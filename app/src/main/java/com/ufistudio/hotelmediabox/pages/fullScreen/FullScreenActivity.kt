@@ -21,10 +21,16 @@ import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 import android.content.Context.WINDOW_SERVICE
 import android.content.Context
+import android.content.Intent
 import android.view.*
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import kotlinx.android.synthetic.main.activity_fullscreen.*
 import android.view.WindowManager
+import com.bumptech.glide.Glide
+import com.ufistudio.hotelmediabox.helper.TVHelper
+import com.ufistudio.hotelmediabox.pages.MainActivity
+import com.ufistudio.hotelmediabox.utils.FileUtils
+import kotlinx.android.synthetic.main.view_bottom_fullscreen.*
 
 
 class FullScreenActivity : AppCompatActivity() {
@@ -38,6 +44,8 @@ class FullScreenActivity : AppCompatActivity() {
 
     private lateinit var mExoPlayerHelper: ExoPlayerHelper
 
+    private var mTVChannel: TVChannel? = null
+
     companion object {
         private val TAG = FactoryActivity::class.simpleName
     }
@@ -48,13 +56,6 @@ class FullScreenActivity : AppCompatActivity() {
 
         mViewModel = AppInjector.obtainViewModel(this)
 
-        //initChannel
-        mViewModel.initChannelsSuccess.observe(this, Observer { list -> list?.let { initChannelsSuccess(it) } })
-        mViewModel.initChannelsProgress.observe(this, Observer { isProgress ->
-            initChannelsProgress(isProgress ?: false)
-        })
-        mViewModel.initChannelsError.observe(this, Observer { throwable -> throwable?.let { initChannelsError(it) } })
-
         mExoPlayerHelper = ExoPlayerHelper()
 
     }
@@ -62,7 +63,7 @@ class FullScreenActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        mViewModel.initChannels()
+//        mViewModel.initChannels()
         dvbView.holder.addCallback(object : SurfaceHolder.Callback {
             override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
             }
@@ -76,7 +77,35 @@ class FullScreenActivity : AppCompatActivity() {
         })
 
         mExoPlayerHelper.initPlayer(this, videoView)
+    }
 
+    override fun onResume() {
+        super.onResume()
+        mViewModel.getTVHelper().initAVPlayer(TVHelper.SCREEN_TYPE.FULLSCREEN)
+        mViewModel.getTVHelper().playCurrent()?.observeOn(AndroidSchedulers.mainThread())?.subscribe({
+
+            mViewModel.getTVHelper().getCurrentChannel()?.let { tvChannel ->
+                textChannelName?.text = tvChannel.chNum + " " + tvChannel.chName
+                viewLogo?.let { viewLogo ->
+                    Glide.with(this)
+                        .load(FileUtils.getFileFromStorage(tvChannel.chLogo.fileName))
+                        .into(viewLogo)
+                }
+                viewMainLogo?.let { viewLogo ->
+                    Glide.with(this)
+                        .load(FileUtils.getFileFromStorage(tvChannel.chLogo.fileName))
+                        .into(viewLogo)
+                }
+                showInfo()
+
+            }
+
+        }, {})
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mViewModel.getTVHelper().closeAVPlayer()
     }
 
     override fun onStop() {
@@ -84,19 +113,76 @@ class FullScreenActivity : AppCompatActivity() {
         if (mDisposable != null && !mDisposable!!.isDisposed) {
             mDisposable?.dispose()
         }
-        DVBHelper.getDVBPlayer().closePlayer()
+//        DVBHelper.getDVBPlayer().closePlayer()
         mExoPlayerHelper.release()
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         when (keyCode) {
             KeyEvent.KEYCODE_CHANNEL_UP -> {
-                playTv(false)
+//                playTv(false)
 
+                mTVChannel = mViewModel.getTVHelper().chooseUp()
+                textChannelName?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
+                viewLogo?.let { viewLogo ->
+                    Glide.with(this)
+                        .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
+                        .into(viewLogo)
+                }
+                viewMainLogo?.let { viewLogo ->
+                    Glide.with(this)
+                        .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
+                        .into(viewLogo)
+                }
+                setPlayTimer()
+                showInfo()
+
+//                mViewModel.getTVHelper().playUp()?.observeOn(AndroidSchedulers.mainThread())?.subscribe({
+//
+//                    mViewModel.getTVHelper().getCurrentChannel()?.let { tvChannel ->
+//                        textChannelName?.text = tvChannel.chNum + " " + tvChannel.chName
+//                        viewLogo?.let { viewLogo ->
+//                            Glide.with(this)
+//                                .load(FileUtils.getFileFromStorage(tvChannel.chLogo.fileName))
+//                                .into(viewLogo)
+//                        }
+//
+//                    }
+//
+//                }, {})
                 return true
             }
             KeyEvent.KEYCODE_CHANNEL_DOWN -> {
-                playTv(true)
+//                playTv(true)
+
+                mTVChannel = mViewModel.getTVHelper().chooseDown()
+                textChannelName?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
+                viewLogo?.let { viewLogo ->
+                    Glide.with(this)
+                        .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
+                        .into(viewLogo)
+                }
+                viewMainLogo?.let { viewLogo ->
+                    Glide.with(this)
+                        .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
+                        .into(viewLogo)
+                }
+                setPlayTimer()
+                showInfo()
+
+//                mViewModel.getTVHelper().playDown()?.observeOn(AndroidSchedulers.mainThread())?.subscribe({
+//
+//                    mViewModel.getTVHelper().getCurrentChannel()?.let { tvChannel ->
+//                        textChannelName?.text = tvChannel.chNum + " " + tvChannel.chName
+//                        viewLogo?.let { viewLogo ->
+//                            Glide.with(this)
+//                                .load(FileUtils.getFileFromStorage(tvChannel.chLogo.fileName))
+//                                .into(viewLogo)
+//                        }
+//
+//                    }
+//
+//                }, {})
                 return true
             }
 //            KeyEvent.KEYCODE_BACK -> {
@@ -107,59 +193,7 @@ class FullScreenActivity : AppCompatActivity() {
         return super.onKeyDown(keyCode, event)
     }
 
-    private fun initChannelsSuccess(list: ArrayList<TVChannel>) {
-        mChannelList = list
-        playTv("")
-    }
-
-    private fun initChannelsProgress(isProgress: Boolean) {
-        Log.e(TAG, "initChannelsProgress call. isProgress:$isProgress")
-    }
-
-    private fun initChannelsError(throwable: Throwable) {
-        Log.e(TAG, "initChannelsError call. ${throwable.message}")
-    }
-
-    private fun playTv(action: Any) {
-        Log.e(TAG, "[playTV] call action:$action")
-        when (action) {
-            is String -> {
-                mPlayPosition = 0
-                mChannelList?.let { list ->
-                    if (list.size != 0 && list.size >= mPlayPosition)
-                        setPlayTimer(list[mPlayPosition])
-                }
-            }
-            is Boolean -> {
-                if (mChannelList == null || mChannelList?.size ?: 0 <= 0) {
-                    return
-                }
-                if (action) {
-                    if (mPlayPosition > 0) {
-                        mPlayPosition--
-                    } else {
-                        return
-                    }
-                    mChannelList?.let { list ->
-                        if (list.size != 0 && list.size >= mPlayPosition)
-                            setPlayTimer(list[mPlayPosition])
-                    }
-                } else {
-                    if (mPlayPosition < mChannelList?.size?.minus(1) ?: 0) {
-                        mPlayPosition++
-                    } else {
-                        return
-                    }
-                    mChannelList?.let { list ->
-                        if (list.size != 0 && list.size >= mPlayPosition)
-                            setPlayTimer(list[mPlayPosition])
-                    }
-                }
-            }
-        }
-    }
-
-    private fun setPlayTimer(channelInfo: TVChannel) {
+    private fun setPlayTimer() {
         if (mDisposable != null && !mDisposable!!.isDisposed) {
             mDisposable?.dispose()
         }
@@ -169,78 +203,37 @@ class FullScreenActivity : AppCompatActivity() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 {}, { onError -> Log.e(TAG, "error:$onError") }, {
-                    if (channelInfo.chType == "DVBT") {
-
-//                        videoView_frame.visibility = View.GONE
-//                        dvbView.visibility = View.VISIBLE
-                        mExoPlayerHelper.stop()
-                        videoView_frame.visibility = View.GONE
-                        DVBHelper.getDVBPlayer().closePlayer()
-                        DVBHelper.getDVBPlayer().initPlayer(0, 0, 0, 0)//940,536
-
-                        Single.just(true)
-                            .map {
-                                DVBHelper.getDVBPlayer()
-                                    .scanChannel("${channelInfo.chIp.frequency} ${channelInfo.chIp.bandwidth}")
-                            }
-                            .map { DVBHelper.getDVBPlayer().playChannel(channelInfo.chIp.dvbParameter) }
-                            .subscribeOn(Schedulers.io())
-                            .subscribe()
-
-                    } else {
-
-//                        dvbView.visibility = View.GONE
-//                        videoView_frame.visibility = View.VISIBLE
-                        DVBHelper.getDVBPlayer().closePlayer()
-                        videoView_frame.visibility = View.VISIBLE
-                        mExoPlayerHelper.setMp4Source(R.raw.videoplayback, true)
-                        mExoPlayerHelper.play()
-                    }
-
+                    mViewModel.getTVHelper().playCurrent()
+                        ?.subscribe()
                 })
     }
 
-    private fun showInfo(channelInfo: TVChannel) {
+    private fun showInfo() {
+        banner.visibility = View.VISIBLE
+
         if (mDisposableInfoView != null && !mDisposableInfoView!!.isDisposed) {
             mDisposableInfoView?.dispose()
         }
 
-        mDisposableInfoView = Observable.timer(400, TimeUnit.MILLISECONDS)
+        mDisposableInfoView = Observable.timer(7, TimeUnit.SECONDS)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                {
-                    _ ->
+                { _ ->
                 }, { onError -> Log.e(TAG, "error:$onError") }, {
-                    if (channelInfo.chType == "DVBT") {
-
-//                        videoView_frame.visibility = View.GONE
-//                        dvbView.visibility = View.VISIBLE
-                        mExoPlayerHelper.stop()
-                        videoView_frame.visibility = View.GONE
-                        DVBHelper.getDVBPlayer().closePlayer()
-                        DVBHelper.getDVBPlayer().initPlayer(0, 0, 0, 0)//940,536
-
-                        Single.just(true)
-                            .map {
-                                DVBHelper.getDVBPlayer()
-                                    .scanChannel("${channelInfo.chIp.frequency} ${channelInfo.chIp.bandwidth}")
-                            }
-                            .map { DVBHelper.getDVBPlayer().playChannel(channelInfo.chIp.dvbParameter) }
-                            .subscribeOn(Schedulers.io())
-                            .subscribe()
-
-                    } else {
-
-//                        dvbView.visibility = View.GONE
-//                        videoView_frame.visibility = View.VISIBLE
-                        DVBHelper.getDVBPlayer().closePlayer()
-                        videoView_frame.visibility = View.VISIBLE
-                        mExoPlayerHelper.setMp4Source(R.raw.videoplayback, true)
-                        mExoPlayerHelper.play()
-                    }
-
+                    banner.visibility = View.INVISIBLE
                 })
+    }
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+        Log.d(TAG, "keycode = $keyCode  ,event = $event")
+        if(keyCode == 302){
+//            var intent: Intent = Intent(this, FullScreenActivity::class.java)
+//            intent.putExtra("page",Page.HOME)
+            startActivity(Intent(this, MainActivity::class.java))
+            return true
+        }
+        return super.onKeyUp(keyCode, event)
     }
 
 }

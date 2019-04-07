@@ -30,6 +30,8 @@ class DVBTestActivity : AppCompatActivity(), View.OnClickListener, AdapterView.O
 //    lateinit var mBtnDeInitAVPlayer : Button
 //    lateinit var mBtnDeInitDev : Button
 
+    private val TAG:String = DVBTestActivity::class.java.simpleName
+
     var list_of_items = arrayOf(
         "fa1 fa2 4 1",
         "fab fac 4 1",
@@ -67,11 +69,13 @@ class DVBTestActivity : AppCompatActivity(), View.OnClickListener, AdapterView.O
         viewChannelList.onItemSelectedListener = this
 
         btnInitDevice.setOnClickListener(this)
-//        btnInitAVPlayer.setOnClickListener(this)
-        btnPlay.setOnClickListener(this)
-//        btnDeInitAVPlayer.setOnClickListener(this)
-        btnDeInitDevice.setOnClickListener(this)
+        btnInitVO.setOnClickListener(this)
         btnInitAVPlayer.setOnClickListener(this)
+        btnSetChnl.setOnClickListener(this)
+        btnPlay.setOnClickListener(this)
+        btnDeInitAVPlayer.setOnClickListener(this)
+        btnDeInitDevice.setOnClickListener(this)
+
     }
 
 //    vcodec: 0-mpeg2, 1-mpeg4, 4-h264
@@ -82,18 +86,25 @@ class DVBTestActivity : AppCompatActivity(), View.OnClickListener, AdapterView.O
             btnInitDevice.id ->
 //                DVBHelper.getDVBPlayer().initPlayer(600, 600, 0, 0)
                 Single.just(true)
-                    .map { DVBHelper.getDVBPlayer().initPlayer(600, 600, 0, 0) }
-                    .subscribeOn(Schedulers.single())
+                    .map { DVBHelper.getDVBPlayer().initDevice() }
+                    .subscribeOn(Schedulers.io())
+                    .subscribe()
+            btnInitVO.id ->
+                Single.just(true)
+                    .map { DVBHelper.getDVBPlayer().setVO(600, 600, 0, 0) }
+                    .subscribeOn(Schedulers.io())
                     .subscribe()
             btnInitAVPlayer.id -> {
-
-//                jnitest5.setchannel("581000 6000")
-//                var result = DVBHelper.getDVBPlayer().getChannelList("581000 6000")
-//                Log.e("Iantest", result?.toString()?:"null")
+                Single.just(true)
+                    .map { DVBHelper.getDVBPlayer().setAVPlayer() }
+                    .subscribeOn(Schedulers.io())
+                    .subscribe()
+            }
+            btnSetChnl.id -> {
                 Single.just(true)
                     .map { DVBHelper.getDVBPlayer().scanChannel("581000 6000") }
-                    .subscribeOn(Schedulers.single())
-                    .subscribe()
+                    .subscribeOn(Schedulers.io())
+                    .subscribe({result -> Log.e(TAG,"[scanChannel result] = $result")},{})
             }
             btnPlay.id ->
                 DVBHelper.getDVBPlayer().playChannel("fa1 fa2 4 1")
@@ -101,7 +112,17 @@ class DVBTestActivity : AppCompatActivity(), View.OnClickListener, AdapterView.O
 //                .subscribeOn(Schedulers.io())
 //                .observeOn(Schedulers.io())
 //                .subscribe()
-            btnDeInitDevice.id -> DVBHelper.getDVBPlayer().closePlayer()
+            btnDeInitAVPlayer.id ->
+                Single.just(true)
+                    .map { DVBHelper.getDVBPlayer().releaseAVPlayer() }
+                    .subscribeOn(Schedulers.io())
+                    .subscribe()
+            btnDeInitDevice.id -> {
+                Single.just(true)
+                    .map { DVBHelper.getDVBPlayer().releaseDev() }
+                    .subscribeOn(Schedulers.io())
+                    .subscribe()
+            }
         }
     }
 
@@ -114,26 +135,40 @@ class DVBTestActivity : AppCompatActivity(), View.OnClickListener, AdapterView.O
 //                .subscribeOn(Schedulers.io())
 //                .observeOn(Schedulers.io())
 //                .subscribe()
-            1 -> Single.just(DVBHelper.getDVBPlayer().scanChannel("581000 6000"))
-                .map { DVBHelper.getDVBPlayer().play(list_of_items[1]) }
+            1 -> Single.just(true)
+                .map { DVBHelper.getDVBPlayer().scanChannel("581000 6000") }
+                .map { DVBHelper.getDVBPlayer().playChannel(list_of_items[1]) }
+                .subscribeOn(Schedulers.io())
                 .subscribe()
-            2 -> Single.just(DVBHelper.getDVBPlayer().scanChannel("581000 6000"))
-                .map { DVBHelper.getDVBPlayer().play(list_of_items[2]) }
+            2 -> Single.just(true)
+                .map { DVBHelper.getDVBPlayer().scanChannel("581000 6000") }
+                .map { DVBHelper.getDVBPlayer().playChannel(list_of_items[2]) }
+                .subscribeOn(Schedulers.io())
                 .subscribe()
-            3 -> Single.just(DVBHelper.getDVBPlayer().scanChannel("581000 6000"))
-                .map { DVBHelper.getDVBPlayer().play(list_of_items[3]) }
+            3 -> Single.just(true)
+                .map { DVBHelper.getDVBPlayer().scanChannel("581000 6000") }
+                .map { DVBHelper.getDVBPlayer().playChannel(list_of_items[3]) }
+                .subscribeOn(Schedulers.io())
                 .subscribe()
-            4 -> Single.just(DVBHelper.getDVBPlayer().scanChannel("533000 6000"))
-                .map { DVBHelper.getDVBPlayer().play(list_of_items[4]) }
+            4 -> Single.just(true)
+                .map { DVBHelper.getDVBPlayer().scanChannel("533000 6000") }
+                .map { DVBHelper.getDVBPlayer().playChannel(list_of_items[4]) }
+                .subscribeOn(Schedulers.io())
                 .subscribe()
-            5 -> Single.just(DVBHelper.getDVBPlayer().scanChannel("533000 6000"))
-                .map { DVBHelper.getDVBPlayer().play(list_of_items[5]) }
+            5 -> Single.just(true)
+                .map { DVBHelper.getDVBPlayer().scanChannel("533000 6000") }
+                .map { DVBHelper.getDVBPlayer().playChannel(list_of_items[5]) }
+                .subscribeOn(Schedulers.io())
                 .subscribe()
-            6 -> Single.just(DVBHelper.getDVBPlayer().scanChannel("533000 6000"))
-                .map { DVBHelper.getDVBPlayer().play(list_of_items[6]) }
+            6 -> Single.just(true)
+                .map { DVBHelper.getDVBPlayer().scanChannel("533000 6000") }
+                .map { DVBHelper.getDVBPlayer().playChannel(list_of_items[6]) }
+                .subscribeOn(Schedulers.io())
                 .subscribe()
-            7 -> Single.just(DVBHelper.getDVBPlayer().scanChannel("533000 6000"))
-                .map { DVBHelper.getDVBPlayer().play(list_of_items[7]) }
+            7 -> Single.just(true)
+                .map { DVBHelper.getDVBPlayer().scanChannel("533000 6000") }
+                .map { DVBHelper.getDVBPlayer().playChannel(list_of_items[7]) }
+                .subscribeOn(Schedulers.io())
                 .subscribe()
         }
     }

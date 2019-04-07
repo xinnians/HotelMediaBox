@@ -20,6 +20,7 @@ class ChannelListAdapter :
     private var mGenreType: String = ""
     private lateinit var mContext: Context
     private var mSelectPosition = 0 //目前被選到的position
+    private var mCurrentTVChannel: TVChannel? = null
     private var mIsFocus = false
 
     interface OnItemClickListener {
@@ -107,7 +108,8 @@ class ChannelListAdapter :
         }
         mSelectPosition -= 1
         notifyDataSetChanged()
-        return mFilterItems?.get(mSelectPosition)
+        mCurrentTVChannel = mFilterItems?.get(mSelectPosition)
+        return mCurrentTVChannel
     }
 
     fun selectUPItem(): TVChannel? {
@@ -119,7 +121,8 @@ class ChannelListAdapter :
         }
         mSelectPosition++
         notifyDataSetChanged()
-        return mFilterItems?.get(mSelectPosition)
+        mCurrentTVChannel = mFilterItems?.get(mSelectPosition)
+        return mCurrentTVChannel
     }
 
     fun getCurrentTVChannel(): TVChannel? {
@@ -131,6 +134,17 @@ class ChannelListAdapter :
         }else{
             return null
         }
+    }
+
+    fun setCurrentTVChannel(channel:TVChannel){
+        if(mFilterItems?.contains(channel) == true){
+            mCurrentTVChannel = channel
+            mSelectPosition = mFilterItems?.indexOf(mCurrentTVChannel!!)?:0
+        }else{
+            mCurrentTVChannel = null
+            mSelectPosition = 0
+        }
+
     }
 
     fun getSelectPosition(): Int{
@@ -152,7 +166,11 @@ class ChannelListAdapter :
      * 清楚上一個被選擇到的狀態
      */
     fun clearSelectPosition() {
-        mSelectPosition = 0
+        if(mFilterItems?.contains(mCurrentTVChannel) == true){
+            mSelectPosition = mFilterItems?.indexOf(mCurrentTVChannel)?:0
+        }else{
+            mSelectPosition = 0
+        }
     }
 
     fun setGenreFilter(genreType: String) {

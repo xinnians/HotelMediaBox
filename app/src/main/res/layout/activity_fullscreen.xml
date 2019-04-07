@@ -47,6 +47,7 @@
             android:id="@+id/banner"
             layout="@layout/view_bottom_fullscreen"
             tools:layout_editor_absoluteX="0dp"
-            tools:layout_editor_absoluteY="0dp" />
+            tools:layout_editor_absoluteY="0dp"
+            android:visibility="invisible"/>
 
 </android.support.constraint.ConstraintLayout>

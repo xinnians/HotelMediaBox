@@ -15,8 +15,8 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
-        DVBHelper.getDVBPlayer().initPlayer(0,0,0,0)
-        DVBHelper.getDVBPlayer().closePlayer()
+//        DVBHelper.getDVBPlayer().initPlayer(0,0,0,0)
+//        DVBHelper.getDVBPlayer().closePlayer()
     }
 
     override fun onStart() {

@@ -11,9 +11,9 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginEnd="@dimen/_20sdp"
-        app:layout_constraintBottom_toBottomOf="@+id/dvbView"
+        app:layout_constraintBottom_toBottomOf="@+id/videoView_frame"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/dvbView"
+        app:layout_constraintStart_toEndOf="@+id/videoView_frame"
         app:layout_constraintTop_toTopOf="parent"
     android:visibility="invisible"/>
 
@@ -22,9 +22,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/_45sdp"
+        android:layout_marginEnd="@dimen/_24sdp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/view_wedge"
-        app:layout_constraintStart_toStartOf="@+id/dvbView" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/videoView_frame" />
 
     <include
         layout="@layout/view_bottom_info"
@@ -61,14 +62,22 @@
             app:resize_mode="fill"
             app:rewind_increment="30000"
             app:use_controller="false" />
+
+        <SurfaceView
+                android:id="@+id/dvbView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="@dimen/_6sdp"
+                android:layout_marginTop="@dimen/_6sdp"
+                android:layout_marginEnd="@dimen/_6sdp"
+                android:layout_marginBottom="@dimen/_6sdp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0"/>
     </android.support.constraint.ConstraintLayout>
 
-    <SurfaceView
-            android:id="@+id/dvbView"
-            android:layout_width="@dimen/_243sdp"
-            android:layout_height="@dimen/_141sdp"
-            android:layout_marginStart="@dimen/_24sdp"
-            android:layout_marginTop="@dimen/_14sdp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+
 </android.support.constraint.ConstraintLayout>

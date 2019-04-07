@@ -10,11 +10,13 @@ import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.*
 import android.view.View.*
+import com.bumptech.glide.Glide
 import com.ufistudio.hotelmediabox.AppInjector
 import com.ufistudio.hotelmediabox.DVBHelper
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.constants.Page
 import com.ufistudio.hotelmediabox.helper.ExoPlayerHelper
+import com.ufistudio.hotelmediabox.helper.TVHelper
 import com.ufistudio.hotelmediabox.pages.base.InteractionView
 import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.pages.fullScreen.FullScreenActivity
@@ -26,7 +28,9 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import com.ufistudio.hotelmediabox.pages.home.HomeFeatureEnum
 import com.ufistudio.hotelmediabox.repository.data.HomeIcons
+import com.ufistudio.hotelmediabox.utils.FileUtils
 import kotlinx.android.synthetic.main.fragment_channel.*
+import kotlinx.android.synthetic.main.view_bottom_fullscreen.*
 import java.util.concurrent.TimeUnit
 
 class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
@@ -51,12 +55,12 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
         super.onCreate(savedInstanceState)
         mViewModel = AppInjector.obtainViewModel(this)
 
-        //initChannel
-        mViewModel.initChannelsSuccess.observe(this, Observer { list -> list?.let { initChannelsSuccess(it) } })
-        mViewModel.initChannelsProgress.observe(this, Observer { isProgress ->
-            initChannelsProgress(isProgress ?: false)
-        })
-        mViewModel.initChannelsError.observe(this, Observer { throwable -> throwable?.let { initChannelsError(it) } })
+//        //initChannel
+//        mViewModel.initChannelsSuccess.observe(this, Observer { list -> list?.let { initChannelsSuccess(it) } })
+//        mViewModel.initChannelsProgress.observe(this, Observer { isProgress ->
+//            initChannelsProgress(isProgress ?: false)
+//        })
+//        mViewModel.initChannelsError.observe(this, Observer { throwable -> throwable?.let { initChannelsError(it) } })
 
         mExoPlayerHelper = ExoPlayerHelper()
 
@@ -79,12 +83,28 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
     override fun onStart() {
         super.onStart()
 
-        mViewModel.initChannels()
+//        mViewModel.initChannels()
+
+        mChannelListAdapter.setItems(mViewModel.getTVHelper().getChannelList())
+//        switchFocus(false)
     }
 
     override fun onResume() {
         super.onResume()
         mExoPlayerHelper.initPlayer(context, videoView)
+        mViewModel.getTVHelper().initAVPlayer(TVHelper.SCREEN_TYPE.CHANNELPAGE)
+        mViewModel.getTVHelper().getCurrentChannel()?.let { mChannelListAdapter.setCurrentTVChannel(it) }
+        switchFocus(false)
+//        mViewModel.getTVHelper().playCurrent()?.observeOn(AndroidSchedulers.mainThread())?.subscribe({
+//            mViewModel.getTVHelper().getCurrentChannel()?.let { tvChannel ->
+//                textChannelName?.text = tvChannel.chNum + ": " + tvChannel.chName + " (${tvChannel.chIp.frequency}mhz,${tvChannel.chIp.dvbParameter})"
+//            }
+//        }, {})
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mViewModel.getTVHelper().closeAVPlayer()
     }
 
     override fun onStop() {
@@ -92,7 +112,7 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
             mDisposable?.dispose()
         }
         mExoPlayerHelper.release()
-        DVBHelper.getDVBPlayer().closePlayer()
+//        DVBHelper.getDVBPlayer().closePlayer()
         super.onStop()
     }
 
@@ -144,34 +164,11 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
             .subscribe(
                 {}, { onError -> Log.e(TAG, "error:$onError") }, {
 
-                    var name = channelInfo.chNum+": "+channelInfo.chName+" (${channelInfo.chIp.frequency}mhz,${channelInfo.chIp.dvbParameter})"
-
-                    text_channel_info.text = name
-
                     if (channelInfo.chType == "DVBT") {
 
-//                        videoView_frame.visibility = View.GONE
-//                        dvbView.visibility = View.VISIBLE
-                        mExoPlayerHelper.stop()
-                        videoView_frame.visibility = View.GONE
-                        DVBHelper.getDVBPlayer().closePlayer()
-                        DVBHelper.getDVBPlayer().initPlayer(980, 555, 857, 233)//1836,784
-
-                        Single.just(true)
-                            .map {
-                                DVBHelper.getDVBPlayer()
-                                    .scanChannel("${channelInfo.chIp.frequency} ${channelInfo.chIp.bandwidth}")
-                            }
-                            .map { DVBHelper.getDVBPlayer().playChannel(channelInfo.chIp.dvbParameter) }
-                            .subscribeOn(Schedulers.io())
-                            .subscribe()
+                        mViewModel.getTVHelper().play(channelInfo).subscribe()
 
                     } else {
-
-//                        dvbView.visibility = View.GONE
-//                        videoView_frame.visibility = View.VISIBLE
-                        DVBHelper.getDVBPlayer().closePlayer()
-                        videoView_frame.visibility = View.VISIBLE
                         mExoPlayerHelper.setMp4Source(R.raw.videoplayback, true)
                         mExoPlayerHelper.play()
                     }
@@ -189,7 +186,12 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
         mGenreAdapter.setFocus(isGenre)
         mChannelListAdapter.setFocus(!isGenre)
         if (!isGenre) {
-            mChannelListAdapter.getCurrentTVChannel()?.let { channel -> onChannelSelectListener(channel) }
+            mChannelListAdapter.getCurrentTVChannel()?.let { channel ->
+                var name =
+                    channel.chNum + ": " + channel.chName + " (${channel.chIp.frequency}mhz,${channel.chIp.dvbParameter})"
+                text_channel_info.text = name
+                onChannelSelectListener(channel)
+            }
         }
     }
 
@@ -200,17 +202,27 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
             KeyEvent.KEYCODE_DPAD_UP -> {
                 if (mGenreFocus) {
                     mChannelListAdapter.setGenreFilter(mGenreAdapter.selectDown().name)
-                } else if(mListFocus){
-                    mChannelListAdapter.selectDownItem()?.let { channel -> onChannelSelectListener(channel) }
+                } else if (mListFocus) {
                     view_channel_list.smoothScrollToPosition(mChannelListAdapter.getSelectPosition())
+                    mChannelListAdapter.selectDownItem()?.let { channel ->
+                        var name =
+                            channel.chNum + ": " + channel.chName + " (${channel.chIp.frequency}mhz,${channel.chIp.dvbParameter})"
+                        text_channel_info.text = name
+                        onChannelSelectListener(channel) }
+
                 }
             }
             KeyEvent.KEYCODE_DPAD_DOWN -> {
                 if (mGenreFocus) {
                     mChannelListAdapter.setGenreFilter(mGenreAdapter.selectUp().name)
-                } else if(mListFocus){
-                    mChannelListAdapter.selectUPItem()?.let { channel -> onChannelSelectListener(channel) }
+                } else if (mListFocus) {
                     view_channel_list.smoothScrollToPosition(mChannelListAdapter.getSelectPosition())
+                    mChannelListAdapter.selectUPItem()?.let { channel ->
+                        var name =
+                            channel.chNum + ": " + channel.chName + " (${channel.chIp.frequency}mhz,${channel.chIp.dvbParameter})"
+                        text_channel_info.text = name
+                        onChannelSelectListener(channel) }
+
                 }
             }
             KeyEvent.KEYCODE_DPAD_LEFT -> {
@@ -220,8 +232,8 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
                 switchFocus(false)
             }
             KeyEvent.KEYCODE_DPAD_CENTER -> {
-                if(!mGenreFocus){
-                    mChannelListAdapter.getCurrentTVChannel()?.let { channel -> startActivity(Intent(context, FullScreenActivity::class.java)) }
+                if (!mGenreFocus) {
+                    startActivity(Intent(context, FullScreenActivity::class.java))
                 }
             }
 
