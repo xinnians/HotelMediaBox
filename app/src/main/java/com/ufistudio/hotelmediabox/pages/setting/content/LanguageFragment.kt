@@ -61,17 +61,6 @@ class LanguageFragment : InteractionView<OnPageInteractionListener.Primary>(), O
         }
     }
 
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        Log.d("neo ", "onActivityCreated ")
-        if (savedInstanceState != null) {
-            mData = savedInstanceState.getParcelable<SettingContent>(TAG_SETTING)
-            mConfigData = savedInstanceState.getParcelable<Config>(TAG_CONFIG)
-            mCurrentIndex = savedInstanceState.getInt(TAG_CURRENT_INDEX)
-        }
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
         return inflater.inflate(R.layout.view_langauge_setting, container, false)

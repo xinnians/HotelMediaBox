@@ -11,6 +11,7 @@ import com.ufistudio.hotelmediabox.pages.nearby.NearbyMeFragment
 import com.ufistudio.hotelmediabox.pages.nearby.template.FoodFragment
 import com.ufistudio.hotelmediabox.pages.nearby.template.ShoppingFragment
 import com.ufistudio.hotelmediabox.pages.roomService.RoomServiceFragment
+import com.ufistudio.hotelmediabox.pages.roomService.template.TemplateType1Fragment
 import com.ufistudio.hotelmediabox.pages.setting.SettingFragment
 import com.ufistudio.hotelmediabox.pages.setting.content.LanguageFragment
 import com.ufistudio.hotelmediabox.pages.setting.content.UserGuideFragment

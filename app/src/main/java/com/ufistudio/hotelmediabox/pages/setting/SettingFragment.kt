@@ -31,6 +31,7 @@ class SettingFragment : InteractionView<OnPageInteractionListener.Primary>(), Vi
     private var mHomeIcons: ArrayList<HomeIcons>? = null //SideView List
     private var mCurrentSideIndex: Int = -1 //當前頁面side view index
     private var mCurrentCategoryIndex: Int = 0 //當前頁面category index
+    private var mTextBackTitle: String = ""
 
     private var mRendered: Boolean = false
     private var mSideViewFocus: Boolean = false
@@ -59,7 +60,8 @@ class SettingFragment : InteractionView<OnPageInteractionListener.Primary>(), Vi
         if (mHomeIcons != null) {
             for (i in 0 until mHomeIcons!!.size) {
                 mCurrentSideIndex++
-                if (mHomeIcons!![i].name == HomeFeatureEnum.SETTING.tag) {
+                if (mHomeIcons!![i].id == HomeFeatureEnum.SETTING.id) {
+                    mTextBackTitle = mHomeIcons!![i].name
                     break
                 }
                 if (mHomeIcons!![i].enable == 0) {
@@ -144,7 +146,7 @@ class SettingFragment : InteractionView<OnPageInteractionListener.Primary>(), Vi
                 TAG_USER_GUIDE -> {
                     val bundle: Bundle = Bundle()
                     bundle.putParcelable(Page.ARG_BUNDLE, category.contents)
-                    getInteractionListener().switchPage(R.id.fragment_sub_content, Page.USER_GUIDE, bundle, false, false)
+                    getInteractionListener().switchPage(R.id.fragment_sub_content, Page.USER_GUIDE, bundle, true, false)
                 }
             }
         }
@@ -197,6 +199,7 @@ class SettingFragment : InteractionView<OnPageInteractionListener.Primary>(), Vi
     }
 
     private fun renderView() {
+        text_back.text = mTextBackTitle
         if (!mRendered && mData?.categories != null) {
             mRendered = true
             mCategoryFocus = true

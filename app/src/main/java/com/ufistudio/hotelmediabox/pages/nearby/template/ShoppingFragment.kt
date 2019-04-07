@@ -71,10 +71,6 @@ class ShoppingFragment : InteractionView<OnPageInteractionListener.Primary>(), O
         saveState(outState)
     }
 
-    override fun onFragmentToFragmentKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        return super.onFragmentToFragmentKeyDown(keyCode, event)
-    }
-
     override fun onPageScrollStateChanged(state: Int) {
     }
 

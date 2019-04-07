@@ -26,10 +26,14 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
         OnItemFocusListener, ViewModelsCallback {
     private lateinit var mViewModel: HotelFacilitiesViewModel
     private var mAdapter: HotelFacilitiesAdapter = HotelFacilitiesAdapter(this, this)
-    private var mInSubContent: Boolean = false //判斷目前focus是否在右邊的view
-    private var mLastSelectIndex: Int = 0 //上一次List的選擇
+    private var mCurrentCategoryIndex: Int = 0 //當前頁面category index
     private var mCurrentSideIndex: Int = -1 //當前頁面side view index
     private var mIsRendered: Boolean = false //判斷是否已經塞資料
+    private var mTextBackTitle: String = ""
+
+    private var mSideViewFocus: Boolean = false
+    private var mCategoryFocus: Boolean = false
+    private var mContentFocus: Boolean = false //判斷目前focus是否在右邊的view
 
     private var mData: HotelFacilities? = null
     private var mHomeIcons: ArrayList<HomeIcons>? = null //SideView List
@@ -55,7 +59,8 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
         if (mHomeIcons != null) {
             for (i in 0 until mHomeIcons!!.size) {
                 mCurrentSideIndex++
-                if (mHomeIcons!![i].name == HomeFeatureEnum.FACILITIES.tag) {
+                if (mHomeIcons!![i].id == HomeFeatureEnum.FACILITIES.id) {
+                    mTextBackTitle = mHomeIcons!![i].name
                     break
                 }
                 if (mHomeIcons!![i].enable == 0) {
@@ -72,6 +77,9 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        recyclerView_service.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        recyclerView_service.adapter = mAdapter
+
         displaySideView(false)
         sideView.setAdapterList(mHomeIcons)
         sideView.setInteractionListener(getInteractionListener())
@@ -79,10 +87,7 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
 
     override fun onStart() {
         super.onStart()
-        recyclerView_service.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        recyclerView_service.adapter = mAdapter
         renderView()
-        mAdapter.selectLast(mLastSelectIndex)
     }
 
     override fun onDestroy() {
@@ -90,43 +95,51 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
     }
 
     override fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        when (keyCode) {
-            KeyEvent.KEYCODE_DPAD_DOWN,
-            KeyEvent.KEYCODE_DPAD_UP -> {
-                if (mInSubContent) {
-                    return true
-                } else {
-
+        if (mContentFocus) {
+            if (getInteractionListener().getOnKeyListener() != null && getInteractionListener().getOnKeyListener()?.onKeyPress(keyCode, event)!!) {
+                when (keyCode) {
+                    KeyEvent.KEYCODE_BACK -> {
+                        mAdapter.selectLast(mCurrentCategoryIndex)
+                        mCategoryFocus = true
+                        mContentFocus = false
+                    }
                 }
+                return true
             }
-            KeyEvent.KEYCODE_DPAD_RIGHT -> {
-                if (sideView.visibility == View.VISIBLE) {
-                    displaySideView(false)
-                    if (!mInSubContent) {
-                        mAdapter.sideViewIsShow(false)
-                        mAdapter.selectLast(mLastSelectIndex)
+        } else {
+            when (keyCode) {
+                KeyEvent.KEYCODE_DPAD_DOWN,
+                KeyEvent.KEYCODE_DPAD_UP -> {
+                    if (mContentFocus) {
+                        return true
+                    } else {
+
+                    }
+                }
+                KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                    if (!sideView.isShown && mCategoryFocus) {
+                        mAdapter.clearFocus(mCurrentCategoryIndex)
+                        mCategoryFocus = false
+                        mContentFocus = true
+                        if (getInteractionListener().getOnKeyListener() != null) {
+                            getInteractionListener().setFragmentCacheData(true)
+                            getInteractionListener().getOnKeyListener()?.onKeyPress(keyCode, event)!!
+                        }
+                    }
+                    return true
+                }
+                KeyEvent.KEYCODE_DPAD_LEFT -> {
+                    if (mContentFocus) {
                         return true
                     }
-                } else {
-                    mInSubContent = true
+                    mAdapter.selectLast()
                 }
-                return false
-            }
-            KeyEvent.KEYCODE_DPAD_LEFT -> {
-                if (mInSubContent) {
-                    return true
-                }
-                mAdapter.selectLast()
-            }
-            KeyEvent.KEYCODE_BACK -> {
-                if (mInSubContent) {
-                    mInSubContent = false
-                    mAdapter.selectLast(mLastSelectIndex)
-                    return true
-                }
-                if (sideView.visibility == View.GONE) {
-                    displaySideView(true)
-                    mAdapter.sideViewIsShow(true)
+                KeyEvent.KEYCODE_BACK -> {
+                    if (sideView.isShown) {
+                        displaySideView(false)
+                    } else {
+                        displaySideView(true)
+                    }
                     return true
                 }
             }
@@ -144,12 +157,16 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
             sideView.visibility = View.VISIBLE
             layout_back.visibility = View.GONE
             view_line.visibility = View.VISIBLE
-            mAdapter.selectLast(-1)
+            mAdapter.sideViewIsShow(true)
+            mCategoryFocus = false
+            sideView.scrollToPosition(mCurrentSideIndex)
             sideView.setLastPosition(mCurrentSideIndex)
         } else {
             sideView.visibility = View.GONE
             layout_back.visibility = View.VISIBLE
             view_line.visibility = View.GONE
+            mAdapter.fromSideViewBack(mCurrentCategoryIndex)
+            mCategoryFocus = true
         }
     }
 
@@ -157,9 +174,12 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
      * 塞資料
      */
     private fun renderView() {
+        text_back.text = mTextBackTitle
         if (!mIsRendered) {
             if (mData?.categories != null) {
                 mIsRendered = true
+                mCategoryFocus = true
+                mAdapter.selectLast(mCurrentCategoryIndex)
                 mAdapter.setData(mData?.categories!!)
             }
         }
@@ -169,18 +189,21 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
     }
 
     override fun onFoucsed(view: View?) {
+        if (!mCategoryFocus) {
+            return
+        }
         val item = view?.getTag(HotelFacilitiesAdapter.TAG_ITEM) as HotelFacilitiesCategories
         val bundle = Bundle()
-        mLastSelectIndex = view.getTag(HotelFacilitiesAdapter.TAG_INDEX) as Int
         bundle.putParcelable(Page.ARG_BUNDLE, item)
-        if (!mInSubContent) {
-            getInteractionListener().switchPage(R.id.fragment_sub_content, Page.HOTEL_FACILITIES_CONTENT, bundle, false, false, true)
-        }
+        mCurrentCategoryIndex = view.getTag(HotelFacilitiesAdapter.TAG_INDEX) as Int
+        getInteractionListener().switchPage(R.id.fragment_sub_content, Page.HOTEL_FACILITIES_CONTENT, bundle, true, false, true)
     }
 
     override fun onSuccess(it: Any?) {
-        mData = it as HotelFacilities
-        renderView()
+        if (it != null) {
+            mData = it as HotelFacilities
+            renderView()
+        }
     }
 
     override fun onError(t: Throwable?) {

@@ -60,7 +60,7 @@ class NearbyMeFragment : InteractionView<OnPageInteractionListener.Primary>(), O
         if (mHomeIcons != null) {
             for (i in 0 until mHomeIcons!!.size) {
                 mCurrentSideIndex++
-                if (mHomeIcons!![i].name == HomeFeatureEnum.NEAR_BY.tag) {
+                if (mHomeIcons!![i].id == HomeFeatureEnum.NEAR_BY.id) {
                     mTextBackTitle = mHomeIcons!![i].name
                     break
                 }
@@ -147,7 +147,6 @@ class NearbyMeFragment : InteractionView<OnPageInteractionListener.Primary>(), O
             mAdapter.sideViewIsShow(true)
             mCategoryFocus = false
             mInSubContent = false
-            Log.d("neo", "mcurrent side = $mCurrentSideIndex")
             sideView.scrollToPosition(mCurrentSideIndex)
             sideView.setLastPosition(mCurrentSideIndex)
         } else {

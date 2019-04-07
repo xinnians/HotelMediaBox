@@ -27,11 +27,14 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
     private lateinit var mViewModel: RoomServiceViewModel
     private var mAdapter: RoomServiceAdapter = RoomServiceAdapter(this, this)
     private var mInSubContent: Boolean = false //判斷目前focus是否在右邊的view
-    private var mLastSelectIndex: Int = 0 //上一次List的選擇
+    //    private var mLastSelectIndex: Int = 0 //上一次List的選擇
     private var mCurrentSideIndex: Int = -1 //當前SideView index
+    private var mCurrentCategoryIndex: Int = 0 //當前頁面category index
     private var mData: RoomServices? = null
     private var mHomeIcons: ArrayList<HomeIcons>? = null //SideView List
     private var mIsRendered: Boolean = false //判斷是否已經塞資料
+    private var mCategoryFocus: Boolean = false
+    private var mTextBackTitle: String = ""
 
 
     companion object {
@@ -54,7 +57,8 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
         if (mHomeIcons != null) {
             for (i in 0 until mHomeIcons!!.size) {
                 mCurrentSideIndex++
-                if (mHomeIcons!![i].name == HomeFeatureEnum.ROOM_SERVICE.tag) {
+                if (mHomeIcons!![i].id == HomeFeatureEnum.ROOM_SERVICE.id) {
+                    mTextBackTitle = mHomeIcons!![i].name
                     break
                 }
                 if (mHomeIcons!![i].enable == 0) {
@@ -71,6 +75,9 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        recyclerView_service.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        recyclerView_service.adapter = mAdapter
+
         displaySideView(false)
         sideView.setAdapterList(mHomeIcons)
         sideView.setInteractionListener(getInteractionListener())
@@ -78,10 +85,7 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
 
     override fun onStart() {
         super.onStart()
-        recyclerView_service.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        recyclerView_service.adapter = mAdapter
         renderView()
-        mAdapter.selectLast(mLastSelectIndex)
     }
 
     override fun onDestroy() {
@@ -89,35 +93,40 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
     }
 
     override fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        when (keyCode) {
-            KeyEvent.KEYCODE_DPAD_RIGHT -> {
-                if (sideView.visibility == View.VISIBLE) {
-                    displaySideView(false)
-                    if (!mInSubContent) {
-                        mAdapter.sideViewIsShow(false)
-                        mAdapter.selectLast(mLastSelectIndex)
-                        return true
+        if (mInSubContent) {
+            if (getInteractionListener().getOnKeyListener() != null && getInteractionListener().getOnKeyListener()?.onKeyPress(keyCode, event)!!) {
+                when (keyCode) {
+                    KeyEvent.KEYCODE_BACK -> {
+                        mAdapter.selectLast(mCurrentCategoryIndex)
+                        mCategoryFocus = true
+                        mInSubContent = false
                     }
-                } else {
-                    mInSubContent = true
                 }
-                return false
+                return true
             }
-            KeyEvent.KEYCODE_DPAD_LEFT -> {
-                if (mInSubContent) {
+        } else {
+            when (keyCode) {
+                KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                    if (!sideView.isShown && mCategoryFocus) {
+                        mAdapter.clearFocus(mCurrentCategoryIndex)
+                        mCategoryFocus = false
+                        mInSubContent = true
+                        if (getInteractionListener().getOnKeyListener() != null) {
+                            getInteractionListener().setFragmentCacheData(true)
+                            getInteractionListener().getOnKeyListener()?.onKeyPress(keyCode, event)!!
+                        }
+                    }
                     return true
                 }
-                mAdapter.selectLast()
-            }
-            KeyEvent.KEYCODE_BACK -> {
-                if (mInSubContent) {
-                    mInSubContent = false
-                    mAdapter.selectLast(mLastSelectIndex)
+                KeyEvent.KEYCODE_DPAD_LEFT -> {
                     return true
                 }
-                if (sideView.visibility == View.GONE) {
-                    displaySideView(true)
-                    mAdapter.sideViewIsShow(true)
+                KeyEvent.KEYCODE_BACK -> {
+                    if (sideView.isShown) {
+                        displaySideView(false)
+                    } else {
+                        displaySideView(true)
+                    }
                     return true
                 }
             }
@@ -135,12 +144,17 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
             sideView.visibility = View.VISIBLE
             layout_back.visibility = View.GONE
             view_line.visibility = View.VISIBLE
-            mAdapter.selectLast(-1)
+            mAdapter.sideViewIsShow(true)
+            mCategoryFocus = false
+            mInSubContent = false
+            sideView.scrollToPosition(mCurrentSideIndex)
             sideView.setLastPosition(mCurrentSideIndex)
         } else {
             sideView.visibility = View.GONE
             layout_back.visibility = View.VISIBLE
             view_line.visibility = View.GONE
+            mAdapter.fromSideViewBack(mCurrentCategoryIndex)
+            mCategoryFocus = true
         }
     }
 
@@ -148,9 +162,12 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
      * 塞資料
      */
     private fun renderView() {
+        text_back.text = mTextBackTitle
         if (!mIsRendered) {
             if (mData?.categories != null) {
                 mIsRendered = true
+                mCategoryFocus = true
+                mAdapter.selectLast(mCurrentCategoryIndex)
                 mAdapter.setData(mData?.categories!!)
             }
         }
@@ -161,13 +178,14 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
 
 
     override fun onFoucsed(view: View?) {
+        if (!mCategoryFocus)
+            return
         val item = view?.getTag(RoomServiceAdapter.TAG_ITEM) as RoomServiceCategories
         val bundle = Bundle()
-        mLastSelectIndex = view.getTag(RoomServiceAdapter.TAG_INDEX) as Int
+        mCurrentCategoryIndex = view.getTag(RoomServiceAdapter.TAG_INDEX) as Int
         bundle.putParcelable(Page.ARG_BUNDLE, item)
         val itemData = view.getTag(RoomServiceAdapter.TAG_ITEM) as RoomServiceCategories
-        if (!mInSubContent)
-            getInteractionListener().switchPage(R.id.fragment_sub_content, if (itemData.content_type == 1) Page.ROOM_SERVICE_TYPE1 else Page.ROOM_SERVICE_TYPE2, bundle, false, false)
+        getInteractionListener().switchPage(R.id.fragment_sub_content, if (itemData.content_type == 1) Page.ROOM_SERVICE_TYPE1 else Page.ROOM_SERVICE_TYPE2, bundle, true, false)
     }
 
     override fun onSuccess(it: Any?) {

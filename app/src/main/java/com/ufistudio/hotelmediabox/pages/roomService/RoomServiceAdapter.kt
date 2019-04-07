@@ -18,6 +18,7 @@ class RoomServiceAdapter(private var mClickListener: OnItemClickListener, privat
     private var mSelectIndex: Int = 0
     private var mSideViewIsShow = false
     private var mData: ArrayList<RoomServiceCategories> = ArrayList()
+    private var mClearFocus: Boolean = false
 
     companion object {
         val TAG_ITEM = "com.ufistudio.hotelmediabox.pages.roomService.item".hashCode()
@@ -39,6 +40,7 @@ class RoomServiceAdapter(private var mClickListener: OnItemClickListener, privat
      */
     fun selectLast(selectIndex: Int = 0) {
         mSelectIndex = selectIndex
+        mClearFocus = false
         notifyItemChanged(selectIndex)
     }
 
@@ -58,6 +60,18 @@ class RoomServiceAdapter(private var mClickListener: OnItemClickListener, privat
         notifyDataSetChanged()
     }
 
+    fun clearFocus(selectIndex: Int) {
+        mClearFocus = true
+        notifyItemChanged(selectIndex)
+    }
+
+    fun fromSideViewBack(selectIndex: Int) {
+        mSideViewIsShow = false
+        mSelectIndex = selectIndex
+        mClearFocus = false
+        notifyDataSetChanged()
+    }
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind()
         val item = mData[position]
@@ -68,23 +82,29 @@ class RoomServiceAdapter(private var mClickListener: OnItemClickListener, privat
             holder.itemView.onFocusChangeListener = null
             holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.white30))
         } else {
-            holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
-            holder.itemView.setTag(TAG_ITEM, item)
-            holder.itemView.setTag(TAG_INDEX, position)
 
-            holder.itemView.setOnClickListener { mClickListener.onClick(holder.itemView) }
-            holder.itemView.setOnFocusChangeListener { v, hasFocus ->
-                mFocusListener.onFoucsed(holder.itemView)
-                if (hasFocus) {
-                    holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.colorYellow))
-                } else {
-                    holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
-                }
-            }
-            if (mSelectIndex == position) {
-                holder.itemView.requestFocus()
-            } else {
+            if (mClearFocus) {
+                holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
                 holder.itemView.clearFocus()
+            } else {
+                holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
+                holder.itemView.setTag(TAG_ITEM, item)
+                holder.itemView.setTag(TAG_INDEX, position)
+
+                holder.itemView.setOnClickListener { mClickListener.onClick(holder.itemView) }
+                holder.itemView.setOnFocusChangeListener { v, hasFocus ->
+                    if (hasFocus) {
+                        mFocusListener.onFoucsed(holder.itemView)
+                        holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.colorYellow))
+                    } else {
+                        holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
+                    }
+                }
+                if (mSelectIndex == position) {
+                    holder.itemView.requestFocus()
+                } else {
+                    holder.itemView.clearFocus()
+                }
             }
         }
     }
