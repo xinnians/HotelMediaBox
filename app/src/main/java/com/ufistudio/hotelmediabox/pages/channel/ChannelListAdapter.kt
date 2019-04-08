@@ -174,6 +174,10 @@ class ChannelListAdapter :
     }
 
     fun setGenreFilter(genreType: String) {
+        if(mOriginalItems == null){
+            return
+        }
+
         mGenreType = genreType
         mFilterItems = if (genreType == "All" || genreType == "") {
             ArrayList(mOriginalItems)
