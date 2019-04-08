@@ -1,5 +1,6 @@
 package com.ufistudio.hotelmediabox.pages.base
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.IdRes
 import android.support.v4.app.Fragment
@@ -9,6 +10,8 @@ import android.util.Log
 import android.util.SparseArray
 import android.view.KeyEvent
 import com.ufistudio.hotelmediabox.constants.Page
+import com.ufistudio.hotelmediabox.pages.MainActivity
+import com.ufistudio.hotelmediabox.pages.fullScreen.FullScreenActivity
 import com.ufistudio.hotelmediabox.utils.ActivityUtils
 
 open class PaneViewActivity : BaseActivity(), OnPageInteractionListener.Pane {
@@ -116,6 +119,12 @@ open class PaneViewActivity : BaseActivity(), OnPageInteractionListener.Pane {
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         Log.d(TAG, "keycode = $keyCode  ,event = $event")
+        if(keyCode == 302){
+//            var intent: Intent = Intent(this, FullScreenActivity::class.java)
+//            intent.putExtra("page",Page.HOME)
+            startActivity(Intent(this, MainActivity::class.java))
+            return true
+        }
         val container = mTopFragment.keyAt(0)
         val top = supportFragmentManager.findFragmentById(container)
         if (top is AppBaseView) {

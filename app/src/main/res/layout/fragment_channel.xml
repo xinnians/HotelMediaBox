@@ -156,10 +156,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_14sdp"
-        android:layout_marginTop="@dimen/_2sdp"
+        android:layout_marginTop="@dimen/_4sdp"
         android:text="01 xbox"
         app:layout_constraintStart_toEndOf="@+id/layout_list"
-        app:layout_constraintTop_toBottomOf="@+id/videoView_frame" />
+        app:layout_constraintTop_toBottomOf="@+id/dvbView" />
 
     <TextView
         android:id="@+id/textView11"
@@ -255,4 +255,17 @@
             app:rewind_increment="30000"
             app:use_controller="false" />
     </android.support.constraint.ConstraintLayout>
+
+    <SurfaceView
+            android:id="@+id/dvbView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/_14sdp"
+            android:layout_marginTop="@dimen/_65sdp"
+            android:layout_marginEnd="@dimen/_23sdp"
+            android:layout_marginBottom="@dimen/_82sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/layout_list"
+            app:layout_constraintTop_toTopOf="parent"/>
 </android.support.constraint.ConstraintLayout>

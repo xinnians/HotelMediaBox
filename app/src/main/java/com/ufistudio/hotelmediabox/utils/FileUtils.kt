@@ -7,6 +7,7 @@ import com.ufistudio.hotelmediabox.interfaces.OnSaveFileStatusListener
 import com.ufistudio.hotelmediabox.interfaces.OnSimpleListener
 import okhttp3.ResponseBody
 import java.io.*
+import java.lang.Exception
 import java.lang.NullPointerException
 import java.nio.channels.FileChannel
 
@@ -68,6 +69,24 @@ object FileUtils {
         }
         return downloadFile.absolutePath ?: throw IOException()
 
+    }
+
+    /**
+     * 檢查檔案是否存在
+     *
+     *
+     * @return 該檔案是否存在
+     */
+    fun fileIsExists(fileName: String ): Boolean{
+        try {
+            var file = File(Environment.getExternalStorageDirectory(), TAG_DEFAULT_LOCAL_PATH+fileName)
+            if (!file.exists()){
+                return false
+            }
+        }catch (e: Exception){
+            return false
+        }
+        return true
     }
 
     /**

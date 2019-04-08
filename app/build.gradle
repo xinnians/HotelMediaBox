@@ -55,6 +55,22 @@ android {
         experimental = true
     }
 
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'x86', 'armeabi-v7', 'x86_64'
+            universalApk true
+        }
+    }
+
+    sourceSets {
+        main { //这个配置是必须的，如果你的so文件放在了libs/armeabi/下，则下面srcDir = libs即可
+            jniLibs.srcDirs = ['src/main/jniLibs']
+
+        }
+    }
+
 }
 
 dependencies {

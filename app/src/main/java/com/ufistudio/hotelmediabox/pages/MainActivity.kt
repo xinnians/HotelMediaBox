@@ -1,6 +1,8 @@
 package com.ufistudio.hotelmediabox.pages
 
 import android.os.Bundle
+import android.util.Log
+import android.view.KeyEvent
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.constants.Page
 import com.ufistudio.hotelmediabox.interfaces.OnFragmentKeyListener
@@ -8,6 +10,9 @@ import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.pages.base.PaneViewActivity
 
 class MainActivity : PaneViewActivity(), OnPageInteractionListener.Primary {
+
+    private val TAG = MainActivity::class.java.simpleName
+
     private var mFragmentCacheData: Any? = null
     private var fragmentKeyListener: OnFragmentKeyListener? = null
 
@@ -24,7 +29,15 @@ class MainActivity : PaneViewActivity(), OnPageInteractionListener.Primary {
 //            args = it.getBundleExtra(EX)
 //        }
 //        switchPage(page, args)
-        switchPage(R.id.fragment_container, Page.HOME, Bundle(), true, false)
+
+        if (page == null || page == 0){
+            switchPage(R.id.fragment_container, Page.HOME, Bundle(), true, false)
+        }
+        else{
+            Log.e(TAG,"[get page] = $page")
+            switchPage(R.id.fragment_container, page, Bundle(), true, false)
+        }
+
     }
 
     private fun init() {
@@ -65,6 +78,10 @@ class MainActivity : PaneViewActivity(), OnPageInteractionListener.Primary {
 
     override fun clearFragmentCacheData() {
         mFragmentCacheData = null
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        return super.onKeyDown(keyCode, event)
     }
 
     override fun setOnKeyListener(listener: OnFragmentKeyListener?) {

@@ -43,7 +43,7 @@
             android:id="@+id/text_title"
             style="@style/MainPrimaryText"
             android:layout_width="wrap_content"
-            android:layout_height="32dp"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/_3sdp"
             android:textSize="@dimen/_17ssp"
             app:layout_constraintBottom_toTopOf="@+id/text_room"

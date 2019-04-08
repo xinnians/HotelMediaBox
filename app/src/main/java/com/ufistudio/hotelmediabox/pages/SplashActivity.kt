@@ -3,6 +3,7 @@ package com.ufistudio.hotelmediabox.pages
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import com.ufistudio.hotelmediabox.DVBHelper
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.pages.welcome.WelcomeActivity
 import com.ufistudio.hotelmediabox.services.UdpReceiver
@@ -14,6 +15,8 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
+//        DVBHelper.getDVBPlayer().initPlayer(0,0,0,0)
+//        DVBHelper.getDVBPlayer().closePlayer()
     }
 
     override fun onStart() {
@@ -24,8 +27,10 @@ class SplashActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         val intent = Intent(this, WelcomeActivity::class.java)
+//        val intent = Intent(this, MainActivity::class.java)
+//        val intent = Intent(this, DVBTestActivity::class.java)
         val timer: Timer = Timer()
-        timer.schedule(3000L) {
+        timer.schedule(6000L) {
             startActivity(intent)
             finish()
         }

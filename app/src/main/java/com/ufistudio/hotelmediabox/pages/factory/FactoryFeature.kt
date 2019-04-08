@@ -11,6 +11,7 @@ enum class FactoryFeature(var stringRes: Int) {
     OPEN_DEFAULT_LAUNCHER(R.string.factory_open_default_launcher),
     SHOW_INSIDE_HOTEL(R.string.factory_show_inside_hotel_files),
     SHOW_OUTSIDE_USB(R.string.factory_show_usb_files),
-    CLEAR_INFO(R.string.factory_clear_info_text)
+    CLEAR_INFO(R.string.factory_clear_info_text),
+    SCAN_DVB_CHANNELS(R.string.factory_scan_dvb_channels)
 
 }

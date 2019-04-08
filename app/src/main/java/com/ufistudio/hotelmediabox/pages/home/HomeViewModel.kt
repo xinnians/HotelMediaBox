@@ -3,8 +3,11 @@ package com.ufistudio.hotelmediabox.pages.home
 import android.app.Application
 import android.arch.lifecycle.MutableLiveData
 import com.google.gson.Gson
+import com.ufistudio.hotelmediabox.MyApplication
+import com.ufistudio.hotelmediabox.helper.TVHelper
 import com.ufistudio.hotelmediabox.repository.Repository
 import com.ufistudio.hotelmediabox.repository.data.Home
+import com.ufistudio.hotelmediabox.repository.data.TVChannel
 import com.ufistudio.hotelmediabox.repository.viewModel.BaseViewModel
 import com.ufistudio.hotelmediabox.utils.MiscUtils
 import io.reactivex.Single
@@ -47,4 +50,9 @@ class HomeViewModel(
         val gson = Gson()
         return gson.fromJson(MiscUtils.getJsonFromStorage("home_en.json"), Home::class.java)
     }
+
+    fun getTVHelper(): TVHelper {
+        return getApplication<MyApplication>().getTVHelper()
+    }
+
 }

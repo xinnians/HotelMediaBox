@@ -1,28 +1,27 @@
 package com.ufistudio.hotelmediabox.pages.channel
 
 import android.content.Context
-import android.graphics.Color
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
-import android.text.TextUtils
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.ufistudio.hotelmediabox.R
-import com.ufistudio.hotelmediabox.repository.data.IPTVChannel
+import com.ufistudio.hotelmediabox.repository.data.TVChannel
+import com.ufistudio.hotelmediabox.utils.FileUtils
 import kotlinx.android.synthetic.main.item_channel_list.view.*
 
-class ChannelListAdapter(private val listener: (IPTVChannel, Boolean) -> Unit) :
-        RecyclerView.Adapter<ChannelListAdapter.ViewHolder>() {
+class ChannelListAdapter :
+    RecyclerView.Adapter<ChannelListAdapter.ViewHolder>() {
 
-    private var mOriginalItems: ArrayList<IPTVChannel>? = null
-    private var mFilterItems: ArrayList<IPTVChannel>? = null
+    private var mOriginalItems: ArrayList<TVChannel>? = null
+    private var mFilterItems: ArrayList<TVChannel>? = null
     private var mGenreType: String = ""
     private lateinit var mContext: Context
     private var mSelectPosition = 0 //目前被選到的position
-    private var mGenreFocus = false //Genre list是否正在focus
+    private var mCurrentTVChannel: TVChannel? = null
+    private var mIsFocus = false
 
     interface OnItemClickListener {
         fun onClick(view: View)
@@ -40,31 +39,58 @@ class ChannelListAdapter(private val listener: (IPTVChannel, Boolean) -> Unit) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         mFilterItems?.get(position)?.let { channelData ->
-            holder.bind(channelData, listener)
+            holder.bind(channelData)
             holder.itemView.tag = channelData
             holder.itemView.setOnClickListener { view ->
                 mListener?.onClick(view)
             }
-            if (mGenreFocus && position == mSelectPosition) {
-                holder.itemView.layout_frame.background = ContextCompat.getDrawable(mContext, R.drawable.home_icon_frame_frame_default)
-            } else {
-                holder.itemView.layout_frame.setBackgroundResource(0)
-            }
-            holder.itemView.setOnFocusChangeListener { v, hasFocus ->
-                if (hasFocus) {
-                    mSelectPosition = position
-                    holder.itemView.layout_frame.background = ContextCompat.getDrawable(mContext, R.drawable.home_icon_frame_frame_focused)
+
+            if (position == mSelectPosition) {
+                if (mIsFocus) {
+                    holder.itemView.layout_frame.background =
+                        ContextCompat.getDrawable(mContext, R.drawable.home_icon_frame_frame_focused)
                     holder.itemView.text_channelName.setTextColor(ContextCompat.getColor(mContext, R.color.colorYellow))
                 } else {
-                    holder.itemView.layout_frame.setBackgroundResource(0)
-                    holder.itemView.text_channelName.setTextColor(ContextCompat.getColor(mContext, android.R.color.white))
+                    holder.itemView.layout_frame.background =
+                        ContextCompat.getDrawable(mContext, R.drawable.home_icon_frame_frame_default)
+                    holder.itemView.text_channelName.setTextColor(
+                        ContextCompat.getColor(
+                            mContext,
+                            android.R.color.white
+                        )
+                    )
                 }
-                listener(channelData, hasFocus)
+            } else {
+                holder.itemView.layout_frame.setBackgroundResource(0)
+                holder.itemView.text_channelName.setTextColor(
+                    ContextCompat.getColor(
+                        mContext,
+                        android.R.color.white
+                    )
+                )
             }
+
+//            holder.itemView.setOnFocusChangeListener { v, hasFocus ->
+//                if (hasFocus) {
+//                    mSelectPosition = position
+//                    holder.itemView.layout_frame.background =
+//                        ContextCompat.getDrawable(mContext, R.drawable.home_icon_frame_frame_focused)
+//                    holder.itemView.text_channelName.setTextColor(ContextCompat.getColor(mContext, R.color.colorYellow))
+//                } else {
+//                    holder.itemView.layout_frame.setBackgroundResource(0)
+//                    holder.itemView.text_channelName.setTextColor(
+//                        ContextCompat.getColor(
+//                            mContext,
+//                            android.R.color.white
+//                        )
+//                    )
+//                }
+//                listener(channelData, hasFocus)
+//            }
         }
     }
 
-    fun setItems(items: ArrayList<IPTVChannel>?) {
+    fun setItems(items: ArrayList<TVChannel>?) {
         this.mOriginalItems = items
         setGenreFilter("")
     }
@@ -73,39 +99,101 @@ class ChannelListAdapter(private val listener: (IPTVChannel, Boolean) -> Unit) :
         mListener = listener
     }
 
+    fun selectDownItem(): TVChannel? {
+        if (mFilterItems?.size ?: 0 == 0) {
+            return null
+        }
+        if (mSelectPosition == 0 && mFilterItems?.size ?: 0 > 0) {
+            return mFilterItems?.get(0)
+        }
+        mSelectPosition -= 1
+        notifyDataSetChanged()
+        mCurrentTVChannel = mFilterItems?.get(mSelectPosition)
+        return mCurrentTVChannel
+    }
+
+    fun selectUPItem(): TVChannel? {
+        if (mFilterItems?.size ?: 0 == 0) {
+            return null
+        }
+        if ((mFilterItems?.size ?: 0) - 1 == mSelectPosition) {
+            return mFilterItems?.get(mSelectPosition)
+        }
+        mSelectPosition++
+        notifyDataSetChanged()
+        mCurrentTVChannel = mFilterItems?.get(mSelectPosition)
+        return mCurrentTVChannel
+    }
+
+    fun getCurrentTVChannel(): TVChannel? {
+        if (mFilterItems?.size ?: 0 == 0) {
+            return null
+        }
+        if ((mFilterItems?.size ?: 0) - 1 >= mSelectPosition && mSelectPosition >= 0) {
+            return mFilterItems?.get(mSelectPosition)
+        }else{
+            return null
+        }
+    }
+
+    fun setCurrentTVChannel(channel:TVChannel){
+        if(mFilterItems?.contains(channel) == true){
+            mCurrentTVChannel = channel
+            mSelectPosition = mFilterItems?.indexOf(mCurrentTVChannel!!)?:0
+        }else{
+            mCurrentTVChannel = null
+            mSelectPosition = 0
+        }
+
+    }
+
+    fun getSelectPosition(): Int{
+        return mSelectPosition
+    }
+
     /**
-     * 通知Genre list是否被foucs
+     * 通知是否被foucs
      * @focus:
-     * true:Genre list被focus
-     * false:Genre list沒有focus
+     * true:list被focus
+     * false:list沒有focus
      */
-    fun genreFocus(focus: Boolean) {
-        mGenreFocus = focus
+    fun setFocus(isFocus: Boolean) {
+        mIsFocus = isFocus
+        notifyDataSetChanged()
     }
 
     /**
      * 清楚上一個被選擇到的狀態
      */
     fun clearSelectPosition() {
-        val int = mSelectPosition
-        mSelectPosition = 0
-        notifyItemChanged(int)
+        if(mFilterItems?.contains(mCurrentTVChannel) == true){
+            mSelectPosition = mFilterItems?.indexOf(mCurrentTVChannel)?:0
+        }else{
+            mSelectPosition = 0
+        }
     }
 
     fun setGenreFilter(genreType: String) {
+        if(mOriginalItems == null){
+            return
+        }
+
         mGenreType = genreType
         mFilterItems = if (genreType == "All" || genreType == "") {
             ArrayList(mOriginalItems)
-        } else ArrayList(mOriginalItems?.filter { it.genre == genreType })
+        } else ArrayList(mOriginalItems?.filter { it.chType == genreType })
+        clearSelectPosition()
         notifyDataSetChanged()
     }
 
     class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-        fun bind(data: IPTVChannel, listener: (IPTVChannel, Boolean) -> Unit) {
+        fun bind(data: TVChannel) {
 //            Glide.with(itemView.image.context).load(data.images?.first()).into(itemView.image)
-//            Log.e("ChannelListAdapter", "IPTVChannel:$data")
-            itemView.text_channelName.text = data.number + " " + data.name
-            itemView.isFocusable = true
+//            Log.e("ChannelListAdapter", "TVChannel:$data")
+            itemView.text_channelName.text = data.chNum + " " + data.chName
+            Glide.with(itemView.context)
+                .load(FileUtils.getFileFromStorage(data.chLogo.fileName))
+                .into(itemView.view_icon)
         }
     }
 }

@@ -3,32 +3,49 @@ package com.ufistudio.hotelmediabox.repository.data
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
+@Parcelize
+data class Logo(
+    var path: String = "",
+    var fileName: String = ""
+) : Parcelable
+
+@Parcelize
+data class ConnectDetail(
+    var ip: String = "",
+    var port: String = "",
+    var frequency: String = "",
+    var bandwidth: String = "",
+    var dvbParameter: String = ""
+) : Parcelable
+
 abstract class BaseChannel {
-    abstract var genre: String
-    abstract var number: String
-    abstract var name: String
-    abstract var icon: String
+    abstract var chNum: String
+    abstract var chName: String
+    abstract var chType: String
+    abstract var chGenre: String
+    abstract var chIp: ConnectDetail
+    abstract var chLogo: Logo
+}
+
+enum class TVType {
+    IP, DVB
 }
 
 @Parcelize
-data class IPTVChannel(
-        val ip: String,
-        val port: String,
-        override var genre: String,
-        override var number: String,
-        override var name: String,
-        override var icon: String
+data class TVChannel(
+    override var chNum: String = "cNumber",
+    override var chName: String = "CName",
+    override var chType: String = "",
+    override var chGenre: String = "",
+    override var chIp: ConnectDetail = ConnectDetail(),
+    override var chLogo: Logo = Logo()
 ) : BaseChannel(), Parcelable
 
 @Parcelize
-data class DTVChannel(
-        val frequency: String,
-        val bandwidth: String,
-        override var genre: String,
-        override var number: String,
-        override var name: String,
-        override var icon: String
-) : BaseChannel(), Parcelable
+data class DVBInfo(
+    var Frequency: String = "",
+    var Bandwidth: String = ""
+) : Parcelable
 
 /*
 Home
@@ -55,6 +72,7 @@ data class HomeStageType(
 @Parcelize
 data class HomeIcons(
         val name: String,
+        val id: Int,
         val enable: Int
 ) : Parcelable
 

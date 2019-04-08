@@ -7,6 +7,7 @@ import com.ufistudio.hotelmediabox.pages.TemplateViewModel
 import com.ufistudio.hotelmediabox.pages.channel.ChannelViewModel
 import com.ufistudio.hotelmediabox.pages.facilies.HotelFacilitiesViewModel
 import com.ufistudio.hotelmediabox.pages.factory.FactoryViewModel
+import com.ufistudio.hotelmediabox.pages.fullScreen.FullScreenViewModel
 import com.ufistudio.hotelmediabox.pages.home.HomeViewModel
 import com.ufistudio.hotelmediabox.pages.nearby.NearbyMeViewModel
 import com.ufistudio.hotelmediabox.pages.roomService.RoomServiceViewModel
@@ -38,6 +39,7 @@ class ViewModelFactory(private val application: Application,
                 isAssignableFrom(HomeViewModel::class.java) -> HomeViewModel(application,CompositeDisposable(),repository)
                 isAssignableFrom(WelcomeViewModel::class.java) -> WelcomeViewModel(application,CompositeDisposable(),repository)
                 isAssignableFrom(FactoryViewModel::class.java) -> FactoryViewModel(application,CompositeDisposable(),repository)
+                isAssignableFrom(FullScreenViewModel::class.java) -> FullScreenViewModel(application,CompositeDisposable(),repository)
                 isAssignableFrom(SettingViewModel::class.java) -> SettingViewModel(application,CompositeDisposable(),repository)
                 isAssignableFrom(LanguageViewModel::class.java) -> LanguageViewModel(application,CompositeDisposable(),repository)
                 isAssignableFrom(NearbyMeViewModel::class.java) -> NearbyMeViewModel(application,CompositeDisposable(),repository)
