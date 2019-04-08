@@ -39,7 +39,6 @@ abstract class InteractionView<I : OnPageInteractionListener.Base> : BaseView() 
     protected fun getInteractionListener(): I = mInteractionListener
 
     override fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        //todo 改成Ian預設好的home鍵key code
         when (keyCode) {
             302 -> {
                 activity?.startActivity(Intent(activity, MainActivity::class.java))

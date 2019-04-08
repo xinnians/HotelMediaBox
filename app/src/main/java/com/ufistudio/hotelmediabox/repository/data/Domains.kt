@@ -71,8 +71,8 @@ data class HomeStageType(
 
 @Parcelize
 data class HomeIcons(
-        val name: String,
         val id: Int,
+        val name: String,
         val enable: Int
 ) : Parcelable
 
@@ -239,4 +239,16 @@ data class SettingContent(
 data class SettingSubContent(
         var title: String,
         var code: String
+) : Parcelable
+
+/*
+    Broadcast
+ */
+@Parcelize
+data class Broadcast(
+        var ip: String,
+        var command: String,
+        var url: String,
+        var port: String,
+        var type: String
 ) : Parcelable

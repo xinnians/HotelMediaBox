@@ -19,6 +19,7 @@ class SideViewAdapter : RecyclerView.Adapter<SideViewAdapter.ViewHolder>() {
 
     private lateinit var mContext: Context
     private var mItem: ArrayList<HomeFeatureEnum> = ArrayList()
+    private var mServerItem: ArrayList<HomeIcons> = ArrayList()
     private var mLastIndex = 0
     private var mIsInit = true //若為第一次進來
 
@@ -41,6 +42,7 @@ class SideViewAdapter : RecyclerView.Adapter<SideViewAdapter.ViewHolder>() {
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind()
         val item = mItem[position]
+        val serverItem = mServerItem[position]
 
 
         holder.itemView.image_icon.background =
@@ -54,7 +56,7 @@ class SideViewAdapter : RecyclerView.Adapter<SideViewAdapter.ViewHolder>() {
             if (hasFocus) {
                 holder.itemView.text_title.visibility = View.VISIBLE
                 holder.itemView.image_icon.background = ContextCompat.getDrawable(mContext, item.focusedIcon)
-                holder.itemView.text_title.text = mContext.getString(item.title)
+                holder.itemView.text_title.text = serverItem.name
             } else {
                 holder.itemView.text_title.visibility = View.GONE
                 holder.itemView.image_icon.background = ContextCompat.getDrawable(mContext, item.icon)
@@ -72,9 +74,11 @@ class SideViewAdapter : RecyclerView.Adapter<SideViewAdapter.ViewHolder>() {
         if (data != null) {
             for (item in data) {
                 if (item.enable == TAG_ENABLE) {
-                    val enumItem = HomeFeatureEnum.findItemByTag(item.name)
-                    if (enumItem != null)
+                    val enumItem = HomeFeatureEnum.findItemById(item.id)
+                    if (enumItem != null) {
                         mItem.add(enumItem)
+                        mServerItem.add(item)
+                    }
                 }
             }
             notifyDataSetChanged()
