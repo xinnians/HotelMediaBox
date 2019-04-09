@@ -44,6 +44,12 @@ class TVHelper {
         return mChannelList
     }
 
+//    @Synchronized
+//    fun clearChannelList(){
+//        mChannelList?.clear()
+//    }
+
+
     @Synchronized
     fun initDevice() {
         Log.i(TAG, "[TVHelper] initDevice call")

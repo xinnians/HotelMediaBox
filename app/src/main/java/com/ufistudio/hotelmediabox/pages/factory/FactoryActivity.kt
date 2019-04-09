@@ -14,7 +14,9 @@ import android.widget.Toast
 import com.google.gson.Gson
 import com.ufistudio.hotelmediabox.AppInjector
 import com.ufistudio.hotelmediabox.DVBHelper
+import com.ufistudio.hotelmediabox.MyApplication
 import com.ufistudio.hotelmediabox.R
+import com.ufistudio.hotelmediabox.helper.TVHelper
 import com.ufistudio.hotelmediabox.interfaces.OnItemClickListener
 import com.ufistudio.hotelmediabox.interfaces.OnSimpleListener
 import com.ufistudio.hotelmediabox.interfaces.ViewModelsCallback
@@ -179,8 +181,6 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
                     mInfo1.append("load DvbScanConfig.json\n")
                     textView_info1.text = mInfo1
 
-                    DVBHelper.getDVBPlayer().initDevice()
-
                     var jsonList: Array<TVChannel> = emptyArray<TVChannel>()
 
                     val jsonArray: Array<DVBInfo> =
@@ -195,6 +195,15 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
 
                         var scanResult = DVBHelper.getDVBPlayer()
                             .getChannelList("${jsonArray[i].Frequency} ${jsonArray[i].Bandwidth}")
+
+                        if(scanResult == null){
+                            (application as MyApplication).getTVHelper().closeAVPlayer()
+                            (application as MyApplication).getTVHelper().closeDevice()
+                            (application as MyApplication).getTVHelper().initDevice()
+                            scanResult = DVBHelper.getDVBPlayer()
+                                .getChannelList("${jsonArray[i].Frequency} ${jsonArray[i].Bandwidth}")
+                        }
+
 
                         Log.e(TAG, "[scan result] = $scanResult")
                         mInfo1.append("scanResult $scanResult\n")
@@ -227,10 +236,12 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
 
                     writeToFile(channelFile, Gson().toJson(jsonList))
 
-                    DVBHelper.getDVBPlayer().closePlayer()
+//                    (application as MyApplication).getTVHelper().clearChannelList()
 
                     mInfo1.append("scan finish.")
                     textView_info1.text = mInfo1
+
+
 
                 } else {
                     Log.e(TAG, "file not exist,Please import DvbScanConfig.json file")
