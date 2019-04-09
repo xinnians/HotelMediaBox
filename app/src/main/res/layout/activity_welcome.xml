@@ -17,12 +17,11 @@
 
         <ImageView
             android:id="@+id/imageView_title"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:layout_marginStart="@dimen/_136sdp"
-            android:layout_marginTop="@dimen/_20sdp"
-            android:layout_marginEnd="@dimen/_136sdp"
+            android:layout_marginTop="@dimen/_10sdp"
             android:layout_marginBottom="@dimen/_8sdp"
+            android:adjustViewBounds="true"
             android:scaleType="fitXY"
             app:layout_constraintBottom_toTopOf="@+id/text_name"
             app:layout_constraintEnd_toEndOf="parent"
@@ -33,10 +32,9 @@
             android:id="@+id/text_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/_3sdp"
             android:textColor="@color/welcomeName"
             android:textSize="@dimen/_23ssp"
-            app:layout_constraintBottom_toTopOf="@+id/text_room"
+            app:layout_constraintBaseline_toBaselineOf="@+id/text_title"
             app:layout_constraintStart_toStartOf="@+id/guideline" />
 
         <TextView
@@ -77,7 +75,7 @@
             android:layout_width="@dimen/_51sdp"
             android:layout_height="@dimen/_49sdp"
             android:layout_marginStart="@dimen/_17sdp"
-            android:layout_marginBottom="@dimen/_1sdp"
+            android:layout_marginBottom="@dimen/_16sdp"
             android:gravity="center"
             android:textSize="@dimen/_13ssp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -87,7 +85,7 @@
             android:id="@+id/text_description"
             style="@style/MainPrimaryText"
             android:layout_width="@dimen/_278sdp"
-            android:layout_height="@dimen/_57sdp"
+            android:layout_height="75dp"
             android:layout_marginBottom="@dimen/_15sdp"
             android:textSize="@dimen/_13ssp"
             app:layout_constraintBottom_toBottomOf="parent"
