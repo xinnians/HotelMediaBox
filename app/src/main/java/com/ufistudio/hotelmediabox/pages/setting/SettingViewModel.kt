@@ -39,6 +39,6 @@ class SettingViewModel(
 
     private fun getJsonObject(): Setting? {
         val gson = Gson()
-        return gson.fromJson(MiscUtils.getJsonFromStorage("setting_en.json"), Setting::class.java)
+        return gson.fromJson(MiscUtils.getJsonLanguageAutoSwitch("setting"), Setting::class.java)
     }
 }

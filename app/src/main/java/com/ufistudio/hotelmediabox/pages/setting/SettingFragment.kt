@@ -161,6 +161,13 @@ class SettingFragment : InteractionView<OnPageInteractionListener.Primary>(), Vi
                         mCategoryFocus = true
                         mContentFocus = false
                     }
+                    KeyEvent.KEYCODE_DPAD_CENTER -> {
+                        val intent: Intent = Intent(activity, MainActivity::class.java)
+                        val bundle: Bundle = Bundle()
+                        bundle.putBoolean(Page.ARG_BUNDLE, true)
+                        intent.putExtras(bundle)
+                        startActivity(intent)
+                    }
                 }
                 return true
             }

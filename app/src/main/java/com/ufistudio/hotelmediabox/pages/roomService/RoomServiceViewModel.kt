@@ -40,6 +40,6 @@ class RoomServiceViewModel(
 
     private fun getJsonObject(): RoomServices? {
         val gson = Gson()
-        return gson.fromJson(MiscUtils.getJsonFromStorage("room_service_en.json"), RoomServices::class.java)
+        return gson.fromJson(MiscUtils.getJsonLanguageAutoSwitch("room_service"), RoomServices::class.java)
     }
 }

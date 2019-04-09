@@ -40,6 +40,6 @@ class NearbyMeViewModel(
 
     private fun getJsonObject(): NearbyMe? {
         val gson = Gson()
-        return gson.fromJson(MiscUtils.getJsonFromStorage("nearby_me_en.json"), NearbyMe::class.java)
+        return gson.fromJson(MiscUtils.getJsonLanguageAutoSwitch("nearby_me"), NearbyMe::class.java)
     }
 }

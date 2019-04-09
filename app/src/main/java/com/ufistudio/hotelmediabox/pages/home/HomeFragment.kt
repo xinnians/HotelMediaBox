@@ -36,7 +36,7 @@ import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 
 class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), FunctionsAdapter.OnItemClickListener,
-    ViewModelsCallback {
+        ViewModelsCallback {
     private val TAG_TYPE_1 = 1//Weather Information
     private val TAG_TYPE_2 = 2//Promo Banner
 
@@ -125,8 +125,8 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                 mViewChannelName?.text = tvChannel.chNum + " " + tvChannel.chName
                 mViewChannelLogo?.let { viewLogo ->
                     Glide.with(this)
-                        .load(FileUtils.getFileFromStorage(tvChannel.chLogo.fileName))
-                        .into(viewLogo)
+                            .load(FileUtils.getFileFromStorage(tvChannel.chLogo.fileName))
+                            .into(viewLogo)
                 }
 
             }
@@ -156,8 +156,8 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                 mViewChannelName?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
                 mViewChannelLogo?.let { viewLogo ->
                     Glide.with(this)
-                        .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
-                        .into(viewLogo)
+                            .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
+                            .into(viewLogo)
                 }
                 setPlayTimer()
 
@@ -182,8 +182,8 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                 mViewChannelName?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
                 mViewChannelLogo?.let { viewLogo ->
                     Glide.with(this)
-                        .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
-                        .into(viewLogo)
+                            .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
+                            .into(viewLogo)
                 }
                 setPlayTimer()
 
@@ -238,6 +238,13 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
         mData = it as Home?
         mFeatureIcons = mData?.home?.icons
 
+        //for setting page reset language use
+        if (activity?.intent?.extras?.getBoolean(Page.ARG_BUNDLE) != null && activity?.intent?.extras?.getBoolean(Page.ARG_BUNDLE)!!) {
+            val b: Bundle = Bundle()
+            b.putParcelableArrayList(Page.ARG_BUNDLE, mFeatureIcons)
+            getInteractionListener().switchPage(R.id.fragment_container, Page.SETTING, b, true, false, true)
+            return
+        }
         renderView()
     }
 
@@ -291,33 +298,33 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                 when (weather?.weather_type) {
                     "1" -> {
                         Glide.with(this)
-                            .load(R.drawable.ic_weather_1)
-                            .into(view.findViewById(R.id.imageView))
+                                .load(R.drawable.ic_weather_1)
+                                .into(view.findViewById(R.id.imageView))
                     }
                     "2" -> {
                         Glide.with(this)
-                            .load(R.drawable.ic_weather_cloudy)
-                            .into(view.findViewById(R.id.imageView))
+                                .load(R.drawable.ic_weather_cloudy)
+                                .into(view.findViewById(R.id.imageView))
                     }
                     "3" -> {
                         Glide.with(this)
-                            .load(R.drawable.ic_weather_partlycloudy)
-                            .into(view.findViewById(R.id.imageView))
+                                .load(R.drawable.ic_weather_partlycloudy)
+                                .into(view.findViewById(R.id.imageView))
                     }
                     "4" -> {
                         Glide.with(this)
-                            .load(R.drawable.ic_weather_raining)
-                            .into(view.findViewById(R.id.imageView))
+                                .load(R.drawable.ic_weather_raining)
+                                .into(view.findViewById(R.id.imageView))
                     }
                     "5" -> {
                         Glide.with(this)
-                            .load(R.drawable.ic_weather_shower)
-                            .into(view.findViewById(R.id.imageView))
+                                .load(R.drawable.ic_weather_shower)
+                                .into(view.findViewById(R.id.imageView))
                     }
                     "6" -> {
                         Glide.with(this)
-                            .load(R.drawable.ic_weather_sunny)
-                            .into(view.findViewById(R.id.imageView))
+                                .load(R.drawable.ic_weather_sunny)
+                                .into(view.findViewById(R.id.imageView))
                     }
                 }
             }
@@ -329,8 +336,8 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                 mViewChannelLogo = view.findViewById(R.id.image_channel)
 
                 Glide.with(this)
-                    .load(FileUtils.getFileFromStorage(mData?.home?.promo_banner!![0].image))
-                    .into(view.findViewById(R.id.image_banner))
+                        .load(FileUtils.getFileFromStorage(mData?.home?.promo_banner!![0].image))
+                        .into(view.findViewById(R.id.image_banner))
             }
         }
     }
@@ -354,12 +361,12 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
         }
 
         mDisposable = Observable.timer(400, TimeUnit.MILLISECONDS)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                {}, { onError -> Log.e(TAG, "error:$onError") }, {
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        {}, { onError -> Log.e(TAG, "error:$onError") }, {
                     mViewModel.getTVHelper().playCurrent()
-                        ?.subscribe()
+                            ?.subscribe()
                 })
     }
 }

@@ -10,6 +10,7 @@ import java.io.*
 import java.lang.Exception
 import java.lang.NullPointerException
 import java.nio.channels.FileChannel
+import java.nio.charset.Charset
 
 object FileUtils {
 
@@ -77,13 +78,13 @@ object FileUtils {
      *
      * @return 該檔案是否存在
      */
-    fun fileIsExists(fileName: String ): Boolean{
+    fun fileIsExists(fileName: String): Boolean {
         try {
-            var file = File(Environment.getExternalStorageDirectory(), TAG_DEFAULT_LOCAL_PATH+fileName)
-            if (!file.exists()){
+            var file = File(Environment.getExternalStorageDirectory(), TAG_DEFAULT_LOCAL_PATH + fileName)
+            if (!file.exists()) {
                 return false
             }
-        }catch (e: Exception){
+        } catch (e: Exception) {
             return false
         }
         return true
@@ -277,5 +278,27 @@ object FileUtils {
 
 
         listener?.callback("export finish")
+    }
+
+    /**
+     * Write string to file
+     */
+    fun writeToFile(file: File, data: String) {
+        var osw: FileOutputStream? = null
+        try {
+            osw = FileOutputStream(file)
+            osw.write("".toByteArray())
+            osw.flush()
+            Log.d("neo","data.() = ${data}")
+            osw.write(data.toByteArray(Charset.defaultCharset()))
+            osw.flush()
+        } catch (e: Exception) {
+        } finally {
+            try {
+                osw!!.close()
+            } catch (e: Exception) {
+            }
+
+        }
     }
 }

@@ -184,7 +184,7 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
                     var jsonList: Array<TVChannel> = emptyArray<TVChannel>()
 
                     val jsonArray: Array<DVBInfo> =
-                        Gson().fromJson(MiscUtils.getJsonFromStorage("DvbScanConfig.json"), Array<DVBInfo>::class.java)
+                            Gson().fromJson(MiscUtils.getJsonFromStorage("DvbScanConfig.json"), Array<DVBInfo>::class.java)
 
                     var count = 1
 
@@ -194,7 +194,7 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
                         textView_info1.text = mInfo1
 
                         var scanResult = DVBHelper.getDVBPlayer()
-                            .getChannelList("${jsonArray[i].Frequency} ${jsonArray[i].Bandwidth}")
+                                .getChannelList("${jsonArray[i].Frequency} ${jsonArray[i].Bandwidth}")
 
                         Log.e(TAG, "[scan result] = $scanResult")
                         mInfo1.append("scanResult $scanResult\n")
@@ -202,20 +202,20 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
 
                         var scanList = scanResult?.split(",")?.filter { it != "" }
 
-                        if(scanList == null || scanList.isEmpty())
+                        if (scanList == null || scanList.isEmpty())
                             continue
 
                         for (j in scanList) {
                             jsonList += TVChannel(
-                                chNum = count.toString(),
-                                chName = "CH $count",
-                                chType = "DVBT",
-                                chIp = ConnectDetail(
-                                    frequency = jsonArray[i].Frequency,
-                                    bandwidth = jsonArray[i].Bandwidth,
-                                    dvbParameter = j
-                                ),
-                                chLogo = Logo(fileName = "channel_default.png")
+                                    chNum = count.toString(),
+                                    chName = "CH $count",
+                                    chType = "DVBT",
+                                    chIp = ConnectDetail(
+                                            frequency = jsonArray[i].Frequency,
+                                            bandwidth = jsonArray[i].Bandwidth,
+                                            dvbParameter = j
+                                    ),
+                                    chLogo = Logo(fileName = "channel_default.png")
                             )
                             count++
                         }
@@ -225,7 +225,7 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
 
                     var channelFile = File("${Environment.getExternalStorageDirectory().path}/hotel/channels.json")
 
-                    writeToFile(channelFile, Gson().toJson(jsonList))
+                    FileUtils.writeToFile(channelFile, Gson().toJson(jsonList))
 
                     DVBHelper.getDVBPlayer().closePlayer()
 
@@ -235,30 +235,13 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
                 } else {
                     Log.e(TAG, "file not exist,Please import DvbScanConfig.json file")
                     Toast.makeText(this, "file not exist,Please import DvbScanConfig.json file", Toast.LENGTH_SHORT)
-                        .show()
+                            .show()
                 }
 
             }
         }
     }
 
-    private fun writeToFile(fout: File, data: String) {
-        var osw: FileOutputStream? = null
-        try {
-            osw = FileOutputStream(fout)
-            osw!!.write("".toByteArray())
-            osw!!.flush()
-            osw!!.write(data.toByteArray())
-            osw!!.flush()
-        } catch (e: Exception) {
-        } finally {
-            try {
-                osw!!.close()
-            } catch (e: Exception) {
-            }
-
-        }
-    }
 
     override fun onSuccess(it: Any?) {
         mData = it as Config?

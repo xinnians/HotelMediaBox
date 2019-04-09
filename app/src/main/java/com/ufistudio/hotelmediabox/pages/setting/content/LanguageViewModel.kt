@@ -21,6 +21,10 @@ class LanguageViewModel(
     val initConfigServiceError = MutableLiveData<Throwable>()
 
     init {
+        getConfig()
+    }
+
+    fun getConfig() {
         val json = getConfigJsonObject()
         if (json != null) {
             compositeDisposable.add(Single.just(json)

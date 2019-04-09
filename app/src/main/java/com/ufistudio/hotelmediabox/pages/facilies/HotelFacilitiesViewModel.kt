@@ -40,6 +40,6 @@ class HotelFacilitiesViewModel(
 
     private fun getJsonObject(): HotelFacilities? {
         val gson = Gson()
-        return gson.fromJson(MiscUtils.getJsonFromStorage("hotel_facilities_en.json"), HotelFacilities::class.java)
+        return gson.fromJson(MiscUtils.getJsonLanguageAutoSwitch("hotel_facilities"), HotelFacilities::class.java)
     }
 }

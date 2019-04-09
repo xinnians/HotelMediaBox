@@ -2,6 +2,7 @@ package com.ufistudio.hotelmediabox.pages.setting.content
 
 import android.arch.lifecycle.Observer
 import android.os.Bundle
+import android.os.Environment
 import android.support.v4.content.ContextCompat
 import android.text.TextUtils
 import android.util.Log
@@ -12,12 +13,18 @@ import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.pages.base.InteractionView
 import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import android.view.KeyEvent
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.ufistudio.hotelmediabox.AppInjector
 import com.ufistudio.hotelmediabox.constants.Page
 import com.ufistudio.hotelmediabox.interfaces.OnFragmentKeyListener
 import com.ufistudio.hotelmediabox.interfaces.ViewModelsCallback
 import com.ufistudio.hotelmediabox.repository.data.*
+import com.ufistudio.hotelmediabox.utils.FileUtils
+import com.ufistudio.hotelmediabox.utils.MiscUtils
+import com.ufistudio.hotelmediabox.utils.TAG_DEFAULT_LOCAL_PATH
 import kotlinx.android.synthetic.main.view_langauge_setting.*
+import java.io.File
 
 class LanguageFragment : InteractionView<OnPageInteractionListener.Primary>(), OnFragmentKeyListener, ViewModelsCallback {
     private lateinit var mViewModel: LanguageViewModel
@@ -27,6 +34,7 @@ class LanguageFragment : InteractionView<OnPageInteractionListener.Primary>(), O
     private var mIsRendered: Boolean = false //判斷塞資料了沒
     private var mCurrentLanguageCode: String = "en"
     private var mCurrentIndex: Int = -1
+    private val mGson: Gson = GsonBuilder().disableHtmlEscaping().create()
 
 
     companion object {
@@ -89,8 +97,8 @@ class LanguageFragment : InteractionView<OnPageInteractionListener.Primary>(), O
     override fun onKeyPress(keyCode: Int, event: KeyEvent?): Boolean {
         when (keyCode) {
             KeyEvent.KEYCODE_DPAD_CENTER -> {
-                //TODO 將設置的語言寫回hotel/config.json
                 mConfigData?.config?.language = mCurrentLanguageCode
+                FileUtils.writeToFile(File("${Environment.getExternalStorageDirectory().path}${TAG_DEFAULT_LOCAL_PATH}config.json"), mGson.toJson(mConfigData))
                 return true
             }
             KeyEvent.KEYCODE_DPAD_UP -> {

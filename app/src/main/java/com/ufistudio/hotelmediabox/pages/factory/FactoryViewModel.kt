@@ -18,7 +18,7 @@ class FactoryViewModel(
         private val compositeDisposable: CompositeDisposable,
         private val repository: Repository
 ) : BaseViewModel(application, compositeDisposable) {
-
+    private val TAG = FactoryViewModel::class.java.simpleName
     val mApplication = application
     val initConfigSuccess = MutableLiveData<Config>()
     val initConfigProgress = MutableLiveData<Boolean>()
@@ -31,7 +31,7 @@ class FactoryViewModel(
     init {
         val gson = Gson()
 
-        val jsonObject = gson.fromJson(MiscUtils.getJsonFromStorage("config_en.json"), Config::class.java)
+        val jsonObject = gson.fromJson(MiscUtils.getJsonFromStorage("config.json"), Config::class.java)
         if (jsonObject != null) {
             compositeDisposable.add(Single.just(jsonObject)
                     .observeOn(AndroidSchedulers.mainThread())
@@ -40,7 +40,7 @@ class FactoryViewModel(
                     .subscribe({ initConfigSuccess.value = it }
                             , { initConfigError.value = it })
             )
-        }else{
+        } else {
             initConfigError.value = Throwable("jsonObject is null")
         }
     }
@@ -53,19 +53,19 @@ class FactoryViewModel(
                     Single.just(FileUtils.writeResponseBodyToDisk(it, "hotelbox.apk"))
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe({
-                                Log.d("neo", "save file finish $it")
+                                Log.d(TAG, "save file finish $it")
 
                             }, {
-                                Log.d("neo", "save file error $it")
+                                Log.d(TAG, "save file error $it")
                             })
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    Log.d("neo", " save success = $it")
+                    Log.d(TAG, " save success = $it")
                     fileDownloadProgress.value = false
                     fileDownloadSuccess.value = "hotelbox.apk"
                 }, {
-                    Log.d("neo", " save error = $it")
+                    Log.d(TAG, " save error = $it")
                     fileDownloadProgress.value = false
                     fileDownloadError.value = it
                 })

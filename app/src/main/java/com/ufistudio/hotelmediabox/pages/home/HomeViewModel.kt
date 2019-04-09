@@ -7,7 +7,6 @@ import com.ufistudio.hotelmediabox.MyApplication
 import com.ufistudio.hotelmediabox.helper.TVHelper
 import com.ufistudio.hotelmediabox.repository.Repository
 import com.ufistudio.hotelmediabox.repository.data.Home
-import com.ufistudio.hotelmediabox.repository.data.TVChannel
 import com.ufistudio.hotelmediabox.repository.viewModel.BaseViewModel
 import com.ufistudio.hotelmediabox.utils.MiscUtils
 import io.reactivex.Single
@@ -48,7 +47,7 @@ class HomeViewModel(
 
     private fun getJsonObject(): Home? {
         val gson = Gson()
-        return gson.fromJson(MiscUtils.getJsonFromStorage("home_en.json"), Home::class.java)
+        return gson.fromJson(MiscUtils.getJsonLanguageAutoSwitch("home"), Home::class.java)
     }
 
     fun getTVHelper(): TVHelper {
