@@ -15,10 +15,9 @@
             app:layout_constraintEnd_toEndOf="parent"/>
     <ImageView
             android:id="@+id/viewMainLogo"
-            android:layout_width="@dimen/_36sdp"
-            android:layout_height="@dimen/_36sdp"
-            android:scaleType="fitXY"
-            android:adjustViewBounds="true"
+            android:layout_width="@dimen/_72sdp"
+            android:layout_height="@dimen/_72sdp"
+            android:scaleType="fitCenter"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -34,11 +33,11 @@
 
         <ImageView
                 android:id="@+id/viewLogo"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/_17sdp"
-                android:layout_marginEnd="@dimen/_5sdp"
+                android:layout_width="@dimen/_34sdp"
+                android:layout_height="@dimen/_19sdp"
                 android:layout_marginStart="@dimen/_18sdp"
                 android:src="@drawable/ic_live_tv"
+                android:background="@drawable/ic_channel_logo_bg"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"/>
@@ -48,6 +47,7 @@
                 style="@style/MainPrimaryText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_5sdp"
                 android:text="sample"
                 android:textSize="@dimen/_9ssp"
                 app:layout_constraintTop_toTopOf="parent"

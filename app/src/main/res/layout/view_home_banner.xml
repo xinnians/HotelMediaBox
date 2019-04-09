@@ -10,6 +10,7 @@
         android:layout_height="@dimen/_26sdp"
         android:layout_marginStart="@dimen/_21sdp"
         android:layout_marginTop="@dimen/_58sdp"
+        android:background="@drawable/ic_channel_logo_bg"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

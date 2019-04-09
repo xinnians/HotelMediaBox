@@ -203,7 +203,7 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
                 if (mGenreFocus) {
                     mChannelListAdapter.setGenreFilter(mGenreAdapter.selectDown().name)
                 } else if (mListFocus) {
-                    view_channel_list.smoothScrollToPosition(mChannelListAdapter.getSelectPosition())
+                    view_channel_list.scrollToPosition(mChannelListAdapter.getSelectPosition())
                     mChannelListAdapter.selectDownItem()?.let { channel ->
                         var name =
                             channel.chNum + ": " + channel.chName + " (${channel.chIp.frequency}mhz,${channel.chIp.dvbParameter})"
@@ -216,7 +216,7 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
                 if (mGenreFocus) {
                     mChannelListAdapter.setGenreFilter(mGenreAdapter.selectUp().name)
                 } else if (mListFocus) {
-                    view_channel_list.smoothScrollToPosition(mChannelListAdapter.getSelectPosition())
+                    view_channel_list.scrollToPosition(mChannelListAdapter.getSelectPosition())
                     mChannelListAdapter.selectUPItem()?.let { channel ->
                         var name =
                             channel.chNum + ": " + channel.chName + " (${channel.chIp.frequency}mhz,${channel.chIp.dvbParameter})"
