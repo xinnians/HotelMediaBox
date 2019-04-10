@@ -126,6 +126,7 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                 mViewChannelLogo?.let { viewLogo ->
                     Glide.with(this)
                             .load(FileUtils.getFileFromStorage(tvChannel.chLogo.fileName))
+                            .skipMemoryCache(true)
                             .into(viewLogo)
                 }
 
@@ -157,6 +158,7 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                 mViewChannelLogo?.let { viewLogo ->
                     Glide.with(this)
                             .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
+                            .skipMemoryCache(true)
                             .into(viewLogo)
                 }
                 setPlayTimer()
@@ -183,6 +185,7 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                 mViewChannelLogo?.let { viewLogo ->
                     Glide.with(this)
                             .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
+                            .skipMemoryCache(true)
                             .into(viewLogo)
                 }
                 setPlayTimer()
@@ -299,31 +302,37 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                     "1" -> {
                         Glide.with(this)
                                 .load(R.drawable.ic_weather_1)
+                                .skipMemoryCache(true)
                                 .into(view.findViewById(R.id.imageView))
                     }
                     "2" -> {
                         Glide.with(this)
                                 .load(R.drawable.ic_weather_cloudy)
+                                .skipMemoryCache(true)
                                 .into(view.findViewById(R.id.imageView))
                     }
                     "3" -> {
                         Glide.with(this)
                                 .load(R.drawable.ic_weather_partlycloudy)
+                                .skipMemoryCache(true)
                                 .into(view.findViewById(R.id.imageView))
                     }
                     "4" -> {
                         Glide.with(this)
                                 .load(R.drawable.ic_weather_raining)
+                                .skipMemoryCache(true)
                                 .into(view.findViewById(R.id.imageView))
                     }
                     "5" -> {
                         Glide.with(this)
                                 .load(R.drawable.ic_weather_shower)
+                                .skipMemoryCache(true)
                                 .into(view.findViewById(R.id.imageView))
                     }
                     "6" -> {
                         Glide.with(this)
                                 .load(R.drawable.ic_weather_sunny)
+                                .skipMemoryCache(true)
                                 .into(view.findViewById(R.id.imageView))
                     }
                 }
@@ -337,6 +346,7 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
 
                 Glide.with(this)
                         .load(FileUtils.getFileFromStorage(mData?.home?.promo_banner!![0].image))
+                        .skipMemoryCache(true)
                         .into(view.findViewById(R.id.image_banner))
             }
         }

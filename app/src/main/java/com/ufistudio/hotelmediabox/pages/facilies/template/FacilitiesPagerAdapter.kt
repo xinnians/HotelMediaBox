@@ -62,6 +62,7 @@ class HotelFacilitiesPagerAdapter(context: Context, data: HotelFacilitiesCategor
                 view.findViewById<TextView>(R.id.text_current_page).text = (position + 1).toString()
                 Glide.with(view.context)
                         .load(FileUtils.getFileFromStorage(item.file_name))
+                        .skipMemoryCache(true)
                         .into(view.findViewById<ImageView>(R.id.image_photo))
             }
             TAG_TYPE_2 -> {
@@ -71,12 +72,14 @@ class HotelFacilitiesPagerAdapter(context: Context, data: HotelFacilitiesCategor
                 view.findViewById<TextView>(R.id.text_description).text = item.content
                 Glide.with(view.context)
                         .load(FileUtils.getFileFromStorage(item.file_name))
+                        .skipMemoryCache(true)
                         .into(view.findViewById<ImageView>(R.id.image_photo))
             }
             TAG_TYPE_3 -> {
                 view.findViewById<TextView>(R.id.text_description).text = item.content
                 Glide.with(view.context)
                         .load(FileUtils.getFileFromStorage(item.file_name))
+                        .skipMemoryCache(true)
                         .into(view.findViewById<ImageView>(R.id.image_photo))
             }
         }

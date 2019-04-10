@@ -45,6 +45,7 @@ open class TemplateType1PagerAdapter(context: Context, data: RoomServiceCategori
         view.findViewById<TextView>(R.id.text_total_page).text = String.format("/%d", mListViews.size)
         Glide.with(view.context)
                 .load(FileUtils.getFileFromStorage(item.file_name))
+                .skipMemoryCache(true)
                 .into(view.findViewById<ImageView>(R.id.image_content))
 
 

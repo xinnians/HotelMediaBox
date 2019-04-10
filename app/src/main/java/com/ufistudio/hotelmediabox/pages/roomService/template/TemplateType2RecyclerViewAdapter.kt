@@ -35,6 +35,7 @@ class TemplateType2RecyclerViewAdapter(data: ArrayList<RoomServiceContent>) : Re
             holder.itemView.text_description.text = item.content
             Glide.with(holder.itemView.context)
                     .load(FileUtils.getFileFromStorage(item.image))
+                    .skipMemoryCache(true)
                     .into(holder.itemView.image_top)
         }
     }

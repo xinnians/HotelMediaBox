@@ -89,12 +89,14 @@ open class ExoPlayerHelper {
         mVideoView.findViewById<TextView>(R.id.text_bottom_title).text = "TV 2"
         Glide.with(mContext!!)
                 .load(ColorDrawable(ContextCompat.getColor(mContext!!, android.R.color.holo_blue_dark)))
+                .skipMemoryCache(true)
                 .apply(RequestOptions.circleCropTransform())
                 .into(mVideoView.findViewById<ImageView>(R.id.image_channel_center))
         var requestOptions = RequestOptions()
         requestOptions = requestOptions.transform(CenterCrop(), RoundedCorners(16))
         Glide.with(mContext!!)
                 .load(ColorDrawable(ContextCompat.getColor(mContext!!, android.R.color.holo_blue_dark)))
+                .skipMemoryCache(true)
                 .apply(requestOptions)
                 .into(mVideoView.findViewById<ImageView>(R.id.image_bottom_channel))
     }

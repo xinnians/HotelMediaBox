@@ -82,6 +82,7 @@ class UserGuideFragment : InteractionView<OnPageInteractionListener.Primary>(), 
 
                 Glide.with(context!!)
                         .load(FileUtils.getFileFromStorage(mData?.image!!))
+                        .skipMemoryCache(true)
                         .into(imageView)
 
             }

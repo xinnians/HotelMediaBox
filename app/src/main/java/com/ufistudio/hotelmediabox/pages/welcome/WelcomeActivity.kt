@@ -150,6 +150,7 @@ class WelcomeActivity : AppCompatActivity(), ViewModelsCallback, View.OnClickLis
         mWelcomeContent.let {
             Glide.with(this)
                     .load(FileUtils.getFileFromStorage(it?.titleImage!!))
+                    .skipMemoryCache(true)
                     .into(imageView_title)
 
             view_frame.background =
