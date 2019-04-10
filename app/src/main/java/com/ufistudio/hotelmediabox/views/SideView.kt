@@ -12,6 +12,7 @@ import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.constants.Page
 import com.ufistudio.hotelmediabox.interfaces.OnItemClickListener
 import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
+import com.ufistudio.hotelmediabox.pages.home.HomeFeatureEnum
 import com.ufistudio.hotelmediabox.repository.data.HomeIcons
 import kotlinx.android.synthetic.main.view_left_side.view.*
 
@@ -26,6 +27,9 @@ import kotlinx.android.synthetic.main.view_left_side.view.*
  * Step 5. If you want to listener click item of SideView, you can call setOnItemClickListener() to listen.
  *
  */
+const val ARG_CURRENT_INDEX: Int = 0
+const val ARG_CURRENT_BACK_TITLE: Int = 1
+
 class SideView : ConstraintLayout, OnItemClickListener {
 
     private var mAdapter: SideViewAdapter? = null
@@ -75,6 +79,30 @@ class SideView : ConstraintLayout, OnItemClickListener {
 
     fun scrollToPosition(position: Int) {
         icon_list.scrollToPosition(position)
+    }
+
+    /**
+     * Set Side view default Focus
+     */
+    fun setFocus(homeIcons: ArrayList<HomeIcons>?, feature: HomeFeatureEnum): HashMap<Int, String> {
+        var currentIndex: Int = -1
+        var currentTitle: String = ""
+        if (homeIcons != null) {
+            for (i in 0 until homeIcons.size) {
+                currentIndex++
+                if (homeIcons[i].id == feature.id) {
+                    currentTitle = homeIcons[i].name
+                    break
+                }
+                if (homeIcons[i].enable == 0) {
+                    currentIndex--
+                }
+            }
+        }
+        val result: HashMap<Int, String> = HashMap<Int, String>()
+        result[ARG_CURRENT_BACK_TITLE] = currentTitle
+        result[ARG_CURRENT_INDEX] = currentIndex.toString()
+        return result
     }
 
     override fun onClick(view: View?) {

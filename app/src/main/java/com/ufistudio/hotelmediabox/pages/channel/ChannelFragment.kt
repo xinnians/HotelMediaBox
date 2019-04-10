@@ -1,18 +1,12 @@
 package com.ufistudio.hotelmediabox.pages.channel
 
-import android.arch.lifecycle.Observer
 import android.content.Intent
 import android.graphics.PixelFormat
-import android.os.Build
 import android.os.Bundle
-import android.support.annotation.RequiresApi
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.*
-import android.view.View.*
-import com.bumptech.glide.Glide
 import com.ufistudio.hotelmediabox.AppInjector
-import com.ufistudio.hotelmediabox.DVBHelper
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.constants.Page
 import com.ufistudio.hotelmediabox.helper.ExoPlayerHelper
@@ -22,15 +16,14 @@ import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.pages.fullScreen.FullScreenActivity
 import com.ufistudio.hotelmediabox.repository.data.TVChannel
 import io.reactivex.Observable
-import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import com.ufistudio.hotelmediabox.pages.home.HomeFeatureEnum
 import com.ufistudio.hotelmediabox.repository.data.HomeIcons
-import com.ufistudio.hotelmediabox.utils.FileUtils
+import com.ufistudio.hotelmediabox.views.ARG_CURRENT_BACK_TITLE
+import com.ufistudio.hotelmediabox.views.ARG_CURRENT_INDEX
 import kotlinx.android.synthetic.main.fragment_channel.*
-import kotlinx.android.synthetic.main.view_bottom_fullscreen.*
 import java.util.concurrent.TimeUnit
 
 class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
@@ -45,6 +38,8 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
     private var mListFocus: Boolean = false //節目list 是否被focus
     private var mHomeIcons: ArrayList<HomeIcons>? = null //SideView List
     private var mDisposable: Disposable? = null
+    private var mCurrentSideIndex: Int = -1 //當前頁面side view index
+    private var mSideViewState: HashMap<Int, String> = HashMap<Int, String>()//拿來儲存當前的sideView index與 Back上方的Title
 
     companion object {
         fun newInstance(): ChannelFragment = ChannelFragment()
@@ -63,7 +58,6 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
 //        mViewModel.initChannelsError.observe(this, Observer { throwable -> throwable?.let { initChannelsError(it) } })
 
         mExoPlayerHelper = ExoPlayerHelper()
-
         mHomeIcons = arguments?.getParcelableArrayList(Page.ARG_BUNDLE)
     }
 
@@ -117,6 +111,9 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
     }
 
     private fun initView() {
+        mSideViewState.putAll(sideView.setFocus(mHomeIcons, HomeFeatureEnum.LIVE_TV))
+        mCurrentSideIndex = mSideViewState[ARG_CURRENT_INDEX]!!.toInt()
+        text_back.text = mSideViewState[ARG_CURRENT_BACK_TITLE]
         dvbView.holder.addCallback(object : SurfaceHolder.Callback {
             override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
             }
@@ -159,10 +156,10 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
         }
 
         mDisposable = Observable.timer(400, TimeUnit.MILLISECONDS)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                {}, { onError -> Log.e(TAG, "error:$onError") }, {
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        {}, { onError -> Log.e(TAG, "error:$onError") }, {
 
                     if (channelInfo.chType == "DVBT") {
 
@@ -188,7 +185,7 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
         if (!isGenre) {
             mChannelListAdapter.getCurrentTVChannel()?.let { channel ->
                 var name =
-                    channel.chNum + ": " + channel.chName + " (${channel.chIp.frequency}mhz,${channel.chIp.dvbParameter})"
+                        channel.chNum + ": " + channel.chName + " (${channel.chIp.frequency}mhz,${channel.chIp.dvbParameter})"
                 text_channel_info.text = name
                 onChannelSelectListener(channel)
             }
@@ -206,9 +203,10 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
                     view_channel_list.smoothScrollToPosition(mChannelListAdapter.getSelectPosition())
                     mChannelListAdapter.selectDownItem()?.let { channel ->
                         var name =
-                            channel.chNum + ": " + channel.chName + " (${channel.chIp.frequency}mhz,${channel.chIp.dvbParameter})"
+                                channel.chNum + ": " + channel.chName + " (${channel.chIp.frequency}mhz,${channel.chIp.dvbParameter})"
                         text_channel_info.text = name
-                        onChannelSelectListener(channel) }
+                        onChannelSelectListener(channel)
+                    }
 
                 }
             }
@@ -219,9 +217,10 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
                     view_channel_list.smoothScrollToPosition(mChannelListAdapter.getSelectPosition())
                     mChannelListAdapter.selectUPItem()?.let { channel ->
                         var name =
-                            channel.chNum + ": " + channel.chName + " (${channel.chIp.frequency}mhz,${channel.chIp.dvbParameter})"
+                                channel.chNum + ": " + channel.chName + " (${channel.chIp.frequency}mhz,${channel.chIp.dvbParameter})"
                         text_channel_info.text = name
-                        onChannelSelectListener(channel) }
+                        onChannelSelectListener(channel)
+                    }
 
                 }
             }
@@ -242,13 +241,12 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
             KeyEvent.KEYCODE_CHANNEL_DOWN -> {
             }
             KeyEvent.KEYCODE_BACK -> {
-                if (!sideView.isShown) {
-                    mGenreFocus = false
-                    mListFocus = false
+                if (sideView.isShown) {
+                    displaySideView(false)
+                } else {
                     displaySideView(true)
-//                    mGenreAdapter.selectLast(mLastGenreSelectIndex)
-                    return true
                 }
+                return true
             }
         }
 
@@ -275,15 +273,17 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
      */
     private fun displaySideView(show: Boolean) {
         if (show) {
+            layout_back.visibility = View.GONE
             sideView.visibility = View.VISIBLE
-//            layout_back.visibility = View.GONE
 //            view_line.visibility = View.VISIBLE
-//            mGenreAdapter.selectLast(-1)
+            switchFocus(false)
+            mListFocus = false
             sideView.setLastPosition(HomeFeatureEnum.LIVE_TV.ordinal)
         } else {
             sideView.visibility = View.GONE
-//            layout_back.visibility = View.VISIBLE
+            layout_back.visibility = View.VISIBLE
 //            view_line.visibility = View.GONE
+            switchFocus(true)
         }
     }
 }

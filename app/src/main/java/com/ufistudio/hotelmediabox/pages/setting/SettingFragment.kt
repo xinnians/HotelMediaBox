@@ -22,6 +22,8 @@ import com.ufistudio.hotelmediabox.pages.home.HomeFeatureEnum
 import com.ufistudio.hotelmediabox.repository.data.HomeIcons
 import com.ufistudio.hotelmediabox.repository.data.Setting
 import com.ufistudio.hotelmediabox.repository.data.SettingCategories
+import com.ufistudio.hotelmediabox.views.ARG_CURRENT_BACK_TITLE
+import com.ufistudio.hotelmediabox.views.ARG_CURRENT_INDEX
 import kotlinx.android.synthetic.main.fragment_setting.*
 
 class SettingFragment : InteractionView<OnPageInteractionListener.Primary>(), ViewModelsCallback, OnItemClickListener, OnItemFocusListener {
@@ -31,7 +33,7 @@ class SettingFragment : InteractionView<OnPageInteractionListener.Primary>(), Vi
     private var mHomeIcons: ArrayList<HomeIcons>? = null //SideView List
     private var mCurrentSideIndex: Int = -1 //當前頁面side view index
     private var mCurrentCategoryIndex: Int = 0 //當前頁面category index
-    private var mTextBackTitle: String = ""
+    private var mSideViewState: HashMap<Int, String> = HashMap<Int, String>()//拿來儲存當前的sideView index與 Back上方的Title
 
     private var mRendered: Boolean = false
     private var mSideViewFocus: Boolean = false
@@ -57,18 +59,6 @@ class SettingFragment : InteractionView<OnPageInteractionListener.Primary>(), Vi
         mViewModel.initSettingServiceError.observe(this, Observer { })
 
         mHomeIcons = arguments?.getParcelableArrayList(Page.ARG_BUNDLE)
-        if (mHomeIcons != null) {
-            for (i in 0 until mHomeIcons!!.size) {
-                mCurrentSideIndex++
-                if (mHomeIcons!![i].id == HomeFeatureEnum.SETTING.id) {
-                    mTextBackTitle = mHomeIcons!![i].name
-                    break
-                }
-                if (mHomeIcons!![i].enable == 0) {
-                    mCurrentSideIndex--
-                }
-            }
-        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -78,6 +68,7 @@ class SettingFragment : InteractionView<OnPageInteractionListener.Primary>(), Vi
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initSideView()
         recyclerView_category.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recyclerView_category.adapter = mAdapter
 
@@ -206,12 +197,20 @@ class SettingFragment : InteractionView<OnPageInteractionListener.Primary>(), Vi
     }
 
     private fun renderView() {
-        text_back.text = mTextBackTitle
         if (!mRendered && mData?.categories != null) {
             mRendered = true
             mCategoryFocus = true
             mAdapter.selectLast(mCurrentCategoryIndex)
             mAdapter.setData(mData?.categories!!)
         }
+    }
+
+    /**
+     * Init Side View
+     */
+    private fun initSideView() {
+        mSideViewState.putAll(sideView.setFocus(mHomeIcons, HomeFeatureEnum.SETTING))
+        mCurrentSideIndex = mSideViewState[ARG_CURRENT_INDEX]!!.toInt()
+        text_back.text = mSideViewState[ARG_CURRENT_BACK_TITLE]
     }
 }

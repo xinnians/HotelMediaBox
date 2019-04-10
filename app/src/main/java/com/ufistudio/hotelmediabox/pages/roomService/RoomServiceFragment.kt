@@ -20,6 +20,8 @@ import com.ufistudio.hotelmediabox.pages.home.HomeFeatureEnum
 import com.ufistudio.hotelmediabox.repository.data.HomeIcons
 import com.ufistudio.hotelmediabox.repository.data.RoomServiceCategories
 import com.ufistudio.hotelmediabox.repository.data.RoomServices
+import com.ufistudio.hotelmediabox.views.ARG_CURRENT_BACK_TITLE
+import com.ufistudio.hotelmediabox.views.ARG_CURRENT_INDEX
 import kotlinx.android.synthetic.main.fragment_room_service.*
 
 class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItemClickListener,
@@ -34,7 +36,8 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
     private var mHomeIcons: ArrayList<HomeIcons>? = null //SideView List
     private var mIsRendered: Boolean = false //判斷是否已經塞資料
     private var mCategoryFocus: Boolean = false
-    private var mTextBackTitle: String = ""
+    private var mSideViewState: HashMap<Int, String> = HashMap<Int, String>()//拿來儲存當前的sideView index與 Back上方的Title
+
 
 
     companion object {
@@ -53,19 +56,6 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
         mViewModel.initRoomServiceError.observe(this, Observer { onError(it) })
 
         mHomeIcons = arguments?.getParcelableArrayList(Page.ARG_BUNDLE)
-
-        if (mHomeIcons != null) {
-            for (i in 0 until mHomeIcons!!.size) {
-                mCurrentSideIndex++
-                if (mHomeIcons!![i].id == HomeFeatureEnum.ROOM_SERVICE.id) {
-                    mTextBackTitle = mHomeIcons!![i].name
-                    break
-                }
-                if (mHomeIcons!![i].enable == 0) {
-                    mCurrentSideIndex--
-                }
-            }
-        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -75,6 +65,7 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initSideView()
         recyclerView_service.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recyclerView_service.adapter = mAdapter
 
@@ -162,7 +153,6 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
      * 塞資料
      */
     private fun renderView() {
-        text_back.text = mTextBackTitle
         if (!mIsRendered) {
             if (mData?.categories != null) {
                 mIsRendered = true
@@ -171,6 +161,15 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
                 mAdapter.setData(mData?.categories!!)
             }
         }
+    }
+
+    /**
+     * Init Side View
+     */
+    private fun initSideView() {
+        mSideViewState.putAll(sideView.setFocus(mHomeIcons, HomeFeatureEnum.ROOM_SERVICE))
+        mCurrentSideIndex = mSideViewState[ARG_CURRENT_INDEX]!!.toInt()
+        text_back.text = mSideViewState[ARG_CURRENT_BACK_TITLE]
     }
 
     override fun onClick(view: View?) {
