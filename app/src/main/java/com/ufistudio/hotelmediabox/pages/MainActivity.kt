@@ -8,6 +8,7 @@ import com.ufistudio.hotelmediabox.constants.Page
 import com.ufistudio.hotelmediabox.interfaces.OnFragmentKeyListener
 import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.pages.base.PaneViewActivity
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : PaneViewActivity(), OnPageInteractionListener.Primary {
 
@@ -41,6 +42,11 @@ class MainActivity : PaneViewActivity(), OnPageInteractionListener.Primary {
             switchPage(R.id.fragment_container, page, Bundle(), true, false)
         }
 
+    }
+
+    override fun onStop() {
+        dateView.stopRefreshTimer()
+        super.onStop()
     }
 
     private fun init() {

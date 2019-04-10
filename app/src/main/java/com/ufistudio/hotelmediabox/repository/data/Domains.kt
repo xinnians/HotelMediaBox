@@ -187,7 +187,8 @@ data class Config(
 data class ConfigContent(
         var language: String,
         var upgradeUrl: String,
-        var room: String
+        var room: String,
+        var timeFormat: String
 ) : Parcelable
 
 /*
