@@ -275,14 +275,15 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
         if (show) {
             layout_back.visibility = View.GONE
             sideView.visibility = View.VISIBLE
-//            view_line.visibility = View.VISIBLE
+            view_line.visibility = View.VISIBLE
             switchFocus(false)
             mListFocus = false
-            sideView.setLastPosition(HomeFeatureEnum.LIVE_TV.ordinal)
+            sideView.scrollToPosition(mCurrentSideIndex)
+            sideView.setLastPosition(mCurrentSideIndex)
         } else {
             sideView.visibility = View.GONE
             layout_back.visibility = View.VISIBLE
-//            view_line.visibility = View.GONE
+            view_line.visibility = View.GONE
             switchFocus(true)
         }
     }

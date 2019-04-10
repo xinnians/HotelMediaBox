@@ -91,7 +91,7 @@ class SideView : ConstraintLayout, OnItemClickListener {
             for (i in 0 until homeIcons.size) {
                 currentIndex++
                 if (homeIcons[i].id == feature.id) {
-                    currentTitle = homeIcons[i].name
+                    currentTitle = homeIcons[i].backTitle
                     break
                 }
                 if (homeIcons[i].enable == 0) {

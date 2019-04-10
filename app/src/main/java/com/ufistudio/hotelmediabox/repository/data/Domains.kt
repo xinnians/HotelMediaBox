@@ -5,17 +5,17 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class Logo(
-    var path: String = "",
-    var fileName: String = ""
+        var path: String = "",
+        var fileName: String = ""
 ) : Parcelable
 
 @Parcelize
 data class ConnectDetail(
-    var ip: String = "",
-    var port: String = "",
-    var frequency: String = "",
-    var bandwidth: String = "",
-    var dvbParameter: String = ""
+        var ip: String = "",
+        var port: String = "",
+        var frequency: String = "",
+        var bandwidth: String = "",
+        var dvbParameter: String = ""
 ) : Parcelable
 
 abstract class BaseChannel {
@@ -33,18 +33,18 @@ enum class TVType {
 
 @Parcelize
 data class TVChannel(
-    override var chNum: String = "cNumber",
-    override var chName: String = "CName",
-    override var chType: String = "",
-    override var chGenre: String = "",
-    override var chIp: ConnectDetail = ConnectDetail(),
-    override var chLogo: Logo = Logo()
+        override var chNum: String = "cNumber",
+        override var chName: String = "CName",
+        override var chType: String = "",
+        override var chGenre: String = "",
+        override var chIp: ConnectDetail = ConnectDetail(),
+        override var chLogo: Logo = Logo()
 ) : BaseChannel(), Parcelable
 
 @Parcelize
 data class DVBInfo(
-    var Frequency: String = "",
-    var Bandwidth: String = ""
+        var Frequency: String = "",
+        var Bandwidth: String = ""
 ) : Parcelable
 
 /*
@@ -73,6 +73,7 @@ data class HomeStageType(
 data class HomeIcons(
         val id: Int,
         val name: String,
+        val backTitle: String,
         val enable: Int
 ) : Parcelable
 

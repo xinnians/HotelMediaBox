@@ -145,8 +145,8 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
      */
     private fun displaySideView(show: Boolean) {
         if (show) {
-            sideView.visibility = View.VISIBLE
             layout_back.visibility = View.GONE
+            sideView.visibility = View.VISIBLE
             view_line.visibility = View.VISIBLE
             mAdapter.sideViewIsShow(true)
             mCategoryFocus = false
