@@ -17,6 +17,7 @@ import com.google.android.exoplayer2.source.ExtractorMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DataSpec
+import com.google.android.exoplayer2.upstream.FileDataSource
 import com.google.android.exoplayer2.upstream.RawResourceDataSource
 import com.google.android.exoplayer2.upstream.UdpDataSource
 import com.ufistudio.hotelmediabox.R
@@ -67,6 +68,28 @@ open class ExoPlayerHelper {
     fun setMp4Source(mp4Uri: Int, playWhenReady: Boolean = true) {
         val dtaSource = RawResourceDataSource(mContext)
         val dataSpec = DataSpec(RawResourceDataSource.buildRawResourceUri(mp4Uri))
+        try {
+            dtaSource.open(dataSpec)
+
+            val factory = com.google.android.exoplayer2.upstream.DataSource.Factory { dtaSource }
+            val videoSource = ExtractorMediaSource.Factory(factory).createMediaSource(dtaSource.uri)
+            mPlayer.prepare(videoSource)
+
+        } catch (e: UdpDataSource.UdpDataSourceException) {
+            e.printStackTrace()
+        }
+
+        mPlayer.playWhenReady = playWhenReady
+    }
+
+    /**
+     * Set File source.
+     * @fileUri : Uri of file
+     * @playWhenReady: If you want play when ready , default:true
+     */
+    fun setFileSource(fileUri: Uri, playWhenReady: Boolean = true) {
+        val dtaSource = FileDataSource()
+        val dataSpec = DataSpec(fileUri)
         try {
             dtaSource.open(dataSpec)
 

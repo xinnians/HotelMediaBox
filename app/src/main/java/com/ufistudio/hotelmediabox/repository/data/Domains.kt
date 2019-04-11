@@ -244,6 +244,25 @@ data class SettingSubContent(
 ) : Parcelable
 
 /*
+   Flights Info
+ */
+@Parcelize
+data class FlightsInfo(
+        var categories: ArrayList<FlightsInfoCategories>
+) : Parcelable
+
+@Parcelize
+data class FlightsInfoCategories(
+        var title: String,
+        var contents: ArrayList<FlightsInfoContent>
+) : Parcelable
+
+@Parcelize
+data class FlightsInfoContent(
+        var iptv: String
+) : Parcelable
+
+/*
     Broadcast
  */
 @Parcelize
