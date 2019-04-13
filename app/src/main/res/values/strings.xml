@@ -39,5 +39,7 @@
 
     <!--Command-->
     <string name="symbol_temp">°C</string>
+    <string name="dialog_error_title">Error</string>
+    <string name="dialog_cannot_find_file">Sorry,The file is not found.Please connect the hotel</string>
 
 </resources>

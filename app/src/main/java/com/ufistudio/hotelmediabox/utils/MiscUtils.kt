@@ -78,7 +78,18 @@ object MiscUtils {
      */
     fun getJsonLanguageAutoSwitch(fileName: String): String {
         val gson = Gson()
-        val config: Config = gson.fromJson(getJsonFromStorage("config.json"), Config::class.java)
+        var config: Config? = null
+        try {
+            config = gson.fromJson(getJsonFromStorage("config.json"), Config::class.java)
+        } catch (e: IllegalStateException) {
+            Log.e(TAG, "getJsonLanguageAutoSwitch = $e")
+            return ""
+        }
+
+        if (config == null) {
+            return ""
+        }
+
         var finalName: String = ""
         finalName = if (File("${Environment.getExternalStorageDirectory()}/$TAG_DEFAULT_LOCAL_PATH${fileName}_${config.config.language}.json").exists()) {
             "${fileName}_${config.config.language}.json"
@@ -86,7 +97,7 @@ object MiscUtils {
             "${fileName}_en.json"
         }
 
-        Log.d("neo","new file name = $finalName")
+        Log.d(TAG, "new file name = $finalName")
         return getJsonFromStorage(finalName)
     }
 

@@ -160,8 +160,14 @@ class WelcomeActivity : AppCompatActivity(), ViewModelsCallback, View.OnClickLis
 
     override fun onError(t: Throwable?) {
         Log.d(TAG, "onError = ${t?.message}")
-        startActivity(Intent(this, FactoryActivity::class.java))
-        finish()
+        AlertDialog.Builder(this)
+                .setTitle(R.string.dialog_error_title)
+                .setMessage(R.string.dialog_cannot_find_file)
+                .setCancelable(false)
+                .create()
+                .show()
+//        startActivity(Intent(this, FactoryActivity::class.java))
+//        finish()
     }
 
     override fun onProgress(b: Boolean) {
