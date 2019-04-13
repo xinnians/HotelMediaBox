@@ -3,7 +3,6 @@ package com.ufistudio.hotelmediabox.pages
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import com.ufistudio.hotelmediabox.DVBHelper
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.pages.welcome.WelcomeActivity
 import com.ufistudio.hotelmediabox.services.UdpReceiver
@@ -30,7 +29,7 @@ class SplashActivity : AppCompatActivity() {
 //        val intent = Intent(this, MainActivity::class.java)
 //        val intent = Intent(this, DVBTestActivity::class.java)
         val timer: Timer = Timer()
-        timer.schedule(6000L) {
+        timer.schedule(2500L) {
             startActivity(intent)
             finish()
         }

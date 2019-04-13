@@ -1,10 +1,11 @@
 package com.ufistudio.hotelmediabox.repository.remote
 
+import com.ufistudio.hotelmediabox.repository.data.BroadcastRequest
 import com.ufistudio.hotelmediabox.repository.remote.RemoteAPI.Companion.getOkHttpClient
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
+import okhttp3.MultipartBody
 import okhttp3.ResponseBody
-import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -35,11 +36,11 @@ class ApiClient {
         val client = getOkHttpClient()
 
         val retrofit = Retrofit.Builder()
-            .baseUrl(url)
-            .client(client)
-            .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
-            .build()
+                .baseUrl(url)
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
+                .build()
 
         mService = retrofit.create(ApiClientService::class.java)
     }
@@ -50,4 +51,11 @@ class ApiClient {
 
     fun downloadFileWithUrl(url: String): Single<ResponseBody> = mService.download(url)
 
+    fun postCheckStatus(url: String, body: BroadcastRequest): Single<ResponseBody> {
+        return mService.checkStatus(url, body)
+    }
+
+    fun postChannel(url: String, body: BroadcastRequest, file: MultipartBody.Part): Single<ResponseBody> {
+        return mService.postChannelList(url, body, file)
+    }
 }
