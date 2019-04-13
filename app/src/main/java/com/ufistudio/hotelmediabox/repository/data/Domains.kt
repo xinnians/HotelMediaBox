@@ -263,6 +263,40 @@ data class FlightsInfoContent(
 ) : Parcelable
 
 /*
+   Weather
+ */
+@Parcelize
+data class Weather(
+        var categories: ArrayList<WeatherCategories>,
+        var title: String,
+        var subtitle: String,
+        var update: String,
+        var temp_none: String,
+        var note: NoteButton
+) : Parcelable
+
+@Parcelize
+data class WeatherCategories(
+        var title: String,
+        var contents: WeatherContent
+) : Parcelable
+
+@Parcelize
+data class WeatherContent(
+        var title: String,
+        var subtitle: String
+) : Parcelable
+
+/*
+    Note button on bottom
+ */
+@Parcelize
+data class NoteButton(
+        var home: String,
+        var back: String
+) : Parcelable
+
+/*
     Broadcast
  */
 @Parcelize
