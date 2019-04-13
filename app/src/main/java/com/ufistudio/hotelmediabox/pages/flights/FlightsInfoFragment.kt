@@ -42,9 +42,10 @@ class FlightsInfoFragment : InteractionView<OnPageInteractionListener.Primary>()
     private var mData: FlightsInfo? = null
     private var mHomeIcons: ArrayList<HomeIcons>? = null //SideView List
     private var mExoPlayerHelper: ExoPlayerHelper = ExoPlayerHelper()
+
     private var mCurrentIpTvSelectIndex: HashMap<Int, Int>? = HashMap() //記錄當前在第幾個Item的Ip Tv, key = category index, value = Ip tv index
     private var mTotalSize: HashMap<Int, Int>? = HashMap()//所有category內容的size, key = category index, value = category content size
-    private var mCurrentContent: List<FlightsInfoContent>? = null
+    private var mCurrentContent: List<FlightsInfoContent>? = null // 被選到的category內的IP tv address
 
     companion object {
         fun newInstance(): FlightsInfoFragment = FlightsInfoFragment()
@@ -113,32 +114,21 @@ class FlightsInfoFragment : InteractionView<OnPageInteractionListener.Primary>()
                     mCategoryFocus = false
                     mContentFocus = true
                 } else if (mContentFocus) {
-                    if (!imageView_arrow_left.isShown) {
-                        imageView_arrow_left.visibility = View.VISIBLE
-                    }
                     val curryIndex = mCurrentIpTvSelectIndex!![mCurrentCategoryIndex]!!
                     if (curryIndex < mTotalSize!![mCurrentCategoryIndex]!! - 1) {
                         mCurrentIpTvSelectIndex!![mCurrentCategoryIndex] = curryIndex + 1
                         setAndPlayVideo()
                     }
-                    if (mCurrentIpTvSelectIndex!![mCurrentCategoryIndex]!! == mTotalSize!![mCurrentCategoryIndex]!! - 1)
-                        imageView_arrow_right.visibility = View.INVISIBLE
                 }
                 return true
             }
             KeyEvent.KEYCODE_DPAD_LEFT -> {
                 if (mContentFocus) {
-                    if (!imageView_arrow_right.isShown) {
-                        imageView_arrow_right.visibility = View.VISIBLE
-                    }
-
                     val curryIndex = mCurrentIpTvSelectIndex!![mCurrentCategoryIndex]!!
                     if (curryIndex != 0) {
                         mCurrentIpTvSelectIndex!![mCurrentCategoryIndex] = curryIndex - 1
                         setAndPlayVideo()
                     }
-                    if (mCurrentIpTvSelectIndex!![mCurrentCategoryIndex]!! == 0)
-                        imageView_arrow_left.visibility = View.INVISIBLE
 
                     return true
                 }
@@ -151,7 +141,8 @@ class FlightsInfoFragment : InteractionView<OnPageInteractionListener.Primary>()
                         displaySideView(true)
                     else {
                         mContentFocus = false
-                        displaySideView(false)
+                        mCategoryFocus = true
+                        mAdapter.selectLast(mCurrentCategoryIndex)
                     }
                 }
                 return true
@@ -247,6 +238,31 @@ class FlightsInfoFragment : InteractionView<OnPageInteractionListener.Primary>()
      * 設置播放影片
      */
     private fun setAndPlayVideo() {
+        /*
+            設置左右箭頭
+            只有一筆的時候箭頭不顯示
+            index在0的時候左鍵頭部顯示
+            index在最後一筆的時候右箭頭不顯示
+         */
+        when {
+            mCurrentContent?.size == 1 -> {
+                imageView_arrow_left.visibility = View.INVISIBLE
+                imageView_arrow_right.visibility = View.INVISIBLE
+            }
+            mCurrentIpTvSelectIndex!![mCurrentCategoryIndex] == 0 -> {
+                imageView_arrow_left.visibility = View.INVISIBLE
+                imageView_arrow_right.visibility = View.VISIBLE
+            }
+            mCurrentIpTvSelectIndex!![mCurrentCategoryIndex] == mCurrentContent!!.size - 1 -> {
+                imageView_arrow_left.visibility = View.VISIBLE
+                imageView_arrow_right.visibility = View.INVISIBLE
+            }
+            else -> {
+                imageView_arrow_left.visibility = View.VISIBLE
+                imageView_arrow_right.visibility = View.VISIBLE
+            }
+        }
+
         mExoPlayerHelper.stop()
         try {
             mContentPlaying = true
