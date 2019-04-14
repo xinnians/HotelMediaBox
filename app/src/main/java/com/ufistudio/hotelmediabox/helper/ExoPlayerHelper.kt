@@ -23,7 +23,7 @@ import com.google.android.exoplayer2.upstream.UdpDataSource
 import com.ufistudio.hotelmediabox.R
 
 open class ExoPlayerHelper {
-    private lateinit var mPlayer: SimpleExoPlayer
+    private var mPlayer: SimpleExoPlayer?=null
     private lateinit var mVideoView: PlayerView
     private var mContext: Context? = null
     private var mVideoFrameParams: ConstraintLayout.LayoutParams? = null
@@ -51,13 +51,13 @@ open class ExoPlayerHelper {
 
             val factory = com.google.android.exoplayer2.upstream.DataSource.Factory { udpDataSource }
             val videoSource = ExtractorMediaSource.Factory(factory).createMediaSource(udpDataSource.uri)
-            mPlayer.prepare(videoSource)
+            mPlayer?.prepare(videoSource)
 
         } catch (e: UdpDataSource.UdpDataSourceException) {
             e.printStackTrace()
         }
 
-        mPlayer.playWhenReady = playWhenReady
+        mPlayer?.playWhenReady = playWhenReady
     }
 
     /**
@@ -73,13 +73,13 @@ open class ExoPlayerHelper {
 
             val factory = com.google.android.exoplayer2.upstream.DataSource.Factory { dtaSource }
             val videoSource = ExtractorMediaSource.Factory(factory).createMediaSource(dtaSource.uri)
-            mPlayer.prepare(videoSource)
+            mPlayer?.prepare(videoSource)
 
         } catch (e: UdpDataSource.UdpDataSourceException) {
             e.printStackTrace()
         }
 
-        mPlayer.playWhenReady = playWhenReady
+        mPlayer?.playWhenReady = playWhenReady
     }
 
     /**
@@ -95,13 +95,13 @@ open class ExoPlayerHelper {
 
             val factory = com.google.android.exoplayer2.upstream.DataSource.Factory { dtaSource }
             val videoSource = ExtractorMediaSource.Factory(factory).createMediaSource(dtaSource.uri)
-            mPlayer.prepare(videoSource)
+            mPlayer?.prepare(videoSource)
 
         } catch (e: UdpDataSource.UdpDataSourceException) {
             e.printStackTrace()
         }
 
-        mPlayer.playWhenReady = playWhenReady
+        mPlayer?.playWhenReady = playWhenReady
     }
 
     /**
@@ -128,14 +128,14 @@ open class ExoPlayerHelper {
      * stop video
      */
     fun stop() {
-        mPlayer.playWhenReady = false
+        mPlayer?.playWhenReady = false
     }
 
     /**
      * Start video
      */
     fun play() {
-        mPlayer.playWhenReady = true
+        mPlayer?.playWhenReady = true
     }
 
     /**
@@ -143,7 +143,7 @@ open class ExoPlayerHelper {
      * You have to call this Method.
      */
     fun release() {
-        mPlayer.release()
+        mPlayer?.release()
         mIsFullscreen = false
     }
 

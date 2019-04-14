@@ -9,15 +9,12 @@ import com.google.gson.Gson
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.constants.Page
 import com.ufistudio.hotelmediabox.interfaces.OnFragmentKeyListener
-import com.ufistudio.hotelmediabox.pages.TemplateType1ViewModel
 import com.ufistudio.hotelmediabox.pages.base.InteractionView
 import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.repository.data.HotelFacilitiesCategories
 import kotlinx.android.synthetic.main.fragment_room_service_content.*
 
 class FacilitiesContentFragment : InteractionView<OnPageInteractionListener.Primary>(), OnFragmentKeyListener {
-
-    private lateinit var mViewModel: TemplateType1ViewModel
 
     private lateinit var mData: HotelFacilitiesCategories
     private var mCurrentIndex: Int = 0
