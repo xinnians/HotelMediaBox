@@ -6,7 +6,6 @@ import com.ufistudio.hotelmediabox.pages.*
 import com.ufistudio.hotelmediabox.pages.home.HomeFragment
 import com.ufistudio.hotelmediabox.pages.channel.ChannelFragment
 import com.ufistudio.hotelmediabox.pages.facilies.HotelFacilitiesFragment
-import com.ufistudio.hotelmediabox.pages.facilies.template.FacilitiesContentFragment
 import com.ufistudio.hotelmediabox.pages.flights.FlightsInfoFragment
 import com.ufistudio.hotelmediabox.pages.nearby.NearbyMeFragment
 import com.ufistudio.hotelmediabox.pages.nearby.template.FoodFragment
@@ -32,7 +31,6 @@ object Page {
     const val SMART_APPS = 1003
     const val ROOM_SERVICE = 1004
     const val HOTEL_FACILITIES = 1007
-    const val HOTEL_FACILITIES_CONTENT = 1008
     const val SETTING = 1009
     const val LANGUAGE_SETTING = 1010
     const val USER_GUIDE = 1011
@@ -56,7 +54,6 @@ object Page {
             SMART_APPS -> result = SmartAppsFragment.newInstance()
             ROOM_SERVICE -> result = RoomServiceFragment.newInstance()
             HOTEL_FACILITIES -> result = HotelFacilitiesFragment.newInstance()
-            HOTEL_FACILITIES_CONTENT -> result = FacilitiesContentFragment.newInstance()
             SETTING -> result = SettingFragment.newInstance()
             LANGUAGE_SETTING -> result = LanguageFragment.newInstance()
             USER_GUIDE -> result = UserGuideFragment.newInstance()

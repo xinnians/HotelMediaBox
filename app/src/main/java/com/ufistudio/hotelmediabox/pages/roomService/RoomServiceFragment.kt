@@ -106,6 +106,11 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
         super.onDestroy()
     }
 
+    override fun onStop() {
+        mExoPlayerHelper.release()
+        super.onStop()
+    }
+
     override fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         when (keyCode) {
             KeyEvent.KEYCODE_DPAD_UP,
