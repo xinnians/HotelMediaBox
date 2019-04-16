@@ -158,6 +158,7 @@
         android:layout_marginStart="@dimen/_14sdp"
         android:layout_marginTop="@dimen/_4sdp"
         android:text="01 xbox"
+        android:textSize="@dimen/_9ssp"
         app:layout_constraintStart_toEndOf="@+id/layout_list"
         app:layout_constraintTop_toBottomOf="@+id/dvbView" />
 
@@ -169,6 +170,7 @@
         android:layout_marginEnd="@dimen/_23sdp"
         android:layout_marginBottom="@dimen/_13sdp"
         android:text="@string/tv_channel_fullscreen_home"
+        android:textSize="@dimen/_9ssp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -190,6 +192,7 @@
         android:layout_marginEnd="@dimen/_14sdp"
         android:layout_marginBottom="@dimen/_13sdp"
         android:text="@string/tv_channel_back"
+        android:textSize="@dimen/_9ssp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/imageView6" />
 
@@ -211,6 +214,7 @@
         android:layout_marginEnd="@dimen/_14sdp"
         android:layout_marginBottom="@dimen/_13sdp"
         android:text="@string/tv_channel_watch_channel"
+        android:textSize="@dimen/_9ssp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/imageView7" />
 

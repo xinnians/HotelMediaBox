@@ -24,6 +24,7 @@
             android:layout_height="0dp"
             android:layout_marginStart="@dimen/_7sdp"
             android:gravity="center|start"
+            android:textSize="@dimen/_9ssp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toRightOf="@+id/view_icon"
             app:layout_constraintRight_toRightOf="parent"
