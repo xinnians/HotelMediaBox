@@ -85,7 +85,7 @@
             android:id="@+id/text_description"
             style="@style/MainPrimaryText"
             android:layout_width="@dimen/_278sdp"
-            android:layout_height="75dp"
+            android:layout_height="@dimen/_57sdp"
             android:layout_marginBottom="@dimen/_15sdp"
             android:textSize="@dimen/_13ssp"
             app:layout_constraintBottom_toBottomOf="parent"
