@@ -158,7 +158,7 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
             mDisposable?.dispose()
         }
 
-        mDisposable = Observable.timer(400, TimeUnit.MILLISECONDS)
+        mDisposable = Observable.timer(500, TimeUnit.MILLISECONDS)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -203,12 +203,12 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
                 if (mGenreFocus) {
                     mChannelListAdapter.setGenreFilter(mGenreAdapter.selectDown().name)
                 } else if (mListFocus) {
-                    view_channel_list.scrollToPosition(mChannelListAdapter.getSelectPosition())
                     mChannelListAdapter.selectDownItem()?.let { channel ->
                         var name =
                             channel.chNum + ": " + channel.chName + " (${channel.chIp.frequency}mhz,${channel.chIp.dvbParameter})"
                         text_channel_info.text = name
                         onChannelSelectListener(channel) }
+                    view_channel_list.scrollToPosition(mChannelListAdapter.getSelectPosition())
 
                 }
             }
@@ -216,12 +216,13 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
                 if (mGenreFocus) {
                     mChannelListAdapter.setGenreFilter(mGenreAdapter.selectUp().name)
                 } else if (mListFocus) {
-                    view_channel_list.scrollToPosition(mChannelListAdapter.getSelectPosition())
+
                     mChannelListAdapter.selectUPItem()?.let { channel ->
                         var name =
                             channel.chNum + ": " + channel.chName + " (${channel.chIp.frequency}mhz,${channel.chIp.dvbParameter})"
                         text_channel_info.text = name
                         onChannelSelectListener(channel) }
+                    view_channel_list.scrollToPosition(mChannelListAdapter.getSelectPosition())
 
                 }
             }
