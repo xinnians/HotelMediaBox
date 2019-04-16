@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.ufistudio.hotelmediabox.AppInjector
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.interfaces.ViewModelsCallback
@@ -51,9 +52,9 @@ class WelcomeActivity : AppCompatActivity(), ViewModelsCallback, View.OnClickLis
         super.onResume()
 
         if (ContextCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED
+                this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
         ) {
 
             // Permission is not granted
@@ -66,9 +67,9 @@ class WelcomeActivity : AppCompatActivity(), ViewModelsCallback, View.OnClickLis
             } else {
                 // No explanation needed, we can request the permission.
                 ActivityCompat.requestPermissions(
-                        this,
-                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                        TAG_WRITE_PERMISSION_CODE
+                    this,
+                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    TAG_WRITE_PERMISSION_CODE
                 )
 
                 // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
@@ -88,10 +89,10 @@ class WelcomeActivity : AppCompatActivity(), ViewModelsCallback, View.OnClickLis
 
     private fun showGoToSetting() {
         AlertDialog.Builder(this)
-                .setTitle("Error")
-                .setMessage("open permission")
-                .setPositiveButton(android.R.string.ok) { dialog, which -> MiscUtils.openSetting(baseContext) }
-                .show()
+            .setTitle("Error")
+            .setMessage("open permission")
+            .setPositiveButton(android.R.string.ok) { dialog, which -> MiscUtils.openSetting(baseContext) }
+            .show()
     }
 
     private fun renderUI() {
@@ -117,8 +118,8 @@ class WelcomeActivity : AppCompatActivity(), ViewModelsCallback, View.OnClickLis
     }
 
     override fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<String>, grantResults: IntArray
+        requestCode: Int,
+        permissions: Array<String>, grantResults: IntArray
     ) {
         when (requestCode) {
             TAG_WRITE_PERMISSION_CODE -> {
@@ -149,11 +150,12 @@ class WelcomeActivity : AppCompatActivity(), ViewModelsCallback, View.OnClickLis
 
         mWelcomeContent.let {
             Glide.with(this)
-                    .load(FileUtils.getFileFromStorage(it?.titleImage!!))
-                    .into(imageView_title)
+                .load(FileUtils.getFileFromStorage(it?.titleImage!!))
+                .skipMemoryCache(true)
+                .into(imageView_title)
 
             view_frame.background =
-                    Drawable.createFromPath(FileUtils.getFileFromStorage(it.background)?.absolutePath)
+                Drawable.createFromPath(FileUtils.getFileFromStorage(it.background)?.absolutePath)
 
             button_ok.text = it.entryButton
             text_name.text = it.name
