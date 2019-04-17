@@ -24,14 +24,13 @@ import com.ufistudio.hotelmediabox.interfaces.ViewModelsCallback
 import com.ufistudio.hotelmediabox.pages.base.InteractionView
 import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.pages.home.HomeFeatureEnum
-import com.ufistudio.hotelmediabox.repository.data.HomeIcons
-import com.ufistudio.hotelmediabox.repository.data.HotelFacilities
-import com.ufistudio.hotelmediabox.repository.data.HotelFacilitiesCategories
-import com.ufistudio.hotelmediabox.repository.data.HotelFacilitiesContent
+import com.ufistudio.hotelmediabox.repository.data.*
 import com.ufistudio.hotelmediabox.utils.FileUtils
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_BACK_TITLE
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_INDEX
 import kotlinx.android.synthetic.main.fragment_facilities.*
+import kotlinx.android.synthetic.main.view_bottom_back_home.*
+import kotlinx.android.synthetic.main.view_bottom_ok_back_home.*
 
 private const val TAG_IMAGE = "image"
 private const val TAG_VIDEO = "video"
@@ -65,6 +64,8 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
     private var mVideoView1: PlayerView? = null
     private var mVideoView2: PlayerView? = null
     private var mVideoView3: PlayerView? = null
+
+    private var mNoteBottom: NoteButton? = null//右下角提示資訊
 
     private var mExoPlayerHelper: ExoPlayerHelper = ExoPlayerHelper()
 
@@ -113,10 +114,13 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
         super.onDestroy()
     }
 
-    override fun onStop() {
+    override fun onPause() {
+        mVideoView1?.visibility=View.GONE
+        mVideoView2?.visibility=View.GONE
+        mVideoView3?.visibility=View.GONE
         mExoPlayerHelper.stop()
         mExoPlayerHelper.release()
-        super.onStop()
+        super.onPause()
     }
 
     override fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
@@ -173,6 +177,9 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
                 }
                 return true
             }
+            KeyEvent.KEYCODE_DPAD_CENTER -> {
+                //TODO full screen image and video
+            }
         }
         return super.onFragmentKeyDown(keyCode, event)
     }
@@ -216,6 +223,10 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
                 mAdapter.selectLast(mCurrentCategoryIndex)
                 mAdapter.setData(mData?.categories!!)
             }
+
+            textView_back.text = mNoteBottom?.note?.back
+            textView_home.text = mNoteBottom?.note?.home
+            textView_ok.text = mNoteBottom?.note?.fullScreen
         }
     }
 
@@ -247,7 +258,9 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
 
     override fun onSuccess(it: Any?) {
         if (it != null) {
-            mData = it as HotelFacilities
+            val data: Pair<*, *> = it as Pair<*, *>
+            mData = data.first as HotelFacilities
+            mNoteBottom = data.second as NoteButton?
             renderView()
         }
     }
@@ -281,7 +294,9 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
         view_content_type1.visibility = View.VISIBLE
         view_content_type2.visibility = View.GONE
         view_content_type3.visibility = View.GONE
+
         checkArrow()
+        showFullScreenBottomNote()
 
         val item = list!![mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!]
         view_content_type1.findViewById<TextView>(R.id.text_total_page).text = String.format("/%d", list.size)
@@ -322,6 +337,7 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
         view_content_type3.visibility = View.GONE
 
         checkArrow()
+        hideFullScreenBottomNote()
 
         val item = list!![mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!]
         view_content_type2.findViewById<TextView>(R.id.text_total_page).text = String.format("/%d", list.size)
@@ -364,6 +380,7 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
         view_content_type3.visibility = View.VISIBLE
 
         checkArrow()
+        hideFullScreenBottomNote()
 
         val item = list!![mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!]
         view_content_type3.findViewById<TextView>(R.id.text_description).text = item.content
@@ -417,5 +434,19 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
                 imageView_arrow_right.visibility = View.VISIBLE
             }
         }
+    }
+
+    private fun showFullScreenBottomNote() {
+        if (!textView_ok.isShown)
+            textView_ok.visibility = View.VISIBLE
+        if (!imageView_ok.isShown)
+            imageView_ok.visibility = View.VISIBLE
+    }
+
+    private fun hideFullScreenBottomNote() {
+        if (textView_ok.isShown)
+            textView_ok.visibility = View.GONE
+        if (imageView_ok.isShown)
+            imageView_ok.visibility = View.GONE
     }
 }

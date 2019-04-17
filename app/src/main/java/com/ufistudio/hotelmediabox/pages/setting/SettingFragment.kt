@@ -20,11 +20,15 @@ import com.ufistudio.hotelmediabox.pages.base.InteractionView
 import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.pages.home.HomeFeatureEnum
 import com.ufistudio.hotelmediabox.repository.data.HomeIcons
+import com.ufistudio.hotelmediabox.repository.data.NoteButton
 import com.ufistudio.hotelmediabox.repository.data.Setting
 import com.ufistudio.hotelmediabox.repository.data.SettingCategories
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_BACK_TITLE
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_INDEX
 import kotlinx.android.synthetic.main.fragment_setting.*
+import kotlinx.android.synthetic.main.view_bottom_back_home.*
+import kotlinx.android.synthetic.main.view_bottom_ok_back_home.*
+import kotlinx.android.synthetic.main.view_bottom_up_down_ok_back_home.*
 
 class SettingFragment : InteractionView<OnPageInteractionListener.Primary>(), ViewModelsCallback, OnItemClickListener, OnItemFocusListener {
     private lateinit var mViewModel: SettingViewModel
@@ -40,6 +44,8 @@ class SettingFragment : InteractionView<OnPageInteractionListener.Primary>(), Vi
     private var mCategoryFocus: Boolean = false
     private var mContentFocus: Boolean = false
     private var mGuidLi: Boolean = false
+
+    private var mNoteBottom: NoteButton? = null//右下角提示資訊
 
     companion object {
         fun newInstance(): SettingFragment = SettingFragment()
@@ -80,7 +86,6 @@ class SettingFragment : InteractionView<OnPageInteractionListener.Primary>(), Vi
     override fun onStart() {
         super.onStart()
         renderView()
-
     }
 
     override fun onClick(view: View?) {
@@ -88,7 +93,9 @@ class SettingFragment : InteractionView<OnPageInteractionListener.Primary>(), Vi
 
     override fun onSuccess(it: Any?) {
         if (it != null) {
-            mData = it as Setting?
+            val data: Pair<*, *> = it as Pair<*, *>
+            mData = data.first as Setting?
+            mNoteBottom = data.second as NoteButton?
             renderView()
         }
     }
@@ -133,11 +140,13 @@ class SettingFragment : InteractionView<OnPageInteractionListener.Primary>(), Vi
                     val bundle: Bundle = Bundle()
                     bundle.putParcelable(Page.ARG_BUNDLE, category.contents)
                     getInteractionListener().switchPage(R.id.fragment_sub_content, Page.LANGUAGE_SETTING, bundle, true, false)
+                    showSelectBottomNote()
                 }
                 TAG_USER_GUIDE -> {
                     val bundle: Bundle = Bundle()
                     bundle.putParcelable(Page.ARG_BUNDLE, category.contents)
                     getInteractionListener().switchPage(R.id.fragment_sub_content, Page.USER_GUIDE, bundle, true, false)
+                    showBasicBottomNote()
                 }
             }
         }
@@ -203,6 +212,11 @@ class SettingFragment : InteractionView<OnPageInteractionListener.Primary>(), Vi
             mAdapter.selectLast(mCurrentCategoryIndex)
             mAdapter.setData(mData?.categories!!)
         }
+
+        textView_back.text = mNoteBottom?.note?.back
+        textView_home.text = mNoteBottom?.note?.home
+        textView_ok.text = mNoteBottom?.note?.select
+        textView_up_down.text = mNoteBottom?.note?.toScroll
     }
 
     /**
@@ -212,5 +226,25 @@ class SettingFragment : InteractionView<OnPageInteractionListener.Primary>(), Vi
         mSideViewState.putAll(sideView.setFocus(mHomeIcons, HomeFeatureEnum.SETTING))
         mCurrentSideIndex = mSideViewState[ARG_CURRENT_INDEX]!!.toInt()
         text_back.text = mSideViewState[ARG_CURRENT_BACK_TITLE]
+    }
+
+    /**
+     * show only [home back]
+     */
+    private fun showBasicBottomNote() {
+        textView_ok.visibility = View.GONE
+        imageView_ok.visibility = View.GONE
+        textView_up_down.visibility = View.GONE
+        imageView_up_down.visibility = View.GONE
+    }
+
+    /**
+     * show only [scroll select home back]
+     */
+    private fun showSelectBottomNote() {
+        textView_ok.visibility = View.VISIBLE
+        imageView_ok.visibility = View.VISIBLE
+        textView_up_down.visibility = View.VISIBLE
+        imageView_up_down.visibility = View.VISIBLE
     }
 }

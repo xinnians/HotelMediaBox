@@ -1,36 +1,47 @@
 package com.ufistudio.hotelmediabox.pages.nearby
 
 import android.arch.lifecycle.Observer
+import android.net.Uri
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
-import android.text.TextUtils
+import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import com.bumptech.glide.Glide
+import com.google.android.exoplayer2.ui.PlayerView
 import com.ufistudio.hotelmediabox.AppInjector
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.constants.Page
+import com.ufistudio.hotelmediabox.helper.ExoPlayerHelper
 import com.ufistudio.hotelmediabox.interfaces.OnItemClickListener
 import com.ufistudio.hotelmediabox.interfaces.OnItemFocusListener
 import com.ufistudio.hotelmediabox.interfaces.ViewModelsCallback
 import com.ufistudio.hotelmediabox.pages.base.InteractionView
 import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.pages.home.HomeFeatureEnum
-import com.ufistudio.hotelmediabox.repository.data.HomeIcons
-import com.ufistudio.hotelmediabox.repository.data.NearbyMe
-import com.ufistudio.hotelmediabox.repository.data.NearbyMeCategories
+import com.ufistudio.hotelmediabox.repository.data.*
+import com.ufistudio.hotelmediabox.utils.FileUtils
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_BACK_TITLE
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_INDEX
-import kotlinx.android.synthetic.main.fragment_room_service.*
+import kotlinx.android.synthetic.main.fragment_nearby_me.*
+import kotlinx.android.synthetic.main.view_bottom_back_home.*
+import kotlinx.android.synthetic.main.view_bottom_ok_back_home.*
+
+private const val TAG_IMAGE = "image"
+private const val TAG_VIDEO = "video"
 
 class NearbyMeFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItemClickListener,
         OnItemFocusListener, ViewModelsCallback {
     private lateinit var mViewModel: NearbyMeViewModel
     private var mAdapter: NearbyMeAdapter = NearbyMeAdapter(this, this)
-    private var mInSubContent: Boolean = false //判斷目前focus是否在右邊的view
+    private var mContentFocus: Boolean = false //判斷目前focus是否在右邊的view
     private var mCategoryFocus: Boolean = false //判斷目前focus是否在category
+    private var mContentPlaying: Boolean = false //判斷目前是否有開始播放影片了
     private var mCurrentCategoryIndex: Int = 0 //上一次List的選擇
     private var mCurrentSideIndex: Int = -1 //當前頁面side view index
     private var mIsRendered: Boolean = false //判斷是否已經塞資料
@@ -38,6 +49,15 @@ class NearbyMeFragment : InteractionView<OnPageInteractionListener.Primary>(), O
 
     private var mData: NearbyMe? = null
     private var mHomeIcons: ArrayList<HomeIcons>? = null //SideView List
+
+    private var mCurrentContentSelectIndex: HashMap<Int, Int>? = HashMap() //記錄當前在第幾個Item的Content, key = category index, value = content index
+    private var mTotalSize: HashMap<Int, Int>? = HashMap()//所有category內容的size, key = category index, value = category content size
+    private var mCurrentContent: List<NearbyMeContent>? = null // 被選到的category內的Content
+
+    private var mVideoView: PlayerView? = null
+    private var mExoPlayerHelper: ExoPlayerHelper = ExoPlayerHelper()
+
+    private var mNoteBottom: NoteButton? = null//右下角提示資訊
 
     companion object {
         fun newInstance(): NearbyMeFragment = NearbyMeFragment()
@@ -77,6 +97,13 @@ class NearbyMeFragment : InteractionView<OnPageInteractionListener.Primary>(), O
         sideView.setInteractionListener(getInteractionListener())
     }
 
+    override fun onPause() {
+        mVideoView?.visibility = View.GONE
+        mExoPlayerHelper.stop()
+        mExoPlayerHelper.release()
+        super.onPause()
+    }
+
     override fun onStart() {
         super.onStart()
         renderView()
@@ -87,39 +114,53 @@ class NearbyMeFragment : InteractionView<OnPageInteractionListener.Primary>(), O
     }
 
     override fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        if (mInSubContent) {
-            if (getInteractionListener().getOnKeyListener() != null && getInteractionListener().getOnKeyListener()?.onKeyPress(keyCode, event)!!) {
-                when (keyCode) {
-                    KeyEvent.KEYCODE_BACK -> {
-                        mAdapter.selectLast(mCurrentCategoryIndex)
-                        mCategoryFocus = true
-                        mInSubContent = false
+        when (keyCode) {
+            KeyEvent.KEYCODE_DPAD_DOWN,
+            KeyEvent.KEYCODE_DPAD_UP -> {
+                if (mContentFocus) {
+                    return true
+                } else {
+                    //若不是在ContentFocus，則將當前在播放的label設為false好讓focus可以更新
+                    mContentPlaying = false
+                }
+            }
+            KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                if (!sideView.isShown && mCategoryFocus) {
+                    mAdapter.clearFocus(mCurrentCategoryIndex)
+                    mCategoryFocus = false
+                    mContentFocus = true
+                } else if (mContentFocus) {
+                    val curryIndex = mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!
+                    if (curryIndex < mTotalSize!![mCurrentCategoryIndex]!! - 1) {
+                        mCurrentContentSelectIndex!![mCurrentCategoryIndex] = curryIndex + 1
+                        renderViewContent()
                     }
                 }
                 return true
             }
-        } else {
-            when (keyCode) {
-                KeyEvent.KEYCODE_DPAD_RIGHT -> {
-                    if (!sideView.isShown && mCategoryFocus) {
-                        mAdapter.clearFocus(mCurrentCategoryIndex)
-                        mCategoryFocus = false
-                        mInSubContent = true
-                        if (getInteractionListener().getOnKeyListener() != null) {
-                            getInteractionListener().setFragmentCacheData(true)
-                            getInteractionListener().getOnKeyListener()?.onKeyPress(keyCode, event)!!
-                        }
+            KeyEvent.KEYCODE_DPAD_LEFT -> {
+                if (mContentFocus) {
+                    val curryIndex = mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!
+                    if (curryIndex != 0) {
+                        mCurrentContentSelectIndex!![mCurrentCategoryIndex] = curryIndex - 1
+                        renderViewContent()
                     }
                     return true
                 }
-                KeyEvent.KEYCODE_BACK -> {
-                    if (sideView.isShown) {
-                        displaySideView(false)
-                    } else {
+            }
+            KeyEvent.KEYCODE_BACK -> {
+                if (sideView.isShown) {
+                    displaySideView(false)
+                } else {
+                    if (!mContentFocus)
                         displaySideView(true)
+                    else {
+                        mContentFocus = false
+                        mCategoryFocus = true
+                        mAdapter.selectLast(mCurrentCategoryIndex)
                     }
-                    return true
                 }
+                return true
             }
         }
         return super.onFragmentKeyDown(keyCode, event)
@@ -137,7 +178,7 @@ class NearbyMeFragment : InteractionView<OnPageInteractionListener.Primary>(), O
             view_line.visibility = View.VISIBLE
             mAdapter.sideViewIsShow(true)
             mCategoryFocus = false
-            mInSubContent = false
+            mContentFocus = false
             sideView.scrollToPosition(mCurrentSideIndex)
             sideView.setLastPosition(mCurrentSideIndex)
         } else {
@@ -153,11 +194,20 @@ class NearbyMeFragment : InteractionView<OnPageInteractionListener.Primary>(), O
      * 塞資料
      */
     private fun renderView() {
-        if (!mIsRendered && mData?.categories != null) {
-            mIsRendered = true
-            mCategoryFocus = true
-            mAdapter.selectLast(mCurrentCategoryIndex)
-            mAdapter.setData(mData?.categories!!)
+        if (!mIsRendered) {
+            if (mData?.categories != null) {
+                mIsRendered = true
+                mCategoryFocus = true
+                for (i in 0 until mData?.categories!!.size) {
+                    mCurrentContentSelectIndex!![i] = 0
+                    mTotalSize!![i] = mData?.categories!![i].contents.size
+                }
+                mAdapter.selectLast(mCurrentCategoryIndex)
+                mAdapter.setData(mData?.categories!!)
+            }
+            textView_back.text = mNoteBottom?.note?.back
+            textView_home.text = mNoteBottom?.note?.home
+            textView_ok.text = mNoteBottom?.note?.fullScreen
         }
     }
 
@@ -174,27 +224,25 @@ class NearbyMeFragment : InteractionView<OnPageInteractionListener.Primary>(), O
     }
 
     override fun onFoucsed(view: View?) {
-        if (!mCategoryFocus)
+        if (!mCategoryFocus || mContentPlaying) {
             return
+        }
         val item = view?.getTag(NearbyMeAdapter.TAG_ITEM) as NearbyMeCategories
         val bundle = Bundle()
         mCurrentCategoryIndex = view.getTag(NearbyMeAdapter.TAG_INDEX) as Int
         bundle.putParcelableArrayList(Page.ARG_BUNDLE, item.contents)
-        if (TextUtils.isEmpty(item.category_id))
-            return
-        when (item.category_id) {
-            TAG_FOOD -> {
-                getInteractionListener().switchPage(R.id.fragment_sub_content, Page.NEARBY_ME_FOOD, bundle, true, false)
-            }
-            TAG_SHOPPING -> {
-                getInteractionListener().switchPage(R.id.fragment_sub_content, Page.NEARBY_ME_SHOPPING, bundle, true, false)
-            }
-        }
+        mCurrentContent = item.contents
+
+        renderViewContent()
     }
 
     override fun onSuccess(it: Any?) {
-        mData = it as NearbyMe
-        renderView()
+        if (it != null) {
+            val data: Pair<*, *> = it as Pair<*, *>
+            mData = data.first as NearbyMe
+            mNoteBottom = data.second as NoteButton?
+            renderView()
+        }
     }
 
     override fun onError(t: Throwable?) {
@@ -202,5 +250,72 @@ class NearbyMeFragment : InteractionView<OnPageInteractionListener.Primary>(), O
     }
 
     override fun onProgress(b: Boolean) {
+    }
+
+    private fun renderViewContent() {
+        checkArrow()
+
+        val item = mCurrentContent!![mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!]
+        view_content.findViewById<TextView>(R.id.text_title).text = item.title
+        val mTextViewContent = view_content.findViewById<TextView>(R.id.text_content)
+        mTextViewContent?.movementMethod = ScrollingMovementMethod()
+        mTextViewContent?.text = item.content
+        view_content.findViewById<TextView>(R.id.text_current_page).text = (mCurrentContentSelectIndex!![mCurrentCategoryIndex]!! + 1).toString()
+        view_content.findViewById<TextView>(R.id.text_total_page).text = String.format("/%d", mCurrentContent!!.size)
+
+        val imageView = view_content.findViewById<ImageView>(R.id.image_content)
+        mVideoView = view_content.findViewById<PlayerView>(R.id.videoView)
+
+        if (item.file_type.hashCode() == TAG_IMAGE.hashCode()) {
+            mContentPlaying = false
+            mVideoView?.visibility = View.GONE
+            imageView.visibility = View.VISIBLE
+            if (imageView != null) {
+                Log.d("neo", "image = test")
+                Glide.with(context!!)
+                        .load(FileUtils.getFileFromStorage(item.file_name))
+                        .skipMemoryCache(true)
+                        .into(imageView)
+            }
+        } else if (item.file_type.hashCode() == TAG_VIDEO.hashCode()) {
+
+            if (mVideoView != null) {
+                Log.d("neo", "vide test")
+                mExoPlayerHelper.stop()
+                mExoPlayerHelper.release()
+                mExoPlayerHelper.initPlayer(context, mVideoView!!)
+                mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(item.file_name)?.absolutePath))
+                mVideoView?.visibility = View.VISIBLE
+                mContentPlaying = true
+            }
+            imageView?.visibility = View.INVISIBLE
+        } else {
+            mVideoView?.visibility = View.INVISIBLE
+            imageView?.visibility = View.INVISIBLE
+        }
+    }
+
+    /**
+     * 判斷左右箭頭
+     */
+    private fun checkArrow() {
+        when {
+            mCurrentContent?.size == 1 -> {
+                imageView_arrow_left.visibility = View.INVISIBLE
+                imageView_arrow_right.visibility = View.INVISIBLE
+            }
+            mCurrentContentSelectIndex!![mCurrentCategoryIndex] == 0 -> {
+                imageView_arrow_left.visibility = View.INVISIBLE
+                imageView_arrow_right.visibility = View.VISIBLE
+            }
+            mCurrentContentSelectIndex!![mCurrentCategoryIndex] == mCurrentContent!!.size - 1 -> {
+                imageView_arrow_left.visibility = View.VISIBLE
+                imageView_arrow_right.visibility = View.INVISIBLE
+            }
+            else -> {
+                imageView_arrow_left.visibility = View.VISIBLE
+                imageView_arrow_right.visibility = View.VISIBLE
+            }
+        }
     }
 }

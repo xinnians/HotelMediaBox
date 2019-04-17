@@ -4,29 +4,16 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/textView_home"
-        style="@style/MainPrimaryText"
+    <include
+        android:id="@+id/view_bottom_back_home"
+        layout="@layout/view_bottom_back_home"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/_23sdp"
-        android:layout_marginBottom="@dimen/_13sdp"
-        android:textSize="@dimen/_9ssp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <ImageView
-        android:id="@+id/imageView_home"
-        android:layout_width="@dimen/_17sdp"
-        android:layout_height="@dimen/_17sdp"
-        android:layout_marginEnd="@dimen/_3sdp"
-        android:layout_marginBottom="@dimen/_8sdp"
-        android:src="@drawable/ic_home"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/textView_home" />
-
     <TextView
-        android:id="@+id/textView_back"
+        android:id="@+id/textView_ok"
         style="@style/MainPrimaryText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -34,15 +21,15 @@
         android:layout_marginBottom="@dimen/_13sdp"
         android:textSize="@dimen/_9ssp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/imageView_home" />
+        app:layout_constraintEnd_toStartOf="@+id/view_bottom_back_home" />
 
     <ImageView
-        android:id="@+id/imageView_back"
+        android:id="@+id/imageView_ok"
         android:layout_width="@dimen/_17sdp"
         android:layout_height="@dimen/_17sdp"
         android:layout_marginEnd="@dimen/_8sdp"
         android:layout_marginBottom="@dimen/_8sdp"
-        android:src="@drawable/ic_return"
+        android:src="@drawable/ic_ok"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/textView_back" />
+        app:layout_constraintEnd_toStartOf="@+id/textView_ok" />
 </android.support.constraint.ConstraintLayout>

@@ -75,7 +75,7 @@ open class ExoPlayerHelper {
             val videoSource = ExtractorMediaSource.Factory(factory).createMediaSource(dtaSource.uri)
             mPlayer?.prepare(videoSource)
 
-        } catch (e: UdpDataSource.UdpDataSourceException) {
+        } catch (e: RawResourceDataSource.RawResourceDataSourceException) {
             e.printStackTrace()
         }
 
@@ -97,7 +97,7 @@ open class ExoPlayerHelper {
             val videoSource = ExtractorMediaSource.Factory(factory).createMediaSource(dtaSource.uri)
             mPlayer?.prepare(videoSource)
 
-        } catch (e: UdpDataSource.UdpDataSourceException) {
+        } catch (e: FileDataSource.FileDataSourceException) {
             e.printStackTrace()
         }
 

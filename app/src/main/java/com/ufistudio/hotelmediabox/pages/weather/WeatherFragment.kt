@@ -21,6 +21,7 @@ import com.ufistudio.hotelmediabox.repository.data.*
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_BACK_TITLE
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_INDEX
 import kotlinx.android.synthetic.main.fragment_weather.*
+import kotlinx.android.synthetic.main.view_bottom_back_home.*
 
 class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItemClickListener,
         OnItemFocusListener, ViewModelsCallback {
@@ -39,6 +40,8 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
     private var mHomeIcons: ArrayList<HomeIcons>? = null //SideView List
 
     private var mCurrentContent: WeatherContent? = null // 被選到的category內的 content
+
+    private var mNoteBottom: NoteButton? = null//右下角提示資訊
 
     companion object {
         fun newInstance(): WeatherFragment = WeatherFragment()
@@ -159,6 +162,9 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
             textView_none4.text = mData?.temp_none
             textView_none5.text = mData?.temp_none
             textView_none6.text = mData?.temp_none
+
+            textView_back.text = mNoteBottom?.note?.back
+            textView_home.text = mNoteBottom?.note?.home
         }
     }
 
@@ -186,7 +192,9 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
 
     override fun onSuccess(it: Any?) {
         if (it != null) {
-            mData = it as Weather?
+            val data: Pair<*, *> = it as Pair<*, *>
+            mData = data.first as Weather?
+            mNoteBottom = data.second as NoteButton?
             renderView()
         }
     }
