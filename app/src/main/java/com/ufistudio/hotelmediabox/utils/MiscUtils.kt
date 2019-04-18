@@ -3,12 +3,19 @@ package com.ufistudio.hotelmediabox.utils
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.net.wifi.WifiManager
 import android.os.Build
+import android.os.Environment
 import android.support.v4.content.FileProvider
+import android.text.TextUtils
 import android.util.Log
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.ufistudio.hotelmediabox.BuildConfig
+import com.ufistudio.hotelmediabox.repository.data.Config
 import java.io.*
 import java.nio.charset.Charset
 
@@ -27,7 +34,7 @@ object MiscUtils {
             try {
                 result = GsonBuilder().create().toJson(obj)
             } catch (e: Exception) {
-                Log.e(TAG, "Fail to serialize object!", e);
+                Log.e(TAG, "Fail to serialize object!", e)
             }
         }
         return result
@@ -64,6 +71,39 @@ object MiscUtils {
         return jsonString
     }
 
+
+    /**
+     * 根據語言選取json file
+     * @fileName: json file不加後贅字 ex: home_en.json 只需要傳 home
+     *
+     * 若找不到，預設英文
+     */
+    fun getJsonLanguageAutoSwitch(fileName: String): String {
+        val gson = Gson()
+        var config: Config? = null
+        try {
+            config = gson.fromJson(getJsonFromStorage("config.json"), Config::class.java)
+        } catch (e: IllegalStateException) {
+            Log.e(TAG, "getJsonLanguageAutoSwitch = $e")
+            return ""
+        }
+
+        if (config == null) {
+            return ""
+        }
+
+        var finalName: String = ""
+        finalName =
+            if (File("${Environment.getExternalStorageDirectory()}/$TAG_DEFAULT_LOCAL_PATH${fileName}_${config.config.language}.json").exists()) {
+                "${fileName}_${config.config.language}.json"
+            } else {
+                "${fileName}_en.json"
+            }
+
+        Log.d(TAG, "new file name = $finalName")
+        return getJsonFromStorage(finalName)
+    }
+
     /**
      * Get Json String from storage
      * @path: the file path, Base is /sdcard/hotelBox/........
@@ -80,8 +120,14 @@ object MiscUtils {
 //    }
     fun getJsonFromStorage(fileName: String, path: String = ""): String {
 
-        return FileUtils.getFileFromStorage(path, fileName)?.let { file -> parseJsonFileByInputStream(FileInputStream(file)) }
-                ?: ""
+        return FileUtils.getFileFromStorage(path, fileName)?.let { file ->
+            parseJsonFileByInputStream(
+                FileInputStream(
+                    file
+                )
+            )
+        }
+            ?: ""
 
 //        return parseJsonFileByInputStream(FileInputStream(FileUtils.getFileFromStorage(path, fileName)))
     }
@@ -181,9 +227,9 @@ object MiscUtils {
                 fileUri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", file)
             }
             val intent: Intent = Intent(Intent.ACTION_VIEW, fileUri)
-            intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
+            intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true)
             intent.setDataAndType(fileUri, "application/vnd.android.package-archive")
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK;
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             context.startActivity(intent)
         } else {
@@ -236,7 +282,68 @@ object MiscUtils {
         }
     }
 
+    /**
+     * Open System Setting page
+     */
     fun openSetting(context: Context) {
         context.startActivity(Intent(android.provider.Settings.ACTION_SETTINGS))
+    }
+
+    /**
+     * Get Wifi MAC address
+     */
+    fun getWifiMACAddress(context: Context): String? {
+        return (context.getSystemService(Context.WIFI_SERVICE) as WifiManager).connectionInfo.macAddress
+    }
+
+    /**
+     * Get IP address
+     */
+    fun getIpAddress(context: Context): String {
+        val ip: Int = (context.getSystemService(Context.WIFI_SERVICE) as WifiManager).connectionInfo.ipAddress
+
+        return ip.toString()
+    }
+
+    /**
+     * Get Room Number
+     */
+    fun getRoomNumber(): String {
+        val gson = Gson()
+        val json = getJsonFromStorage("config.json")
+        return if (!TextUtils.isEmpty(json)) {
+            val config = gson.fromJson(json, Config::class.java)
+            config.config.room
+        } else {
+            ""
+        }
+    }
+
+    fun getLocalVersion(ctx: Context): Int {
+        var localVersion: Int = 0
+        try {
+            var packageInfo: PackageInfo = ctx.applicationContext
+                .packageManager
+                .getPackageInfo(ctx.packageName, 0)
+            localVersion = packageInfo.versionCode
+            Log.d(TAG, "版本号：$localVersion")
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
+        }
+        return localVersion
+    }
+
+    fun getLocalVersionName(ctx: Context): String {
+        var localVersion: String = ""
+        try {
+            var packageInfo: PackageInfo = ctx.applicationContext
+                .packageManager
+                .getPackageInfo(ctx.packageName, 0)
+            localVersion = packageInfo.versionName
+            Log.d(TAG, "版本名：$localVersion")
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
+        }
+        return localVersion
     }
 }

@@ -5,13 +5,23 @@ import android.text.TextUtils
 import android.util.Log
 import com.ufistudio.hotelmediabox.interfaces.OnSaveFileStatusListener
 import com.ufistudio.hotelmediabox.interfaces.OnSimpleListener
+import io.reactivex.Observable
+import io.reactivex.ObservableEmitter
+import io.reactivex.ObservableOnSubscribe
+import io.reactivex.Observer
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import okhttp3.ResponseBody
 import java.io.*
 import java.lang.Exception
 import java.lang.NullPointerException
 import java.nio.channels.FileChannel
+import java.nio.charset.Charset
 
 object FileUtils {
+
+    val TAG: String = FileUtils.javaClass.simpleName
 
     /**
      * 取得裝置內的Hotel資料夾
@@ -36,13 +46,16 @@ object FileUtils {
 
     /**
      * Get File from Storage
-     * @path: the file path, Base is /sdcard/hotelBox/........
+     * @path: the file path, Base is /sdcard/hotel/........
      * @fileName: This is your file name, ex: welcome.json
      */
     fun getFileFromStorage(fileName: String, path: String = ""): File? {
         var file: File? = null
         try {
-            file = File(String.format("%s%s%s", Environment.getExternalStorageDirectory(), TAG_DEFAULT_LOCAL_PATH, path), fileName)
+            file = File(
+                String.format("%s%s%s", Environment.getExternalStorageDirectory(), TAG_DEFAULT_LOCAL_PATH, path),
+                fileName
+            )
             Log.d("getFileFromStorage", "file pagh = ${file.absolutePath}")
         } catch (e: NullPointerException) {
             Log.e("getFileFromStorage", "error = $e")
@@ -77,13 +90,13 @@ object FileUtils {
      *
      * @return 該檔案是否存在
      */
-    fun fileIsExists(fileName: String ): Boolean{
+    fun fileIsExists(fileName: String): Boolean {
         try {
-            var file = File(Environment.getExternalStorageDirectory(), TAG_DEFAULT_LOCAL_PATH+fileName)
-            if (!file.exists()){
+            var file = File(Environment.getExternalStorageDirectory(), TAG_DEFAULT_LOCAL_PATH + fileName)
+            if (!file.exists()) {
                 return false
             }
-        }catch (e: Exception){
+        } catch (e: Exception) {
             return false
         }
         return true
@@ -96,10 +109,10 @@ object FileUtils {
      * @filePath:欲存檔案的目錄，ex: /xxx ，xxx為sdcard底下之目錄
      */
     fun writeResponseBodyToDisk(
-            body: ResponseBody,
-            name: String,
-            filePath: String = TAG_DEFAULT_LOCAL_PATH,
-            listener: OnSaveFileStatusListener? = null
+        body: ResponseBody,
+        name: String,
+        filePath: String = TAG_DEFAULT_LOCAL_PATH,
+        listener: OnSaveFileStatusListener? = null
     ): Boolean {
         listener?.savingFileStart()
         try {
@@ -186,9 +199,9 @@ object FileUtils {
      * @targetLocation:
      */
     fun copyFileOrDirectory(
-            sourceLocation: String,
-            targetLocation: String,
-            listener: OnSaveFileStatusListener? = null
+        sourceLocation: String,
+        targetLocation: String,
+        listener: OnSaveFileStatusListener? = null
     ) {
         val source: File = File(sourceLocation)
         val target: File = File(targetLocation, source.name)
@@ -230,8 +243,8 @@ object FileUtils {
                 Log.d("importFile", "item = $item")
                 listener?.callback("coping file -> $item")
                 FileUtils.copyFile(
-                        File("/mnt/media_rw/${usbDir.name}/$item"),
-                        File("${Environment.getExternalStorageDirectory().path}/hotel/$item")
+                    File("/mnt/media_rw/${usbDir.name}/$item"),
+                    File("${Environment.getExternalStorageDirectory().path}/hotel/$item")
                 )
             }
         } catch (e: IOException) {
@@ -263,8 +276,8 @@ object FileUtils {
                 listener?.callback("coping file -> $item")
 
                 FileUtils.copyFile(
-                        File("${Environment.getExternalStorageDirectory().path}/hotel/$item"),
-                        File("/mnt/media_rw/$usbDir/$item")
+                    File("${Environment.getExternalStorageDirectory().path}/hotel/$item"),
+                    File("/mnt/media_rw/$usbDir/$item")
                 )
             }
         } catch (e: IOException) {
@@ -277,5 +290,27 @@ object FileUtils {
 
 
         listener?.callback("export finish")
+    }
+
+    /**
+     * Write string to file
+     */
+    fun writeToFile(file: File, data: String) {
+        var osw: FileOutputStream? = null
+        try {
+            osw = FileOutputStream(file)
+            osw.write("".toByteArray())
+            osw.flush()
+            Log.d("neo", "data.() = ${data}")
+            osw.write(data.toByteArray(Charset.defaultCharset()))
+            osw.flush()
+        } catch (e: Exception) {
+        } finally {
+            try {
+                osw!!.close()
+            } catch (e: Exception) {
+            }
+
+        }
     }
 }

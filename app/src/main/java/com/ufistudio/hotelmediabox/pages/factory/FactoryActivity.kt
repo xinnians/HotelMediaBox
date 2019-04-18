@@ -76,6 +76,9 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
         textView_info1.movementMethod = ScrollingMovementMethod()
         textView_info2.movementMethod = ScrollingMovementMethod()
 
+        var textVersionInfo = MiscUtils.getLocalVersionName(this)+","+MiscUtils.getLocalVersion(this)
+        text_version.text = textVersionInfo
+
     }
 
     override fun onResume() {
@@ -89,25 +92,30 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
     override fun onClick(view: View?) {
         when (view?.tag as FactoryFeature) {
             FactoryFeature.CHECK_UPGRADE_FROM_URL -> {
-                mInfo1.setLength(0)
-                if (TextUtils.isEmpty(mData?.config?.upgradeUrl!!)) {
-                    mInfo1.append("找不到url")
-                    textView_info1.text = mInfo1
-                    return
-                }
-                mInfo1.append("檢查更新網址：${mData?.config?.upgradeUrl}\n")
-                textView_info1.text = mInfo1
-                mViewModel.downloadFileWithUrl(mData?.config?.upgradeUrl!!)
+
+                var link = "https://drive.google.com/uc?export=download&id=1xnX0GLqhvwViob-WzbzOxPRgqkvkd39J"
+//                mInfo1.setLength(0)
+//                if (TextUtils.isEmpty(mData?.config?.upgradeUrl!!)) {
+//                    mInfo1.append("找不到url")
+//                    textView_info1.text = mInfo1
+//                    return
+//                }
+//                mInfo1.append("檢查更新網址：${mData?.config?.upgradeUrl}\n")
+//                textView_info1.text = mInfo1
+//                mViewModel.downloadFileWithUrl(mData?.config?.upgradeUrl!!)
+
+                textView_info1.text = link
+                mViewModel.downloadFileWithUrl(link)
             }
             FactoryFeature.CHECK_UPGRADE_FROM_USB -> {
                 if (!MiscUtils.installApk(this, "hotelbox.apk", "${FileUtils.getUSBFiles()?.path}")) {
                     mInfo1.setLength(0)
                     mInfo1.append("找不到 hotelbox.apk 安裝檔")
 
-                    Log.d("neo", "找不到裝置")
+                    Log.d(TAG, "找不到裝置")
                 }
                 textView_info1.text = mInfo1
-                Log.d("neo", "找得到裝置")
+                Log.d(TAG, "找得到裝置")
             }
             FactoryFeature.EXPORT_JSON_FILE -> {
                 mInfo1.setLength(0)
@@ -184,7 +192,7 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
                     var jsonList: Array<TVChannel> = emptyArray<TVChannel>()
 
                     val jsonArray: Array<DVBInfo> =
-                        Gson().fromJson(MiscUtils.getJsonFromStorage("DvbScanConfig.json"), Array<DVBInfo>::class.java)
+                            Gson().fromJson(MiscUtils.getJsonFromStorage("DvbScanConfig.json"), Array<DVBInfo>::class.java)
 
                     var count = 1
 
@@ -194,7 +202,7 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
                         textView_info1.text = mInfo1
 
                         var scanResult = DVBHelper.getDVBPlayer()
-                            .getChannelList("${jsonArray[i].Frequency} ${jsonArray[i].Bandwidth}")
+                                .getChannelList("${jsonArray[i].Frequency} ${jsonArray[i].Bandwidth}")
 
                         if(scanResult == null){
                             (application as MyApplication).getTVHelper().closeAVPlayer()
@@ -211,20 +219,20 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
 
                         var scanList = scanResult?.split(",")?.filter { it != "" }
 
-                        if(scanList == null || scanList.isEmpty())
+                        if (scanList == null || scanList.isEmpty())
                             continue
 
                         for (j in scanList) {
                             jsonList += TVChannel(
-                                chNum = count.toString(),
-                                chName = "CH $count",
-                                chType = "DVBT",
-                                chIp = ConnectDetail(
-                                    frequency = jsonArray[i].Frequency,
-                                    bandwidth = jsonArray[i].Bandwidth,
-                                    dvbParameter = j
-                                ),
-                                chLogo = Logo(fileName = "channel_default.png")
+                                    chNum = count.toString(),
+                                    chName = "CH $count",
+                                    chType = "DVBT",
+                                    chIp = ConnectDetail(
+                                            frequency = jsonArray[i].Frequency,
+                                            bandwidth = jsonArray[i].Bandwidth,
+                                            dvbParameter = j
+                                    ),
+                                    chLogo = Logo(fileName = "channel_default.png")
                             )
                             count++
                         }
@@ -234,7 +242,7 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
 
                     var channelFile = File("${Environment.getExternalStorageDirectory().path}/hotel/channels.json")
 
-                    writeToFile(channelFile, Gson().toJson(jsonList))
+                    FileUtils.writeToFile(channelFile, Gson().toJson(jsonList))
 
 //                    (application as MyApplication).getTVHelper().clearChannelList()
 
@@ -246,30 +254,13 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
                 } else {
                     Log.e(TAG, "file not exist,Please import DvbScanConfig.json file")
                     Toast.makeText(this, "file not exist,Please import DvbScanConfig.json file", Toast.LENGTH_SHORT)
-                        .show()
+                            .show()
                 }
 
             }
         }
     }
 
-    private fun writeToFile(fout: File, data: String) {
-        var osw: FileOutputStream? = null
-        try {
-            osw = FileOutputStream(fout)
-            osw!!.write("".toByteArray())
-            osw!!.flush()
-            osw!!.write(data.toByteArray())
-            osw!!.flush()
-        } catch (e: Exception) {
-        } finally {
-            try {
-                osw!!.close()
-            } catch (e: Exception) {
-            }
-
-        }
-    }
 
     override fun onSuccess(it: Any?) {
         mData = it as Config?
@@ -295,7 +286,7 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
 
             mDownloadDialog?.show()
         } else {
-            Log.d("neo", "cancel")
+            Log.d(TAG, "cancel")
         }
     }
 
@@ -325,6 +316,7 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
             mInfo1.append("Can not find apk：$it\n")
         }
         textView_info1.text = mInfo1
+
     }
 
     override fun onBackPressed() {

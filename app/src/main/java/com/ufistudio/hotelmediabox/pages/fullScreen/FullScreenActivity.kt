@@ -88,13 +88,15 @@ class FullScreenActivity : AppCompatActivity() {
                 textChannelName?.text = tvChannel.chNum + " " + tvChannel.chName
                 viewLogo?.let { viewLogo ->
                     Glide.with(this)
-                        .load(FileUtils.getFileFromStorage(tvChannel.chLogo.fileName))
-                        .into(viewLogo)
+                            .load(FileUtils.getFileFromStorage(tvChannel.chLogo.fileName))
+                            .skipMemoryCache(true)
+                            .into(viewLogo)
                 }
                 viewMainLogo?.let { viewLogo ->
                     Glide.with(this)
-                        .load(FileUtils.getFileFromStorage(tvChannel.chLogo.fileName))
-                        .into(viewLogo)
+                            .load(FileUtils.getFileFromStorage(tvChannel.chLogo.fileName))
+                            .skipMemoryCache(true)
+                            .into(viewLogo)
                 }
                 showInfo()
 
@@ -126,13 +128,15 @@ class FullScreenActivity : AppCompatActivity() {
                 textChannelName?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
                 viewLogo?.let { viewLogo ->
                     Glide.with(this)
-                        .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
-                        .into(viewLogo)
+                            .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
+                            .skipMemoryCache(true)
+                            .into(viewLogo)
                 }
                 viewMainLogo?.let { viewLogo ->
                     Glide.with(this)
-                        .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
-                        .into(viewLogo)
+                            .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
+                            .skipMemoryCache(true)
+                            .into(viewLogo)
                 }
                 setPlayTimer()
                 showInfo()
@@ -159,13 +163,15 @@ class FullScreenActivity : AppCompatActivity() {
                 textChannelName?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
                 viewLogo?.let { viewLogo ->
                     Glide.with(this)
-                        .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
-                        .into(viewLogo)
+                            .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
+                            .skipMemoryCache(true)
+                            .into(viewLogo)
                 }
                 viewMainLogo?.let { viewLogo ->
                     Glide.with(this)
-                        .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
-                        .into(viewLogo)
+                            .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
+                            .skipMemoryCache(true)
+                            .into(viewLogo)
                 }
                 setPlayTimer()
                 showInfo()
@@ -199,12 +205,12 @@ class FullScreenActivity : AppCompatActivity() {
         }
 
         mDisposable = Observable.timer(400, TimeUnit.MILLISECONDS)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                {}, { onError -> Log.e(TAG, "error:$onError") }, {
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        {}, { onError -> Log.e(TAG, "error:$onError") }, {
                     mViewModel.getTVHelper().playCurrent()
-                        ?.subscribe()
+                            ?.subscribe()
                 })
     }
 
@@ -216,18 +222,18 @@ class FullScreenActivity : AppCompatActivity() {
         }
 
         mDisposableInfoView = Observable.timer(7, TimeUnit.SECONDS)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { _ ->
-                }, { onError -> Log.e(TAG, "error:$onError") }, {
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        { _ ->
+                        }, { onError -> Log.e(TAG, "error:$onError") }, {
                     banner.visibility = View.INVISIBLE
                 })
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
         Log.d(TAG, "keycode = $keyCode  ,event = $event")
-        if(keyCode == 302){
+        if (keyCode == 302) {
 //            var intent: Intent = Intent(this, FullScreenActivity::class.java)
 //            intent.putExtra("page",Page.HOME)
             startActivity(Intent(this, MainActivity::class.java))

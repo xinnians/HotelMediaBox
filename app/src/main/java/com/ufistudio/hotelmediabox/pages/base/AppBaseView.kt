@@ -9,5 +9,6 @@ interface AppBaseView {
     fun isActivite(): Boolean
     fun showFullScreenLoading()
     fun dismissFullScreenLoading()
-    fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?):Boolean
+    fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?): Boolean
+    fun onFragmentToFragmentKeyDown(keyCode: Int, event: KeyEvent?): Boolean
 }

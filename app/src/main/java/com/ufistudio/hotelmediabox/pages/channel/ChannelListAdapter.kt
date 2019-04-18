@@ -13,7 +13,7 @@ import com.ufistudio.hotelmediabox.utils.FileUtils
 import kotlinx.android.synthetic.main.item_channel_list.view.*
 
 class ChannelListAdapter :
-    RecyclerView.Adapter<ChannelListAdapter.ViewHolder>() {
+        RecyclerView.Adapter<ChannelListAdapter.ViewHolder>() {
 
     private var mOriginalItems: ArrayList<TVChannel>? = null
     private var mFilterItems: ArrayList<TVChannel>? = null
@@ -48,25 +48,25 @@ class ChannelListAdapter :
             if (position == mSelectPosition) {
                 if (mIsFocus) {
                     holder.itemView.layout_frame.background =
-                        ContextCompat.getDrawable(mContext, R.drawable.home_icon_frame_frame_focused)
+                            ContextCompat.getDrawable(mContext, R.drawable.home_icon_frame_frame_focused)
                     holder.itemView.text_channelName.setTextColor(ContextCompat.getColor(mContext, R.color.colorYellow))
                 } else {
                     holder.itemView.layout_frame.background =
-                        ContextCompat.getDrawable(mContext, R.drawable.home_icon_frame_frame_default)
+                            ContextCompat.getDrawable(mContext, R.drawable.home_icon_frame_frame_default)
                     holder.itemView.text_channelName.setTextColor(
-                        ContextCompat.getColor(
-                            mContext,
-                            android.R.color.white
-                        )
+                            ContextCompat.getColor(
+                                    mContext,
+                                    android.R.color.white
+                            )
                     )
                 }
             } else {
                 holder.itemView.layout_frame.setBackgroundResource(0)
                 holder.itemView.text_channelName.setTextColor(
-                    ContextCompat.getColor(
-                        mContext,
-                        android.R.color.white
-                    )
+                        ContextCompat.getColor(
+                                mContext,
+                                android.R.color.white
+                        )
                 )
             }
 
@@ -131,23 +131,23 @@ class ChannelListAdapter :
         }
         if ((mFilterItems?.size ?: 0) - 1 >= mSelectPosition && mSelectPosition >= 0) {
             return mFilterItems?.get(mSelectPosition)
-        }else{
+        } else {
             return null
         }
     }
 
-    fun setCurrentTVChannel(channel:TVChannel){
-        if(mFilterItems?.contains(channel) == true){
+    fun setCurrentTVChannel(channel: TVChannel) {
+        if (mFilterItems?.contains(channel) == true) {
             mCurrentTVChannel = channel
-            mSelectPosition = mFilterItems?.indexOf(mCurrentTVChannel!!)?:0
-        }else{
+            mSelectPosition = mFilterItems?.indexOf(mCurrentTVChannel!!) ?: 0
+        } else {
             mCurrentTVChannel = null
             mSelectPosition = 0
         }
 
     }
 
-    fun getSelectPosition(): Int{
+    fun getSelectPosition(): Int {
         return mSelectPosition
     }
 
@@ -166,15 +166,15 @@ class ChannelListAdapter :
      * 清楚上一個被選擇到的狀態
      */
     fun clearSelectPosition() {
-        if(mFilterItems?.contains(mCurrentTVChannel) == true){
-            mSelectPosition = mFilterItems?.indexOf(mCurrentTVChannel)?:0
-        }else{
+        if (mFilterItems?.contains(mCurrentTVChannel) == true) {
+            mSelectPosition = mFilterItems?.indexOf(mCurrentTVChannel) ?: 0
+        } else {
             mSelectPosition = 0
         }
     }
 
     fun setGenreFilter(genreType: String) {
-        if(mOriginalItems == null){
+        if (mOriginalItems == null) {
             return
         }
 
@@ -192,8 +192,9 @@ class ChannelListAdapter :
 //            Log.e("ChannelListAdapter", "TVChannel:$data")
             itemView.text_channelName.text = data.chNum + " " + data.chName
             Glide.with(itemView.context)
-                .load(FileUtils.getFileFromStorage(data.chLogo.fileName))
-                .into(itemView.view_icon)
+                    .load(FileUtils.getFileFromStorage(data.chLogo.fileName))
+                    .skipMemoryCache(true)
+                    .into(itemView.view_icon)
         }
     }
 }

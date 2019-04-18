@@ -25,8 +25,11 @@
     <color name="roomServicePrice">#78777c</color>
     <color name="roomServiceLine">#cf2622</color>
 
+    <!--Weather-->
+    <color name="weather_line">#1b3f9a</color>
 
     <color name="white30">#4DFFFFFF</color>
+    <color name="white50">#80FFFFFF</color>
     <color name="block40">#66000000</color>
     <color name="block30">#4D000000</color>
 

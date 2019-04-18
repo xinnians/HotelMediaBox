@@ -37,6 +37,17 @@
         app:layout_constraintStart_toStartOf="@+id/image_content"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <com.google.android.exoplayer2.ui.PlayerView
+        android:id="@+id/videoView"
+        android:layout_width="@dimen/_166sdp"
+        android:layout_height="@dimen/_110sdp"
+        android:layout_marginStart="@dimen/_11sdp"
+        android:layout_marginTop="@dimen/_9sdp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_title"
+        app:use_controller="false" />
+
     <ImageView
         android:id="@+id/image_content"
         android:layout_width="@dimen/_166sdp"
@@ -45,6 +56,7 @@
         android:layout_marginTop="@dimen/_9sdp"
         android:background="@android:color/darker_gray"
         android:scaleType="fitXY"
+        android:visibility="invisible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_title" />
 
@@ -55,8 +67,8 @@
         android:layout_height="0dp"
         android:layout_marginStart="@dimen/_11sdp"
         android:layout_marginEnd="@dimen/_26sdp"
-        android:textSize="@dimen/_9ssp"
         android:text="324gfsdfdfglfdjgklfdjdfkjh"
+        android:textSize="@dimen/_9ssp"
         app:layout_constraintBottom_toBottomOf="@+id/image_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/image_content"

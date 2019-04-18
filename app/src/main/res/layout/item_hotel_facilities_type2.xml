@@ -49,6 +49,16 @@
         app:layout_constraintStart_toStartOf="@id/text_title"
         app:layout_constraintTop_toBottomOf="@id/text_title" />
 
+    <com.google.android.exoplayer2.ui.PlayerView
+        android:id="@+id/videoView2"
+        android:layout_width="@dimen/_166sdp"
+        android:layout_height="@dimen/_111sdp"
+        android:layout_marginTop="@dimen/_9sdp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@id/text_title"
+        app:layout_constraintTop_toBottomOf="@id/text_title"
+        app:use_controller="false" />
+
     <TextView
         android:id="@+id/text_description"
         style="@style/MainPrimaryText"

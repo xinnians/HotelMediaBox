@@ -3,7 +3,6 @@ package com.ufistudio.hotelmediabox.pages.home
 import android.content.Context
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +17,7 @@ class FunctionsAdapter : RecyclerView.Adapter<FunctionsAdapter.ViewHolder>() {
 
     private lateinit var mContext: Context
     private var mItem: ArrayList<HomeFeatureEnum> = ArrayList()
+    private var mServerItem: ArrayList<HomeIcons> = ArrayList()
     private var mListener: OnItemClickListener? = null
 
     interface OnItemClickListener {
@@ -38,17 +38,19 @@ class FunctionsAdapter : RecyclerView.Adapter<FunctionsAdapter.ViewHolder>() {
         return mItem.size
     }
 
-    override fun onBindViewHolder(p0: FunctionsAdapter.ViewHolder, p1: Int) {
-        p0.itemView.text_title.setText(mItem[p1].title)
+    override fun onBindViewHolder(p0: FunctionsAdapter.ViewHolder, position: Int) {
+        val serverItem = mServerItem[position]
+        p0.itemView.text_title.text = serverItem.name
+
 
         if (p0.itemView.image_icon.isFocused) {
             p0.itemView.text_title.setTextColor(ContextCompat.getColor(mContext, R.color.homeIconFrameFocused))
-            p0.itemView.image_icon.background = ContextCompat.getDrawable(mContext, mItem[p1].focusedIcon)
+            p0.itemView.image_icon.background = ContextCompat.getDrawable(mContext, mItem[position].focusedIcon)
         } else {
             p0.itemView.text_title.setTextColor(ContextCompat.getColor(mContext, android.R.color.white))
-            p0.itemView.image_icon.background = ContextCompat.getDrawable(mContext, mItem[p1].icon)
+            p0.itemView.image_icon.background = ContextCompat.getDrawable(mContext, mItem[position].icon)
         }
-        p0.itemView.tag = mItem[p1].page
+        p0.itemView.tag = mItem[position].page
         p0.itemView.setOnClickListener {
             mListener?.onClick(it)
         }
@@ -59,9 +61,11 @@ class FunctionsAdapter : RecyclerView.Adapter<FunctionsAdapter.ViewHolder>() {
         if (data != null) {
             for (item in data) {
                 if (item.enable == TAG_ENABLE) {
-                    val enumItem = HomeFeatureEnum.findItemByTag(item.name)
-                    if (enumItem != null)
+                    val enumItem = HomeFeatureEnum.findItemById(item.id)
+                    if (enumItem != null) {
                         mItem.add(enumItem)
+                        mServerItem.add(item)
+                    }
                 }
             }
             notifyDataSetChanged()

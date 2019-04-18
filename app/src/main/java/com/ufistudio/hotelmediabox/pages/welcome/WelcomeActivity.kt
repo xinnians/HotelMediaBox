@@ -51,12 +51,7 @@ class WelcomeActivity : AppCompatActivity(), ViewModelsCallback, View.OnClickLis
     override fun onResume() {
         super.onResume()
 
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             // Permission is not granted
             // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
@@ -66,12 +61,7 @@ class WelcomeActivity : AppCompatActivity(), ViewModelsCallback, View.OnClickLis
                 showGoToSetting()
             } else {
                 // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                    TAG_WRITE_PERMISSION_CODE
-                )
-
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), TAG_WRITE_PERMISSION_CODE)
                 // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
                 // app-defined int constant. The callback method gets the
                 // result of the request.
@@ -84,6 +74,7 @@ class WelcomeActivity : AppCompatActivity(), ViewModelsCallback, View.OnClickLis
     override fun onStop() {
         mPlayer?.stop()
         mPlayer?.release()
+        dateView.stopRefreshTimer()
         super.onStop()
     }
 
@@ -117,10 +108,7 @@ class WelcomeActivity : AppCompatActivity(), ViewModelsCallback, View.OnClickLis
         button_ok.requestFocus()
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>, grantResults: IntArray
-    ) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         when (requestCode) {
             TAG_WRITE_PERMISSION_CODE -> {
                 // If request is cancelled, the result arrays are empty.
@@ -128,6 +116,7 @@ class WelcomeActivity : AppCompatActivity(), ViewModelsCallback, View.OnClickLis
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
                     renderUI()
+                    dateView.getTimeFormate()
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
@@ -172,8 +161,14 @@ class WelcomeActivity : AppCompatActivity(), ViewModelsCallback, View.OnClickLis
 
     override fun onError(t: Throwable?) {
         Log.d(TAG, "onError = ${t?.message}")
-        startActivity(Intent(this, FactoryActivity::class.java))
-        finish()
+        AlertDialog.Builder(this)
+                .setTitle(R.string.dialog_error_title)
+                .setMessage(R.string.dialog_cannot_find_file)
+                .setCancelable(false)
+                .create()
+                .show()
+//        startActivity(Intent(this, FactoryActivity::class.java))
+//        finish()
     }
 
     override fun onProgress(b: Boolean) {

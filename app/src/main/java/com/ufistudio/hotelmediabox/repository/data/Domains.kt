@@ -5,17 +5,17 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class Logo(
-    var path: String = "",
-    var fileName: String = ""
+        var path: String = "",
+        var fileName: String = ""
 ) : Parcelable
 
 @Parcelize
 data class ConnectDetail(
-    var ip: String = "",
-    var port: String = "",
-    var frequency: String = "",
-    var bandwidth: String = "",
-    var dvbParameter: String = ""
+        var ip: String = "",
+        var port: String = "",
+        var frequency: String = "",
+        var bandwidth: String = "",
+        var dvbParameter: String = ""
 ) : Parcelable
 
 abstract class BaseChannel {
@@ -33,19 +33,18 @@ enum class TVType {
 
 @Parcelize
 data class TVChannel(
-    override var chNum: String = "cNumber",
-    override var chName: String = "CName",
-    override var chType: String = "",
-    override var chGenre: String = "",
-    override var chIp: ConnectDetail = ConnectDetail(),
-    override var chLogo: Logo = Logo()
+        override var chNum: String = "cNumber",
+        override var chName: String = "CName",
+        override var chType: String = "",
+        override var chGenre: String = "",
+        override var chIp: ConnectDetail = ConnectDetail(),
+        override var chLogo: Logo = Logo()
 ) : BaseChannel(), Parcelable
-
 
 @Parcelize
 data class DVBInfo(
-    var Frequency: String = "",
-    var Bandwidth: String = ""
+        var Frequency: String = "",
+        var Bandwidth: String = ""
 ) : Parcelable
 
 /*
@@ -53,49 +52,51 @@ Home
  */
 @Parcelize
 data class Home(
-    val home: HomeContent
+        val home: HomeContent
 ) : Parcelable
 
 @Parcelize
 data class HomeContent(
-    val stage_type: HomeStageType,
-    val icons: ArrayList<HomeIcons>,
-    val promo_banner: ArrayList<HomePromoBanner>,
-    val weather: HomeWeather
+        val stage_type: HomeStageType,
+        val icons: ArrayList<HomeIcons>,
+        val promo_banner: ArrayList<HomePromoBanner>,
+        val weather: HomeWeather
 ) : Parcelable
 
 @Parcelize
 data class HomeStageType(
-    val type: Int,
-    val description: String
+        val type: Int,
+        val description: String
 ) : Parcelable
 
 @Parcelize
 data class HomeIcons(
-    val name: String,
-    val enable: Int
+        val id: Int,
+        val name: String,
+        val backTitle: String,
+        val enable: Int
 ) : Parcelable
 
 @Parcelize
 data class HomePromoBanner(
-    val image: String
+        val image: String
 ) : Parcelable
 
 @Parcelize
 data class HomeWeather(
-    val wifi_id_title: String,
-    val wifi_id: String,
-    val wifi_password_title: String,
-    val wifi_password: String,
-    val weather_value: String,
-    val weather_type: String,
-    val weather_title: String
+        val wifi_id_title: String,
+        val wifi_id: String,
+        val wifi_password_title: String,
+        val wifi_password: String,
+        val weather_value: String,
+        val weather_type: String,
+        val weather_title: String
 ) : Parcelable
 
 @Parcelize
 data class HomeVodMovie(
-    val server_ip: String,
-    val port: Int
+        val server_ip: String,
+        val port: Int
 ) : Parcelable
 
 /*
@@ -103,25 +104,25 @@ Hotel Facilities
  */
 @Parcelize
 data class HotelFacilitiesContent(
-    var title: String,
-    var file_type: String,
-    var content: String,
-    var file_name: String
+        var title: String,
+        var file_type: String,
+        var content: String,
+        var file_name: String
 ) : Parcelable
 
 @Parcelize
 data class HotelFacilitiesCategories(
-    val title: String,
-    val content_type: Int,
-    val description: String,
-    val total: Int,
-    val contents: ArrayList<HotelFacilitiesContent>
+        val title: String,
+        val content_type: Int,
+        val description: String,
+        val total: Int,
+        val contents: ArrayList<HotelFacilitiesContent>
 ) : Parcelable
 
 
 @Parcelize
 data class HotelFacilities(
-    val categories: ArrayList<HotelFacilitiesCategories>
+        val categories: ArrayList<HotelFacilitiesCategories>
 ) : Parcelable
 
 /*
@@ -129,28 +130,28 @@ Room Service
  */
 @Parcelize
 data class RoomServices(
-    val categories: ArrayList<RoomServiceCategories>
+        val categories: ArrayList<RoomServiceCategories>
 ) : Parcelable
 
 @Parcelize
 data class RoomServiceCategories(
-    val title: String,
-    val content_type: Int,
-    val description: String,
-    val total: Int,
-    val bottomNote: String,
-    val contents: ArrayList<RoomServiceContent>
+        val title: String,
+        val content_type: Int,
+        val description: String,
+        val total: Int,
+        val bottomNote: String,
+        val contents: ArrayList<RoomServiceContent>
 ) : Parcelable
 
 @Parcelize
 data class RoomServiceContent(
-    var title: String,
-    var price: String,
-    var type: String,
-    var file_type: String,
-    var file_name: String,
-    var content: String,
-    var image: String
+        var title: String,
+        var price: String,
+        var type: String,
+        var file_type: String,
+        var file_name: String,
+        var content: String,
+        var image: String
 ) : Parcelable
 
 /*
@@ -158,20 +159,20 @@ data class RoomServiceContent(
  */
 @Parcelize
 data class Welcome(
-    var welcome: WelcomeContent
+        var welcome: WelcomeContent
 ) : Parcelable
 
 @Parcelize
 data class WelcomeContent(
-    var room: String,
-    var description: String,
-    var title: String,
-    var name: String,
-    var time: String,
-    var titleImage: String,
-    var background: String,
-    var music: String,
-    var entryButton: String
+        var room: String,
+        var description: String,
+        var title: String,
+        var name: String,
+        var time: String,
+        var titleImage: String,
+        var background: String,
+        var music: String,
+        var entryButton: String
 ) : Parcelable
 
 /*
@@ -179,13 +180,15 @@ data class WelcomeContent(
  */
 @Parcelize
 data class Config(
-    var config: ConfigContent
+        var config: ConfigContent
 ) : Parcelable
 
 @Parcelize
 data class ConfigContent(
-    var language: String,
-    var upgradeUrl: String
+        var language: String,
+        var upgradeUrl: String,
+        var room: String,
+        var timeFormat: String
 ) : Parcelable
 
 /*
@@ -193,22 +196,114 @@ data class ConfigContent(
  */
 @Parcelize
 data class NearbyMe(
-    val categories: ArrayList<NearbyMeCategories>
+        val categories: ArrayList<NearbyMeCategories>
 ) : Parcelable
 
 @Parcelize
 data class NearbyMeCategories(
-    val title: String,
-    val content_type: Int,
-    val description: String,
-    val total: Int,
-    val contents: ArrayList<NearbyMeContent>
+        val title: String,
+        val category_id: String,
+        val total: Int,
+        val contents: ArrayList<NearbyMeContent>
 ) : Parcelable
 
 @Parcelize
 data class NearbyMeContent(
-    var title: String,
-    var file_type: String,
-    var content: String,
-    var file_name: String
+        var title: String,
+        var file_type: String,
+        var content: String,
+        var file_name: String
+) : Parcelable
+
+/*
+    Setting
+ */
+@Parcelize
+data class Setting(
+        var categories: ArrayList<SettingCategories>
+) : Parcelable
+
+@Parcelize
+data class SettingCategories(
+        var title: String,
+        var type: String,
+        var contents: SettingContent
+) : Parcelable
+
+@Parcelize
+data class SettingContent(
+        var content_title: String,
+        var image: String,
+        var content: List<SettingSubContent>
+) : Parcelable
+
+@Parcelize
+data class SettingSubContent(
+        var title: String,
+        var code: String
+) : Parcelable
+
+/*
+   Flights Info
+ */
+@Parcelize
+data class FlightsInfo(
+        var categories: ArrayList<FlightsInfoCategories>
+) : Parcelable
+
+@Parcelize
+data class FlightsInfoCategories(
+        var title: String,
+        var contents: ArrayList<FlightsInfoContent>
+) : Parcelable
+
+@Parcelize
+data class FlightsInfoContent(
+        var iptv: String
+) : Parcelable
+
+/*
+   Weather
+ */
+@Parcelize
+data class Weather(
+        var categories: ArrayList<WeatherCategories>,
+        var title: String,
+        var subtitle: String,
+        var update: String,
+        var temp_none: String,
+        var note: NoteButton
+) : Parcelable
+
+@Parcelize
+data class WeatherCategories(
+        var title: String,
+        var contents: WeatherContent
+) : Parcelable
+
+@Parcelize
+data class WeatherContent(
+        var title: String,
+        var subtitle: String
+) : Parcelable
+
+/*
+    Note button on bottom
+ */
+@Parcelize
+data class NoteButton(
+        var home: String,
+        var back: String
+) : Parcelable
+
+/*
+    Broadcast
+ */
+@Parcelize
+data class Broadcast(
+        var ip: String,
+        var command: String,
+        var url: String,
+        var port: String,
+        var type: String
 ) : Parcelable

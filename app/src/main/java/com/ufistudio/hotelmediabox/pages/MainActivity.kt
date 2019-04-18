@@ -5,14 +5,17 @@ import android.util.Log
 import android.view.KeyEvent
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.constants.Page
+import com.ufistudio.hotelmediabox.interfaces.OnFragmentKeyListener
 import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.pages.base.PaneViewActivity
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : PaneViewActivity(), OnPageInteractionListener.Primary {
 
     private val TAG = MainActivity::class.java.simpleName
 
     private var mFragmentCacheData: Any? = null
+    private var fragmentKeyListener: OnFragmentKeyListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,14 +31,22 @@ class MainActivity : PaneViewActivity(), OnPageInteractionListener.Primary {
 //        }
 //        switchPage(page, args)
 
-        if (page == null || page == 0){
-            switchPage(R.id.fragment_container, Page.HOME, Bundle(), true, false)
-        }
-        else{
-            Log.e(TAG,"[get page] = $page")
+        if (page == null || page == 0) {
+            val bundle: Bundle = Bundle()
+            //for setting page reset language use
+            if (args?.getBoolean(Page.ARG_BUNDLE) != null)
+                bundle.putBoolean(Page.ARG_BUNDLE, args.getBoolean(Page.ARG_BUNDLE))
+            switchPage(R.id.fragment_container, Page.HOME, bundle, true, false)
+        } else {
+            Log.e(TAG, "[get page] = $page")
             switchPage(R.id.fragment_container, page, Bundle(), true, false)
         }
 
+    }
+
+    override fun onStop() {
+        dateView.stopRefreshTimer()
+        super.onStop()
     }
 
     private fun init() {
@@ -80,6 +91,14 @@ class MainActivity : PaneViewActivity(), OnPageInteractionListener.Primary {
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         return super.onKeyDown(keyCode, event)
+    }
+
+    override fun setOnKeyListener(listener: OnFragmentKeyListener?) {
+        fragmentKeyListener = listener
+    }
+
+    override fun getOnKeyListener(): OnFragmentKeyListener? {
+        return fragmentKeyListener
     }
 }
 

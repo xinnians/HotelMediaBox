@@ -17,12 +17,13 @@ import com.google.android.exoplayer2.source.ExtractorMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DataSpec
+import com.google.android.exoplayer2.upstream.FileDataSource
 import com.google.android.exoplayer2.upstream.RawResourceDataSource
 import com.google.android.exoplayer2.upstream.UdpDataSource
 import com.ufistudio.hotelmediabox.R
 
 open class ExoPlayerHelper {
-    private lateinit var mPlayer: SimpleExoPlayer
+    private var mPlayer: SimpleExoPlayer?=null
     private lateinit var mVideoView: PlayerView
     private var mContext: Context? = null
     private var mVideoFrameParams: ConstraintLayout.LayoutParams? = null
@@ -50,13 +51,13 @@ open class ExoPlayerHelper {
 
             val factory = com.google.android.exoplayer2.upstream.DataSource.Factory { udpDataSource }
             val videoSource = ExtractorMediaSource.Factory(factory).createMediaSource(udpDataSource.uri)
-            mPlayer.prepare(videoSource)
+            mPlayer?.prepare(videoSource)
 
         } catch (e: UdpDataSource.UdpDataSourceException) {
             e.printStackTrace()
         }
 
-        mPlayer.playWhenReady = playWhenReady
+        mPlayer?.playWhenReady = playWhenReady
     }
 
     /**
@@ -72,13 +73,35 @@ open class ExoPlayerHelper {
 
             val factory = com.google.android.exoplayer2.upstream.DataSource.Factory { dtaSource }
             val videoSource = ExtractorMediaSource.Factory(factory).createMediaSource(dtaSource.uri)
-            mPlayer.prepare(videoSource)
+            mPlayer?.prepare(videoSource)
 
         } catch (e: UdpDataSource.UdpDataSourceException) {
             e.printStackTrace()
         }
 
-        mPlayer.playWhenReady = playWhenReady
+        mPlayer?.playWhenReady = playWhenReady
+    }
+
+    /**
+     * Set File source.
+     * @fileUri : Uri of file
+     * @playWhenReady: If you want play when ready , default:true
+     */
+    fun setFileSource(fileUri: Uri, playWhenReady: Boolean = true) {
+        val dtaSource = FileDataSource()
+        val dataSpec = DataSpec(fileUri)
+        try {
+            dtaSource.open(dataSpec)
+
+            val factory = com.google.android.exoplayer2.upstream.DataSource.Factory { dtaSource }
+            val videoSource = ExtractorMediaSource.Factory(factory).createMediaSource(dtaSource.uri)
+            mPlayer?.prepare(videoSource)
+
+        } catch (e: UdpDataSource.UdpDataSourceException) {
+            e.printStackTrace()
+        }
+
+        mPlayer?.playWhenReady = playWhenReady
     }
 
     /**
@@ -89,12 +112,14 @@ open class ExoPlayerHelper {
         mVideoView.findViewById<TextView>(R.id.text_bottom_title).text = "TV 2"
         Glide.with(mContext!!)
                 .load(ColorDrawable(ContextCompat.getColor(mContext!!, android.R.color.holo_blue_dark)))
+                .skipMemoryCache(true)
                 .apply(RequestOptions.circleCropTransform())
                 .into(mVideoView.findViewById<ImageView>(R.id.image_channel_center))
         var requestOptions = RequestOptions()
         requestOptions = requestOptions.transform(CenterCrop(), RoundedCorners(16))
         Glide.with(mContext!!)
                 .load(ColorDrawable(ContextCompat.getColor(mContext!!, android.R.color.holo_blue_dark)))
+                .skipMemoryCache(true)
                 .apply(requestOptions)
                 .into(mVideoView.findViewById<ImageView>(R.id.image_bottom_channel))
     }
@@ -103,14 +128,14 @@ open class ExoPlayerHelper {
      * stop video
      */
     fun stop() {
-        mPlayer.playWhenReady = false
+        mPlayer?.playWhenReady = false
     }
 
     /**
      * Start video
      */
     fun play() {
-        mPlayer.playWhenReady = true
+        mPlayer?.playWhenReady = true
     }
 
     /**
@@ -118,7 +143,7 @@ open class ExoPlayerHelper {
      * You have to call this Method.
      */
     fun release() {
-        mPlayer.release()
+        mPlayer?.release()
         mIsFullscreen = false
     }
 

@@ -24,7 +24,7 @@ class WelcomeViewModel(
 
     init {
         val gson = Gson()
-        val jsonObject = gson.fromJson(MiscUtils.getJsonFromStorage("welcome_en.json"), Welcome::class.java)
+        val jsonObject = gson.fromJson(MiscUtils.getJsonLanguageAutoSwitch("welcome"), Welcome::class.java)
         if (jsonObject != null) {
             compositeDisposable.add(Single.just(jsonObject)
                     .observeOn(AndroidSchedulers.mainThread())
