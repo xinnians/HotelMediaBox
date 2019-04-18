@@ -2,6 +2,7 @@ package com.ufistudio.hotelmediabox.repository
 
 import android.app.Application
 import com.ufistudio.hotelmediabox.repository.data.BaseChannel
+import com.ufistudio.hotelmediabox.repository.data.Broadcast
 import com.ufistudio.hotelmediabox.repository.data.BroadcastRequest
 import com.ufistudio.hotelmediabox.repository.provider.preferences.PreferencesKey.CHANNEL_LIST
 import com.ufistudio.hotelmediabox.repository.provider.preferences.SharedPreferencesProvider
@@ -48,14 +49,19 @@ class Repository(
                 "ok"
         )
 
-        val channels: File? = FileUtils.getFileFromStorage("channels.json")
+        val channels: File? = FileUtils.getFileFromStorage("box_channels.json")
         var multipartBody: MultipartBody.Part? = null
         if (channels != null) {
             val requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), channels)
-            multipartBody = MultipartBody.Part.createFormData("channels.json", "channels.json", requestFile)
+            multipartBody = MultipartBody.Part.createFormData("channels.json", "box_channels.json", requestFile)
         }
         return ApiClient.getInstance()!!.postChannel(url, body, multipartBody!!)
     }
+
+    fun getSoftwareUpdate(url: String): Single<Broadcast> {
+        return ApiClient.getInstance()!!.getSoftwareUpdate(url)
+    }
+
     // local
 
     fun getChannelList(): Single<ArrayList<BaseChannel>>? {

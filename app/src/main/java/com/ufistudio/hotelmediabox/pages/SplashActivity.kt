@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.pages.welcome.WelcomeActivity
 import com.ufistudio.hotelmediabox.services.UdpReceiver
+import com.ufistudio.hotelmediabox.utils.FileUtils
+import com.ufistudio.hotelmediabox.utils.TAG_DEFAULT_APK_NAME
 import java.util.*
 import kotlin.concurrent.schedule
 
@@ -20,6 +22,7 @@ class SplashActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+        FileUtils.getFileFromStorage(TAG_DEFAULT_APK_NAME)?.delete()
         startService(Intent(this, UdpReceiver::class.java))
     }
 

@@ -235,7 +235,7 @@ data class SettingCategories(
 data class SettingContent(
         var content_title: String,
         var image: String,
-        var content: List<SettingSubContent>
+        var content: List<SettingSubContent>? = ArrayList()
 ) : Parcelable
 
 @Parcelize
@@ -314,5 +314,6 @@ data class Broadcast(
         var command: String,
         var url: String,
         var port: String,
-        var type: String
+        var type: String,
+        var needUpdate: Int = 0
 ) : Parcelable

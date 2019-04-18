@@ -98,7 +98,7 @@ class LanguageFragment : InteractionView<OnPageInteractionListener.Primary>(), O
         when (keyCode) {
             KeyEvent.KEYCODE_DPAD_CENTER -> {
                 mConfigData?.config?.language = mCurrentLanguageCode
-                FileUtils.writeToFile(File("${Environment.getExternalStorageDirectory().path}${TAG_DEFAULT_LOCAL_PATH}config.json"), mGson.toJson(mConfigData))
+                FileUtils.writeToFile(File("${Environment.getExternalStorageDirectory().path}$TAG_DEFAULT_LOCAL_PATH", "box_config.json"), mGson.toJson(mConfigData))
                 return true
             }
             KeyEvent.KEYCODE_DPAD_UP -> {

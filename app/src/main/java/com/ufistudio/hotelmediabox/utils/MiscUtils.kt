@@ -18,6 +18,7 @@ import java.io.*
 import java.nio.charset.Charset
 
 const val TAG_DEFAULT_LOCAL_PATH: String = "/hotel/"
+const val TAG_DEFAULT_APK_NAME: String = "box_hotel.apk"
 
 object MiscUtils {
 
@@ -72,7 +73,7 @@ object MiscUtils {
 
     /**
      * 根據語言選取json file
-     * @fileName: json file不加後贅字 ex: home_en.json 只需要傳 home
+     * @fileName: json file不加前、後贅字 ex: box_home_en.json 只需要傳 home
      *
      * 若找不到，預設英文
      */
@@ -80,7 +81,7 @@ object MiscUtils {
         val gson = Gson()
         var config: Config? = null
         try {
-            config = gson.fromJson(getJsonFromStorage("config.json"), Config::class.java)
+            config = gson.fromJson(getJsonFromStorage("box_config.json"), Config::class.java)
         } catch (e: IllegalStateException) {
             Log.e(TAG, "getJsonLanguageAutoSwitch = $e")
             return ""
@@ -92,9 +93,9 @@ object MiscUtils {
 
         var finalName: String = ""
         finalName = if (File("${Environment.getExternalStorageDirectory()}/$TAG_DEFAULT_LOCAL_PATH${fileName}_${config.config.language}.json").exists()) {
-            "${fileName}_${config.config.language}.json"
+            "box_${fileName}_${config.config.language}.json"
         } else {
-            "${fileName}_en.json"
+            "box_${fileName}_en.json"
         }
 
         Log.d(TAG, "new file name = $finalName")
@@ -117,7 +118,7 @@ object MiscUtils {
 //    }
     fun getJsonFromStorage(fileName: String, path: String = ""): String {
 
-        return FileUtils.getFileFromStorage(path, fileName)?.let { file ->
+        return FileUtils.getFileFromStorage(fileName, path)?.let { file ->
             parseJsonFileByInputStream(
                     FileInputStream(
                             file
@@ -307,7 +308,7 @@ object MiscUtils {
      */
     fun getRoomNumber(): String {
         val gson = Gson()
-        val json = getJsonFromStorage("config.json")
+        val json = getJsonFromStorage("box_config.json")
         return if (!TextUtils.isEmpty(json)) {
             val config = gson.fromJson(json, Config::class.java)
             config.config.room

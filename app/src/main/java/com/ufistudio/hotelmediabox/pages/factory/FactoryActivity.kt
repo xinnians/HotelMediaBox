@@ -22,6 +22,7 @@ import com.ufistudio.hotelmediabox.pages.welcome.WelcomeActivity
 import com.ufistudio.hotelmediabox.repository.data.*
 import com.ufistudio.hotelmediabox.utils.FileUtils
 import com.ufistudio.hotelmediabox.utils.MiscUtils
+import com.ufistudio.hotelmediabox.utils.TAG_DEFAULT_APK_NAME
 import kotlinx.android.synthetic.main.activity_factory.*
 import java.io.File
 import java.io.FileOutputStream
@@ -98,9 +99,9 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
                 mViewModel.downloadFileWithUrl(mData?.config?.upgradeUrl!!)
             }
             FactoryFeature.CHECK_UPGRADE_FROM_USB -> {
-                if (!MiscUtils.installApk(this, "hotelbox.apk", "${FileUtils.getUSBFiles()?.path}")) {
+                if (!MiscUtils.installApk(this, TAG_DEFAULT_APK_NAME, "${FileUtils.getUSBFiles()?.path}")) {
                     mInfo1.setLength(0)
-                    mInfo1.append("找不到 hotelbox.apk 安裝檔")
+                    mInfo1.append("找不到 $TAG_DEFAULT_APK_NAME 安裝檔")
 
                     Log.d(TAG, "找不到裝置")
                 }
@@ -173,7 +174,7 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
             FactoryFeature.SCAN_DVB_CHANNELS -> {
                 //TODO 確認有頻點表 然後再掃台將結果寫入channels.json
 
-                if (FileUtils.fileIsExists("DvbScanConfig.json")) {
+                if (FileUtils.fileIsExists("box_DvbScanConfig.json")) {
                     Log.e(TAG, "load DvbScanConfig.json")
                     mInfo1.setLength(0)
                     mInfo1.append("load DvbScanConfig.json\n")
@@ -184,7 +185,10 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
                     var jsonList: Array<TVChannel> = emptyArray<TVChannel>()
 
                     val jsonArray: Array<DVBInfo> =
-                            Gson().fromJson(MiscUtils.getJsonFromStorage("DvbScanConfig.json"), Array<DVBInfo>::class.java)
+                            Gson().fromJson(
+                                    MiscUtils.getJsonFromStorage("box_DvbScanConfig.json"),
+                                    Array<DVBInfo>::class.java
+                            )
 
                     var count = 1
 
@@ -223,7 +227,7 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
 
                     Log.e(TAG, "[json result] = $jsonList")
 
-                    var channelFile = File("${Environment.getExternalStorageDirectory().path}/hotel/channels.json")
+                    var channelFile = File("${Environment.getExternalStorageDirectory().path}/hotel/box_channels.json")
 
                     FileUtils.writeToFile(channelFile, Gson().toJson(jsonList))
 

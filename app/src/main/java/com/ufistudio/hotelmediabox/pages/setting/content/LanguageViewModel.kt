@@ -41,6 +41,6 @@ class LanguageViewModel(
 
     private fun getConfigJsonObject(): Config? {
         val gson = Gson()
-        return gson.fromJson(MiscUtils.getJsonFromStorage("config.json"), Config::class.java)
+        return gson.fromJson(MiscUtils.getJsonFromStorage("box_config.json"), Config::class.java)
     }
 }
