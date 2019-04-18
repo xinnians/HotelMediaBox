@@ -24,6 +24,8 @@ import com.ufistudio.hotelmediabox.utils.FileUtils
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_BACK_TITLE
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_INDEX
 import kotlinx.android.synthetic.main.fragment_flights_info.*
+import kotlinx.android.synthetic.main.view_bottom_back_home.*
+import kotlinx.android.synthetic.main.view_bottom_ok_back_home.*
 
 class FlightsInfoFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItemClickListener,
         OnItemFocusListener, ViewModelsCallback {
@@ -46,6 +48,8 @@ class FlightsInfoFragment : InteractionView<OnPageInteractionListener.Primary>()
     private var mCurrentIpTvSelectIndex: HashMap<Int, Int>? = HashMap() //記錄當前在第幾個Item的Ip Tv, key = category index, value = Ip tv index
     private var mTotalSize: HashMap<Int, Int>? = HashMap()//所有category內容的size, key = category index, value = category content size
     private var mCurrentContent: List<FlightsInfoContent>? = null // 被選到的category內的IP tv address
+
+    private var mNoteBottom: NoteButton? = null//右下角提示資訊
 
     companion object {
         fun newInstance(): FlightsInfoFragment = FlightsInfoFragment()
@@ -190,6 +194,10 @@ class FlightsInfoFragment : InteractionView<OnPageInteractionListener.Primary>()
                 mAdapter.setData(mData?.categories!!)
                 mExoPlayerHelper.initPlayer(context, videoView)
             }
+
+            textView_back.text = mNoteBottom?.note?.back
+            textView_home.text = mNoteBottom?.note?.home
+            textView_ok.text = mNoteBottom?.note?.fullScreen
         }
     }
 
@@ -222,7 +230,9 @@ class FlightsInfoFragment : InteractionView<OnPageInteractionListener.Primary>()
 
     override fun onSuccess(it: Any?) {
         if (it != null) {
-            mData = it as FlightsInfo?
+            val data: Pair<*, *> = it as Pair<*, *>
+            mData = data.first as FlightsInfo?
+            mNoteBottom = data.second as NoteButton?
             renderView()
         }
     }

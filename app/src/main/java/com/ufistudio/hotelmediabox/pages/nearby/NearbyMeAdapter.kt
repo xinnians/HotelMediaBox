@@ -86,8 +86,8 @@ class NearbyMeAdapter(private var mClickListener: OnItemClickListener, private v
 
                 holder.itemView.setOnClickListener { mClickListener.onClick(holder.itemView) }
                 holder.itemView.setOnFocusChangeListener { v, hasFocus ->
-                    mFocusListener.onFoucsed(holder.itemView)
                     if (hasFocus) {
+                        mFocusListener.onFoucsed(holder.itemView)
                         holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.colorYellow))
                     } else {
                         holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))

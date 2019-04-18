@@ -11,12 +11,16 @@ import android.util.SparseArray
 import android.view.KeyEvent
 import com.ufistudio.hotelmediabox.constants.Page
 import com.ufistudio.hotelmediabox.pages.MainActivity
-import com.ufistudio.hotelmediabox.pages.fullScreen.FullScreenActivity
+import com.ufistudio.hotelmediabox.receivers.MyReceiver
 import com.ufistudio.hotelmediabox.utils.ActivityUtils
+import android.content.IntentFilter
+import com.ufistudio.hotelmediabox.receivers.ACTION_UPDATE_APK
+
 
 open class PaneViewActivity : BaseActivity(), OnPageInteractionListener.Pane {
 
     private val TAG = PaneViewActivity::class.simpleName
+    private var mReceiver: MyReceiver = MyReceiver()
 
     private var mTopFragment: SparseArray<String> = SparseArray(2)
 
@@ -119,7 +123,7 @@ open class PaneViewActivity : BaseActivity(), OnPageInteractionListener.Pane {
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         Log.d(TAG, "keycode = $keyCode  ,event = $event")
-        if(keyCode == 302){
+        if (keyCode == 302) {
 //            var intent: Intent = Intent(this, FullScreenActivity::class.java)
 //            intent.putExtra("page",Page.HOME)
             startActivity(Intent(this, MainActivity::class.java))
@@ -133,5 +137,17 @@ open class PaneViewActivity : BaseActivity(), OnPageInteractionListener.Pane {
                 return true
         }
         return super.onKeyDown(keyCode, event)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val filter = IntentFilter()
+        filter.addAction(ACTION_UPDATE_APK)
+        registerReceiver(mReceiver, filter)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        unregisterReceiver(mReceiver)
     }
 }

@@ -82,7 +82,7 @@ class DateView : ConstraintLayout {
     fun getTimeFormate() {
         val gson = Gson()
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            val jsonObject = gson.fromJson(MiscUtils.getJsonFromStorage("config.json"), Config::class.java)
+            val jsonObject = gson.fromJson(MiscUtils.getJsonFromStorage("box_config.json"), Config::class.java)
             if (jsonObject != null) {
                 val getConfigDisposable: Disposable? = Single.just(jsonObject)
                         .subscribeOn(Schedulers.io())

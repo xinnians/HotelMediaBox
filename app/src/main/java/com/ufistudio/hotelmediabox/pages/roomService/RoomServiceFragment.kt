@@ -25,14 +25,12 @@ import com.ufistudio.hotelmediabox.pages.base.InteractionView
 import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.pages.home.HomeFeatureEnum
 import com.ufistudio.hotelmediabox.pages.roomService.template.TemplateType2RecyclerViewAdapter
-import com.ufistudio.hotelmediabox.repository.data.HomeIcons
-import com.ufistudio.hotelmediabox.repository.data.RoomServiceCategories
-import com.ufistudio.hotelmediabox.repository.data.RoomServiceContent
-import com.ufistudio.hotelmediabox.repository.data.RoomServices
+import com.ufistudio.hotelmediabox.repository.data.*
 import com.ufistudio.hotelmediabox.utils.FileUtils
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_BACK_TITLE
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_INDEX
 import kotlinx.android.synthetic.main.fragment_room_service.*
+import kotlinx.android.synthetic.main.view_bottom_back_home.*
 
 private const val TAG_IMAGE = "image"
 private const val TAG_VIDEO = "video"
@@ -60,6 +58,9 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
     private var mCurrentContent: List<RoomServiceContent>? = null // 被選到的category內的Content
     private var mCurrentContentType: Int? = 0 // 被選到的content type
     private var mTemplate2BottomNote: String = ""//template2 底下的提示字
+
+    private var mVideoView: PlayerView? = null
+    private var mNoteBottom: NoteButton? = null//右下角提示資訊
 
     private var mExoPlayerHelper: ExoPlayerHelper = ExoPlayerHelper()
 
@@ -106,9 +107,10 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
         super.onDestroy()
     }
 
-    override fun onStop() {
+    override fun onPause() {
+        mVideoView!!.visibility = View.GONE
         mExoPlayerHelper.release()
-        super.onStop()
+        super.onPause()
     }
 
     override fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
@@ -206,6 +208,9 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
                 mAdapter.selectLast(mCurrentCategoryIndex)
                 mAdapter.setData(mData?.categories!!)
             }
+
+            textView_back.text = mNoteBottom?.note?.back
+            textView_home.text = mNoteBottom?.note?.home
         }
     }
 
@@ -236,7 +241,9 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
     }
 
     override fun onSuccess(it: Any?) {
-        mData = it as RoomServices
+        val data: Pair<*, *> = it as Pair<*, *>
+        mData = data.first as RoomServices?
+        mNoteBottom = data.second as NoteButton?
         renderView()
     }
 
@@ -270,11 +277,11 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
         view_content_type1?.findViewById<TextView>(R.id.text_content)!!.text = item.content
         view_content_type1?.findViewById<TextView>(R.id.text_current_page)!!.text = (mCurrentContentSelectIndex?.get(mCurrentCategoryIndex)!! + 1).toString()
         view_content_type1?.findViewById<TextView>(R.id.text_total_page)!!.text = String.format("/%d", mTotalSize?.get(mCurrentCategoryIndex))
-        val videoView = view_content_type1?.findViewById<PlayerView>(R.id.videoView)
+        mVideoView = view_content_type1?.findViewById<PlayerView>(R.id.videoView)
         val imageView = view_content_type1?.findViewById<ImageView>(R.id.image_content)
 
         if (item.file_type.hashCode() == TAG_IMAGE.hashCode()) {
-            videoView?.visibility = View.GONE
+            mVideoView?.visibility = View.GONE
             imageView?.visibility = View.VISIBLE
             Glide.with(context!!)
                     .load(FileUtils.getFileFromStorage(item.file_name))
@@ -282,9 +289,12 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
                     .into(imageView!!)
         } else if (item.file_type.hashCode() == TAG_VIDEO.hashCode()) {
             mContentPlaying = true
-            mExoPlayerHelper.initPlayer(context, videoView!!)
+            mExoPlayerHelper.initPlayer(context, mVideoView!!)
             mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(item.file_name)?.absolutePath))
-            videoView.visibility = View.VISIBLE
+            mVideoView!!.visibility = View.VISIBLE
+            imageView?.visibility = View.INVISIBLE
+        } else {
+            mVideoView!!.visibility = View.GONE
             imageView?.visibility = View.INVISIBLE
         }
     }

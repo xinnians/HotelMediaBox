@@ -1,5 +1,6 @@
 package com.ufistudio.hotelmediabox.repository.remote
 
+import com.ufistudio.hotelmediabox.repository.data.Broadcast
 import com.ufistudio.hotelmediabox.repository.data.BroadcastRequest
 import com.ufistudio.hotelmediabox.repository.remote.RemoteAPI.Companion.getOkHttpClient
 import io.reactivex.Single
@@ -58,4 +59,6 @@ class ApiClient {
     fun postChannel(url: String, body: BroadcastRequest, file: MultipartBody.Part): Single<ResponseBody> {
         return mService.postChannelList(url, body, file)
     }
+
+    fun getSoftwareUpdate(url: String): Single<Broadcast> = mService.softwareUpdate(url)
 }

@@ -36,7 +36,7 @@ class TVHelper {
         Log.i(TAG, "[TVHelper] getChannelList call")
         if (mChannelList == null || mChannelList?.size ?: 0 == 0) {
             val jsonObject: Array<TVChannel> =
-                Gson().fromJson(MiscUtils.getJsonFromStorage("channels.json"), Array<TVChannel>::class.java)
+                Gson().fromJson(MiscUtils.getJsonFromStorage("box_channels.json"), Array<TVChannel>::class.java)
                     ?: return null
             mChannelList = jsonObject.toCollection(ArrayList())
         }

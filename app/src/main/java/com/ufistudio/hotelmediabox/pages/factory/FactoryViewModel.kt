@@ -9,6 +9,7 @@ import com.ufistudio.hotelmediabox.repository.data.Config
 import com.ufistudio.hotelmediabox.repository.viewModel.BaseViewModel
 import com.ufistudio.hotelmediabox.utils.FileUtils
 import com.ufistudio.hotelmediabox.utils.MiscUtils
+import com.ufistudio.hotelmediabox.utils.TAG_DEFAULT_APK_NAME
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -31,7 +32,7 @@ class FactoryViewModel(
     init {
         val gson = Gson()
 
-        val jsonObject = gson.fromJson(MiscUtils.getJsonFromStorage("config.json"), Config::class.java)
+        val jsonObject = gson.fromJson(MiscUtils.getJsonFromStorage("box_config.json"), Config::class.java)
         if (jsonObject != null) {
             compositeDisposable.add(Single.just(jsonObject)
                     .observeOn(AndroidSchedulers.mainThread())
@@ -50,7 +51,7 @@ class FactoryViewModel(
 
         compositeDisposable.add(repository.downloadFileWithUrl(url)
                 .map {
-                    Single.just(FileUtils.writeResponseBodyToDisk(it, "hotelbox.apk"))
+                    Single.just(FileUtils.writeResponseBodyToDisk(it, TAG_DEFAULT_APK_NAME))
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe({
                                 Log.d(TAG, "save file finish $it")
@@ -63,7 +64,7 @@ class FactoryViewModel(
                 .subscribe({
                     Log.d(TAG, " save success = $it")
                     fileDownloadProgress.value = false
-                    fileDownloadSuccess.value = "hotelbox.apk"
+                    fileDownloadSuccess.value = TAG_DEFAULT_APK_NAME
                 }, {
                     Log.d(TAG, " save error = $it")
                     fileDownloadProgress.value = false

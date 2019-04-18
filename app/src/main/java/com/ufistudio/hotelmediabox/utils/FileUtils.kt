@@ -52,11 +52,8 @@ object FileUtils {
     fun getFileFromStorage(fileName: String, path: String = ""): File? {
         var file: File? = null
         try {
-            file = File(
-                String.format("%s%s%s", Environment.getExternalStorageDirectory(), TAG_DEFAULT_LOCAL_PATH, path),
-                fileName
-            )
-            Log.d("getFileFromStorage", "file pagh = ${file.absolutePath}")
+            file = File(String.format("%s%s%s", Environment.getExternalStorageDirectory(), TAG_DEFAULT_LOCAL_PATH, path), fileName)
+            Log.d("getFileFromStorage", "file path = ${file.absolutePath}")
         } catch (e: NullPointerException) {
             Log.e("getFileFromStorage", "error = $e")
         } catch (e: FileNotFoundException) {
@@ -301,7 +298,7 @@ object FileUtils {
             osw = FileOutputStream(file)
             osw.write("".toByteArray())
             osw.flush()
-            Log.d("neo", "data.() = ${data}")
+            Log.d("writeToFile", "data.() = ${data}")
             osw.write(data.toByteArray(Charset.defaultCharset()))
             osw.flush()
         } catch (e: Exception) {

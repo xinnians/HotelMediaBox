@@ -7,7 +7,9 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.media.MediaPlayer
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
@@ -20,6 +22,7 @@ import com.ufistudio.hotelmediabox.AppInjector
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.interfaces.ViewModelsCallback
 import com.ufistudio.hotelmediabox.pages.MainActivity
+import com.ufistudio.hotelmediabox.pages.base.PaneViewActivity
 import com.ufistudio.hotelmediabox.pages.factory.FactoryActivity
 import com.ufistudio.hotelmediabox.repository.data.Welcome
 import com.ufistudio.hotelmediabox.repository.data.WelcomeContent
@@ -29,7 +32,7 @@ import kotlinx.android.synthetic.main.activity_welcome.*
 
 const val TAG_WRITE_PERMISSION_CODE = 10000
 
-class WelcomeActivity : AppCompatActivity(), ViewModelsCallback, View.OnClickListener {
+class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickListener {
     private lateinit var mViewModel: WelcomeViewModel
     private var mWelcomeContent: WelcomeContent? = null
     private var mPlayer: MediaPlayer? = null
@@ -152,9 +155,12 @@ class WelcomeActivity : AppCompatActivity(), ViewModelsCallback, View.OnClickLis
             text_room.text = it.room
             text_description.text = it.description
 
-            mPlayer = MediaPlayer.create(this, Uri.fromFile(FileUtils.getFileFromStorage(it.music)))
-            mPlayer?.start()
-            mPlayer?.isLooping = true
+            val file = FileUtils.getFileFromStorage(it.music)
+            if (file != null) {
+                mPlayer = MediaPlayer.create(this, Uri.fromFile(file))
+                mPlayer?.start()
+                mPlayer?.isLooping = true
+            }
         }
 
     }

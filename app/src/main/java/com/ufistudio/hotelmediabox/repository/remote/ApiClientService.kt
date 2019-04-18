@@ -1,5 +1,6 @@
 package com.ufistudio.hotelmediabox.repository.remote
 
+import com.ufistudio.hotelmediabox.repository.data.Broadcast
 import com.ufistudio.hotelmediabox.repository.data.BroadcastRequest
 import io.reactivex.Single
 import okhttp3.MultipartBody
@@ -9,6 +10,9 @@ import retrofit2.http.*
 interface ApiClientService {
     @GET
     fun download(@Url url: String): Single<ResponseBody>
+
+    @GET
+    fun softwareUpdate(@Url url: String): Single<Broadcast>
 
     @POST
     fun checkStatus(

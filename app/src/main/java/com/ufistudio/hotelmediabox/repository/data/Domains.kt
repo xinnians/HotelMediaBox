@@ -130,7 +130,8 @@ Room Service
  */
 @Parcelize
 data class RoomServices(
-        val categories: ArrayList<RoomServiceCategories>
+        val categories: ArrayList<RoomServiceCategories>,
+        val note: NoteButton
 ) : Parcelable
 
 @Parcelize
@@ -234,7 +235,7 @@ data class SettingCategories(
 data class SettingContent(
         var content_title: String,
         var image: String,
-        var content: List<SettingSubContent>
+        var content: List<SettingSubContent>? = ArrayList()
 ) : Parcelable
 
 @Parcelize
@@ -292,8 +293,16 @@ data class WeatherContent(
  */
 @Parcelize
 data class NoteButton(
+        var note: Note? = null
+) : Parcelable
+
+@Parcelize
+data class Note(
         var home: String,
-        var back: String
+        var back: String,
+        var fullScreen: String,
+        var toScroll: String,
+        var select: String
 ) : Parcelable
 
 /*
@@ -305,5 +314,6 @@ data class Broadcast(
         var command: String,
         var url: String,
         var port: String,
-        var type: String
+        var type: String,
+        var needUpdate: Int = 0
 ) : Parcelable
