@@ -87,8 +87,8 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
      * 接收 Broadcast
      */
     private fun receiveBroadcast() {
+        Log.d(TAG, "receiveBroadcast")
         while (true) {
-            Log.d(TAG, "receiveBroadcast")
             val recBuf: ByteArray = ByteArray(255)
             mPacket = null
             mPacket = DatagramPacket(recBuf, recBuf.size)
@@ -101,6 +101,7 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
 
             try {
                 val myBroadcast = gson.fromJson(receiverString, Broadcast::class.java)
+                Log.d(TAG, "Server: IP = ${mPacket!!.address}")
                 Log.i(TAG, "Server: Message received = ${mPacket!!.data}")
                 Log.i(TAG, "Server: Message receiverString = $receiverString")
                 when (myBroadcast.command.hashCode()) {
@@ -194,7 +195,7 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                 Log.d(TAG, "error = $e")
             }
 
-            Log.d(TAG, "Server: IP = ${mPacket!!.address}")
+
         }
     }
 }
