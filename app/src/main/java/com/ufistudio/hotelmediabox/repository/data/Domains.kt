@@ -217,6 +217,30 @@ data class NearbyMeContent(
 ) : Parcelable
 
 /*
+    VOD
+ */
+@Parcelize
+data class Vod(
+        val categories: ArrayList<VodCategories>
+) : Parcelable
+
+@Parcelize
+data class VodCategories(
+        val title: String,
+        val category_id: String,
+        val total: Int,
+        val contents: ArrayList<VodContent>
+) : Parcelable
+
+@Parcelize
+data class VodContent(
+        var title: String,
+        var ip: String,
+        var port: String,
+        var description: String
+) : Parcelable
+
+/*
     Setting
  */
 @Parcelize
