@@ -108,7 +108,7 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
     }
 
     override fun onPause() {
-        mVideoView!!.visibility = View.GONE
+        mVideoView?.visibility = View.GONE
         mExoPlayerHelper.release()
         super.onPause()
     }
