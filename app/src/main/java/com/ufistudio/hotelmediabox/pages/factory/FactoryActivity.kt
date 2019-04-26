@@ -94,19 +94,19 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
         when (view?.tag as FactoryFeature) {
             FactoryFeature.CHECK_UPGRADE_FROM_URL -> {
 
-                var link = "https://drive.google.com/uc?export=download&id=1xnX0GLqhvwViob-WzbzOxPRgqkvkd39J"
-//                mInfo1.setLength(0)
-//                if (TextUtils.isEmpty(mData?.config?.upgradeUrl!!)) {
-//                    mInfo1.append("找不到url")
-//                    textView_info1.text = mInfo1
-//                    return
-//                }
-//                mInfo1.append("檢查更新網址：${mData?.config?.upgradeUrl}\n")
-//                textView_info1.text = mInfo1
-//                mViewModel.downloadFileWithUrl(mData?.config?.upgradeUrl!!)
+//                var link = "https://drive.google.com/uc?export=download&id=1xnX0GLqhvwViob-WzbzOxPRgqkvkd39J"
+                mInfo1.setLength(0)
+                if (TextUtils.isEmpty(mData?.config?.upgradeUrl!!)) {
+                    mInfo1.append("找不到url")
+                    textView_info1.text = mInfo1
+                    return
+                }
+                mInfo1.append("檢查更新網址：${mData?.config?.upgradeUrl}\n")
+                textView_info1.text = mInfo1
+                mViewModel.downloadFileWithUrl(mData?.config?.upgradeUrl!!)
 
-                textView_info1.text = link
-                mViewModel.downloadFileWithUrl(link)
+//                textView_info1.text = link
+//                mViewModel.downloadFileWithUrl(link)
             }
             FactoryFeature.CHECK_UPGRADE_FROM_USB -> {
                 if (!MiscUtils.installApk(this, TAG_DEFAULT_APK_NAME, "${FileUtils.getUSBFiles()?.path}")) {
