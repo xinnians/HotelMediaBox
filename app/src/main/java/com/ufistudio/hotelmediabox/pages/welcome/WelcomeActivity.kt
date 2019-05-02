@@ -7,23 +7,18 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.media.MediaPlayer
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.ufistudio.hotelmediabox.AppInjector
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.interfaces.ViewModelsCallback
 import com.ufistudio.hotelmediabox.pages.MainActivity
 import com.ufistudio.hotelmediabox.pages.base.PaneViewActivity
-import com.ufistudio.hotelmediabox.pages.factory.FactoryActivity
 import com.ufistudio.hotelmediabox.repository.data.Welcome
 import com.ufistudio.hotelmediabox.repository.data.WelcomeContent
 import com.ufistudio.hotelmediabox.utils.FileUtils
@@ -119,7 +114,7 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
                     renderUI()
-                    dateView.getTimeFormate()
+                    dateView.getTimeFormat()
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.

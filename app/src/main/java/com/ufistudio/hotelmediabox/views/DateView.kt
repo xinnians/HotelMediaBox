@@ -38,7 +38,7 @@ class DateView : ConstraintLayout {
 
     init {
         LayoutInflater.from(context).inflate(R.layout.view_date, this)
-        getTimeFormate()
+        getTimeFormat()
     }
 
     private fun getTime() {
@@ -79,7 +79,7 @@ class DateView : ConstraintLayout {
     /**
      * 取得時間格式
      */
-    fun getTimeFormate() {
+    fun getTimeFormat() {
         val gson = Gson()
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             val jsonObject = gson.fromJson(MiscUtils.getJsonFromStorage("box_config.json"), Config::class.java)
