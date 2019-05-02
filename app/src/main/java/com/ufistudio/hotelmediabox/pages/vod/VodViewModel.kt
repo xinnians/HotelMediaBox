@@ -28,7 +28,7 @@ class VodViewModel(
     init {
         val json = getJsonObject()
         if (json != null) {
-            compositeDisposable.add(Single.just(getJsonObject())
+            compositeDisposable.add(Single.just(json)
                     .zipWith(Single.just(getNoteButton()))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())

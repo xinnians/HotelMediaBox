@@ -12,6 +12,7 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.util.Log
+import android.view.KeyEvent
 import android.view.View
 import com.bumptech.glide.Glide
 import com.ufistudio.hotelmediabox.AppInjector
@@ -32,6 +33,8 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
     private var mWelcomeContent: WelcomeContent? = null
     private var mPlayer: MediaPlayer? = null
 
+    private var mSpecialCount: Int = 0
+
     companion object {
         private val TAG = WelcomeActivity::class.simpleName
     }
@@ -49,7 +52,11 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
     override fun onResume() {
         super.onResume()
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             // Permission is not granted
             // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
@@ -59,7 +66,11 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
                 showGoToSetting()
             } else {
                 // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), TAG_WRITE_PERMISSION_CODE)
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    TAG_WRITE_PERMISSION_CODE
+                )
                 // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
                 // app-defined int constant. The callback method gets the
                 // result of the request.
@@ -163,11 +174,11 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
     override fun onError(t: Throwable?) {
         Log.d(TAG, "onError = ${t?.message}")
         AlertDialog.Builder(this)
-                .setTitle(R.string.dialog_error_title)
-                .setMessage(R.string.dialog_cannot_find_file)
-                .setCancelable(false)
-                .create()
-                .show()
+            .setTitle(R.string.dialog_error_title)
+            .setMessage(R.string.dialog_cannot_find_file)
+            .setPositiveButton(android.R.string.ok) { dialog, which -> dialog.dismiss() }
+            .create()
+            .show()
 //        startActivity(Intent(this, FactoryActivity::class.java))
 //        finish()
     }
@@ -183,5 +194,20 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
 
     override fun onBackPressed() {
         return
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        when (keyCode) {
+            KeyEvent.KEYCODE_DPAD_LEFT -> {
+                mSpecialCount++
+            }
+        }
+
+        if (mSpecialCount == 10) {
+            mSpecialCount = 0
+            startActivity(Intent(this, FactoryActivity::class.java))
+        }
+
+        return super.onKeyDown(keyCode, event)
     }
 }
