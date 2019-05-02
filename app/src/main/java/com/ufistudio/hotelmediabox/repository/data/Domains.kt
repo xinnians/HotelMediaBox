@@ -237,7 +237,17 @@ data class VodContent(
         var title: String,
         var ip: String,
         var port: String,
-        var description: String
+        var description: String,
+        var info: String,
+        var image: String,
+        var label: List<String>,
+        var trailer: VodTrailer
+) : Parcelable
+
+@Parcelize
+data class VodTrailer(
+        var ip: String,
+        var port: String
 ) : Parcelable
 
 /*
@@ -326,7 +336,8 @@ data class Note(
         var back: String,
         var fullScreen: String,
         var toScroll: String,
-        var select: String
+        var select: String,
+        var watch_movie: String
 ) : Parcelable
 
 /*

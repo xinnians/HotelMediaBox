@@ -8,6 +8,7 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.bumptech.glide.Glide
 import com.google.android.exoplayer2.ui.PlayerView
 import com.ufistudio.hotelmediabox.AppInjector
 import com.ufistudio.hotelmediabox.R
@@ -20,13 +21,12 @@ import com.ufistudio.hotelmediabox.pages.base.InteractionView
 import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.pages.home.HomeFeatureEnum
 import com.ufistudio.hotelmediabox.repository.data.*
+import com.ufistudio.hotelmediabox.utils.FileUtils
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_BACK_TITLE
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_INDEX
 import kotlinx.android.synthetic.main.fragment_vod.*
 import kotlinx.android.synthetic.main.view_bottom_back_home.*
-import kotlinx.android.synthetic.main.view_bottom_ok_back_home.*
-
-private const val TAG_VIDEO = "video"
+import kotlinx.android.synthetic.main.view_bottom_watch_back_home.*
 
 class VodFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItemClickListener,
         OnItemFocusListener, ViewModelsCallback {
@@ -38,10 +38,13 @@ class VodFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItem
     private var mCurrentCategoryIndex: Int = 0 //上一次List的選擇
     private var mCurrentSideIndex: Int = -1 //當前頁面side view index
     private var mIsRendered: Boolean = false //判斷是否已經塞資料
+    private var mIsBack: Boolean = false //判斷是否從content回到category
     private var mSideViewState: HashMap<Int, String> = HashMap<Int, String>()//拿來儲存當前的sideView index與 Back上方的Title
 
     private var mData: Vod? = null
     private var mHomeIcons: ArrayList<HomeIcons>? = null //SideView List
+
+    private var mLabelAdapter: VodLabelRecyclerViewAdapter = VodLabelRecyclerViewAdapter()
 
     private var mCurrentContentSelectIndex: HashMap<Int, Int>? = HashMap() //記錄當前在第幾個Item的Content, key = category index, value = content index
     private var mTotalSize: HashMap<Int, Int>? = HashMap()//所有category內容的size, key = category index, value = category content size
@@ -55,8 +58,6 @@ class VodFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItem
     companion object {
         fun newInstance(): VodFragment = VodFragment()
         private val TAG = VodFragment::class.simpleName
-        private const val TAG_FOOD: String = "1"
-        private const val TAG_SHOPPING: String = "2"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -85,9 +86,13 @@ class VodFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItem
         recyclerView_service.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recyclerView_service.adapter = mAdapter
 
+        recyclerView_label.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        recyclerView_label.adapter = mLabelAdapter
+
         displaySideView(false)
         sideView.setAdapterList(mHomeIcons)
         sideView.setInteractionListener(getInteractionListener())
+        recyclerView_label.isFocusable = false
     }
 
     override fun onPause() {
@@ -115,29 +120,34 @@ class VodFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItem
                 } else {
                     //若不是在ContentFocus，則將當前在播放的label設為false好讓focus可以更新
                     mContentPlaying = false
+                    mIsBack = false
                 }
             }
             KeyEvent.KEYCODE_DPAD_RIGHT -> {
                 if (!sideView.isShown && mCategoryFocus) {
-//                    mAdapter.clearFocus(mCurrentCategoryIndex)
-//                    mCategoryFocus = false
-//                    mContentFocus = true
+                    mAdapter.clearFocus(mCurrentCategoryIndex)
+                    mCategoryFocus = false
+                    mContentFocus = true
                 } else if (mContentFocus) {
-//                    val curryIndex = mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!
-//                    if (curryIndex < mTotalSize!![mCurrentCategoryIndex]!! - 1) {
-//                        mCurrentContentSelectIndex!![mCurrentCategoryIndex] = curryIndex + 1
-//                        renderViewContent()
-//                    }
+                    val curryIndex = mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!
+                    if (curryIndex < mTotalSize!![mCurrentCategoryIndex]!! - 1) {
+                        mCurrentContentSelectIndex!![mCurrentCategoryIndex] = curryIndex + 1
+                    } else {
+                        mCurrentContentSelectIndex!![mCurrentCategoryIndex] = 0
+                    }
+                    renderViewContent()
                 }
                 return true
             }
             KeyEvent.KEYCODE_DPAD_LEFT -> {
                 if (mContentFocus) {
-//                    val curryIndex = mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!
-//                    if (curryIndex != 0) {
-//                        mCurrentContentSelectIndex!![mCurrentCategoryIndex] = curryIndex - 1
-//                        renderViewContent()
-//                    }
+                    val curryIndex = mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!
+                    if (curryIndex != 0) {
+                        mCurrentContentSelectIndex!![mCurrentCategoryIndex] = curryIndex - 1
+                    } else {
+                        mCurrentContentSelectIndex!![mCurrentCategoryIndex] = mTotalSize!![mCurrentCategoryIndex]!! - 1
+                    }
+                    renderViewContent()
                     return true
                 }
             }
@@ -148,6 +158,7 @@ class VodFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItem
                     if (!mContentFocus)
                         displaySideView(true)
                     else {
+                        mIsBack = true
                         mContentFocus = false
                         mCategoryFocus = true
                         mAdapter.selectLast(mCurrentCategoryIndex)
@@ -156,6 +167,8 @@ class VodFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItem
                 return true
             }
         }
+        //TODO 串接ok鍵播放預告片
+        //TODO 串接Watch Movie鍵播放正片
         return super.onFragmentKeyDown(keyCode, event)
     }
 
@@ -200,7 +213,7 @@ class VodFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItem
             }
             textView_back.text = mNoteBottom?.note?.back
             textView_home.text = mNoteBottom?.note?.home
-            textView_ok.text = mNoteBottom?.note?.fullScreen
+            textView_watch_movie.text = mNoteBottom?.note?.watch_movie
         }
     }
 
@@ -246,28 +259,70 @@ class VodFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItem
     }
 
     private fun renderViewContent() {
-        checkArrow()
+        if (!mIsBack) {
+//        checkArrow()
 
-        val item = mCurrentContent!![mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!]
+            if (mCurrentContent == null || mCurrentContentSelectIndex == null || mCurrentContentSelectIndex!![mCurrentCategoryIndex] == null) {
+                Log.w(TAG, "mCurrentContent or mCurrentContentSelectIndex or mCurrentContentSelectIndex!![mCurrentCategoryIndex] == null")
+                return
+            }
 
-        mVideoView = videoView
+            val item = mCurrentContent!![mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!]
+
+            renderImage()
+            textView_subtitle.text = item.title
+            textView_Info.text = item.info
+            textView_description.text = item.description
+            mLabelAdapter.setData(item.label)
+        }
+//        mVideoView = videoView
 
 //        if (item.file_type.hashCode() == TAG_IMAGE.hashCode()) {
-        mContentPlaying = false
-        mVideoView?.visibility = View.GONE
-        textView_test_title.text = item.title
-        if (mVideoView != null) {
-            Log.d("neo", "vide test")
-            mExoPlayerHelper.stop()
-            mExoPlayerHelper.release()
-            mExoPlayerHelper.initPlayer(context, mVideoView!!)
-            mExoPlayerHelper.setUdpSource("udp://${item.ip}:${item.port}")
-            mVideoView?.visibility = View.VISIBLE
-            mContentPlaying = true
-        }
+//        mContentPlaying = false
+//        mVideoView?.visibility = View.GONE
+//        textView_test_title.text = item.title
+//        if (mVideoView != null) {
+//            Log.d("neo", "vide test")
+//            mExoPlayerHelper.stop()
+//            mExoPlayerHelper.release()
+//            mExoPlayerHelper.initPlayer(context, mVideoView!!)
+//            mExoPlayerHelper.setUdpSource("udp://${item.ip}:${item.port}")
+//            mVideoView?.visibility = View.VISIBLE
+//            mContentPlaying = true
+//        }
 //        } else {
 //            mVideoView?.visibility = View.INVISIBLE
 //        }
+    }
+
+    /**
+     * Render上方Image
+     */
+    private fun renderImage() {
+        if (mCurrentContent == null || mCurrentContentSelectIndex == null || mCurrentContentSelectIndex!![mCurrentCategoryIndex] == null)
+            return
+
+        val index = mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!
+        Glide.with(this)
+                .load(FileUtils.getFileFromStorage(mCurrentContent!![if (index - 2 >= 0) index - 2 else mCurrentContent!!.size + index - 2].image))
+                .skipMemoryCache(true)
+                .into(imageView_1)
+        Glide.with(this)
+                .load(FileUtils.getFileFromStorage(mCurrentContent!![if (index - 1 >= 0) index - 1 else mCurrentContent!!.size + index - 1].image))
+                .skipMemoryCache(true)
+                .into(imageView_2)
+        Glide.with(this)
+                .load(FileUtils.getFileFromStorage(mCurrentContent!![index].image))
+                .skipMemoryCache(true)
+                .into(imageView_3)
+        Glide.with(this)
+                .load(FileUtils.getFileFromStorage(mCurrentContent!![if (index + 1 < mCurrentContent!!.size) index + 1 else Math.abs(index + 1 - mCurrentContent!!.size)].image))
+                .skipMemoryCache(true)
+                .into(imageView_4)
+        Glide.with(this)
+                .load(FileUtils.getFileFromStorage(mCurrentContent!![if (index + 2 < mCurrentContent!!.size) index + 2 else Math.abs(index + 2 - mCurrentContent!!.size)].image))
+                .skipMemoryCache(true)
+                .into(imageView_5)
     }
 
     /**
