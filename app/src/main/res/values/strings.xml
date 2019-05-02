@@ -42,4 +42,14 @@
     <string name="dialog_error_title">Error</string>
     <string name="dialog_cannot_find_file">Sorry,The file is not found.Please connect the hotel</string>
 
+    <array name="factory_key">
+        <item>19</item>
+        <item>19</item>
+        <item>20</item>
+        <item>20</item>
+        <item>21</item>
+        <item>21</item>
+        <item>22</item>
+        <item>22</item>
+    </array>
 </resources>

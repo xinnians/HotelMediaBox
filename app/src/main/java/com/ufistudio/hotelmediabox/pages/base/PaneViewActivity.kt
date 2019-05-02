@@ -14,7 +14,15 @@ import com.ufistudio.hotelmediabox.pages.MainActivity
 import com.ufistudio.hotelmediabox.receivers.MyReceiver
 import com.ufistudio.hotelmediabox.utils.ActivityUtils
 import android.content.IntentFilter
+import com.ufistudio.hotelmediabox.R
+import com.ufistudio.hotelmediabox.pages.factory.FactoryActivity
 import com.ufistudio.hotelmediabox.receivers.ACTION_UPDATE_APK
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 open class PaneViewActivity : BaseActivity(), OnPageInteractionListener.Pane {
@@ -23,6 +31,8 @@ open class PaneViewActivity : BaseActivity(), OnPageInteractionListener.Pane {
     private var mReceiver: MyReceiver = MyReceiver()
 
     private var mTopFragment: SparseArray<String> = SparseArray(2)
+    private val mFactoryKeyInput: ArrayList<Int> = ArrayList()
+    private var mDisposable: Disposable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -123,6 +133,9 @@ open class PaneViewActivity : BaseActivity(), OnPageInteractionListener.Pane {
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         Log.d(TAG, "keycode = $keyCode  ,event = $event")
+        mFactoryKeyInput.add(keyCode)
+        checkFactoryKey()
+
         if (keyCode == 302) {
 //            var intent: Intent = Intent(this, FullScreenActivity::class.java)
 //            intent.putExtra("page",Page.HOME)
@@ -149,5 +162,23 @@ open class PaneViewActivity : BaseActivity(), OnPageInteractionListener.Pane {
     override fun onStop() {
         super.onStop()
         unregisterReceiver(mReceiver)
+    }
+
+    private fun checkFactoryKey() {
+        if (mFactoryKeyInput.size >= 8)
+            mDisposable = Observable.just(mFactoryKeyInput)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                        if (Arrays.equals(it.subList(it.size - 8, it.size).toIntArray(), resources.getIntArray(R.array.factory_key))) {
+                            startActivity(Intent(this, FactoryActivity::class.java))
+                            finish()
+                        }
+                        if (mFactoryKeyInput.size > 100) {
+                            mFactoryKeyInput.clear()
+                        }
+                    }, {
+                        Log.d(TAG, "checkFactoryKey factory key mapping error = $it")
+                    })
     }
 }
