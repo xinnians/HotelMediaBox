@@ -4,6 +4,7 @@ import android.app.Application
 import com.ufistudio.hotelmediabox.repository.data.BaseChannel
 import com.ufistudio.hotelmediabox.repository.data.Broadcast
 import com.ufistudio.hotelmediabox.repository.data.BroadcastRequest
+import com.ufistudio.hotelmediabox.repository.data.WeatherInfo
 import com.ufistudio.hotelmediabox.repository.provider.preferences.PreferencesKey.CHANNEL_LIST
 import com.ufistudio.hotelmediabox.repository.provider.preferences.SharedPreferencesProvider
 import com.ufistudio.hotelmediabox.repository.remote.ApiClient
@@ -60,6 +61,10 @@ class Repository(
 
     fun getSoftwareUpdate(url: String): Single<Broadcast> {
         return ApiClient.getInstance()!!.getSoftwareUpdate(url)
+    }
+
+    fun getWeatherInfo(url: String, cityCode: String): Single<WeatherInfo> {
+        return ApiClient.getInstance()!!.getWeatherInfo(url, cityCode)
     }
 
     // local

@@ -2,6 +2,7 @@ package com.ufistudio.hotelmediabox.repository.remote
 
 import com.ufistudio.hotelmediabox.repository.data.Broadcast
 import com.ufistudio.hotelmediabox.repository.data.BroadcastRequest
+import com.ufistudio.hotelmediabox.repository.data.WeatherInfo
 import com.ufistudio.hotelmediabox.repository.remote.RemoteAPI.Companion.getOkHttpClient
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
@@ -61,4 +62,6 @@ class ApiClient {
     }
 
     fun getSoftwareUpdate(url: String): Single<Broadcast> = mService.softwareUpdate(url)
+
+    fun getWeatherInfo(url: String, city: String): Single<WeatherInfo> = mService.getWeatherInfo(url, city)
 }

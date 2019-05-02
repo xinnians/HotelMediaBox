@@ -2,7 +2,9 @@ package com.ufistudio.hotelmediabox.pages.weather
 
 import android.arch.lifecycle.Observer
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
+import android.text.TextUtils
 import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -22,6 +24,13 @@ import com.ufistudio.hotelmediabox.views.ARG_CURRENT_BACK_TITLE
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_INDEX
 import kotlinx.android.synthetic.main.fragment_weather.*
 import kotlinx.android.synthetic.main.view_bottom_back_home.*
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+
+private const val TAG_DEFAULT_FORMAT = "dd MMM"
 
 class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItemClickListener,
         OnItemFocusListener, ViewModelsCallback {
@@ -37,9 +46,13 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
     private var mContentFocus: Boolean = false //判斷目前focus是否在右邊的view
 
     private var mData: Weather? = null
+    private var mWeatherData: WeatherInfo? = null
     private var mHomeIcons: ArrayList<HomeIcons>? = null //SideView List
+    private var mCityCode: String = ""//要帶入的城市編號
 
     private var mCurrentContent: WeatherContent? = null // 被選到的category內的 content
+    private var mDf: DateFormat = SimpleDateFormat(TAG_DEFAULT_FORMAT, Locale.getDefault())
+
 
     private var mNoteBottom: NoteButton? = null//右下角提示資訊
 
@@ -59,6 +72,10 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
         mViewModel.initWeatherError.observe(this, Observer {
             onError(it)
         })
+
+        mViewModel.getWeatherInfoProgress.observe(this, Observer { onProgress(it!!) })
+        mViewModel.getWeatherInfoSuccess.observe(this, Observer { onSuccess(it!!) })
+        mViewModel.getWeatherInfoError.observe(this, Observer { onError(it!!) })
 
         mHomeIcons = arguments?.getParcelableArrayList(Page.ARG_BUNDLE)
     }
@@ -81,7 +98,9 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
 
     override fun onStart() {
         super.onStart()
-        renderView()
+
+        renderCategoryView()
+        renderEmptyView()
     }
 
     override fun onDestroy() {
@@ -135,36 +154,148 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
     }
 
     /**
-     * 塞資料
+     * Render category View
      */
-    private fun renderView() {
+    private fun renderCategoryView() {
         if (!mIsRendered) {
             if (mData?.categories != null) {
                 mIsRendered = true
                 mCategoryFocus = true
                 mAdapter.setData(mData?.categories!!)
                 mAdapter.selectLast(mCurrentCategoryIndex)
-
             }
-
-            textView_title.text = mData?.title
-            textView_subtitle.text = mData?.subtitle
-            textView_last_update.text = String.format("%s --", mData?.update)
-            textView_none1.visibility = view?.visibility!!
-            textView_none2.visibility = view?.visibility!!
-            textView_none3.visibility = view?.visibility!!
-            textView_none4.visibility = view?.visibility!!
-            textView_none5.visibility = view?.visibility!!
-            textView_none6.visibility = view?.visibility!!
-            textView_none1.text = mData?.temp_none
-            textView_none2.text = mData?.temp_none
-            textView_none3.text = mData?.temp_none
-            textView_none4.text = mData?.temp_none
-            textView_none5.text = mData?.temp_none
-            textView_none6.text = mData?.temp_none
 
             textView_back.text = mNoteBottom?.note?.back
             textView_home.text = mNoteBottom?.note?.home
+        }
+    }
+
+    /**
+     * Render 空資料時的UI
+     */
+    private fun renderEmptyView() {
+        imageView_today.visibility = View.INVISIBLE
+        imageView_weather1.visibility = View.GONE
+        imageView_weather2.visibility = View.GONE
+        imageView_weather3.visibility = View.GONE
+        imageView_weather4.visibility = View.GONE
+        imageView_weather5.visibility = View.GONE
+        imageView_weather6.visibility = View.GONE
+        textView_temperature1.visibility = View.GONE
+        textView_temperature2.visibility = View.GONE
+        textView_temperature3.visibility = View.GONE
+        textView_temperature4.visibility = View.GONE
+        textView_temperature5.visibility = View.GONE
+        textView_temperature6.visibility = View.GONE
+
+        textView_location.text = String.format("%s\n%s %s", mCityCode, "--", getString(R.string.symbol_temp))
+
+        textView_title.text = mData?.title
+        textView_subtitle.text = mData?.subtitle
+        textView_last_update.text = String.format("%s --", mData?.update)
+        textView_none1.visibility = View.VISIBLE
+        textView_none2.visibility = View.VISIBLE
+        textView_none3.visibility = View.VISIBLE
+        textView_none4.visibility = View.VISIBLE
+        textView_none5.visibility = View.VISIBLE
+        textView_none6.visibility = View.VISIBLE
+        textView_none1.text = mData?.temp_none
+        textView_none2.text = mData?.temp_none
+        textView_none3.text = mData?.temp_none
+        textView_none4.text = mData?.temp_none
+        textView_none5.text = mData?.temp_none
+        textView_none6.text = mData?.temp_none
+    }
+
+    /**
+     * 塞天氣的資料
+     */
+    private fun renderView() {
+        var toDayTemp: String? = "--"
+        if (mWeatherData != null && mWeatherData?.forecasts != null) {
+            with(mWeatherData?.forecasts!!) {
+                for (i in 0 until this.size) {
+                    if (this[i] != null) {
+                        when (i) {
+                            0 -> {
+                                toDayTemp = this[i].high
+                                textView_location.text = String.format("%s\n%s %s", mCityCode, toDayTemp, getString(R.string.symbol_temp))
+                                val icon = WeatherIconEnum.getItemByName(this[i].text).mIcon
+                                if (icon != -1) {
+                                    imageView_today.visibility = View.VISIBLE
+                                    imageView_today.background = ContextCompat.getDrawable(imageView_today.context, icon)
+                                }
+                            }
+                            1 -> {
+                                textView_day1.text = this[i].day
+                                textView_date1.text = mDf.format(Date(this[i].date * 1000L))
+                                textView_none1.visibility = View.INVISIBLE
+                                textView_temperature1.visibility = View.VISIBLE
+                                textView_temperature1.text = String.format("%s %s", this[i].high, getString(R.string.symbol_temp))
+                                imageView_weather1.visibility = View.VISIBLE
+                                val icon = WeatherIconEnum.getItemByName(this[i].text).mIcon
+                                if (icon != -1)
+                                    imageView_weather1.background = ContextCompat.getDrawable(imageView_weather1.context, icon)
+                            }
+                            2 -> {
+                                textView_day2.text = this[i].day
+                                textView_date2.text = mDf.format(Date(this[i].date * 1000L))
+                                textView_none2.visibility = View.INVISIBLE
+                                textView_temperature2.visibility = View.VISIBLE
+                                textView_temperature2.text = String.format("%s %s", this[i].high, getString(R.string.symbol_temp))
+                                imageView_weather2.visibility = View.VISIBLE
+                                val icon = WeatherIconEnum.getItemByName(this[i].text).mIcon
+                                if (icon != -1)
+                                    imageView_weather2.background = ContextCompat.getDrawable(imageView_weather2.context, icon)
+                            }
+                            3 -> {
+                                textView_day3.text = this[i].day
+                                textView_date3.text = mDf.format(Date(this[i].date * 1000L))
+                                textView_none3.visibility = View.INVISIBLE
+                                textView_temperature3.visibility = View.VISIBLE
+                                textView_temperature3.text = String.format("%s %s", this[i].high, getString(R.string.symbol_temp))
+                                imageView_weather3.visibility = View.VISIBLE
+                                val icon = WeatherIconEnum.getItemByName(this[i].text).mIcon
+                                if (icon != -1)
+                                    imageView_weather3.background = ContextCompat.getDrawable(imageView_weather3.context, icon)
+                            }
+                            4 -> {
+                                textView_day4.text = this[i].day
+                                textView_date4.text = mDf.format(Date(this[i].date * 1000L))
+                                textView_none4.visibility = View.INVISIBLE
+                                textView_temperature4.visibility = View.VISIBLE
+                                textView_temperature4.text = String.format("%s %s", this[i].high, getString(R.string.symbol_temp))
+                                imageView_weather4.visibility = View.VISIBLE
+                                val icon = WeatherIconEnum.getItemByName(this[i].text).mIcon
+                                if (icon != -1)
+                                    imageView_weather4.background = ContextCompat.getDrawable(imageView_weather4.context, icon)
+                            }
+                            5 -> {
+                                textView_day5.text = this[i].day
+                                textView_date5.text = mDf.format(Date(this[i].date * 1000L))
+                                textView_none5.visibility = View.INVISIBLE
+                                textView_temperature5.visibility = View.VISIBLE
+                                textView_temperature5.text = String.format("%s %s", this[i].high, getString(R.string.symbol_temp))
+                                imageView_weather5.visibility = View.VISIBLE
+                                val icon = WeatherIconEnum.getItemByName(this[i].text).mIcon
+                                if (icon != -1)
+                                    imageView_weather5.background = ContextCompat.getDrawable(imageView_weather5.context, icon)
+                            }
+                            6 -> {
+                                textView_day6.text = this[i].day
+                                textView_date6.text = mDf.format(Date(this[i].date * 1000L))
+                                textView_none6.visibility = View.INVISIBLE
+                                textView_temperature6.visibility = View.VISIBLE
+                                textView_temperature6.text = String.format("%s %s", this[i].high, getString(R.string.symbol_temp))
+                                imageView_weather6.visibility = View.VISIBLE
+                                val icon = WeatherIconEnum.getItemByName(this[i].text).mIcon
+                                if (icon != -1)
+                                    imageView_weather6.background = ContextCompat.getDrawable(imageView_weather6.context, icon)
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -186,21 +317,31 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
         }
         mCurrentContent = view?.getTag(WeatherAdapter.TAG_ITEM) as WeatherContent
         mCurrentCategoryIndex = view.getTag(WeatherAdapter.TAG_INDEX) as Int
-        textView_location.text = String.format("%s\n-- %s", view.getTag(WeatherAdapter.TAG_TITLE) as String, getString(R.string.symbol_temp))
-
+        mCityCode = (view.getTag(WeatherAdapter.TAG_TITLE) as String)
+        renderEmptyView()
+        mViewModel.getWeather(mCityCode.toLowerCase().replace(" ", ""))
     }
 
     override fun onSuccess(it: Any?) {
         if (it != null) {
-            val data: Pair<*, *> = it as Pair<*, *>
-            mData = data.first as Weather?
-            mNoteBottom = data.second as NoteButton?
-            renderView()
+            if (it is WeatherInfo) {
+                if (TextUtils.equals(it.location.city, mCityCode)) {
+                    mWeatherData = it
+                    renderView()
+                }
+            } else if (it is Pair<*, *>) {
+                val data: Pair<*, *> = it
+                mData = data.first as Weather?
+                mNoteBottom = data.second as NoteButton?
+                renderCategoryView()
+            }
+
         }
     }
 
     override fun onError(t: Throwable?) {
         Log.d(TAG, "error: ${t?.message}")
+        renderEmptyView()
     }
 
     override fun onProgress(b: Boolean) {

@@ -189,7 +189,11 @@ data class ConfigContent(
         var language: String,
         var upgradeUrl: String,
         var room: String,
-        var timeFormat: String
+        var timeFormat: String,
+        var file_version: String,
+        var defaultIp: String,
+        var defaultServerIp: String
+
 ) : Parcelable
 
 /*
@@ -311,6 +315,30 @@ data class WeatherContent(
         var title: String,
         var subtitle: String
 ) : Parcelable
+
+/*
+   WeatherInfo
+ */
+@Parcelize
+data class WeatherInfo(
+        var forecasts: ArrayList<WeatherForecasts>? = ArrayList(),
+        var location: WeatherLocation
+) : Parcelable
+
+@Parcelize
+data class WeatherLocation(
+        var city: String? = ""
+) : Parcelable
+
+@Parcelize
+data class WeatherForecasts(
+        var day: String? = "",
+        var date: Long = 0,
+        var low: String? = "",
+        var high: String? = "",
+        var text: String? = ""
+) : Parcelable
+
 
 /*
     Note button on bottom

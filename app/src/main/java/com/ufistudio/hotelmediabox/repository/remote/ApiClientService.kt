@@ -2,6 +2,8 @@ package com.ufistudio.hotelmediabox.repository.remote
 
 import com.ufistudio.hotelmediabox.repository.data.Broadcast
 import com.ufistudio.hotelmediabox.repository.data.BroadcastRequest
+import com.ufistudio.hotelmediabox.repository.data.Weather
+import com.ufistudio.hotelmediabox.repository.data.WeatherInfo
 import io.reactivex.Single
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
@@ -27,4 +29,10 @@ interface ApiClientService {
             @Body request: BroadcastRequest,
             @Part file: MultipartBody.Part
     ): Single<ResponseBody>
+
+    @GET
+    fun getWeatherInfo(
+            @Url url: String,
+            @Query("city") city: String
+    ): Single<WeatherInfo>
 }
