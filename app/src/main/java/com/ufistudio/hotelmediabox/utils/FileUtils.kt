@@ -238,11 +238,15 @@ object FileUtils {
         try {
             for (item in File("/mnt/media_rw/${usbDir.name}").list()) {
                 Log.d("importFile", "item = $item")
-                listener?.callback("coping file -> $item")
-                FileUtils.copyFile(
-                    File("/mnt/media_rw/${usbDir.name}/$item"),
-                    File("${Environment.getExternalStorageDirectory().path}/hotel/$item")
-                )
+                if (TextUtils.equals(item.substring(0,4),"box_")){
+                    listener?.callback("coping file -> $item")
+                    FileUtils.copyFile(
+                        File("/mnt/media_rw/${usbDir.name}/$item"),
+                        File("${Environment.getExternalStorageDirectory().path}/hotel/$item")
+                    )
+                }else{
+                    Log.d("importFile", "$item is not box_ file")
+                }
             }
         } catch (e: IOException) {
             Log.e("importFile", "Error = $e")
