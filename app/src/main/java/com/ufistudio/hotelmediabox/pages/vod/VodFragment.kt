@@ -1,6 +1,7 @@
 package com.ufistudio.hotelmediabox.pages.vod
 
 import android.arch.lifecycle.Observer
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
@@ -165,6 +166,14 @@ class VodFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItem
                     }
                 }
                 return true
+            }
+            KeyEvent.KEYCODE_DPAD_CENTER -> {
+                val i = Intent(context!!, VodFullScreenActivity::class.java)
+                val b = Bundle()
+                b.putParcelable("bottom_note", mNoteBottom)
+                b.putString("a","aaa")
+                i.putExtras(b)
+                startActivity(i)
             }
         }
         //TODO 串接ok鍵播放預告片

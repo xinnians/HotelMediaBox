@@ -365,7 +365,11 @@ data class Note(
         var fullScreen: String,
         var toScroll: String,
         var select: String,
-        var watch_movie: String
+        var watch_movie: String,
+        var rewind: String,
+        var play_pause: String,
+        var fast_forward: String,
+        var stop: String
 ) : Parcelable
 
 /*
