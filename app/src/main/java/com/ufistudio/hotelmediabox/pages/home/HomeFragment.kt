@@ -20,7 +20,7 @@ import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.ufistudio.hotelmediabox.AppInjector
 import com.ufistudio.hotelmediabox.constants.Page
-import com.ufistudio.hotelmediabox.helper.TVHelper
+import com.ufistudio.hotelmediabox.helper.TVController
 import com.ufistudio.hotelmediabox.interfaces.ViewModelsCallback
 import com.ufistudio.hotelmediabox.pages.factory.FactoryActivity
 import com.ufistudio.hotelmediabox.pages.fullScreen.FullScreenActivity
@@ -36,7 +36,7 @@ import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 
 class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), FunctionsAdapter.OnItemClickListener,
-        ViewModelsCallback {
+    ViewModelsCallback {
     private val TAG_TYPE_1 = 1//Weather Information
     private val TAG_TYPE_2 = 2//Promo Banner
 
@@ -58,6 +58,19 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
     private var mViewChannelName: TextView? = null
     private var mViewChannelLogo: ImageView? = null
     private var mTVChannel: TVChannel? = null
+
+    private var mTVListener: TVController.OnTVListener = object : TVController.OnTVListener {
+        override fun onChannelChange(tvChannel: TVChannel?) {
+        }
+
+        override fun initDeviceFinish() {
+        }
+
+        override fun initAVPlayerFinish() {
+            TVController.playCurrent()
+        }
+
+    }
 
     companion object {
         fun newInstance(): HomeFragment = HomeFragment()
@@ -118,26 +131,30 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
 
     override fun onResume() {
         super.onResume()
-        mViewModel.getTVHelper().initAVPlayer(TVHelper.SCREEN_TYPE.HOMEPAGE)
-        mViewModel.getTVHelper().playCurrent()?.observeOn(AndroidSchedulers.mainThread())?.subscribe({
-
-            mViewModel.getTVHelper().getCurrentChannel()?.let { tvChannel ->
-                mViewChannelName?.text = tvChannel.chNum + " " + tvChannel.chName
-                mViewChannelLogo?.let { viewLogo ->
-                    Glide.with(this)
-                            .load(FileUtils.getFileFromStorage(tvChannel.chLogo.fileName))
-                            .skipMemoryCache(true)
-                            .into(viewLogo)
-                }
-
-            }
-
-        }, {})
+//        mViewModel.getTVHelper().initAVPlayer(TVHelper.SCREEN_TYPE.HOMEPAGE)
+//        mViewModel.getTVHelper().playCurrent()?.observeOn(AndroidSchedulers.mainThread())?.subscribe({
+//
+//            mViewModel.getTVHelper().getCurrentChannel()?.let { tvChannel ->
+//                mViewChannelName?.text = tvChannel.chNum + " " + tvChannel.chName
+//                mViewChannelLogo?.let { viewLogo ->
+//                    Glide.with(this)
+//                        .load(FileUtils.getFileFromStorage(tvChannel.chLogo.fileName))
+//                        .skipMemoryCache(true)
+//                        .into(viewLogo)
+//                }
+//
+//            }
+//
+//        }, {})
+        TVController.registerListener(mTVListener)
+        TVController.initAVPlayer(TVController.SCREEN_TYPE.HOMEPAGE)
     }
 
     override fun onPause() {
         super.onPause()
-        mViewModel.getTVHelper().closeAVPlayer()
+//        mViewModel.getTVHelper().closeAVPlayer()
+        TVController.releaseListener(mTVListener)
+        TVController.deInitAVPlayer()
     }
 
     override fun onStop() {
@@ -153,13 +170,14 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
         when (keyCode) {
             KeyEvent.KEYCODE_CHANNEL_UP -> {
 
-                mTVChannel = mViewModel.getTVHelper().chooseUp()
+//                mTVChannel = mViewModel.getTVHelper().chooseUp()
+                mTVChannel = TVController.chooseUp()
                 mViewChannelName?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
                 mViewChannelLogo?.let { viewLogo ->
                     Glide.with(this)
-                            .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
-                            .skipMemoryCache(true)
-                            .into(viewLogo)
+                        .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
+                        .skipMemoryCache(true)
+                        .into(viewLogo)
                 }
                 setPlayTimer()
 
@@ -180,28 +198,16 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
             }
             KeyEvent.KEYCODE_CHANNEL_DOWN -> {
 
-                mTVChannel = mViewModel.getTVHelper().chooseDown()
+//                mTVChannel = mViewModel.getTVHelper().chooseDown()
+                mTVChannel = TVController.chooseDown()
                 mViewChannelName?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
                 mViewChannelLogo?.let { viewLogo ->
                     Glide.with(this)
-                            .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
-                            .skipMemoryCache(true)
-                            .into(viewLogo)
+                        .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
+                        .skipMemoryCache(true)
+                        .into(viewLogo)
                 }
                 setPlayTimer()
-
-//                mViewModel.getTVHelper().playDown()?.observeOn(AndroidSchedulers.mainThread())?.subscribe({
-//                    mViewModel.getTVHelper().getCurrentChannel()?.let { tvChannel ->
-//                        mViewChannelName?.text = tvChannel.chNum + " " + tvChannel.chName
-//                        mViewChannelLogo?.let { viewLogo ->
-//                            Glide.with(this)
-//                                .load(FileUtils.getFileFromStorage(tvChannel.chLogo.fileName))
-//                                .into(viewLogo)
-//                        }
-//
-//                    }
-//
-//                }, {})
 
                 return true
             }
@@ -301,39 +307,39 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                 when (weather?.weather_type) {
                     "1" -> {
                         Glide.with(this)
-                                .load(R.drawable.ic_weather_1)
-                                .skipMemoryCache(true)
-                                .into(view.findViewById(R.id.imageView))
+                            .load(R.drawable.ic_weather_1)
+                            .skipMemoryCache(true)
+                            .into(view.findViewById(R.id.imageView))
                     }
                     "2" -> {
                         Glide.with(this)
-                                .load(R.drawable.ic_weather_cloudy)
-                                .skipMemoryCache(true)
-                                .into(view.findViewById(R.id.imageView))
+                            .load(R.drawable.ic_weather_cloudy)
+                            .skipMemoryCache(true)
+                            .into(view.findViewById(R.id.imageView))
                     }
                     "3" -> {
                         Glide.with(this)
-                                .load(R.drawable.ic_weather_partlycloudy)
-                                .skipMemoryCache(true)
-                                .into(view.findViewById(R.id.imageView))
+                            .load(R.drawable.ic_weather_partlycloudy)
+                            .skipMemoryCache(true)
+                            .into(view.findViewById(R.id.imageView))
                     }
                     "4" -> {
                         Glide.with(this)
-                                .load(R.drawable.ic_weather_raining)
-                                .skipMemoryCache(true)
-                                .into(view.findViewById(R.id.imageView))
+                            .load(R.drawable.ic_weather_raining)
+                            .skipMemoryCache(true)
+                            .into(view.findViewById(R.id.imageView))
                     }
                     "5" -> {
                         Glide.with(this)
-                                .load(R.drawable.ic_weather_shower)
-                                .skipMemoryCache(true)
-                                .into(view.findViewById(R.id.imageView))
+                            .load(R.drawable.ic_weather_shower)
+                            .skipMemoryCache(true)
+                            .into(view.findViewById(R.id.imageView))
                     }
                     "6" -> {
                         Glide.with(this)
-                                .load(R.drawable.ic_weather_sunny)
-                                .skipMemoryCache(true)
-                                .into(view.findViewById(R.id.imageView))
+                            .load(R.drawable.ic_weather_sunny)
+                            .skipMemoryCache(true)
+                            .into(view.findViewById(R.id.imageView))
                     }
                 }
             }
@@ -345,24 +351,11 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                 mViewChannelLogo = view.findViewById(R.id.image_channel)
 
                 Glide.with(this)
-                        .load(FileUtils.getFileFromStorage(mData?.home?.promo_banner!![0].image))
-                        .skipMemoryCache(true)
-                        .into(view.findViewById(R.id.image_banner))
+                    .load(FileUtils.getFileFromStorage(mData?.home?.promo_banner!![0].image))
+                    .skipMemoryCache(true)
+                    .into(view.findViewById(R.id.image_banner))
             }
         }
-    }
-
-    private fun initChannelsSuccess(list: ArrayList<TVChannel>) {
-        mChannelList = list
-//        playTv("")
-    }
-
-    private fun initChannelsProgress(isProgress: Boolean) {
-        Log.e(TAG, "initChannelsProgress call. isProgress:$isProgress")
-    }
-
-    private fun initChannelsError(throwable: Throwable) {
-        Log.e(TAG, "initChannelsError call. ${throwable.message}")
     }
 
     private fun setPlayTimer() {
@@ -371,12 +364,12 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
         }
 
         mDisposable = Observable.timer(400, TimeUnit.MILLISECONDS)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        {}, { onError -> Log.e(TAG, "error:$onError") }, {
-                    mViewModel.getTVHelper().playCurrent()
-                            ?.subscribe()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {}, { onError -> Log.e(TAG, "error:$onError") }, {
+                    //                    mViewModel.getTVHelper().playCurrent()?.subscribe()
+                    TVController.playCurrent()
                 })
     }
 }

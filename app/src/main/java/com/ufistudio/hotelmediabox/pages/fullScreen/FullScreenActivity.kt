@@ -1,33 +1,24 @@
 package com.ufistudio.hotelmediabox.pages.fullScreen
 
-import android.arch.lifecycle.Observer
 import android.graphics.PixelFormat
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import com.ufistudio.hotelmediabox.AppInjector
-import com.ufistudio.hotelmediabox.DVBHelper
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.helper.ExoPlayerHelper
 import com.ufistudio.hotelmediabox.pages.factory.FactoryActivity
-import com.ufistudio.hotelmediabox.pages.factory.FactoryViewModel
-import com.ufistudio.hotelmediabox.pages.home.HomeFragment
 import com.ufistudio.hotelmediabox.repository.data.TVChannel
 import io.reactivex.Observable
-import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
-import android.content.Context.WINDOW_SERVICE
-import android.content.Context
 import android.content.Intent
 import android.view.*
-import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import kotlinx.android.synthetic.main.activity_fullscreen.*
-import android.view.WindowManager
 import com.bumptech.glide.Glide
-import com.ufistudio.hotelmediabox.helper.TVHelper
+import com.ufistudio.hotelmediabox.helper.TVController
 import com.ufistudio.hotelmediabox.pages.MainActivity
 import com.ufistudio.hotelmediabox.utils.FileUtils
 import kotlinx.android.synthetic.main.view_bottom_fullscreen.*
@@ -45,6 +36,19 @@ class FullScreenActivity : AppCompatActivity() {
     private lateinit var mExoPlayerHelper: ExoPlayerHelper
 
     private var mTVChannel: TVChannel? = null
+
+    private var mTVListener:TVController.OnTVListener = object :TVController.OnTVListener{
+        override fun onChannelChange(tvChannel: TVChannel?) {
+        }
+
+        override fun initDeviceFinish() {
+        }
+
+        override fun initAVPlayerFinish() {
+            TVController.playCurrent()
+        }
+
+    }
 
     companion object {
         private val TAG = FactoryActivity::class.simpleName
@@ -81,33 +85,38 @@ class FullScreenActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        mViewModel.getTVHelper().initAVPlayer(TVHelper.SCREEN_TYPE.FULLSCREEN)
-        mViewModel.getTVHelper().playCurrent()?.observeOn(AndroidSchedulers.mainThread())?.subscribe({
+//        mViewModel.getTVHelper().initAVPlayer(TVHelper.SCREEN_TYPE.FULLSCREEN)
+//        mViewModel.getTVHelper().playCurrent()?.observeOn(AndroidSchedulers.mainThread())?.subscribe({
+//
+//            mViewModel.getTVHelper().getCurrentChannel()?.let { tvChannel ->
+//                textChannelName?.text = tvChannel.chNum + " " + tvChannel.chName
+//                viewLogo?.let { viewLogo ->
+//                    Glide.with(this)
+//                            .load(FileUtils.getFileFromStorage(tvChannel.chLogo.fileName))
+//                            .skipMemoryCache(true)
+//                            .into(viewLogo)
+//                }
+//                viewMainLogo?.let { viewLogo ->
+//                    Glide.with(this)
+//                            .load(FileUtils.getFileFromStorage(tvChannel.chLogo.fileName))
+//                            .skipMemoryCache(true)
+//                            .into(viewLogo)
+//                }
+//                showInfo()
+//
+//            }
+//
+//        }, {})
 
-            mViewModel.getTVHelper().getCurrentChannel()?.let { tvChannel ->
-                textChannelName?.text = tvChannel.chNum + " " + tvChannel.chName
-                viewLogo?.let { viewLogo ->
-                    Glide.with(this)
-                            .load(FileUtils.getFileFromStorage(tvChannel.chLogo.fileName))
-                            .skipMemoryCache(true)
-                            .into(viewLogo)
-                }
-                viewMainLogo?.let { viewLogo ->
-                    Glide.with(this)
-                            .load(FileUtils.getFileFromStorage(tvChannel.chLogo.fileName))
-                            .skipMemoryCache(true)
-                            .into(viewLogo)
-                }
-                showInfo()
-
-            }
-
-        }, {})
+        TVController.registerListener(mTVListener)
+        TVController.initAVPlayer(TVController.SCREEN_TYPE.FULLSCREEN)
     }
 
     override fun onPause() {
         super.onPause()
-        mViewModel.getTVHelper().closeAVPlayer()
+//        mViewModel.getTVHelper().closeAVPlayer()
+        TVController.releaseListener(mTVListener)
+        TVController.deInitAVPlayer()
     }
 
     override fun onStop() {
@@ -124,19 +133,20 @@ class FullScreenActivity : AppCompatActivity() {
             KeyEvent.KEYCODE_CHANNEL_UP -> {
 //                playTv(false)
 
-                mTVChannel = mViewModel.getTVHelper().chooseUp()
+//                mTVChannel = mViewModel.getTVHelper().chooseUp()
+                mTVChannel = TVController.chooseUp()
                 textChannelName?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
                 viewLogo?.let { viewLogo ->
                     Glide.with(this)
-                            .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
-                            .skipMemoryCache(true)
-                            .into(viewLogo)
+                        .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
+                        .skipMemoryCache(true)
+                        .into(viewLogo)
                 }
                 viewMainLogo?.let { viewLogo ->
                     Glide.with(this)
-                            .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
-                            .skipMemoryCache(true)
-                            .into(viewLogo)
+                        .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
+                        .skipMemoryCache(true)
+                        .into(viewLogo)
                 }
                 setPlayTimer()
                 showInfo()
@@ -159,19 +169,20 @@ class FullScreenActivity : AppCompatActivity() {
             KeyEvent.KEYCODE_CHANNEL_DOWN -> {
 //                playTv(true)
 
-                mTVChannel = mViewModel.getTVHelper().chooseDown()
+//                mTVChannel = mViewModel.getTVHelper().chooseDown()
+                mTVChannel = TVController.chooseDown()
                 textChannelName?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
                 viewLogo?.let { viewLogo ->
                     Glide.with(this)
-                            .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
-                            .skipMemoryCache(true)
-                            .into(viewLogo)
+                        .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
+                        .skipMemoryCache(true)
+                        .into(viewLogo)
                 }
                 viewMainLogo?.let { viewLogo ->
                     Glide.with(this)
-                            .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
-                            .skipMemoryCache(true)
-                            .into(viewLogo)
+                        .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
+                        .skipMemoryCache(true)
+                        .into(viewLogo)
                 }
                 setPlayTimer()
                 showInfo()
@@ -205,29 +216,30 @@ class FullScreenActivity : AppCompatActivity() {
         }
 
         mDisposable = Observable.timer(400, TimeUnit.MILLISECONDS)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        {}, { onError -> Log.e(TAG, "error:$onError") }, {
-                    mViewModel.getTVHelper().playCurrent()
-                            ?.subscribe()
-                })
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({}, { onError -> Log.e(TAG, "error:$onError") }, {
+                //                    mViewModel.getTVHelper().playCurrent()?.subscribe()
+                TVController.playCurrent()
+            })
     }
 
     private fun showInfo() {
         banner.visibility = View.VISIBLE
+        dateView.visibility = View.VISIBLE
 
         if (mDisposableInfoView != null && !mDisposableInfoView!!.isDisposed) {
             mDisposableInfoView?.dispose()
         }
 
         mDisposableInfoView = Observable.timer(7, TimeUnit.SECONDS)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        { _ ->
-                        }, { onError -> Log.e(TAG, "error:$onError") }, {
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { _ ->
+                }, { onError -> Log.e(TAG, "error:$onError") }, {
                     banner.visibility = View.INVISIBLE
+                    dateView.visibility = View.INVISIBLE
                 })
     }
 
