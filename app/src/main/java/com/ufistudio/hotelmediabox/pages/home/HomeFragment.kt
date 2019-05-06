@@ -47,7 +47,6 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
 
     private var mData: Home? = null
     private var mChannelIndex = 0
-    private var mSpecialCount: Int = 0
     private var mFeatureIcons: ArrayList<HomeIcons>? = null
     private var mIsRendered: Boolean = false //判斷塞資料了沒
 
@@ -222,13 +221,7 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                 return true
             }
             KeyEvent.KEYCODE_DPAD_LEFT -> {
-                mSpecialCount++
             }
-        }
-
-        if (mSpecialCount == 10) {
-            mSpecialCount = 0
-            startActivity(Intent(context, FactoryActivity::class.java))
         }
         return false
     }

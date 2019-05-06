@@ -7,24 +7,18 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.media.MediaPlayer
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.view.KeyEvent
 import android.view.View
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.ufistudio.hotelmediabox.AppInjector
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.interfaces.ViewModelsCallback
 import com.ufistudio.hotelmediabox.pages.MainActivity
 import com.ufistudio.hotelmediabox.pages.base.PaneViewActivity
-import com.ufistudio.hotelmediabox.pages.factory.FactoryActivity
 import com.ufistudio.hotelmediabox.repository.data.Welcome
 import com.ufistudio.hotelmediabox.repository.data.WelcomeContent
 import com.ufistudio.hotelmediabox.utils.FileUtils
@@ -58,9 +52,9 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
         super.onResume()
 
         if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
+                        this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
         ) {
             // Permission is not granted
             // Should we show an explanation?
@@ -72,9 +66,9 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
             } else {
                 // No explanation needed, we can request the permission.
                 ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                    TAG_WRITE_PERMISSION_CODE
+                        this,
+                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                        TAG_WRITE_PERMISSION_CODE
                 )
                 // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
                 // app-defined int constant. The callback method gets the
@@ -94,10 +88,10 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
 
     private fun showGoToSetting() {
         AlertDialog.Builder(this)
-            .setTitle("Error")
-            .setMessage("open permission")
-            .setPositiveButton(android.R.string.ok) { dialog, which -> MiscUtils.openSetting(baseContext) }
-            .show()
+                .setTitle("Error")
+                .setMessage("open permission")
+                .setPositiveButton(android.R.string.ok) { dialog, which -> MiscUtils.openSetting(baseContext) }
+                .show()
     }
 
     private fun renderUI() {
@@ -130,7 +124,7 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
                     renderUI()
-                    dateView.getTimeFormate()
+                    dateView.getTimeFormat()
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
@@ -153,12 +147,12 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
 
         mWelcomeContent.let {
             Glide.with(this)
-                .load(FileUtils.getFileFromStorage(it?.titleImage!!))
-                .skipMemoryCache(true)
-                .into(imageView_title)
+                    .load(FileUtils.getFileFromStorage(it?.titleImage!!))
+                    .skipMemoryCache(true)
+                    .into(imageView_title)
 
             view_frame.background =
-                Drawable.createFromPath(FileUtils.getFileFromStorage(it.background)?.absolutePath)
+                    Drawable.createFromPath(FileUtils.getFileFromStorage(it.background)?.absolutePath)
 
             button_ok.text = it.entryButton
             text_name.text = it.name
@@ -179,11 +173,11 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
     override fun onError(t: Throwable?) {
         Log.d(TAG, "onError = ${t?.message}")
         AlertDialog.Builder(this)
-            .setTitle(R.string.dialog_error_title)
-            .setMessage(R.string.dialog_cannot_find_file)
-            .setPositiveButton(android.R.string.ok) { dialog, which -> dialog.dismiss() }
-            .create()
-            .show()
+                .setTitle(R.string.dialog_error_title)
+                .setMessage(R.string.dialog_cannot_find_file)
+                .setPositiveButton(android.R.string.ok) { dialog, which -> dialog.dismiss() }
+                .create()
+                .show()
 //        startActivity(Intent(this, FactoryActivity::class.java))
 //        finish()
     }
@@ -199,20 +193,5 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
 
     override fun onBackPressed() {
         return
-    }
-
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        when (keyCode) {
-            KeyEvent.KEYCODE_DPAD_LEFT -> {
-                mSpecialCount++
-            }
-        }
-
-        if (mSpecialCount == 10) {
-            mSpecialCount = 0
-            startActivity(Intent(this, FactoryActivity::class.java))
-        }
-
-        return super.onKeyDown(keyCode, event)
     }
 }

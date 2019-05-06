@@ -5,6 +5,7 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.support.constraint.ConstraintLayout
 import android.support.v4.content.ContextCompat
+import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
@@ -44,6 +45,7 @@ open class ExoPlayerHelper {
      * @playWhenReady: If you want play when ready , default:true
      */
     fun setUdpSource(udpUrl: String, playWhenReady: Boolean = true) {
+        Log.d("setUdpSource","setUdpSource udp url = $udpUrl")
         val udpDataSource = UdpDataSource()
         val dataSpec = DataSpec(Uri.parse(udpUrl))
         try {

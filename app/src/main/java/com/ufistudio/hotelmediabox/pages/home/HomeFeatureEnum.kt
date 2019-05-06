@@ -5,7 +5,7 @@ import com.ufistudio.hotelmediabox.constants.Page
 
 enum class HomeFeatureEnum(id: Int, page: Int, focusedIcon: Int, icon: Int) {
     LIVE_TV(0, Page.CHANNEL, R.drawable.ic_live_tv_1, R.drawable.ic_live_tv),
-    VOD(1, -100, R.drawable.ic_vod_1, R.drawable.ic_vod),
+    VOD(1, Page.VOD, R.drawable.ic_vod_1, R.drawable.ic_vod),
     SMART_APP(2, -100, R.drawable.ic_smart_apps_1, R.drawable.ic_smart_apps),
     ROOM_SERVICE(3, Page.ROOM_SERVICE, R.drawable.ic_room_service_1, R.drawable.ic_room_service),
     FACILITIES(4, Page.HOTEL_FACILITIES, R.drawable.ic_facilities_1, R.drawable.ic_facilities),

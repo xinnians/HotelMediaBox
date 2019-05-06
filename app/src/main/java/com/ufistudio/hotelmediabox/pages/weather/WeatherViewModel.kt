@@ -4,9 +4,7 @@ import android.app.Application
 import android.arch.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.ufistudio.hotelmediabox.repository.Repository
-import com.ufistudio.hotelmediabox.repository.data.Weather
-import com.ufistudio.hotelmediabox.repository.data.HotelFacilities
-import com.ufistudio.hotelmediabox.repository.data.NoteButton
+import com.ufistudio.hotelmediabox.repository.data.*
 import com.ufistudio.hotelmediabox.repository.viewModel.BaseViewModel
 import com.ufistudio.hotelmediabox.utils.MiscUtils
 import io.reactivex.Single
@@ -24,12 +22,16 @@ class WeatherViewModel(
     val initWeatherProgress = MutableLiveData<Boolean>()
     val initWeatherError = MutableLiveData<Throwable>()
 
+    val getWeatherInfoSuccess = MutableLiveData<WeatherInfo?>()
+    val getWeatherInfoProgress = MutableLiveData<Boolean>()
+    val getWeatherInfoError = MutableLiveData<Throwable>()
+
     val mGson = Gson()
 
     init {
         val json = getJsonObject()
         if (json != null) {
-            compositeDisposable.add(Single.just(getJsonObject())
+            compositeDisposable.add(Single.just(json)
                     .zipWith(Single.just(getNoteButton()))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -50,5 +52,22 @@ class WeatherViewModel(
     private fun getNoteButton(): NoteButton? {
         return mGson.fromJson(MiscUtils.getJsonLanguageAutoSwitch("bottom_note"), NoteButton::class.java)
                 ?: NoteButton()
+    }
+
+    private fun getConfig(): Config? {
+        return mGson.fromJson(MiscUtils.getJsonFromStorage("box_config.json"), Config::class.java)
+    }
+
+    fun getWeather(cityCode: String) {
+        val json = getConfig()
+        compositeDisposable.add(Single.just(json)
+                .map {
+                    repository.getWeatherInfo("http:${it.config.defaultServerIp}/api/weather", cityCode)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .doFinally { getWeatherInfoProgress.value = false }
+                            .subscribe({ getWeatherInfoSuccess.value = it }
+                                    , { getWeatherInfoError.value = it })
+                }.subscribe()
+        )
     }
 }
