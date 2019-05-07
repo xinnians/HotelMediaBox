@@ -10,7 +10,7 @@ import com.ufistudio.hotelmediabox.AppInjector
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.constants.Page
 import com.ufistudio.hotelmediabox.helper.ExoPlayerHelper
-import com.ufistudio.hotelmediabox.helper.TVHelper
+import com.ufistudio.hotelmediabox.helper.TVController
 import com.ufistudio.hotelmediabox.pages.base.InteractionView
 import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.pages.fullScreen.FullScreenActivity
@@ -41,6 +41,20 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
     private var mCurrentSideIndex: Int = -1 //當前頁面side view index
     private var mSideViewState: HashMap<Int, String> = HashMap<Int, String>()//拿來儲存當前的sideView index與 Back上方的Title
 
+    private var mTVListener: TVController.OnTVListener = object : TVController.OnTVListener{
+        override fun onChannelChange(tvChannel: TVChannel?) {
+        }
+
+        override fun initDeviceFinish() {
+        }
+
+        override fun initAVPlayerFinish() {
+            TVController.playCurrent()
+            TVController.getCurrentChannel()?.let { mChannelListAdapter.setCurrentTVChannel(it) }
+        }
+
+    }
+
     companion object {
         fun newInstance(): ChannelFragment = ChannelFragment()
         private val TAG = ChannelFragment::class.simpleName
@@ -49,14 +63,6 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mViewModel = AppInjector.obtainViewModel(this)
-
-//        //initChannel
-//        mViewModel.initChannelsSuccess.observe(this, Observer { list -> list?.let { initChannelsSuccess(it) } })
-//        mViewModel.initChannelsProgress.observe(this, Observer { isProgress ->
-//            initChannelsProgress(isProgress ?: false)
-//        })
-//        mViewModel.initChannelsError.observe(this, Observer { throwable -> throwable?.let { initChannelsError(it) } })
-
         mExoPlayerHelper = ExoPlayerHelper()
         mHomeIcons = arguments?.getParcelableArrayList(Page.ARG_BUNDLE)
     }
@@ -76,18 +82,16 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
 
     override fun onStart() {
         super.onStart()
-
-//        mViewModel.initChannels()
-
         mChannelListAdapter.setItems(mViewModel.getTVHelper().getChannelList())
-//        switchFocus(false)
     }
 
     override fun onResume() {
         super.onResume()
         mExoPlayerHelper.initPlayer(context, videoView)
-        mViewModel.getTVHelper().initAVPlayer(TVHelper.SCREEN_TYPE.CHANNELPAGE)
-        mViewModel.getTVHelper().getCurrentChannel()?.let { mChannelListAdapter.setCurrentTVChannel(it) }
+//        mViewModel.getTVHelper().initAVPlayer(TVHelper.SCREEN_TYPE.CHANNELPAGE)
+//        mViewModel.getTVHelper().getCurrentChannel()?.let { mChannelListAdapter.setCurrentTVChannel(it) }
+        TVController.registerListener(mTVListener)
+        TVController.initAVPlayer(TVController.SCREEN_TYPE.CHANNELPAGE)
         switchFocus(false)
 //        mViewModel.getTVHelper().playCurrent()?.observeOn(AndroidSchedulers.mainThread())?.subscribe({
 //            mViewModel.getTVHelper().getCurrentChannel()?.let { tvChannel ->
@@ -98,7 +102,9 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
 
     override fun onPause() {
         super.onPause()
-        mViewModel.getTVHelper().closeAVPlayer()
+//        mViewModel.getTVHelper().closeAVPlayer()
+        TVController.releaseListener(mTVListener)
+        TVController.deInitAVPlayer()
     }
 
     override fun onStop() {
@@ -163,7 +169,8 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
 
                     if (channelInfo.chType == "DVBT") {
 
-                        mViewModel.getTVHelper().play(channelInfo).subscribe()
+//                        mViewModel.getTVHelper().play(channelInfo).subscribe()
+                        TVController.play(channelInfo)
 
                     } else {
                         mExoPlayerHelper.setMp4Source(R.raw.videoplayback, true)
