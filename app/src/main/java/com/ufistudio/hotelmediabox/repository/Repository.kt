@@ -34,13 +34,12 @@ class Repository(
     }
 
     fun postCheckStatus(url: String): Single<ResponseBody> {
-        val body: BroadcastRequest = BroadcastRequest(
+        return ApiClient.getInstance()!!.postCheckStatus(url,
                 MiscUtils.getWifiMACAddress(application.applicationContext)!!,
                 MiscUtils.getIpAddress(application.applicationContext),
-                "ok",
-                MiscUtils.getRoomNumber()
+                MiscUtils.getRoomNumber(),
+                "1"
         )
-        return ApiClient.getInstance()!!.postCheckStatus(url, body)
     }
 
     fun postChannel(url: String): Single<ResponseBody> {
