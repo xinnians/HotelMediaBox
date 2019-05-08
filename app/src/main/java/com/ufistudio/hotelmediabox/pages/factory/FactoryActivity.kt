@@ -16,6 +16,7 @@ import com.ufistudio.hotelmediabox.AppInjector
 import com.ufistudio.hotelmediabox.DVBHelper
 import com.ufistudio.hotelmediabox.MyApplication
 import com.ufistudio.hotelmediabox.R
+import com.ufistudio.hotelmediabox.helper.TVController
 import com.ufistudio.hotelmediabox.helper.TVHelper
 import com.ufistudio.hotelmediabox.interfaces.OnItemClickListener
 import com.ufistudio.hotelmediabox.interfaces.OnSimpleListener
@@ -184,82 +185,84 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
             FactoryFeature.SCAN_DVB_CHANNELS -> {
                 //TODO 確認有頻點表 然後再掃台將結果寫入channels.json
 
-                if (FileUtils.fileIsExists("box_DvbScanConfig.json")) {
-                    Log.e(TAG, "load DvbScanConfig.json")
-                    mInfo1.setLength(0)
-                    mInfo1.append("load DvbScanConfig.json\n")
-                    textView_info1.text = mInfo1
+                TVController.scanChannel()
 
-                    var jsonList: Array<TVChannel> = emptyArray<TVChannel>()
-
-                    val jsonArray: Array<DVBInfo> =
-                            Gson().fromJson(
-                                    MiscUtils.getJsonFromStorage("box_DvbScanConfig.json"),
-                                    Array<DVBInfo>::class.java
-                            )
-
-                    var count = 1
-
-                    for (i in 0 until jsonArray.size) {
-
-                        mInfo1.append("scan ${jsonArray[i].Frequency} ${jsonArray[i].Bandwidth}\n")
-                        textView_info1.text = mInfo1
-
-                        var scanResult = DVBHelper.getDVBPlayer()
-                                .getChannelList("${jsonArray[i].Frequency} ${jsonArray[i].Bandwidth}")
-
-                        if(scanResult == null){
-                            (application as MyApplication).getTVHelper().closeAVPlayer()
-                            (application as MyApplication).getTVHelper().closeDevice()
-                            (application as MyApplication).getTVHelper().initDevice()
-                            scanResult = DVBHelper.getDVBPlayer()
-                                .getChannelList("${jsonArray[i].Frequency} ${jsonArray[i].Bandwidth}")
-                        }
-
-
-                        Log.e(TAG, "[scan result] = $scanResult")
-                        mInfo1.append("scanResult $scanResult\n")
-                        textView_info1.text = mInfo1
-
-                        var scanList = scanResult?.split(",")?.filter { it != "" }
-
-                        if (scanList == null || scanList.isEmpty())
-                            continue
-
-                        for (j in scanList) {
-                            jsonList += TVChannel(
-                                    chNum = count.toString(),
-                                    chName = "CH $count",
-                                    chType = "DVBT",
-                                    chIp = ConnectDetail(
-                                            frequency = jsonArray[i].Frequency,
-                                            bandwidth = jsonArray[i].Bandwidth,
-                                            dvbParameter = j
-                                    ),
-                                    chLogo = Logo(fileName = "channel_default.png")
-                            )
-                            count++
-                        }
-                    }
-
-                    Log.e(TAG, "[json result] = $jsonList")
-
-                    var channelFile = File("${Environment.getExternalStorageDirectory().path}/hotel/box_channels.json")
-
-                    FileUtils.writeToFile(channelFile, Gson().toJson(jsonList))
-
-//                    (application as MyApplication).getTVHelper().clearChannelList()
-
-                    mInfo1.append("scan finish.")
-                    textView_info1.text = mInfo1
-
-
-
-                } else {
-                    Log.e(TAG, "file not exist,Please import DvbScanConfig.json file")
-                    Toast.makeText(this, "file not exist,Please import DvbScanConfig.json file", Toast.LENGTH_SHORT)
-                            .show()
-                }
+//                if (FileUtils.fileIsExists("box_DvbScanConfig.json")) {
+//                    Log.e(TAG, "load DvbScanConfig.json")
+//                    mInfo1.setLength(0)
+//                    mInfo1.append("load DvbScanConfig.json\n")
+//                    textView_info1.text = mInfo1
+//
+//                    var jsonList: Array<TVChannel> = emptyArray<TVChannel>()
+//
+//                    val jsonArray: Array<DVBInfo> =
+//                            Gson().fromJson(
+//                                    MiscUtils.getJsonFromStorage("box_DvbScanConfig.json"),
+//                                    Array<DVBInfo>::class.java
+//                            )
+//
+//                    var count = 1
+//
+//                    for (i in 0 until jsonArray.size) {
+//
+//                        mInfo1.append("scan ${jsonArray[i].Frequency} ${jsonArray[i].Bandwidth}\n")
+//                        textView_info1.text = mInfo1
+//
+//                        var scanResult = DVBHelper.getDVBPlayer()
+//                                .getChannelList("${jsonArray[i].Frequency} ${jsonArray[i].Bandwidth}")
+//
+//                        if(scanResult == null){
+//                            (application as MyApplication).getTVHelper().closeAVPlayer()
+//                            (application as MyApplication).getTVHelper().closeDevice()
+//                            (application as MyApplication).getTVHelper().initDevice()
+//                            scanResult = DVBHelper.getDVBPlayer()
+//                                .getChannelList("${jsonArray[i].Frequency} ${jsonArray[i].Bandwidth}")
+//                        }
+//
+//
+//                        Log.e(TAG, "[scan result] = $scanResult")
+//                        mInfo1.append("scanResult $scanResult\n")
+//                        textView_info1.text = mInfo1
+//
+//                        var scanList = scanResult?.split(",")?.filter { it != "" }
+//
+//                        if (scanList == null || scanList.isEmpty())
+//                            continue
+//
+//                        for (j in scanList) {
+//                            jsonList += TVChannel(
+//                                    chNum = count.toString(),
+//                                    chName = "CH $count",
+//                                    chType = "DVBT",
+//                                    chIp = ConnectDetail(
+//                                            frequency = jsonArray[i].Frequency,
+//                                            bandwidth = jsonArray[i].Bandwidth,
+//                                            dvbParameter = j
+//                                    ),
+//                                    chLogo = Logo(fileName = "channel_default.png")
+//                            )
+//                            count++
+//                        }
+//                    }
+//
+//                    Log.e(TAG, "[json result] = $jsonList")
+//
+//                    var channelFile = File("${Environment.getExternalStorageDirectory().path}/hotel/box_channels.json")
+//
+//                    FileUtils.writeToFile(channelFile, Gson().toJson(jsonList))
+//
+////                    (application as MyApplication).getTVHelper().clearChannelList()
+//
+//                    mInfo1.append("scan finish.")
+//                    textView_info1.text = mInfo1
+//
+//
+//
+//                } else {
+//                    Log.e(TAG, "file not exist,Please import DvbScanConfig.json file")
+//                    Toast.makeText(this, "file not exist,Please import DvbScanConfig.json file", Toast.LENGTH_SHORT)
+//                            .show()
+//                }
 
             }
         }
