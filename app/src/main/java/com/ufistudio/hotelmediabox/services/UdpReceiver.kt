@@ -9,6 +9,7 @@ import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.ufistudio.hotelmediabox.receivers.ACTION_UPDATE_APK
+import com.ufistudio.hotelmediabox.receivers.TAG_FORCE
 import com.ufistudio.hotelmediabox.repository.Repository
 import com.ufistudio.hotelmediabox.repository.data.Broadcast
 import com.ufistudio.hotelmediabox.repository.provider.preferences.SharedPreferencesProvider
@@ -153,6 +154,7 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                     TAG_SOFTWARE_UPDATE -> {
                         Repository(application, SharedPreferencesProvider(application)).getSoftwareUpdate("http://${myBroadcast.ip}${myBroadcast.url}:${myBroadcast.port}")
                                 .map {
+                                    var force = it.force
                                     Log.d(TAG, "TAG_SOFTWARE_UPDATE response = $it")
                                     if (it.needUpdate == 0) {
                                         return@map
@@ -167,7 +169,7 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                                                         .subscribe({
                                                             Log.d(TAG, "TAG_SOFTWARE_UPDATE save file finish $it")
                                                             val intent = Intent()
-                                                            intent.putExtra("Neo", "success")
+                                                            intent.putExtra(TAG_FORCE, force)
                                                             intent.action = ACTION_UPDATE_APK
                                                             sendBroadcast(intent)
                                                         }, {

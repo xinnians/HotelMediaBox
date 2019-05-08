@@ -19,7 +19,10 @@ interface ApiClientService {
     @POST
     fun checkStatus(
             @Url url: String,
-            @Body request: BroadcastRequest
+            @Query("mac") mac: String,
+            @Query("ip") ip: String,
+            @Query("room") room: String,
+            @Query("status") status: String
     ): Single<ResponseBody>
 
     @Multipart

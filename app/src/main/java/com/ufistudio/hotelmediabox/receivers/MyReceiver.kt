@@ -8,6 +8,7 @@ import android.content.Intent
 import android.util.Log
 
 const val ACTION_UPDATE_APK = "UpdateApk"
+const val TAG_FORCE = "force"
 
 class MyReceiver : BroadcastReceiver() {
     private val TAG = MyReceiver::class.java.simpleName
@@ -19,15 +20,17 @@ class MyReceiver : BroadcastReceiver() {
         Log.d(TAG, "broadcast receiver")
 
         if (intent?.action == ACTION_UPDATE_APK) {
+            if (intent.extras[TAG_FORCE] == "1") {
+                forceRestart(context)
+                return
+            }
             if (mBuild == null)
                 mBuild = AlertDialog.Builder(context)
                         .setTitle("Notification")
                         .setMessage("Would you want to install new version app and restart?")
                         .setPositiveButton(android.R.string.ok, object : DialogInterface.OnClickListener {
                             override fun onClick(dialog: DialogInterface?, which: Int) {
-                                val i: Intent? = context?.packageManager?.getLaunchIntentForPackage("com.fdi.customlauncher")
-                                if (i != null)
-                                    context.startActivity(i)
+                                forceRestart(context)
                             }
                         })
                         .setNegativeButton(android.R.string.cancel) { dialog, which -> }
@@ -39,5 +42,14 @@ class MyReceiver : BroadcastReceiver() {
             if (!mDialog?.isShowing!!)
                 mDialog?.show()
         }
+    }
+
+    /**
+     * 強制導到com.fdi.customlauncher重啟
+     */
+    fun forceRestart(context: Context?) {
+        val i: Intent? = context?.packageManager?.getLaunchIntentForPackage("com.fdi.customlauncher")
+        if (i != null)
+            context.startActivity(i)
     }
 }
