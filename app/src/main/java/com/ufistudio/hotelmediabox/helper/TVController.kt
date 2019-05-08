@@ -233,6 +233,20 @@ object TVController {
 //            }
 //    }
 
+    fun scanChannel(){
+        Log.e(TAG,"[scanChannel] call.")
+        sendTCPRequestSingle("j_presetscan")
+            .subscribeOn(singelThreadScheduler)
+            .observeOn(singelThreadScheduler)
+            .subscribe({ successResult ->
+                Log.e(TAG, "[j_presetscan] Result : $successResult")
+//                onBroadcastAll(null,TVController.ACTION_TYPE.)
+            }, { failResult ->
+                Log.e(TAG, "[j_presetscan] throwable : $failResult")
+            })
+
+    }
+
     fun chooseUp(): TVChannel? {
         if (getChannelList() == null || getChannelList()?.size ?: 0 == 0) {
             return null
