@@ -4,6 +4,7 @@ import android.app.IntentService
 
 import android.content.Intent
 import android.os.Binder
+import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
 import com.google.gson.Gson
@@ -154,7 +155,6 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                     TAG_SOFTWARE_UPDATE -> {
                         Repository(application, SharedPreferencesProvider(application)).getSoftwareUpdate("http://${myBroadcast.ip}${myBroadcast.url}:${myBroadcast.port}")
                                 .map {
-                                    var force = it.force
                                     Log.d(TAG, "TAG_SOFTWARE_UPDATE response = $it")
                                     if (it.needUpdate == 0) {
                                         return@map
@@ -167,9 +167,10 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                                                         }
                                                         .observeOn(AndroidSchedulers.mainThread())
                                                         .subscribe({
-                                                            Log.d(TAG, "TAG_SOFTWARE_UPDATE save file finish $it")
                                                             val intent = Intent()
-                                                            intent.putExtra(TAG_FORCE, force)
+                                                            val b = Bundle()
+                                                            b.putString(TAG_FORCE, myBroadcast.force)
+                                                            intent.putExtras(b)
                                                             intent.action = ACTION_UPDATE_APK
                                                             sendBroadcast(intent)
                                                         }, {

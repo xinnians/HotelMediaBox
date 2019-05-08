@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.text.TextUtils
 import android.util.Log
 
 const val ACTION_UPDATE_APK = "UpdateApk"
@@ -20,7 +21,8 @@ class MyReceiver : BroadcastReceiver() {
         Log.d(TAG, "broadcast receiver")
 
         if (intent?.action == ACTION_UPDATE_APK) {
-            if (intent.extras[TAG_FORCE] == "1") {
+            Log.d(TAG,"intent.extras.getString(TAG_FORCE):${intent.extras.getString(TAG_FORCE)}")
+            if (TextUtils.equals(intent.extras.getString(TAG_FORCE),"1")) {
                 forceRestart(context)
                 return
             }
