@@ -11,6 +11,7 @@ import com.ufistudio.hotelmediabox.repository.data.TVChannel
 import com.ufistudio.hotelmediabox.services.UdpReceiver
 import com.ufistudio.hotelmediabox.utils.FileUtils
 import com.ufistudio.hotelmediabox.utils.FileUtils.fileIsExists
+import com.ufistudio.hotelmediabox.utils.MiscUtils
 import com.ufistudio.hotelmediabox.utils.TAG_DEFAULT_APK_NAME
 import java.util.*
 import kotlin.concurrent.schedule
@@ -19,7 +20,7 @@ class SplashActivity : AppCompatActivity() {
 
     private val TAG = SplashActivity::class.java.simpleName
 
-    private var mTVListener:TVController.OnTVListener = object :TVController.OnTVListener{
+    private var mTVListener: TVController.OnTVListener = object : TVController.OnTVListener {
         override fun onChannelChange(tvChannel: TVChannel?) {
         }
 
@@ -39,7 +40,11 @@ class SplashActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        FileUtils.getFileFromStorage(TAG_DEFAULT_APK_NAME)?.delete()
+        if (FileUtils.getFileFromStorage(TAG_DEFAULT_APK_NAME)?.exists()!!) {
+            FileUtils.getFileFromStorage(TAG_DEFAULT_APK_NAME)?.delete()
+            MiscUtils.reboot(this)
+        }
+
         startService(Intent(this, UdpReceiver::class.java))
     }
 
@@ -56,7 +61,7 @@ class SplashActivity : AppCompatActivity() {
         TVController.releaseListener(mTVListener)
     }
 
-    fun goNextPage(){
+    fun goNextPage() {
         val intent = Intent(this, WelcomeActivity::class.java)
 //        val intent = Intent(this, MainActivity::class.java)
 //        val intent = Intent(this, DVBTestActivity::class.java)
