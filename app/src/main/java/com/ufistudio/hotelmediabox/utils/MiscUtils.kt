@@ -325,6 +325,7 @@ object MiscUtils {
      */
     fun reboot(context: Context) {
         try {
+            Log.e("reboot", "reboot now")
             val pm: PowerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
             pm.reboot(null)
         } catch (e: SecurityException) {

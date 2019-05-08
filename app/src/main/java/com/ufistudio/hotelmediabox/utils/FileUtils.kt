@@ -62,7 +62,7 @@ object FileUtils {
         if (file?.exists()!!) {
             return file
         }
-        return File("/sdcard/hotel/")
+        return null
     }
 
     /**
@@ -106,10 +106,10 @@ object FileUtils {
      * @filePath:欲存檔案的目錄，ex: /xxx ，xxx為sdcard底下之目錄
      */
     fun writeResponseBodyToDisk(
-        body: ResponseBody,
-        name: String,
-        filePath: String = TAG_DEFAULT_LOCAL_PATH,
-        listener: OnSaveFileStatusListener? = null
+            body: ResponseBody,
+            name: String,
+            filePath: String = TAG_DEFAULT_LOCAL_PATH,
+            listener: OnSaveFileStatusListener? = null
     ): Boolean {
         listener?.savingFileStart()
         try {
@@ -196,9 +196,9 @@ object FileUtils {
      * @targetLocation:
      */
     fun copyFileOrDirectory(
-        sourceLocation: String,
-        targetLocation: String,
-        listener: OnSaveFileStatusListener? = null
+            sourceLocation: String,
+            targetLocation: String,
+            listener: OnSaveFileStatusListener? = null
     ) {
         val source: File = File(sourceLocation)
         val target: File = File(targetLocation, source.name)
@@ -238,13 +238,13 @@ object FileUtils {
         try {
             for (item in File("/mnt/media_rw/${usbDir.name}").list()) {
                 Log.d("importFile", "item = $item")
-                if (TextUtils.equals(item.substring(0,4),"box_")){
+                if (TextUtils.equals(item.substring(0, 4), "box_")) {
                     listener?.callback("coping file -> $item")
                     FileUtils.copyFile(
-                        File("/mnt/media_rw/${usbDir.name}/$item"),
-                        File("${Environment.getExternalStorageDirectory().path}/hotel/$item")
+                            File("/mnt/media_rw/${usbDir.name}/$item"),
+                            File("${Environment.getExternalStorageDirectory().path}/hotel/$item")
                     )
-                }else{
+                } else {
                     Log.d("importFile", "$item is not box_ file")
                 }
             }
@@ -277,8 +277,8 @@ object FileUtils {
                 listener?.callback("coping file -> $item")
 
                 FileUtils.copyFile(
-                    File("${Environment.getExternalStorageDirectory().path}/hotel/$item"),
-                    File("/mnt/media_rw/$usbDir/$item")
+                        File("${Environment.getExternalStorageDirectory().path}/hotel/$item"),
+                        File("/mnt/media_rw/$usbDir/$item")
                 )
             }
         } catch (e: IOException) {
