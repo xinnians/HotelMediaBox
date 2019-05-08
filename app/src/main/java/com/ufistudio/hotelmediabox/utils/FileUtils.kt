@@ -62,7 +62,7 @@ object FileUtils {
         if (file?.exists()!!) {
             return file
         }
-        return null
+        return File("/sdcard/hotel/")
     }
 
     /**

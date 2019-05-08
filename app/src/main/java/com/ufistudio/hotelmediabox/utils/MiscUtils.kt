@@ -9,6 +9,7 @@ import android.net.Uri
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Environment
+import android.os.PowerManager
 import android.support.v4.content.FileProvider
 import android.text.TextUtils
 import android.util.Log
@@ -122,12 +123,12 @@ object MiscUtils {
 
         return FileUtils.getFileFromStorage(fileName, path)?.let { file ->
             parseJsonFileByInputStream(
-                FileInputStream(
-                    file
-                )
+                    FileInputStream(
+                            file
+                    )
             )
         }
-            ?: ""
+                ?: ""
 
 //        return parseJsonFileByInputStream(FileInputStream(FileUtils.getFileFromStorage(path, fileName)))
     }
@@ -319,12 +320,24 @@ object MiscUtils {
         }
     }
 
+    /**
+     * reboot device
+     */
+    fun reboot(context: Context) {
+        try {
+            val pm: PowerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
+            pm.reboot(null)
+        } catch (e: SecurityException) {
+            Log.e("reboot", "error = $e")
+        }
+    }
+
     fun getLocalVersion(ctx: Context): Int {
         var localVersion: Int = 0
         try {
             var packageInfo: PackageInfo = ctx.applicationContext
-                .packageManager
-                .getPackageInfo(ctx.packageName, 0)
+                    .packageManager
+                    .getPackageInfo(ctx.packageName, 0)
             localVersion = packageInfo.versionCode
             Log.d(TAG, "版本号：$localVersion")
         } catch (e: PackageManager.NameNotFoundException) {
@@ -337,8 +350,8 @@ object MiscUtils {
         var localVersion: String = ""
         try {
             var packageInfo: PackageInfo = ctx.applicationContext
-                .packageManager
-                .getPackageInfo(ctx.packageName, 0)
+                    .packageManager
+                    .getPackageInfo(ctx.packageName, 0)
             localVersion = packageInfo.versionName
             Log.d(TAG, "版本名：$localVersion")
         } catch (e: PackageManager.NameNotFoundException) {
