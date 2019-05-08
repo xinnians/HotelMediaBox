@@ -3,12 +3,14 @@ package com.ufistudio.hotelmediabox.pages
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.helper.TVController
 import com.ufistudio.hotelmediabox.pages.welcome.WelcomeActivity
 import com.ufistudio.hotelmediabox.repository.data.TVChannel
 import com.ufistudio.hotelmediabox.services.UdpReceiver
 import com.ufistudio.hotelmediabox.utils.FileUtils
+import com.ufistudio.hotelmediabox.utils.FileUtils.fileIsExists
 import com.ufistudio.hotelmediabox.utils.TAG_DEFAULT_APK_NAME
 import java.util.*
 import kotlin.concurrent.schedule
@@ -22,7 +24,7 @@ class SplashActivity : AppCompatActivity() {
         }
 
         override fun initDeviceFinish() {
-            goNextPage()
+
         }
 
         override fun initAVPlayerFinish() {
@@ -46,6 +48,7 @@ class SplashActivity : AppCompatActivity() {
         TVController.registerListener(mTVListener)
         // initDVB，init完成後再進下一頁
         TVController.initDevice()
+        goNextPage()
     }
 
     override fun onPause() {
@@ -58,8 +61,17 @@ class SplashActivity : AppCompatActivity() {
 //        val intent = Intent(this, MainActivity::class.java)
 //        val intent = Intent(this, DVBTestActivity::class.java)
 
+        var waitTime = 2500L
+
+        if(!fileIsExists("chkflag")){
+            Log.e(TAG,"chkflag isn't Exist.")
+            waitTime = 10000L
+        }else{
+            Log.e(TAG,"chkflag is Exist.")
+        }
+
         val timer: Timer = Timer()
-        timer.schedule(2500L) {
+        timer.schedule(waitTime) {
             startActivity(intent)
             finish()
         }
