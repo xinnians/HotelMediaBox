@@ -82,7 +82,7 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
 
     override fun onStart() {
         super.onStart()
-        mChannelListAdapter.setItems(mViewModel.getTVHelper().getChannelList())
+        mChannelListAdapter.setItems(TVController.getChannelList())
     }
 
     override fun onResume() {
