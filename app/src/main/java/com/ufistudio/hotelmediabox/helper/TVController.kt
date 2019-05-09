@@ -1,12 +1,15 @@
 package com.ufistudio.hotelmediabox.helper
 
 import android.util.Log
+import android.widget.Toast
 import com.google.gson.Gson
+import com.ufistudio.hotelmediabox.repository.data.Channels
 import com.ufistudio.hotelmediabox.repository.data.TVChannel
 import com.ufistudio.hotelmediabox.utils.DVBUtils
 import com.ufistudio.hotelmediabox.utils.MiscUtils
 import io.reactivex.Single
 import io.reactivex.SingleEmitter
+import io.reactivex.disposables.Disposable
 import java.io.*
 import java.net.Socket
 import java.net.UnknownHostException
@@ -36,6 +39,8 @@ object TVController {
     const val RESULT_SUCCESS = "0"
     const val RESULT_FAIL = "1"
 
+    private var mPlayDisposable: Disposable? = null
+
     enum class SCREEN_TYPE(width: Int, height: Int, x: Int, y: Int) {
         HOMEPAGE(832, 464, 108, 72),
         CHANNELPAGE(980, 555, 857, 233),
@@ -45,12 +50,12 @@ object TVController {
     fun getChannelList(): ArrayList<TVChannel>? {
         Log.e(TAG, "[getChannelList] call.")
         if (mChannelList == null || mChannelList?.size ?: 0 == 0) {
-            val jsonObject: Array<TVChannel> =
-                Gson().fromJson(MiscUtils.getJsonFromStorage("box_channels.json"), Array<TVChannel>::class.java)
+            val jsonObject: Channels =
+                Gson().fromJson(MiscUtils.getJsonFromStorage("box_channels.json"), Channels::class.java)
                     ?: return null
-            mChannelList = jsonObject.toCollection(ArrayList())
+            mChannelList = jsonObject.channels.toCollection(ArrayList())
         }
-        Log.i(TAG, "[TVHelper] getChannelList size = ${mChannelList?.size ?: "null"}")
+        Log.e(TAG, "[TVHelper] getChannelList size = ${mChannelList?.size ?: "null"}")
         return mChannelList
     }
 
@@ -117,7 +122,7 @@ object TVController {
             .observeOn(singelThreadScheduler)
             .subscribe({ successResult ->
                 Log.e(TAG, "[initAVPlayer] Result : $successResult")
-                onBroadcastAll(null,TVController.ACTION_TYPE.InitAVPlayerFinish)
+                onBroadcastAll(null, TVController.ACTION_TYPE.InitAVPlayerFinish)
             }, { failResult ->
                 Log.e(TAG, "[initAVPlayer] throwable : $failResult")
             })
@@ -148,7 +153,7 @@ object TVController {
 
 
     //TODO 應該再增加個play method並在裡面做好鎖頻的判斷以及dvb和iptv的切換邏輯
-    fun play(channel: TVChannel){
+    fun play(channel: TVChannel) {
         Log.i(TAG, "[play] call")
         if (getChannelList() == null || getChannelList()?.size ?: 0 == 0) {
             Log.i(TAG, "[play] channelList null.")
@@ -163,8 +168,13 @@ object TVController {
 //                return@map result
 //            }
 
+        mPlayDisposable?.let {
+            if (!it.isDisposed) {
+                it.dispose()
+            }
+        }
 
-        sendTCPRequestSingle("j_stopplay 1")
+        mPlayDisposable = sendTCPRequestSingle("j_stopplay 1")
             .flatMap {
                 var channelParameter = channel.chIp.frequency + " " + channel.chIp.bandwidth
                 if (mCurrentLockFrequency == channelParameter) {
@@ -172,7 +182,8 @@ object TVController {
                 }
                 return@flatMap sendTCPRequestSingle("j_setchan $channelParameter")
                     .map { result ->
-                        if (result == RESULT_SUCCESS) mCurrentLockFrequency = channelParameter
+                        mCurrentLockFrequency = if (result == RESULT_SUCCESS) channelParameter
+                        else ""
                         return@map result
                     }
             }
@@ -182,7 +193,7 @@ object TVController {
             .observeOn(singelThreadScheduler)
             .subscribe({ successResult ->
                 Log.e(TAG, "[play] Result : $successResult")
-                onBroadcastAll(channel,TVController.ACTION_TYPE.OnChannelChange)
+                onBroadcastAll(channel, TVController.ACTION_TYPE.OnChannelChange)
             }, { failResult ->
                 Log.e(TAG, "[play] throwable : $failResult")
             })
@@ -196,7 +207,7 @@ object TVController {
 //        return DVBUtils().sendTCPRequestSingle("j_stopplay $stopType")
 //    }
 
-    fun deInitAVPlayer(){
+    fun deInitAVPlayer() {
         Log.e(TAG, "[deInitAVPlayer] call.")
         sendTCPRequestSingle("avplay_deinit")
             .flatMap { result ->
@@ -233,8 +244,8 @@ object TVController {
 //            }
 //    }
 
-    fun scanChannel(){
-        Log.e(TAG,"[scanChannel] call.")
+    fun scanChannel() {
+        Log.e(TAG, "[scanChannel] call.")
         sendTCPRequestSingle("j_presetscan")
             .subscribeOn(singelThreadScheduler)
             .observeOn(singelThreadScheduler)
@@ -346,9 +357,14 @@ object TVController {
                 input = BufferedReader(InputStreamReader(echoSocket.getInputStream()))
 //            System.exit(1)
             } catch (e: java.lang.Exception) {
-                Log.e(TAG, "exception: $e")
-            } catch (e: java.net.SocketException){
+                Log.e(TAG, "java.lang.exception: $e")
+            } catch (e: java.net.SocketException) {
                 Log.e(TAG, "SocketException: $e")
+                echoSocket = Socket(serverHostname, serverPort)
+                out = PrintWriter(echoSocket.getOutputStream(), true)
+                input = BufferedReader(InputStreamReader(echoSocket.getInputStream()))
+            } catch (e: Exception){
+                Log.e(TAG, "exception: $e")
                 echoSocket = Socket(serverHostname, serverPort)
                 out = PrintWriter(echoSocket.getOutputStream(), true)
                 input = BufferedReader(InputStreamReader(echoSocket.getInputStream()))

@@ -5,8 +5,8 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class Logo(
-        var path: String = "",
-        var fileName: String = ""
+        var normalIconName: String = "",
+        var bigIconName: String = ""
 ) : Parcelable
 
 @Parcelize
@@ -40,6 +40,14 @@ data class TVChannel(
         override var chIp: ConnectDetail = ConnectDetail(),
         override var chLogo: Logo = Logo()
 ) : BaseChannel(), Parcelable
+
+@Parcelize
+data class Channels(
+        var version: String = "",
+        var channels: Array<TVChannel>
+) : Parcelable
+
+
 
 @Parcelize
 data class DVBInfo(

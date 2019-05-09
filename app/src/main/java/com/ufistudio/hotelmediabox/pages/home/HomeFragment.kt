@@ -174,7 +174,7 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                 mViewChannelName?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
                 mViewChannelLogo?.let { viewLogo ->
                     Glide.with(this)
-                        .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
+                        .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.normalIconName ?: ""))
                         .skipMemoryCache(true)
                         .into(viewLogo)
                 }
@@ -202,7 +202,7 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                 mViewChannelName?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
                 mViewChannelLogo?.let { viewLogo ->
                     Glide.with(this)
-                        .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
+                        .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.normalIconName ?: ""))
                         .skipMemoryCache(true)
                         .into(viewLogo)
                 }

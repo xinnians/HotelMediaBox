@@ -46,6 +46,7 @@ class FullScreenActivity : AppCompatActivity() {
 
         override fun initAVPlayerFinish() {
             TVController.playCurrent()
+            showInfo()
         }
 
     }
@@ -110,6 +111,20 @@ class FullScreenActivity : AppCompatActivity() {
 
         TVController.registerListener(mTVListener)
         TVController.initAVPlayer(TVController.SCREEN_TYPE.FULLSCREEN)
+        mTVChannel = TVController.getCurrentChannel()
+        textChannelName?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
+        viewLogo?.let { viewLogo ->
+            Glide.with(this)
+                .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.normalIconName ?: ""))
+                .skipMemoryCache(true)
+                .into(viewLogo)
+        }
+        viewMainLogo?.let { viewLogo ->
+            Glide.with(this)
+                .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.bigIconName ?: ""))
+                .skipMemoryCache(true)
+                .into(viewLogo)
+        }
     }
 
     override fun onPause() {
@@ -138,13 +153,13 @@ class FullScreenActivity : AppCompatActivity() {
                 textChannelName?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
                 viewLogo?.let { viewLogo ->
                     Glide.with(this)
-                        .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
+                        .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.normalIconName ?: ""))
                         .skipMemoryCache(true)
                         .into(viewLogo)
                 }
                 viewMainLogo?.let { viewLogo ->
                     Glide.with(this)
-                        .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
+                        .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.bigIconName ?: ""))
                         .skipMemoryCache(true)
                         .into(viewLogo)
                 }
@@ -174,13 +189,13 @@ class FullScreenActivity : AppCompatActivity() {
                 textChannelName?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
                 viewLogo?.let { viewLogo ->
                     Glide.with(this)
-                        .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
+                        .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.normalIconName ?: ""))
                         .skipMemoryCache(true)
                         .into(viewLogo)
                 }
                 viewMainLogo?.let { viewLogo ->
                     Glide.with(this)
-                        .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.fileName ?: ""))
+                        .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.bigIconName ?: ""))
                         .skipMemoryCache(true)
                         .into(viewLogo)
                 }
@@ -232,7 +247,7 @@ class FullScreenActivity : AppCompatActivity() {
             mDisposableInfoView?.dispose()
         }
 
-        mDisposableInfoView = Observable.timer(7, TimeUnit.SECONDS)
+        mDisposableInfoView = Observable.timer(5, TimeUnit.SECONDS)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
