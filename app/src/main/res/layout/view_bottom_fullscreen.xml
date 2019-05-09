@@ -15,13 +15,14 @@
             app:layout_constraintEnd_toEndOf="parent"/>
     <ImageView
             android:id="@+id/viewMainLogo"
-            android:layout_width="@dimen/_72sdp"
-            android:layout_height="@dimen/_72sdp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="@dimen/_5sdp"
             android:scaleType="fitCenter"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintTop_toTopOf="@id/viewMainLogoBG"
+            app:layout_constraintBottom_toBottomOf="@id/viewMainLogoBG"
+            app:layout_constraintStart_toStartOf="@id/viewMainLogoBG"
+            app:layout_constraintEnd_toEndOf="@id/viewMainLogoBG"/>
 
 
     <android.support.constraint.ConstraintLayout android:layout_width="match_parent"
