@@ -9,6 +9,7 @@ import com.ufistudio.hotelmediabox.utils.DVBUtils
 import com.ufistudio.hotelmediabox.utils.MiscUtils
 import io.reactivex.Single
 import io.reactivex.SingleEmitter
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import java.io.*
 import java.net.Socket
@@ -116,7 +117,7 @@ object TVController {
         sendTCPRequestSingle("j_set_win $x $y $width $height")
             .retry(1)
             .subscribeOn(singelThreadScheduler)
-            .observeOn(singelThreadScheduler)
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ successResult ->
                 Log.e(TAG, "[initAVPlayer] Result : $successResult")
                 onBroadcastAll(null, TVController.ACTION_TYPE.InitAVPlayerFinish)
@@ -375,6 +376,7 @@ object TVController {
 
             while (stdIn.readLine()?.apply { userInput = this } != null) {
                 out?.println(userInput)
+                //TODO 這邊會connect reset 需要包起來
                 result = input?.readLine()
                 Log.e(TAG, "echo: $result")
             }
