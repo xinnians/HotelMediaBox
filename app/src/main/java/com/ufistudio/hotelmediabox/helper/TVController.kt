@@ -5,7 +5,6 @@ import android.widget.Toast
 import com.google.gson.Gson
 import com.ufistudio.hotelmediabox.repository.data.Channels
 import com.ufistudio.hotelmediabox.repository.data.TVChannel
-import com.ufistudio.hotelmediabox.utils.DVBUtils
 import com.ufistudio.hotelmediabox.utils.MiscUtils
 import io.reactivex.Single
 import io.reactivex.SingleEmitter
