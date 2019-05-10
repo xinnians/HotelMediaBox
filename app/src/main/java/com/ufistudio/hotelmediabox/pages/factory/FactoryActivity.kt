@@ -121,21 +121,25 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
             }
             FactoryFeature.EXPORT_JSON_FILE -> {
                 mInfo1.setLength(0)
-                FileUtils.exportFile(object : OnSimpleListener {
-                    override fun callback(msg: String?) {
-                        mInfo1.append("$msg\n")
-                        textView_info1.text = mInfo1
-                    }
-                })
+                mInfo1.append("暫時不給使用")
+                //TODO 需要修正
+//                FileUtils.exportFile(object : OnSimpleListener {
+//                    override fun callback(msg: String?) {
+//                        mInfo1.append("$msg\n")
+//                        textView_info1.text = mInfo1
+//                    }
+//                })
             }
             FactoryFeature.IMPORT_JSON_FILE -> {
                 mInfo1.setLength(0)
-                FileUtils.importFile(object : OnSimpleListener {
-                    override fun callback(msg: String?) {
-                        mInfo1.append("$msg\n")
-                        textView_info1.text = mInfo1
-                    }
-                })
+                mInfo1.append("暫時不給使用")
+                //TODO 需要修正
+//                FileUtils.importFile(object : OnSimpleListener {
+//                    override fun callback(msg: String?) {
+//                        mInfo1.append("$msg\n")
+//                        textView_info1.text = mInfo1
+//                    }
+//                })
             }
             FactoryFeature.OPEN_SETTING -> {
                 MiscUtils.openSetting(this)
