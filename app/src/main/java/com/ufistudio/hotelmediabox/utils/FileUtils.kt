@@ -28,7 +28,7 @@ object FileUtils {
      * @return: all of the hotel directory in device directory
      */
     fun getInsideHotel(): File? {
-        return if (File("${Environment.getExternalStorageDirectory().path}$TAG_DEFAULT_LOCAL_PATH").exists()) File("${Environment.getExternalStorageDirectory().path}$TAG_DEFAULT_LOCAL_PATH") else null
+        return if (File("/data$TAG_DEFAULT_LOCAL_PATH").exists()) File("/data$TAG_DEFAULT_LOCAL_PATH") else null
     }
 
     /**
@@ -52,7 +52,7 @@ object FileUtils {
     fun getFileFromStorage(fileName: String, path: String = ""): File? {
         var file: File? = null
         try {
-            file = File(String.format("%s%s%s", Environment.getExternalStorageDirectory(), TAG_DEFAULT_LOCAL_PATH, path), fileName)
+            file = File(String.format("%s%s%s", "/data", TAG_DEFAULT_LOCAL_PATH, path), fileName)
             Log.d("getFileFromStorage", "file path = ${file.absolutePath}")
         } catch (e: NullPointerException) {
             Log.e("getFileFromStorage", "error = $e")
@@ -73,7 +73,7 @@ object FileUtils {
      */
     @Throws(IOException::class)
     fun fileIsExist(saveDir: String): String {
-        val downloadFile: File = File(Environment.getExternalStorageDirectory(), saveDir)
+        val downloadFile: File = File("/data", saveDir)
         if (!downloadFile.mkdirs()) {
             downloadFile.createNewFile()
         }
@@ -89,7 +89,7 @@ object FileUtils {
      */
     fun fileIsExists(fileName: String): Boolean {
         try {
-            var file = File(Environment.getExternalStorageDirectory(), TAG_DEFAULT_LOCAL_PATH + fileName)
+            var file = File("/data", TAG_DEFAULT_LOCAL_PATH + fileName)
             if (!file.exists()) {
                 return false
             }
@@ -242,7 +242,7 @@ object FileUtils {
                     listener?.callback("coping file -> $item")
                     FileUtils.copyFile(
                             File("/mnt/media_rw/${usbDir.name}/$item"),
-                            File("${Environment.getExternalStorageDirectory().path}/hotel/$item")
+                            File("/data/hotel/$item")
                     )
                 } else {
                     Log.d("importFile", "$item is not box_ file")
@@ -272,12 +272,12 @@ object FileUtils {
 
         try {
 
-            for (item in File("${Environment.getExternalStorageDirectory().path}/hotel").list()) {
+            for (item in File("/data/hotel").list()) {
                 Log.d("exportFile", "item = $item")
                 listener?.callback("coping file -> $item")
 
                 FileUtils.copyFile(
-                        File("${Environment.getExternalStorageDirectory().path}/hotel/$item"),
+                        File("/data/hotel/$item"),
                         File("/mnt/media_rw/$usbDir/$item")
                 )
             }

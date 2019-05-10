@@ -95,7 +95,7 @@ object MiscUtils {
         }
 
         var finalName: String = ""
-        finalName = if (File("${Environment.getExternalStorageDirectory()}/$TAG_DEFAULT_LOCAL_PATH${fileName}_${config.config.language}.json").exists()) {
+        finalName = if (File("/data/$TAG_DEFAULT_LOCAL_PATH${fileName}_${config.config.language}.json").exists()) {
             "box_${fileName}_${config.config.language}.json"
         } else {
             "box_${fileName}_en.json"
