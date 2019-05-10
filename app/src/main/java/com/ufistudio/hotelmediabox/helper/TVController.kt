@@ -113,11 +113,8 @@ object TVController {
             }
         }
 
-        sendTCPRequestSingle("jv_win_init $x $y $width $height")
-            .flatMap { result ->
-                if (result == RESULT_SUCCESS) sendTCPRequestSingle("avplay_init")
-                else return@flatMap Single.just(result)
-            }
+        sendTCPRequestSingle("j_set_win $x $y $width $height")
+            .retry(1)
             .subscribeOn(singelThreadScheduler)
             .observeOn(singelThreadScheduler)
             .subscribe({ successResult ->
@@ -188,6 +185,7 @@ object TVController {
                     }
             }
             .flatMap { sendTCPRequestSingle("j_play ${channel.chIp.dvbParameter}") }
+            .retry(1)
             .map { mCurrentChannel = channel }
             .subscribeOn(singelThreadScheduler)
             .observeOn(singelThreadScheduler)
@@ -209,11 +207,12 @@ object TVController {
 
     fun deInitAVPlayer() {
         Log.e(TAG, "[deInitAVPlayer] call.")
-        sendTCPRequestSingle("avplay_deinit")
-            .flatMap { result ->
-                Log.e(TAG, "[deInitAVPlayer] avplay_deinit result = $result")
-                return@flatMap sendTCPRequestSingle("jv_win_deinit")
-            }
+        sendTCPRequestSingle("j_stopplay 1")
+//            .flatMap { result ->
+//                Log.e(TAG, "[deInitAVPlayer] avplay_deinit result = $result")
+//                return@flatMap sendTCPRequestSingle("jv_win_deinit")
+//            }
+            .retry(1)
             .subscribeOn(singelThreadScheduler)
             .observeOn(singelThreadScheduler)
             .subscribe({ successResult ->
