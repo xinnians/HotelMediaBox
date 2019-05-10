@@ -217,6 +217,9 @@ class FullScreenActivity : AppCompatActivity() {
 //                }, {})
                 return true
             }
+            KeyEvent.KEYCODE_INFO ->{
+                showInfo()
+            }
 //            KeyEvent.KEYCODE_BACK -> {
 ////                this.onBackPressed()
 //                finish()
