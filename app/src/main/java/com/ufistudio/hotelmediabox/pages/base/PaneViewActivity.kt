@@ -14,6 +14,10 @@ import com.ufistudio.hotelmediabox.pages.MainActivity
 import com.ufistudio.hotelmediabox.receivers.MyReceiver
 import com.ufistudio.hotelmediabox.utils.ActivityUtils
 import android.content.IntentFilter
+import android.support.v7.app.AlertDialog
+import android.text.Editable
+import android.text.TextWatcher
+import android.widget.EditText
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.pages.factory.FactoryActivity
 import com.ufistudio.hotelmediabox.receivers.ACTION_UPDATE_APK
@@ -24,6 +28,8 @@ import io.reactivex.schedulers.Schedulers
 import java.util.*
 import kotlin.collections.ArrayList
 
+const val TAG_KEY_AUDIO: Int = 300
+const val TAG_KEY_HOME: Int = 302
 
 open class PaneViewActivity : BaseActivity(), OnPageInteractionListener.Pane {
 
@@ -33,6 +39,7 @@ open class PaneViewActivity : BaseActivity(), OnPageInteractionListener.Pane {
     private var mTopFragment: SparseArray<String> = SparseArray(2)
     private val mFactoryKeyInput: ArrayList<Int> = ArrayList()
     private var mDisposable: Disposable? = null
+    private var mFactoryDialog: AlertDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,6 +58,8 @@ open class PaneViewActivity : BaseActivity(), OnPageInteractionListener.Pane {
                 }
             }
         })
+
+        initFactoryEntry()
     }
 
     override fun onBackPressed() {
@@ -133,15 +142,22 @@ open class PaneViewActivity : BaseActivity(), OnPageInteractionListener.Pane {
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         Log.d(TAG, "keycode = $keyCode  ,event = $event")
-        mFactoryKeyInput.add(keyCode)
-        checkFactoryKey()
 
-        if (keyCode == 302) {
-//            var intent: Intent = Intent(this, FullScreenActivity::class.java)
-//            intent.putExtra("page",Page.HOME)
-            startActivity(Intent(this, MainActivity::class.java))
-            return true
+        when (keyCode) {
+            TAG_KEY_AUDIO -> {
+                mFactoryKeyInput.add(keyCode)
+                checkFactoryKey()
+            }
+            TAG_KEY_HOME -> {
+                startActivity(Intent(this, MainActivity::class.java))
+                return true
+            }
         }
+
+        if (keyCode != TAG_KEY_AUDIO)
+            mFactoryKeyInput.clear()
+
+        //將keycode 傳入當前Fragment
         val container = mTopFragment.keyAt(0)
         val top = supportFragmentManager.findFragmentById(container)
         if (top is AppBaseView) {
@@ -164,19 +180,52 @@ open class PaneViewActivity : BaseActivity(), OnPageInteractionListener.Pane {
         unregisterReceiver(mReceiver)
     }
 
+    /**
+     * Init factory entry dialog
+     */
+    private fun initFactoryEntry() {
+        mFactoryDialog = AlertDialog.Builder(this)
+                .setTitle("Factory password")
+                .setView(R.layout.view_edittext)
+                .setNegativeButton(android.R.string.cancel, null)
+                .setOnDismissListener { mFactoryDialog?.findViewById<EditText>(R.id.editText_password)?.setText("") }
+                .create()
+    }
+
+    /**
+     * 檢查進入Factory page
+     */
     private fun checkFactoryKey() {
-        if (mFactoryKeyInput.size >= 8)
+        val correctCode = resources.getIntArray(R.array.factory_key)
+        if (mFactoryKeyInput.size >= correctCode.size)
             mDisposable = Observable.just(mFactoryKeyInput)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({
-                        if (Arrays.equals(it.subList(it.size - 8, it.size).toIntArray(), resources.getIntArray(R.array.factory_key))) {
-                            startActivity(Intent(this, FactoryActivity::class.java))
-                            finish()
+                        if (Arrays.equals(it.toIntArray(), correctCode)) {
+                            mFactoryDialog?.show()
+                            mFactoryDialog?.findViewById<EditText>(R.id.editText_password)?.let {
+                                Log.d("neo", "find view")
+                                it.addTextChangedListener(object : TextWatcher {
+                                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                                    }
+
+                                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                                    }
+
+                                    override fun afterTextChanged(s: Editable?) {
+                                        if (s?.length == FactoryActivity.mFactoryCode.length) {
+                                            if (TextUtils.equals(it.text, FactoryActivity.mFactoryCode)) {
+                                                mFactoryDialog?.dismiss()
+                                                startActivity(Intent(applicationContext, FactoryActivity::class.java))
+                                                finish()
+                                            }
+                                        }
+                                    }
+                                })
+                            }
                         }
-                        if (mFactoryKeyInput.size > 100) {
-                            mFactoryKeyInput.clear()
-                        }
+                        mFactoryKeyInput.clear()
                     }, {
                         Log.d(TAG, "checkFactoryKey factory key mapping error = $it")
                     })
