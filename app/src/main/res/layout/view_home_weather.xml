@@ -16,7 +16,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/imageView_weather"
         android:layout_width="@dimen/_61sdp"
         android:layout_height="@dimen/_48sdp"
         android:layout_marginStart="@dimen/_34sdp"
@@ -32,8 +32,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_4sdp"
         android:textSize="@dimen/_24ssp"
-        app:layout_constraintStart_toStartOf="@+id/imageView"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintStart_toStartOf="@+id/imageView_weather"
+        app:layout_constraintTop_toBottomOf="@+id/imageView_weather" />
 
     <View
         android:id="@+id/line"

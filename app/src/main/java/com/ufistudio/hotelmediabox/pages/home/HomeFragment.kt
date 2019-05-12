@@ -22,21 +22,20 @@ import com.ufistudio.hotelmediabox.AppInjector
 import com.ufistudio.hotelmediabox.constants.Page
 import com.ufistudio.hotelmediabox.helper.TVController
 import com.ufistudio.hotelmediabox.interfaces.ViewModelsCallback
-import com.ufistudio.hotelmediabox.pages.factory.FactoryActivity
 import com.ufistudio.hotelmediabox.pages.fullScreen.FullScreenActivity
-import com.ufistudio.hotelmediabox.repository.data.Home
-import com.ufistudio.hotelmediabox.repository.data.HomeIcons
-import com.ufistudio.hotelmediabox.repository.data.TVChannel
-import com.ufistudio.hotelmediabox.repository.data.HomeWeather
+import com.ufistudio.hotelmediabox.pages.weather.WeatherIconEnum
+import com.ufistudio.hotelmediabox.repository.data.*
 import com.ufistudio.hotelmediabox.utils.FileUtils
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.view_home_banner.*
+import kotlinx.android.synthetic.main.view_home_weather.*
 import java.util.concurrent.TimeUnit
 
 class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), FunctionsAdapter.OnItemClickListener,
-    ViewModelsCallback {
+        ViewModelsCallback {
     private val TAG_TYPE_1 = 1//Weather Information
     private val TAG_TYPE_2 = 2//Promo Banner
 
@@ -46,6 +45,7 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
     private lateinit var mExoPlayerHelper: ExoPlayerHelper
 
     private var mData: Home? = null
+    private var mWeatherData: WeatherInfo? = null
     private var mChannelIndex = 0
     private var mFeatureIcons: ArrayList<HomeIcons>? = null
     private var mIsRendered: Boolean = false //判斷塞資料了沒
@@ -94,6 +94,10 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
             onSuccess(it)
         })
         mViewModel.initHomeError.observe(this, Observer { onError(it) })
+
+        mViewModel.getWeatherInfoProgress.observe(this, Observer { onProgress(it!!) })
+        mViewModel.getWeatherInfoSuccess.observe(this, Observer { onSuccess(it!!) })
+        mViewModel.getWeatherInfoError.observe(this, Observer { onError(it!!) })
 
         mExoPlayerHelper = ExoPlayerHelper()
     }
@@ -174,9 +178,10 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                 mViewChannelName?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
                 mViewChannelLogo?.let { viewLogo ->
                     Glide.with(this)
-                        .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.normalIconName ?: ""))
-                        .skipMemoryCache(true)
-                        .into(viewLogo)
+                            .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.normalIconName
+                                    ?: ""))
+                            .skipMemoryCache(true)
+                            .into(viewLogo)
                 }
                 setPlayTimer()
 
@@ -202,9 +207,10 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                 mViewChannelName?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
                 mViewChannelLogo?.let { viewLogo ->
                     Glide.with(this)
-                        .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.normalIconName ?: ""))
-                        .skipMemoryCache(true)
-                        .into(viewLogo)
+                            .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.normalIconName
+                                    ?: ""))
+                            .skipMemoryCache(true)
+                            .into(viewLogo)
                 }
                 setPlayTimer()
 
@@ -237,17 +243,24 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
     }
 
     override fun onSuccess(it: Any?) {
-        mData = it as Home?
-        mFeatureIcons = mData?.home?.icons
+        if (it != null) {
+            if (it is Home) {
+                mData = it
+                mFeatureIcons = mData?.home?.icons
 
-        //for setting page reset language use
-        if (activity?.intent?.extras?.getBoolean(Page.ARG_BUNDLE) != null && activity?.intent?.extras?.getBoolean(Page.ARG_BUNDLE)!!) {
-            val b: Bundle = Bundle()
-            b.putParcelableArrayList(Page.ARG_BUNDLE, mFeatureIcons)
-            getInteractionListener().switchPage(R.id.fragment_container, Page.SETTING, b, true, false, true)
-            return
+                //for setting page reset language use
+                if (activity?.intent?.extras?.getBoolean(Page.ARG_BUNDLE) != null && activity?.intent?.extras?.getBoolean(Page.ARG_BUNDLE)!!) {
+                    val b: Bundle = Bundle()
+                    b.putParcelableArrayList(Page.ARG_BUNDLE, mFeatureIcons)
+                    getInteractionListener().switchPage(R.id.fragment_container, Page.SETTING, b, true, false, true)
+                    return
+                }
+                renderView()
+            } else if (it is WeatherInfo) {
+                mWeatherData = it
+                switchWedge(TAG_TYPE_1)
+            }
         }
-        renderView()
     }
 
     override fun onError(t: Throwable?) {
@@ -278,75 +291,45 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
      *        TAG_TYPE_2:廣告欄
      */
     private fun switchWedge(type: Int?) {
-        if (view_wedge == null) return
+
         when (type) {
             TAG_TYPE_1 -> {
-                view_wedge.layoutResource = R.layout.view_home_weather
-                val view = view_wedge.inflate()
-                val weather: HomeWeather? = mData?.home?.weather
+                include_weather.visibility = View.VISIBLE
+                if (mWeatherData != null) {
+                    mWeatherData?.forecasts?.get(0)?.let {
+                        val icon = WeatherIconEnum.getItemByName(it.text).mIcon
+                        if (icon != -1) {
+                            imageView_weather.visibility = View.VISIBLE
+                            Glide.with(this)
+                                    .load(icon)
+                                    .skipMemoryCache(true)
+                                    .into(imageView_weather)
+                            textView_value.text = String.format("%s %s", it.high, getString(R.string.symbol_temp))
+                        } else {
+                            imageView_weather.visibility = View.INVISIBLE
+                        }
+                    }
+                } else {
+                    val weather: HomeWeather? = mData?.home?.weather
+                    weather?.weather_city?.let { mViewModel.getWeather(it.toLowerCase().replace(" ", "")) }
 
-                val textViewWifiId: TextView = view.findViewById<TextView>(R.id.textView_wifi_id)
-                textViewWifiId.text = weather?.wifi_id
-                val textViewWifiIdTitle: TextView = view.findViewById<TextView>(R.id.textView_wifiIdTitle)
-                textViewWifiIdTitle.text = weather?.wifi_id_title
-                val textViewWifiIdPassword: TextView = view.findViewById<TextView>(R.id.textView_wifi_password)
-                textViewWifiIdPassword.text = weather?.wifi_password
-                val textViewWifiPasswordTitle: TextView = view.findViewById<TextView>(R.id.textView_wifiPasswordTitle)
-                textViewWifiPasswordTitle.text = weather?.wifi_password_title
-                val textViewValue: TextView = view.findViewById<TextView>(R.id.textView_value)
-                textViewValue.text = weather?.weather_value
-                val textViewWeatherTitle: TextView = view.findViewById<TextView>(R.id.weather_title)
-                textViewWeatherTitle.text = weather?.weather_title
-                when (weather?.weather_type) {
-                    "1" -> {
-                        Glide.with(this)
-                            .load(R.drawable.ic_weather_1)
-                            .skipMemoryCache(true)
-                            .into(view.findViewById(R.id.imageView))
-                    }
-                    "2" -> {
-                        Glide.with(this)
-                            .load(R.drawable.ic_weather_cloudy)
-                            .skipMemoryCache(true)
-                            .into(view.findViewById(R.id.imageView))
-                    }
-                    "3" -> {
-                        Glide.with(this)
-                            .load(R.drawable.ic_weather_partlycloudy)
-                            .skipMemoryCache(true)
-                            .into(view.findViewById(R.id.imageView))
-                    }
-                    "4" -> {
-                        Glide.with(this)
-                            .load(R.drawable.ic_weather_raining)
-                            .skipMemoryCache(true)
-                            .into(view.findViewById(R.id.imageView))
-                    }
-                    "5" -> {
-                        Glide.with(this)
-                            .load(R.drawable.ic_weather_shower)
-                            .skipMemoryCache(true)
-                            .into(view.findViewById(R.id.imageView))
-                    }
-                    "6" -> {
-                        Glide.with(this)
-                            .load(R.drawable.ic_weather_sunny)
-                            .skipMemoryCache(true)
-                            .into(view.findViewById(R.id.imageView))
-                    }
+                    textView_wifi_id.text = weather?.wifi_id
+                    textView_wifiIdTitle.text = weather?.wifi_id_title
+                    textView_wifi_password.text = weather?.wifi_password
+                    textView_wifiPasswordTitle.text = weather?.wifi_password_title
+                    textView_value.text = weather?.temp_none
+                    weather_title.text = weather?.weather_title
+                    imageView_weather.visibility = View.INVISIBLE
                 }
+
             }
             TAG_TYPE_2 -> {
-                view_wedge.layoutResource = R.layout.view_home_banner
-                val view = view_wedge.inflate()
-
-                mViewChannelName = view.findViewById(R.id.text_channel)
-                mViewChannelLogo = view.findViewById(R.id.image_channel)
 
                 Glide.with(this)
-                    .load(FileUtils.getFileFromStorage(mData?.home?.promo_banner!![0].image))
-                    .skipMemoryCache(true)
-                    .into(view.findViewById(R.id.image_banner))
+                        .load(FileUtils.getFileFromStorage(mData?.home?.promo_banner!![0].image))
+                        .skipMemoryCache(true)
+                        .into(image_banner)
+
             }
         }
     }
@@ -357,10 +340,10 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
         }
 
         mDisposable = Observable.timer(400, TimeUnit.MILLISECONDS)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                {}, { onError -> Log.e(TAG, "error:$onError") }, {
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        {}, { onError -> Log.e(TAG, "error:$onError") }, {
                     //                    mViewModel.getTVHelper().playCurrent()?.subscribe()
                     TVController.playCurrent()
                 })

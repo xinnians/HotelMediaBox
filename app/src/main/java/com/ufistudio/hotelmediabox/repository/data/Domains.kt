@@ -96,9 +96,9 @@ data class HomeWeather(
         val wifi_id: String,
         val wifi_password_title: String,
         val wifi_password: String,
-        val weather_value: String,
-        val weather_type: String,
-        val weather_title: String
+        val weather_title: String,
+        val weather_city: String,
+        val temp_none: String
 ) : Parcelable
 
 @Parcelize

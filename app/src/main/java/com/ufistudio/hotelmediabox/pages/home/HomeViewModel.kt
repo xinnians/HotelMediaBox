@@ -6,7 +6,9 @@ import com.google.gson.Gson
 import com.ufistudio.hotelmediabox.MyApplication
 import com.ufistudio.hotelmediabox.helper.TVHelper
 import com.ufistudio.hotelmediabox.repository.Repository
+import com.ufistudio.hotelmediabox.repository.data.Config
 import com.ufistudio.hotelmediabox.repository.data.Home
+import com.ufistudio.hotelmediabox.repository.data.WeatherInfo
 import com.ufistudio.hotelmediabox.repository.viewModel.BaseViewModel
 import com.ufistudio.hotelmediabox.utils.MiscUtils
 import io.reactivex.Single
@@ -16,29 +18,35 @@ import io.reactivex.schedulers.Schedulers
 
 
 class HomeViewModel(
-        application: Application,
-        private val compositeDisposable: CompositeDisposable,
-        private val repository: Repository
+    application: Application,
+    private val compositeDisposable: CompositeDisposable,
+    private val repository: Repository
 ) : BaseViewModel(application, compositeDisposable) {
 
     val initHomeSuccess = MutableLiveData<Home>()
     val initHomeProgress = MutableLiveData<Boolean>()
     val initHomeError = MutableLiveData<Throwable>()
 
+    val getWeatherInfoSuccess = MutableLiveData<WeatherInfo?>()
+    val getWeatherInfoProgress = MutableLiveData<Boolean>()
+    val getWeatherInfoError = MutableLiveData<Throwable>()
+
+    val mGson = Gson()
+
     init {
         val json = getJsonObject()
         if (json != null) {
             compositeDisposable.add(Single.just(json)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnSubscribe {
-                        initHomeProgress.value = true
-                    }
-                    .doFinally {
-                        initHomeProgress.value = false
-                    }
-                    .subscribe({ initHomeSuccess.value = it }
-                            , { initHomeError.value = it })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe {
+                    initHomeProgress.value = true
+                }
+                .doFinally {
+                    initHomeProgress.value = false
+                }
+                .subscribe({ initHomeSuccess.value = it }
+                    , { initHomeError.value = it })
             )
         } else {
             initHomeError.value = Throwable("jsonObject is null")
@@ -46,12 +54,28 @@ class HomeViewModel(
     }
 
     private fun getJsonObject(): Home? {
-        val gson = Gson()
-        return gson.fromJson(MiscUtils.getJsonLanguageAutoSwitch("home"), Home::class.java)
+        return mGson.fromJson(MiscUtils.getJsonLanguageAutoSwitch("home"), Home::class.java)
     }
 
     fun getTVHelper(): TVHelper {
         return getApplication<MyApplication>().getTVHelper()
     }
 
+    private fun getConfig(): Config? {
+        return mGson.fromJson(MiscUtils.getJsonFromStorage("box_config.json"), Config::class.java)
+    }
+
+    fun getWeather(cityCode: String) {
+        val json = getConfig()
+        compositeDisposable.add(
+            Single.just(json)
+                .map {
+                    repository.getWeatherInfo("http:${it.config.defaultServerIp}/api/weather", cityCode)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doFinally { getWeatherInfoProgress.value = false }
+                        .subscribe({ getWeatherInfoSuccess.value = it }
+                            , { getWeatherInfoError.value = it })
+                }.subscribe()
+        )
+    }
 }
