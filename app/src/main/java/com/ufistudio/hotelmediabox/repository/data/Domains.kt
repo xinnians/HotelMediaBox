@@ -48,7 +48,6 @@ data class Channels(
 ) : Parcelable
 
 
-
 @Parcelize
 data class DVBInfo(
         var Frequency: String = "",
@@ -194,13 +193,13 @@ data class Config(
 
 @Parcelize
 data class ConfigContent(
-        var language: String,
-        var upgradeUrl: String,
-        var room: String,
-        var timeFormat: String,
-        var file_version: String,
-        var defaultIp: String,
-        var defaultServerIp: String
+        var language: String = "",
+        var upgradeUrl: String = "",
+        var room: String = "",
+        var timeFormat: String = "",
+        var file_version: String = "",
+        var defaultIp: String = "",
+        var defaultServerIp: String = ""
 
 ) : Parcelable
 
@@ -392,4 +391,9 @@ data class Broadcast(
         var type: String,
         var needUpdate: Int = 0,
         var force: String = "0"
+) : Parcelable
+
+@Parcelize
+data class TimeInfo(
+        var time: String
 ) : Parcelable
