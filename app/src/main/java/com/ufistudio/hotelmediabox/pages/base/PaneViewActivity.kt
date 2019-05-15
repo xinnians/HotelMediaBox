@@ -198,7 +198,7 @@ open class PaneViewActivity : BaseActivity(), OnPageInteractionListener.Pane {
     private fun checkFactoryKey() {
         val correctCode = resources.getIntArray(R.array.factory_key)
         if (mFactoryKeyInput.size >= correctCode.size)
-            mDisposable = Observable.just(mFactoryKeyInput)
+            mDisposable = Observable.fromCallable{mFactoryKeyInput}
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({

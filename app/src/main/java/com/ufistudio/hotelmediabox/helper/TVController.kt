@@ -51,8 +51,8 @@ object TVController {
         Log.e(TAG, "[getChannelList] call.")
         if (mChannelList == null || mChannelList?.size ?: 0 == 0) {
             val jsonObject: Channels =
-                Gson().fromJson(MiscUtils.getJsonFromStorage("box_channels.json"), Channels::class.java)
-                    ?: return null
+                    Gson().fromJson(MiscUtils.getJsonFromStorage("box_channels.json"), Channels::class.java)
+                            ?: return null
             mChannelList = jsonObject.channels.toCollection(ArrayList())
         }
         Log.e(TAG, "[TVHelper] getChannelList size = ${mChannelList?.size ?: "null"}")
@@ -70,18 +70,18 @@ object TVController {
             onBroadcastAll(null, TVController.ACTION_TYPE.InitDeviceFinish)
         }
         sendTCPRequestSingle("j_dev_init")
-            .map { result ->
-                if (result == RESULT_SUCCESS) mIsDeviceInit = true
-                return@map result
-            }
-            .subscribeOn(singelThreadScheduler)
-            .observeOn(singelThreadScheduler)
-            .subscribe({ successResult ->
-                Log.e(TAG, "[initDevice] Result : $successResult")
-                onBroadcastAll(null, TVController.ACTION_TYPE.InitDeviceFinish)
-            }, { failResult ->
-                Log.e(TAG, "[initDevice] throwable : $failResult")
-            })
+                .map { result ->
+                    if (result == RESULT_SUCCESS) mIsDeviceInit = true
+                    return@map result
+                }
+                .subscribeOn(singelThreadScheduler)
+                .observeOn(singelThreadScheduler)
+                .subscribe({ successResult ->
+                    Log.e(TAG, "[initDevice] Result : $successResult")
+                    onBroadcastAll(null, TVController.ACTION_TYPE.InitDeviceFinish)
+                }, { failResult ->
+                    Log.e(TAG, "[initDevice] throwable : $failResult")
+                })
     }
 
     fun initAVPlayer(screenType: SCREEN_TYPE) {
@@ -114,15 +114,15 @@ object TVController {
         }
 
         sendTCPRequestSingle("j_set_win $x $y $width $height")
-            .retry(1)
-            .subscribeOn(singelThreadScheduler)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ successResult ->
-                Log.e(TAG, "[initAVPlayer] Result : $successResult")
-                onBroadcastAll(null, TVController.ACTION_TYPE.InitAVPlayerFinish)
-            }, { failResult ->
-                Log.e(TAG, "[initAVPlayer] throwable : $failResult")
-            })
+                .retry(1)
+                .subscribeOn(singelThreadScheduler)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ successResult ->
+                    Log.e(TAG, "[initAVPlayer] Result : $successResult")
+                    onBroadcastAll(null, TVController.ACTION_TYPE.InitAVPlayerFinish)
+                }, { failResult ->
+                    Log.e(TAG, "[initAVPlayer] throwable : $failResult")
+                })
     }
 
     /**
@@ -172,29 +172,29 @@ object TVController {
         }
 
         mPlayDisposable = sendTCPRequestSingle("j_stopplay 1")
-            .flatMap {
-                var channelParameter = channel.chIp.frequency + " " + channel.chIp.bandwidth
-                if (mCurrentLockFrequency == channelParameter) {
-                    return@flatMap Single.just(RESULT_SUCCESS)
-                }
-                return@flatMap sendTCPRequestSingle("j_setchan $channelParameter")
-                    .map { result ->
-                        mCurrentLockFrequency = if (result == RESULT_SUCCESS) channelParameter
-                        else ""
-                        return@map result
+                .flatMap {
+                    var channelParameter = channel.chIp.frequency + " " + channel.chIp.bandwidth
+                    if (mCurrentLockFrequency == channelParameter) {
+                        return@flatMap Single.fromCallable { RESULT_SUCCESS }
                     }
-            }
-            .flatMap { sendTCPRequestSingle("j_play ${channel.chIp.dvbParameter}") }
-            .retry(1)
-            .map { mCurrentChannel = channel }
-            .subscribeOn(singelThreadScheduler)
-            .observeOn(singelThreadScheduler)
-            .subscribe({ successResult ->
-                Log.e(TAG, "[play] Result : $successResult")
-                onBroadcastAll(channel, TVController.ACTION_TYPE.OnChannelChange)
-            }, { failResult ->
-                Log.e(TAG, "[play] throwable : $failResult")
-            })
+                    return@flatMap sendTCPRequestSingle("j_setchan $channelParameter")
+                            .map { result ->
+                                mCurrentLockFrequency = if (result == RESULT_SUCCESS) channelParameter
+                                else ""
+                                return@map result
+                            }
+                }
+                .flatMap { sendTCPRequestSingle("j_play ${channel.chIp.dvbParameter}") }
+                .retry(1)
+                .map { mCurrentChannel = channel }
+                .subscribeOn(singelThreadScheduler)
+                .observeOn(singelThreadScheduler)
+                .subscribe({ successResult ->
+                    Log.e(TAG, "[play] Result : $successResult")
+                    onBroadcastAll(channel, TVController.ACTION_TYPE.OnChannelChange)
+                }, { failResult ->
+                    Log.e(TAG, "[play] throwable : $failResult")
+                })
     }
 
 //    /**
@@ -212,15 +212,15 @@ object TVController {
 //                Log.e(TAG, "[deInitAVPlayer] avplay_deinit result = $result")
 //                return@flatMap sendTCPRequestSingle("jv_win_deinit")
 //            }
-            .retry(1)
-            .subscribeOn(singelThreadScheduler)
-            .observeOn(singelThreadScheduler)
-            .subscribe({ successResult ->
-                Log.e(TAG, "[deInitAVPlayer] Result : $successResult")
+                .retry(1)
+                .subscribeOn(singelThreadScheduler)
+                .observeOn(singelThreadScheduler)
+                .subscribe({ successResult ->
+                    Log.e(TAG, "[deInitAVPlayer] Result : $successResult")
 //                onBroadcastAll(null,TVController.ACTION_TYPE.)
-            }, { failResult ->
-                Log.e(TAG, "[deInitAVPlayer] throwable : $failResult")
-            })
+                }, { failResult ->
+                    Log.e(TAG, "[deInitAVPlayer] throwable : $failResult")
+                })
     }
 
 //    fun deInitWindow(): Single<String> {
@@ -246,14 +246,14 @@ object TVController {
     fun scanChannel() {
         Log.e(TAG, "[scanChannel] call.")
         sendTCPRequestSingle("j_presetscan")
-            .subscribeOn(singelThreadScheduler)
-            .observeOn(singelThreadScheduler)
-            .subscribe({ successResult ->
-                Log.e(TAG, "[j_presetscan] Result : $successResult")
+                .subscribeOn(singelThreadScheduler)
+                .observeOn(singelThreadScheduler)
+                .subscribe({ successResult ->
+                    Log.e(TAG, "[j_presetscan] Result : $successResult")
 //                onBroadcastAll(null,TVController.ACTION_TYPE.)
-            }, { failResult ->
-                Log.e(TAG, "[j_presetscan] throwable : $failResult")
-            })
+                }, { failResult ->
+                    Log.e(TAG, "[j_presetscan] throwable : $failResult")
+                })
 
     }
 
@@ -362,7 +362,7 @@ object TVController {
                 echoSocket = Socket(serverHostname, serverPort)
                 out = PrintWriter(echoSocket.getOutputStream(), true)
                 input = BufferedReader(InputStreamReader(echoSocket.getInputStream()))
-            } catch (e: Exception){
+            } catch (e: Exception) {
                 Log.e(TAG, "exception: $e")
                 echoSocket = Socket(serverHostname, serverPort)
                 out = PrintWriter(echoSocket.getOutputStream(), true)

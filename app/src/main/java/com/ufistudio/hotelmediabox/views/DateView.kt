@@ -87,26 +87,20 @@ class DateView : ConstraintLayout {
      */
     fun getTimeFormat() {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            val jsonObject = mGson.fromJson(MiscUtils.getJsonFromStorage("box_config.json"), Config::class.java)
-            if (jsonObject != null) {
-                mDateDisposable = Single.just(jsonObject)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({
-                            if (!TextUtils.isEmpty(it.config.timeFormat))
-                                setDateFormat(it.config.timeFormat)
-                            else {
-                                Log.e(TAG, "讀不到format")
-                                setDefaultFormat()
-                            }
-                        }, {
-                            Log.e(TAG, "load file error $it")
+            mDateDisposable = Single.fromCallable { mGson.fromJson(MiscUtils.getJsonFromStorage("box_config.json"), Config::class.java) }
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                        if (!TextUtils.isEmpty(it.config.timeFormat))
+                            setDateFormat(it.config.timeFormat)
+                        else {
+                            Log.e(TAG, "讀不到format")
                             setDefaultFormat()
-                        })
-            } else {
-                setDefaultFormat()
-                Log.e(TAG, "jsonObject is null")
-            }
+                        }
+                    }, {
+                        Log.e(TAG, "load file error $it")
+                        setDefaultFormat()
+                    })
         } else {
             setDefaultFormat()
         }
@@ -121,9 +115,9 @@ class DateView : ConstraintLayout {
             jsonObject = Config(ConfigContent(defaultServerIp = "10.0.0.1"))
         }
 
-        return Single.just(jsonObject)
+        return Single.fromCallable { jsonObject }
                 .flatMap {
                     ApiClient.getInstance()!!.getTime("http:${it.config.defaultServerIp}/api/device/time")
-                }
+                }.subscribeOn(Schedulers.io())
     }
 }

@@ -138,22 +138,20 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                     TAG_IMPORT_CHANNEL_LIST -> {
                         Repository(application, SharedPreferencesProvider(application)).downloadFileWithUrl("http://${myBroadcast.ip}${myBroadcast.url}:${myBroadcast.port}")
                                 .map {
-                                    Single.just(FileUtils.writeResponseBodyToDisk(it, "box_channels.json"))
+                                    Single.fromCallable { FileUtils.writeResponseBodyToDisk(it, "box_channels.json") }
+                                            .subscribeOn(Schedulers.io())
                                             .observeOn(AndroidSchedulers.mainThread())
                                             .subscribe({
-                                                Log.d(TAG, "TAG_IMPORT_CHANNEL_LIST save file finish $it")
+                                                if (FileUtils.fileIsExists("box_channels.json"))
+                                                    Log.d(TAG, "TAG_IMPORT_CHANNEL_LIST save file finish $it")
+                                                else {
+                                                    Log.d(TAG, "TAG_IMPORT_CHANNEL_LIST save file error : can not find file in storage")
+                                                }
                                             }, {
-                                                Log.d(TAG, "TAG_IMPORT_CHANNEL_LIST save file error $it")
+                                                Log.d(TAG, "TAG_IMPORT_CHANNEL_LIST save file error : $it")
                                             })
                                 }
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe({
-                                    Log.d(TAG, "TAG_IMPORT_CHANNEL_LIST success")
-                                }
-                                        , {
-                                    Log.d(TAG, "TAG_IMPORT_CHANNEL_LIST error $it")
-                                })
+                                .subscribe()
                     }
                     TAG_SOFTWARE_UPDATE -> {
                         //將 更新的apk下載到/data/hotel資料夾內
@@ -165,8 +163,11 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                                     }
                                     Repository(application, SharedPreferencesProvider(application)).downloadFileWithUrl("http://${it.ip}${it.url}:${it.port}")
                                             .flatMap {
-                                                Single.just(FileUtils.writeResponseBodyToDisk(it, TAG_DEFAULT_APK_NAME))
-                                            }.subscribe({
+                                                Single.fromCallable { FileUtils.writeResponseBodyToDisk(it, TAG_DEFAULT_APK_NAME) }
+                                            }
+                                            .subscribeOn(Schedulers.io())
+                                            .observeOn(AndroidSchedulers.mainThread())
+                                            .subscribe({
                                                 if (FileUtils.fileIsExists(TAG_DEFAULT_APK_NAME)) {
                                                     Log.d(TAG, "TAG_SOFTWARE_UPDATE download success")
                                                     val intent = Intent()
@@ -183,7 +184,6 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                                             })
                                 }
                                 .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe()
                     }
                     TAG_RESOURCE_UPDATE -> {
@@ -192,11 +192,12 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                                 .map {
                                     Log.d(TAG, "TAG_RESOURCE_UPDATE response = $it")
                                     if (it.needUpdate == 0) {
+                                        //TODO 判斷config 的tar version判斷是否需要更新
                                         return@map
                                     }
                                     Repository(application, SharedPreferencesProvider(application)).downloadFileWithUrl("http://${it.ip}${it.url}:${it.port}")
                                             .flatMap {
-                                                Single.just(FileUtils.writeResponseBodyToDisk(it, TAG_DEFAULT_HOTEL_TAR_FILE_NAME, TAG_DEFAULT_CORRECTION_PATH))
+                                                Single.fromCallable { FileUtils.writeResponseBodyToDisk(it, TAG_DEFAULT_HOTEL_TAR_FILE_NAME, TAG_DEFAULT_CORRECTION_PATH) }
                                             }.subscribe({
                                                 if (FileUtils.fileIsExists(TAG_DEFAULT_HOTEL_TAR_FILE_NAME)) {
                                                     Log.d(TAG, "TAG_RESOURCE_UPDATE download success")
@@ -215,7 +216,6 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                                             })
                                 }
                                 .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe()
                     }
                 }

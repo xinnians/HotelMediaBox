@@ -18,9 +18,9 @@ import io.reactivex.schedulers.Schedulers
 
 
 class HomeViewModel(
-    application: Application,
-    private val compositeDisposable: CompositeDisposable,
-    private val repository: Repository
+        application: Application,
+        private val compositeDisposable: CompositeDisposable,
+        private val repository: Repository
 ) : BaseViewModel(application, compositeDisposable) {
 
     val initHomeSuccess = MutableLiveData<Home>()
@@ -34,9 +34,7 @@ class HomeViewModel(
     val mGson = Gson()
 
     init {
-        val json = getJsonObject()
-        if (json != null) {
-            compositeDisposable.add(Single.just(json)
+        compositeDisposable.add(Single.fromCallable { getJsonObject() }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe {
@@ -46,11 +44,8 @@ class HomeViewModel(
                     initHomeProgress.value = false
                 }
                 .subscribe({ initHomeSuccess.value = it }
-                    , { initHomeError.value = it })
-            )
-        } else {
-            initHomeError.value = Throwable("jsonObject is null")
-        }
+                        , { initHomeError.value = it })
+        )
     }
 
     private fun getJsonObject(): Home? {
@@ -66,16 +61,15 @@ class HomeViewModel(
     }
 
     fun getWeather(cityCode: String) {
-        val json = getConfig()
         compositeDisposable.add(
-            Single.just(json)
-                .map {
-                    repository.getWeatherInfo("http:${it.config.defaultServerIp}/api/weather", cityCode)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .doFinally { getWeatherInfoProgress.value = false }
-                        .subscribe({ getWeatherInfoSuccess.value = it }
-                            , { getWeatherInfoError.value = it })
-                }.subscribe()
+                Single.fromCallable { getConfig() }
+                        .map {
+                            repository.getWeatherInfo("http:${it.config.defaultServerIp}/api/weather", cityCode)
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .doFinally { getWeatherInfoProgress.value = false }
+                                    .subscribe({ getWeatherInfoSuccess.value = it }
+                                            , { getWeatherInfoError.value = it })
+                        }.subscribe()
         )
     }
 }

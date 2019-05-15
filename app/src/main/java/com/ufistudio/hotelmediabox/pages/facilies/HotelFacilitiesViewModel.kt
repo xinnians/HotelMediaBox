@@ -27,9 +27,9 @@ class HotelFacilitiesViewModel(
     init {
         val json = getJsonObject()
         if (json != null) {
-            compositeDisposable.add(Single.just(getJsonObject())
+            compositeDisposable.add(Single.fromCallable { getJsonObject() }
+                    .zipWith(Single.fromCallable { getNoteButton() })
                     .subscribeOn(Schedulers.io())
-                    .zipWith(Single.just(getNoteButton()))
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnSubscribe { initHotelFacilitiesProgress.value = true }
                     .doFinally { initHotelFacilitiesProgress.value = false }

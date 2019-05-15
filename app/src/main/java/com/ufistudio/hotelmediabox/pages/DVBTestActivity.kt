@@ -116,12 +116,12 @@ class DVBTestActivity : AppCompatActivity(), View.OnClickListener, AdapterView.O
 //                .observeOn(Schedulers.io())
 //                .subscribe()
             btnDeInitAVPlayer.id ->
-                Single.just(true)
+                Single.fromCallable{true}
                     .map { DVBHelper.getDVBPlayer().releaseAVPlayer() }
                     .subscribeOn(Schedulers.io())
                     .subscribe()
             btnDeInitDevice.id -> {
-                Single.just(true)
+                Single.fromCallable{true}
                     .map { DVBHelper.getDVBPlayer().releaseDev() }
                     .subscribeOn(Schedulers.io())
                     .subscribe()

@@ -31,8 +31,8 @@ class WeatherViewModel(
     init {
         val json = getJsonObject()
         if (json != null) {
-            compositeDisposable.add(Single.just(json)
-                    .zipWith(Single.just(getNoteButton()))
+            compositeDisposable.add(Single.fromCallable { json }
+                    .zipWith(Single.fromCallable { getNoteButton() })
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnSubscribe { initWeatherProgress.value = true }
@@ -60,9 +60,10 @@ class WeatherViewModel(
 
     fun getWeather(cityCode: String) {
         val json = getConfig()
-        compositeDisposable.add(Single.just(json)
+        compositeDisposable.add(Single.fromCallable { json }
                 .map {
                     repository.getWeatherInfo("http:${it.config.defaultServerIp}/api/weather", cityCode)
+                            .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .doFinally { getWeatherInfoProgress.value = false }
                             .subscribe({ getWeatherInfoSuccess.value = it }

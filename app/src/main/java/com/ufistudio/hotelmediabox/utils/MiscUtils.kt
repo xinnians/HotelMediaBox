@@ -83,6 +83,7 @@ object MiscUtils {
      * 若找不到，預設英文
      */
     fun getJsonLanguageAutoSwitch(fileName: String): String {
+        Log.d("neo","安安 $fileName")
         val gson = Gson()
         var config: Config? = null
         try {
