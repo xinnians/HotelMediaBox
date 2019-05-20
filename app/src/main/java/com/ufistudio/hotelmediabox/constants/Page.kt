@@ -12,6 +12,7 @@ import com.ufistudio.hotelmediabox.pages.roomService.RoomServiceFragment
 import com.ufistudio.hotelmediabox.pages.setting.SettingFragment
 import com.ufistudio.hotelmediabox.pages.setting.content.LanguageFragment
 import com.ufistudio.hotelmediabox.pages.setting.content.UserGuideFragment
+import com.ufistudio.hotelmediabox.pages.tourist.TouristFragment
 import com.ufistudio.hotelmediabox.pages.vod.VodFragment
 import com.ufistudio.hotelmediabox.pages.weather.WeatherFragment
 import java.lang.IllegalArgumentException
@@ -37,6 +38,7 @@ object Page {
     const val FLIGHTS_INFO = 1015
     const val WEATHER = 1016
     const val VOD = 1017
+    const val TOURIST = 1018
 
     /*--------------------------------------------------------------------------------------------*/
     /* Helpers */
@@ -59,6 +61,7 @@ object Page {
             FLIGHTS_INFO -> result = FlightsInfoFragment.newInstance()
             WEATHER -> result = WeatherFragment.newInstance()
             VOD -> result = VodFragment.newInstance()
+            TOURIST -> result = TouristFragment.newInstance()
             else -> throw IllegalArgumentException("No match view! page = $page")
         }
 
@@ -69,7 +72,7 @@ object Page {
     }
 
     private fun putData(fragment: Fragment, data: Bundle) {
-        var args = fragment.arguments;
+        var args = fragment.arguments
         if (args == null) {
             fragment.arguments = data
         } else {
