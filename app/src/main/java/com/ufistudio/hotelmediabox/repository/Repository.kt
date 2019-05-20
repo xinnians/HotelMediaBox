@@ -1,10 +1,8 @@
 package com.ufistudio.hotelmediabox.repository
 
 import android.app.Application
-import com.ufistudio.hotelmediabox.repository.data.BaseChannel
-import com.ufistudio.hotelmediabox.repository.data.Broadcast
-import com.ufistudio.hotelmediabox.repository.data.BroadcastRequest
-import com.ufistudio.hotelmediabox.repository.data.WeatherInfo
+import com.google.gson.Gson
+import com.ufistudio.hotelmediabox.repository.data.*
 import com.ufistudio.hotelmediabox.repository.provider.preferences.PreferencesKey.CHANNEL_LIST
 import com.ufistudio.hotelmediabox.repository.provider.preferences.SharedPreferencesProvider
 import com.ufistudio.hotelmediabox.repository.remote.ApiClient
@@ -12,6 +10,7 @@ import com.ufistudio.hotelmediabox.repository.remote.RemoteAPI
 import com.ufistudio.hotelmediabox.utils.FileUtils
 import com.ufistudio.hotelmediabox.utils.MiscUtils
 import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -35,28 +34,30 @@ class Repository(
     }
 
     fun postCheckStatus(url: String): Single<ResponseBody> {
-        return ApiClient.getInstance()!!.postCheckStatus(url,
-                MiscUtils.getWifiMACAddress(application.applicationContext)!!,
-                MiscUtils.getIpAddress(application.applicationContext),
-                MiscUtils.getRoomNumber(),
-                "1"
-        )
+        val gson = Gson()
+        return Single.fromCallable { gson.fromJson(MiscUtils.getJsonFromStorage("box_config.json"), Config::class.java) }
+                .subscribeOn(Schedulers.io())
+                .flatMap {
+                    ApiClient.getInstance()!!.postCheckStatus(url,
+                            MiscUtils.getWifiMACAddress(application.applicationContext),
+                            it.config.defaultIp,
+                            MiscUtils.getRoomNumber(),
+                            "1",
+                            it.config.tar_version,
+                            it.config.j_version
+                    )
+                }
     }
 
     fun postChannel(url: String): Single<ResponseBody> {
-        val body: BroadcastRequest = BroadcastRequest(
-                MiscUtils.getWifiMACAddress(application.applicationContext)!!,
-                MiscUtils.getIpAddress(application.applicationContext),
-                "ok"
-        )
 
         val channels: File? = FileUtils.getFileFromStorage("box_channels.json")
         var multipartBody: MultipartBody.Part? = null
         if (channels != null) {
             val requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), channels)
-            multipartBody = MultipartBody.Part.createFormData("channels.json", "box_channels.json", requestFile)
+            multipartBody = MultipartBody.Part.createFormData("channels", "box_channels.json", requestFile)
         }
-        return ApiClient.getInstance()!!.postChannel(url, body, multipartBody!!)
+        return ApiClient.getInstance()!!.postChannel(url, multipartBody!!)
     }
 
     fun getSoftwareUpdate(url: String): Single<Broadcast> {

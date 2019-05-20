@@ -87,9 +87,10 @@ object FileUtils {
      *
      * @return 該檔案是否存在
      */
-    fun fileIsExists(fileName: String): Boolean {
+    fun fileIsExists(fileName: String, path: String = TAG_DEFAULT_LOCAL_PATH): Boolean {
         try {
-            var file = File("/data", TAG_DEFAULT_LOCAL_PATH + fileName)
+            var file = File("/data", path + fileName)
+            Log.d(TAG,"fileIsExists = $file")
             if (!file.exists()) {
                 return false
             }

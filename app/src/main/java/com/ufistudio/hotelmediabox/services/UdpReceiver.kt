@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Binder
 import android.os.Bundle
 import android.os.IBinder
+import android.text.TextUtils
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
@@ -14,10 +15,8 @@ import com.ufistudio.hotelmediabox.receivers.TAG_FORCE
 import com.ufistudio.hotelmediabox.repository.Repository
 import com.ufistudio.hotelmediabox.repository.data.Broadcast
 import com.ufistudio.hotelmediabox.repository.provider.preferences.SharedPreferencesProvider
-import com.ufistudio.hotelmediabox.utils.FileUtils
-import com.ufistudio.hotelmediabox.utils.TAG_DEFAULT_APK_NAME
-import com.ufistudio.hotelmediabox.utils.TAG_DEFAULT_CORRECTION_PATH
-import com.ufistudio.hotelmediabox.utils.TAG_DEFAULT_HOTEL_TAR_FILE_NAME
+import com.ufistudio.hotelmediabox.utils.*
+import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -58,8 +57,14 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
 
     override fun run() {
         Log.d(TAG, "run UdpReceiver")
-        registerToServer()
+//        registerToServer()
         receiveBroadcast()
+    }
+
+    override fun stopService(name: Intent?): Boolean {
+        Log.d(TAG,"Stop udp receiver service")
+        socket = null
+        return super.stopService(name)
     }
 
     /**
@@ -93,6 +98,8 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
      */
     private fun receiveBroadcast() {
         Log.d(TAG, "receiveBroadcast")
+        socket?.disconnect()
+        socket = DatagramSocket(TAG_SERVER_PORT)
         while (true) {
             val recBuf: ByteArray = ByteArray(255)
             mPacket = null
@@ -103,40 +110,41 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                 Log.e(TAG, e.toString())
             }
             val receiverString = String(mPacket!!.data, mPacket!!.offset, mPacket!!.length)
-
+            if (mPacket!!.address == null) {
+                continue
+            }
             try {
-                val myBroadcast = gson.fromJson(receiverString, Broadcast::class.java)
                 Log.d(TAG, "Server: IP = ${mPacket!!.address}")
-                Log.i(TAG, "Server: Message received = ${mPacket!!.data}")
                 Log.i(TAG, "Server: Message receiverString = $receiverString")
+                val myBroadcast = gson.fromJson(receiverString, Broadcast::class.java)
                 when (myBroadcast.command.hashCode()) {
                     TAG_CHECK_STATUS -> {
-                        Repository(application, SharedPreferencesProvider(application)).postCheckStatus("http://${myBroadcast.ip}${myBroadcast.url}:${myBroadcast.port}")
+                        Repository(application, SharedPreferencesProvider(application)).postCheckStatus("http://${myBroadcast.ip}:${myBroadcast.port}${myBroadcast.url}")
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe({
-                                    Log.d(TAG, "TAG_CHECK_STATUS success $it")
+                                    Log.d(TAG, "TAG_CHECK_STATUS success ${it.string()}")
                                 }
                                         , {
-                                    Log.d(TAG, "TAG_CHECK_STATUS error $it")
+                                    Log.d(TAG, "TAG_CHECK_STATUS error $it.string()")
                                 })
                     }
                     TAG_EXPORT_CHANNEL_LIST -> {
-                        Repository(application, SharedPreferencesProvider(application)).postChannel("http://${myBroadcast.ip}${myBroadcast.url}:${myBroadcast.port}")
+                        Repository(application, SharedPreferencesProvider(application)).postChannel("http://${myBroadcast.ip}:${myBroadcast.port}${myBroadcast.url}")
                                 .subscribeOn(Schedulers.io())
-                                .doOnSubscribe {
-                                    Log.d(TAG, "TAG_EXPORT_CHANNEL_LIST on progress $it")
-                                }
                                 .observeOn(AndroidSchedulers.mainThread())
+                                .doOnSubscribe {
+                                    Log.d(TAG, "TAG_EXPORT_CHANNEL_LIST on progress")
+                                }
                                 .subscribe({
-                                    Log.d(TAG, "TAG_EXPORT_CHANNEL_LIST success $it")
+                                    Log.d(TAG, "TAG_EXPORT_CHANNEL_LIST success $it.string()")
                                 }
                                         , {
-                                    Log.d(TAG, "TAG_EXPORT_CHANNEL_LIST error $it")
+                                    Log.d(TAG, "TAG_EXPORT_CHANNEL_LIST error $it.string()")
                                 })
                     }
                     TAG_IMPORT_CHANNEL_LIST -> {
-                        Repository(application, SharedPreferencesProvider(application)).downloadFileWithUrl("http://${myBroadcast.ip}${myBroadcast.url}:${myBroadcast.port}")
+                        Repository(application, SharedPreferencesProvider(application)).downloadFileWithUrl("http://${myBroadcast.ip}:${myBroadcast.port}${myBroadcast.url}")
                                 .map {
                                     Single.fromCallable { FileUtils.writeResponseBodyToDisk(it, "box_channels.json") }
                                             .subscribeOn(Schedulers.io())
@@ -155,13 +163,14 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                     }
                     TAG_SOFTWARE_UPDATE -> {
                         //將 更新的apk下載到/data/hotel資料夾內
-                        Repository(application, SharedPreferencesProvider(application)).getSoftwareUpdate("http://${myBroadcast.ip}${myBroadcast.url}:${myBroadcast.port}")
+                        Repository(application, SharedPreferencesProvider(application)).getSoftwareUpdate("http://${myBroadcast.ip}:${myBroadcast.port}${myBroadcast.url}")
                                 .map {
                                     Log.d(TAG, "TAG_SOFTWARE_UPDATE response = $it")
                                     if (it.needUpdate == 0) {
+                                        //TODO判斷apk_version是否為較小
                                         return@map
                                     }
-                                    Repository(application, SharedPreferencesProvider(application)).downloadFileWithUrl("http://${it.ip}${it.url}:${it.port}")
+                                    Repository(application, SharedPreferencesProvider(application)).downloadFileWithUrl("http://${it.ip}:${it.port}${it.url}")
                                             .flatMap {
                                                 Single.fromCallable { FileUtils.writeResponseBodyToDisk(it, TAG_DEFAULT_APK_NAME) }
                                             }
@@ -188,38 +197,21 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                     }
                     TAG_RESOURCE_UPDATE -> {
                         //將 hotel.tar下載到/data/correction資料夾內
-                        Repository(application, SharedPreferencesProvider(application)).getSoftwareUpdate("http://${myBroadcast.ip}${myBroadcast.url}:${myBroadcast.port}")
-                                .map {
-                                    Log.d(TAG, "TAG_RESOURCE_UPDATE response = $it")
-                                    if (it.needUpdate == 0) {
-                                        //TODO 判斷config 的tar version判斷是否需要更新
-                                        return@map
+                        Repository(application, SharedPreferencesProvider(application)).downloadFileWithUrl("http://${myBroadcast.ip}:${myBroadcast.port}${myBroadcast.url}")
+                                .flatMap { Single.fromCallable { FileUtils.writeResponseBodyToDisk(it, TAG_DEFAULT_HOTEL_TAR_FILE_NAME, TAG_DEFAULT_CORRECTION_PATH) } }
+                                .subscribe({
+                                    if (FileUtils.fileIsExists(TAG_DEFAULT_HOTEL_TAR_FILE_NAME, TAG_DEFAULT_CORRECTION_PATH)) {
+                                        Log.d(TAG, "TAG_RESOURCE_UPDATE download success")
+                                        FileUtils.getFileFromStorage("chkflag")?.delete()
+                                        MiscUtils.reboot(baseContext)
+                                    } else {
+                                        Log.d(TAG, "TAG_RESOURCE_UPDATE download finish, but can not find file")
                                     }
-                                    Repository(application, SharedPreferencesProvider(application)).downloadFileWithUrl("http://${it.ip}${it.url}:${it.port}")
-                                            .flatMap {
-                                                Single.fromCallable { FileUtils.writeResponseBodyToDisk(it, TAG_DEFAULT_HOTEL_TAR_FILE_NAME, TAG_DEFAULT_CORRECTION_PATH) }
-                                            }.subscribe({
-                                                if (FileUtils.fileIsExists(TAG_DEFAULT_HOTEL_TAR_FILE_NAME)) {
-                                                    Log.d(TAG, "TAG_RESOURCE_UPDATE download success")
-                                                    FileUtils.getFileFromStorage("chkflag")?.delete()
-                                                    val intent = Intent()
-                                                    val b = Bundle()
-                                                    b.putString(TAG_FORCE, myBroadcast.force)
-                                                    intent.putExtras(b)
-                                                    intent.action = ACTION_UPDATE_APK
-                                                    sendBroadcast(intent)
-                                                } else {
-                                                    Log.d(TAG, "TAG_RESOURCE_UPDATE download finish, but can not find file")
-                                                }
-                                            }, {
-                                                Log.d(TAG, "TAG_RESOURCE_UPDATE download error $it")
-                                            })
-                                }
-                                .subscribeOn(Schedulers.io())
-                                .subscribe()
+                                }, {
+                                    Log.d(TAG, "TAG_RESOURCE_UPDATE download error $it")
+                                })
                     }
                 }
-                Log.d(TAG, "receive ip = ${myBroadcast.ip}")
             } catch (e: JsonSyntaxException) {
                 Log.d(TAG, "error = $e")
             }

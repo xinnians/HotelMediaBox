@@ -42,7 +42,7 @@ class ApiClient {
                 .baseUrl(url)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.createAsync())
                 .build()
 
         mService = retrofit.create(ApiClientService::class.java)
@@ -54,12 +54,12 @@ class ApiClient {
 
     fun downloadFileWithUrl(url: String): Single<ResponseBody> = mService.download(url)
 
-    fun postCheckStatus(url: String, mac: String, ip: String, room: String, status: String): Single<ResponseBody> {
-        return mService.checkStatus(url, mac, ip, room, status)
+    fun postCheckStatus(url: String, mac: String, ip: String, room: String, status: String, tarVersion: String = "", jVersion: String = ""): Single<ResponseBody> {
+        return mService.checkStatus(url, mac, ip, room, status, tarVersion, jVersion)
     }
 
-    fun postChannel(url: String, body: BroadcastRequest, file: MultipartBody.Part): Single<ResponseBody> {
-        return mService.postChannelList(url, body, file)
+    fun postChannel(url: String, file: MultipartBody.Part): Single<ResponseBody> {
+        return mService.postChannelList(url, file)
     }
 
     fun getSoftwareUpdate(url: String): Single<Broadcast> = mService.softwareUpdate(url)

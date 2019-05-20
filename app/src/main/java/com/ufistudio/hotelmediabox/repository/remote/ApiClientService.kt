@@ -7,6 +7,7 @@ import okhttp3.ResponseBody
 import retrofit2.http.*
 
 interface ApiClientService {
+    @Streaming
     @GET
     fun download(@Url url: String): Single<ResponseBody>
 
@@ -19,14 +20,16 @@ interface ApiClientService {
             @Query("mac") mac: String,
             @Query("ip") ip: String,
             @Query("room") room: String,
-            @Query("status") status: String
+            @Query("status") status: String,
+            @Query("tar_version") tarVersion: String,
+            @Query("j_version") jVersion: String
     ): Single<ResponseBody>
 
     @Multipart
     @POST
     fun postChannelList(
             @Url url: String,
-            @Body request: BroadcastRequest,
+//            @Body request: BroadcastRequest,
             @Part file: MultipartBody.Part
     ): Single<ResponseBody>
 

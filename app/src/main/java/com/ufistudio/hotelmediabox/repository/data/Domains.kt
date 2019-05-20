@@ -199,7 +199,9 @@ data class ConfigContent(
         var timeFormat: String = "",
         var file_version: String = "",
         var defaultIp: String = "",
-        var defaultServerIp: String = ""
+        var defaultServerIp: String = "",
+        var j_version: String = "",
+        var tar_version: String = ""
 
 ) : Parcelable
 
