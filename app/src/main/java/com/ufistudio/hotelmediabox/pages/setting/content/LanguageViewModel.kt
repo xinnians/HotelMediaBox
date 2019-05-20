@@ -27,7 +27,7 @@ class LanguageViewModel(
     fun getConfig() {
         val json = getConfigJsonObject()
         if (json != null) {
-            compositeDisposable.add(Single.just(json)
+            compositeDisposable.add(Single.fromCallable { json }
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnSubscribe { initConfigServiceProgress.value = true }
                     .doFinally { initConfigServiceProgress.value = false }

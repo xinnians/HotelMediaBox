@@ -17,6 +17,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import java.io.File
+import java.util.concurrent.Callable
 
 class Repository(
         private var application: Application,

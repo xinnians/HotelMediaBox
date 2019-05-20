@@ -21,7 +21,9 @@ import java.io.*
 import java.nio.charset.Charset
 
 const val TAG_DEFAULT_LOCAL_PATH: String = "/hotel/"
+const val TAG_DEFAULT_CORRECTION_PATH: String = "/correction/"
 const val TAG_DEFAULT_APK_NAME: String = "box_hotel.apk"
+const val TAG_DEFAULT_HOTEL_TAR_FILE_NAME: String = "hotel.tar"
 
 object MiscUtils {
 
@@ -81,6 +83,7 @@ object MiscUtils {
      * 若找不到，預設英文
      */
     fun getJsonLanguageAutoSwitch(fileName: String): String {
+        Log.d("neo","安安 $fileName")
         val gson = Gson()
         var config: Config? = null
         try {

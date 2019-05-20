@@ -98,7 +98,7 @@ class TVHelper {
             }
         }
 
-        Single.just(true)
+        Single.fromCallable{true}
             .map { DVBHelper.getDVBPlayer().releaseAVPlayer() }
             .map { DVBHelper.getDVBPlayer().setVO(width, height, x, y) }
             .map { DVBHelper.getDVBPlayer().setAVPlayer() }
@@ -122,7 +122,7 @@ class TVHelper {
     @Synchronized
     fun reInit(): Single<Int> {
         Log.i(TAG, "[TVHelper] reInit call")
-        return Single.just(true)
+        return Single.fromCallable { true }
             .map { DVBHelper.getDVBPlayer().releaseAVPlayer() }
             .map { closeDevice() }
             .map { initDevice() }
@@ -164,7 +164,7 @@ class TVHelper {
     @Synchronized
     fun reInitAVPlayer(): Single<Int> {
         Log.i(TAG, "[TVHelper] reInitAVPlayer call")
-        return Single.just(true)
+        return Single.fromCallable { true }
             .map { DVBHelper.getDVBPlayer().releaseAVPlayer() }
             .map {
                 var width = 0
@@ -205,7 +205,7 @@ class TVHelper {
     @Synchronized
     fun lockFrequency(parameter: String): Single<Int> {
         Log.i(TAG, "[TVHelper] lockFrequency call")
-        return Single.just(true)
+        return Single.fromCallable { true }
             .map {
                 if (mCurrentLockFrequency == parameter) return@map 0
                 else DVBHelper.getDVBPlayer().scanChannel(parameter)
@@ -225,7 +225,7 @@ class TVHelper {
             }
             .flatMap { result ->
                 if (result == 0) {
-                    return@flatMap Single.just(3)
+                    return@flatMap Single.fromCallable { 3 }
                 } else {
                     return@flatMap reInit()
                 }
@@ -252,10 +252,10 @@ class TVHelper {
         Log.i(TAG, "[TVHelper] play call")
         if (getChannelList() == null || getChannelList()?.size ?: 0 == 0) {
             Log.i(TAG, "[TVHelper] play channelList null.")
-            return Single.just(1)
+            return Single.fromCallable { 1 }
         }
         Log.i(TAG, "[TVHelper] play return single.")
-        return Single.just(true)
+        return Single.fromCallable { true }
             .flatMap { lockFrequency(channel.chIp.frequency + " " + channel.chIp.bandwidth) }
             .flatMap { result ->
                 return@flatMap reInitAVPlayer()
@@ -266,7 +266,7 @@ class TVHelper {
                 return@map playresult
             }.flatMap { result ->
                 if (result == 0) {
-                    return@flatMap Single.just(result)
+                    return@flatMap Single.fromCallable { result }
                 } else {
                     Log.i(TAG, "[TVHelper] play result = 走到initDev的地方了")
                     mCurrentLockFrequency = ""

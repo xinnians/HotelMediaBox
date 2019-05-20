@@ -100,7 +100,7 @@ object FileUtils {
     }
 
     /**
-     * 將檔案寫入SD card 預設路徑為sdcard/hotelBox
+     * 將檔案寫入 Storage 預設路徑為 /data/hotel/
      * @body: url responseBody stream
      * @name: 欲存檔的檔名，ex: xxx.apk
      * @filePath:欲存檔案的目錄，ex: /xxx ，xxx為sdcard底下之目錄

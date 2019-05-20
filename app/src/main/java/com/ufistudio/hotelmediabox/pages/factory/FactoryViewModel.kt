@@ -13,6 +13,7 @@ import com.ufistudio.hotelmediabox.utils.TAG_DEFAULT_APK_NAME
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 
 class FactoryViewModel(
         application: Application,
@@ -31,19 +32,14 @@ class FactoryViewModel(
 
     init {
         val gson = Gson()
-
-        val jsonObject = gson.fromJson(MiscUtils.getJsonFromStorage("box_config.json"), Config::class.java)
-        if (jsonObject != null) {
-            compositeDisposable.add(Single.just(jsonObject)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnSubscribe { initConfigProgress.value = true }
-                    .doFinally { initConfigProgress.value = false }
-                    .subscribe({ initConfigSuccess.value = it }
-                            , { initConfigError.value = it })
-            )
-        } else {
-            initConfigError.value = Throwable("jsonObject is null")
-        }
+        compositeDisposable.add(Single.fromCallable { gson.fromJson(MiscUtils.getJsonFromStorage("box_config.json"), Config::class.java) }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { initConfigProgress.value = true }
+                .doFinally { initConfigProgress.value = false }
+                .subscribe({ initConfigSuccess.value = it }
+                        , { initConfigError.value = it })
+        )
     }
 
     fun downloadFileWithUrl(url: String) {
@@ -51,25 +47,21 @@ class FactoryViewModel(
 
         compositeDisposable.add(repository.downloadFileWithUrl(url)
                 .map {
-                    Single.just(FileUtils.writeResponseBodyToDisk(it, TAG_DEFAULT_APK_NAME))
+                    Single.fromCallable { FileUtils.writeResponseBodyToDisk(it, TAG_DEFAULT_APK_NAME) }
+                            .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe({
                                 Log.d(TAG, "save file finish $it")
+                                fileDownloadProgress.value = false
+                                fileDownloadSuccess.value = TAG_DEFAULT_APK_NAME
 
                             }, {
                                 Log.d(TAG, "save file error $it")
+                                fileDownloadProgress.value = false
+                                fileDownloadError.value = it
                             })
                 }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    Log.d(TAG, " save success = $it")
-                    fileDownloadProgress.value = false
-                    fileDownloadSuccess.value = TAG_DEFAULT_APK_NAME
-                }, {
-                    Log.d(TAG, " save error = $it")
-                    fileDownloadProgress.value = false
-                    fileDownloadError.value = it
-                })
+                .subscribe()
         !!)
     }
 }

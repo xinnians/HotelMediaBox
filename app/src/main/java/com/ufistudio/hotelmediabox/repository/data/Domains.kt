@@ -95,9 +95,9 @@ data class HomeWeather(
     val wifi_id: String,
     val wifi_password_title: String,
     val wifi_password: String,
-    val weather_value: String,
-    val weather_type: String,
-    val weather_title: String
+    val weather_title: String,
+    val weather_city: String,
+    val temp_none: String
 ) : Parcelable
 
 @Parcelize
@@ -193,13 +193,13 @@ data class Config(
 
 @Parcelize
 data class ConfigContent(
-    var language: String,
-    var upgradeUrl: String,
-    var room: String,
-    var timeFormat: String,
-    var file_version: String,
-    var defaultIp: String,
-    var defaultServerIp: String
+    var language: String = "",
+    var upgradeUrl: String = "",
+    var room: String = "",
+    var timeFormat: String = "",
+    var file_version: String = "",
+    var defaultIp: String = "",
+    var defaultServerIp: String = ""
 
 ) : Parcelable
 
@@ -393,9 +393,15 @@ data class Broadcast(
     var force: String = "0"
 ) : Parcelable
 
+
+@Parcelize
+data class TimeInfo(
+    var time: String
+) : Parcelable
+
 /*
-    tourist
- */
+tourist
+*/
 data class TouristAttractions(
     var title: String = "",
     var imageName: String = "",
@@ -412,4 +418,3 @@ data class TouristLocation(
 data class TouristInfo(
     var locationList: ArrayList<TouristLocation>? = ArrayList()
 )
-

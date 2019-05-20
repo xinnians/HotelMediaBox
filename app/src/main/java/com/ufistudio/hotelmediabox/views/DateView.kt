@@ -12,6 +12,9 @@ import android.view.LayoutInflater
 import com.google.gson.Gson
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.repository.data.Config
+import com.ufistudio.hotelmediabox.repository.data.ConfigContent
+import com.ufistudio.hotelmediabox.repository.data.TimeInfo
+import com.ufistudio.hotelmediabox.repository.remote.ApiClient
 import com.ufistudio.hotelmediabox.utils.MiscUtils
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -32,6 +35,8 @@ class DateView : ConstraintLayout {
     private var mDf: DateFormat = SimpleDateFormat(TAG_DEFAULT_FORMAT, Locale.getDefault())
     private var mDateDisposable: Disposable? = null
 
+    val mGson = Gson()
+
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
@@ -42,7 +47,8 @@ class DateView : ConstraintLayout {
     }
 
     private fun getTime() {
-        mDateDisposable = Observable.interval(1, 3, TimeUnit.SECONDS)
+        mDateDisposable = Observable.interval(1, 20, TimeUnit.SECONDS)
+                .flatMapSingle { getTimeFromServer() }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
@@ -80,30 +86,38 @@ class DateView : ConstraintLayout {
      * 取得時間格式
      */
     fun getTimeFormat() {
-        val gson = Gson()
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            val jsonObject = gson.fromJson(MiscUtils.getJsonFromStorage("box_config.json"), Config::class.java)
-            if (jsonObject != null) {
-                val getConfigDisposable: Disposable? = Single.just(jsonObject)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({
-                            if (!TextUtils.isEmpty(it.config.timeFormat))
-                                setDateFormat(it.config.timeFormat)
-                            else {
-                                Log.e(TAG, "讀不到format")
-                                setDefaultFormat()
-                            }
-                        }, {
-                            Log.e(TAG, "load file error $it")
+            mDateDisposable = Single.fromCallable { mGson.fromJson(MiscUtils.getJsonFromStorage("box_config.json"), Config::class.java) }
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                        if (!TextUtils.isEmpty(it.config.timeFormat))
+                            setDateFormat(it.config.timeFormat)
+                        else {
+                            Log.e(TAG, "讀不到format")
                             setDefaultFormat()
-                        })
-            } else {
-                setDefaultFormat()
-                Log.e(TAG, "jsonObject is null")
-            }
-        }else{
+                        }
+                    }, {
+                        Log.e(TAG, "load file error $it")
+                        setDefaultFormat()
+                    })
+        } else {
             setDefaultFormat()
         }
+    }
+
+    /**
+     * 從Server 讀取時間
+     */
+    private fun getTimeFromServer(): Single<TimeInfo> {
+        var jsonObject = mGson.fromJson(MiscUtils.getJsonFromStorage("box_config.json"), Config::class.java)
+        if (jsonObject == null) {
+            jsonObject = Config(ConfigContent(defaultServerIp = "10.0.0.1"))
+        }
+
+        return Single.fromCallable { jsonObject }
+                .flatMap {
+                    ApiClient.getInstance()!!.getTime("http:${it.config.defaultServerIp}/api/device/time")
+                }.subscribeOn(Schedulers.io())
     }
 }

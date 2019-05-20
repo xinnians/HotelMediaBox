@@ -29,8 +29,8 @@ class SettingViewModel(
     init {
         val json = getJsonObject()
         if (json != null) {
-            compositeDisposable.add(Single.just(json)
-                    .zipWith(Single.just(getNoteButton()))
+            compositeDisposable.add(Single.fromCallable { json }
+                    .zipWith(Single.fromCallable { getNoteButton() })
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnSubscribe { initSettingServiceProgress.value = true }
                     .doFinally { initSettingServiceProgress.value = false }

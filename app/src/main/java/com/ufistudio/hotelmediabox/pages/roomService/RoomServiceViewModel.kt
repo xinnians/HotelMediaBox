@@ -28,8 +28,8 @@ class RoomServiceViewModel(
     init {
         val json = getJsonObject()
         if (json != null) {
-            compositeDisposable.add(Single.just(getJsonObject())
-                    .zipWith(Single.just(getNoteButton()))
+            compositeDisposable.add(Single.fromCallable { getJsonObject() }
+                    .zipWith(Single.fromCallable { getNoteButton() })
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnSubscribe { initRoomServiceProgress.value = true }

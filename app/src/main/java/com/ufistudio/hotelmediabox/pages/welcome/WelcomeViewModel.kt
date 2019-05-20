@@ -3,6 +3,7 @@ package com.ufistudio.hotelmediabox.pages.welcome
 import android.app.Application
 import android.arch.lifecycle.MutableLiveData
 import android.text.TextUtils
+import android.util.Log
 import com.google.gson.Gson
 import com.ufistudio.hotelmediabox.repository.Repository
 import com.ufistudio.hotelmediabox.repository.data.Welcome
@@ -11,6 +12,7 @@ import com.ufistudio.hotelmediabox.utils.MiscUtils
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 
 class WelcomeViewModel(
         application: Application,
@@ -24,17 +26,13 @@ class WelcomeViewModel(
 
     init {
         val gson = Gson()
-        val jsonObject = gson.fromJson(MiscUtils.getJsonLanguageAutoSwitch("welcome"), Welcome::class.java)
-        if (jsonObject != null) {
-            compositeDisposable.add(Single.just(jsonObject)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnSubscribe { initWelcomeProgress.value = true }
-                    .doFinally { initWelcomeProgress.value = false }
-                    .subscribe({ initWelcomeSuccess.value = it }
-                            , { initWelcomeError.value = it })
-            )
-        }else{
-            initWelcomeError.value = Throwable("jsonObject is null")
-        }
+        compositeDisposable.add(Single.fromCallable { gson.fromJson(MiscUtils.getJsonLanguageAutoSwitch("welcome"), Welcome::class.java) }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { initWelcomeProgress.value = true }
+                .doFinally { initWelcomeProgress.value = false }
+                .subscribe({ initWelcomeSuccess.value = it }
+                        , { initWelcomeError.value = it })
+        )
     }
 }

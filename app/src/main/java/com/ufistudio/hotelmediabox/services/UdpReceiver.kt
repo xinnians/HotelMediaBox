@@ -16,6 +16,8 @@ import com.ufistudio.hotelmediabox.repository.data.Broadcast
 import com.ufistudio.hotelmediabox.repository.provider.preferences.SharedPreferencesProvider
 import com.ufistudio.hotelmediabox.utils.FileUtils
 import com.ufistudio.hotelmediabox.utils.TAG_DEFAULT_APK_NAME
+import com.ufistudio.hotelmediabox.utils.TAG_DEFAULT_CORRECTION_PATH
+import com.ufistudio.hotelmediabox.utils.TAG_DEFAULT_HOTEL_TAR_FILE_NAME
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -37,6 +39,7 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
         private val TAG_EXPORT_CHANNEL_LIST = "exportChannelList".hashCode()
         private val TAG_IMPORT_CHANNEL_LIST = "importChannelList".hashCode()
         private val TAG_SOFTWARE_UPDATE = "softwareUpdate".hashCode()
+        private val TAG_RESOURCE_UPDATE = "resourceUpdate".hashCode()
     }
 
     override fun onBind(intent: Intent?): IBinder {
@@ -135,24 +138,23 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                     TAG_IMPORT_CHANNEL_LIST -> {
                         Repository(application, SharedPreferencesProvider(application)).downloadFileWithUrl("http://${myBroadcast.ip}${myBroadcast.url}:${myBroadcast.port}")
                                 .map {
-                                    Single.just(FileUtils.writeResponseBodyToDisk(it, "box_channels.json"))
+                                    Single.fromCallable { FileUtils.writeResponseBodyToDisk(it, "box_channels.json") }
+                                            .subscribeOn(Schedulers.io())
                                             .observeOn(AndroidSchedulers.mainThread())
                                             .subscribe({
-                                                Log.d(TAG, "TAG_IMPORT_CHANNEL_LIST save file finish $it")
+                                                if (FileUtils.fileIsExists("box_channels.json"))
+                                                    Log.d(TAG, "TAG_IMPORT_CHANNEL_LIST save file finish $it")
+                                                else {
+                                                    Log.d(TAG, "TAG_IMPORT_CHANNEL_LIST save file error : can not find file in storage")
+                                                }
                                             }, {
-                                                Log.d(TAG, "TAG_IMPORT_CHANNEL_LIST save file error $it")
+                                                Log.d(TAG, "TAG_IMPORT_CHANNEL_LIST save file error : $it")
                                             })
                                 }
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe({
-                                    Log.d(TAG, "TAG_IMPORT_CHANNEL_LIST success")
-                                }
-                                        , {
-                                    Log.d(TAG, "TAG_IMPORT_CHANNEL_LIST error $it")
-                                })
+                                .subscribe()
                     }
                     TAG_SOFTWARE_UPDATE -> {
+                        //將 更新的apk下載到/data/hotel資料夾內
                         Repository(application, SharedPreferencesProvider(application)).getSoftwareUpdate("http://${myBroadcast.ip}${myBroadcast.url}:${myBroadcast.port}")
                                 .map {
                                     Log.d(TAG, "TAG_SOFTWARE_UPDATE response = $it")
@@ -160,45 +162,67 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                                         return@map
                                     }
                                     Repository(application, SharedPreferencesProvider(application)).downloadFileWithUrl("http://${it.ip}${it.url}:${it.port}")
-                                            .map {
-                                                Single.just(FileUtils.writeResponseBodyToDisk(it, TAG_DEFAULT_APK_NAME))
-                                                        .doOnSubscribe {
-                                                            Log.d(TAG, "TAG_SOFTWARE_UPDATE saving file")
-                                                        }
-                                                        .observeOn(AndroidSchedulers.mainThread())
-                                                        .subscribe({
-                                                            val intent = Intent()
-                                                            val b = Bundle()
-                                                            b.putString(TAG_FORCE, myBroadcast.force)
-                                                            intent.putExtras(b)
-                                                            intent.action = ACTION_UPDATE_APK
-                                                            sendBroadcast(intent)
-                                                        }, {
-                                                            Log.d(TAG, "TAG_SOFTWARE_UPDATE save file error $it")
-                                                        })
-
-                                            }.subscribe({
-                                                Log.d(TAG, "TAG_SOFTWARE_UPDATE download success")
+                                            .flatMap {
+                                                Single.fromCallable { FileUtils.writeResponseBodyToDisk(it, TAG_DEFAULT_APK_NAME) }
                                             }
-                                                    , {
+                                            .subscribeOn(Schedulers.io())
+                                            .observeOn(AndroidSchedulers.mainThread())
+                                            .subscribe({
+                                                if (FileUtils.fileIsExists(TAG_DEFAULT_APK_NAME)) {
+                                                    Log.d(TAG, "TAG_SOFTWARE_UPDATE download success")
+                                                    val intent = Intent()
+                                                    val b = Bundle()
+                                                    b.putString(TAG_FORCE, myBroadcast.force)
+                                                    intent.putExtras(b)
+                                                    intent.action = ACTION_UPDATE_APK
+                                                    sendBroadcast(intent)
+                                                } else {
+                                                    Log.d(TAG, "TAG_SOFTWARE_UPDATE download finish, but can not find file")
+                                                }
+                                            }, {
                                                 Log.d(TAG, "TAG_SOFTWARE_UPDATE download error $it")
                                             })
                                 }
                                 .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe({
-                                    Log.d(TAG, "TAG_SOFTWARE_UPDATE success")
-                                }, {
-                                    Log.d(TAG, "TAG_SOFTWARE_UPDATE error $it")
-                                })
+                                .subscribe()
+                    }
+                    TAG_RESOURCE_UPDATE -> {
+                        //將 hotel.tar下載到/data/correction資料夾內
+                        Repository(application, SharedPreferencesProvider(application)).getSoftwareUpdate("http://${myBroadcast.ip}${myBroadcast.url}:${myBroadcast.port}")
+                                .map {
+                                    Log.d(TAG, "TAG_RESOURCE_UPDATE response = $it")
+                                    if (it.needUpdate == 0) {
+                                        //TODO 判斷config 的tar version判斷是否需要更新
+                                        return@map
+                                    }
+                                    Repository(application, SharedPreferencesProvider(application)).downloadFileWithUrl("http://${it.ip}${it.url}:${it.port}")
+                                            .flatMap {
+                                                Single.fromCallable { FileUtils.writeResponseBodyToDisk(it, TAG_DEFAULT_HOTEL_TAR_FILE_NAME, TAG_DEFAULT_CORRECTION_PATH) }
+                                            }.subscribe({
+                                                if (FileUtils.fileIsExists(TAG_DEFAULT_HOTEL_TAR_FILE_NAME)) {
+                                                    Log.d(TAG, "TAG_RESOURCE_UPDATE download success")
+                                                    FileUtils.getFileFromStorage("chkflag")?.delete()
+                                                    val intent = Intent()
+                                                    val b = Bundle()
+                                                    b.putString(TAG_FORCE, myBroadcast.force)
+                                                    intent.putExtras(b)
+                                                    intent.action = ACTION_UPDATE_APK
+                                                    sendBroadcast(intent)
+                                                } else {
+                                                    Log.d(TAG, "TAG_RESOURCE_UPDATE download finish, but can not find file")
+                                                }
+                                            }, {
+                                                Log.d(TAG, "TAG_RESOURCE_UPDATE download error $it")
+                                            })
+                                }
+                                .subscribeOn(Schedulers.io())
+                                .subscribe()
                     }
                 }
                 Log.d(TAG, "receive ip = ${myBroadcast.ip}")
             } catch (e: JsonSyntaxException) {
                 Log.d(TAG, "error = $e")
             }
-
-
         }
     }
 }
