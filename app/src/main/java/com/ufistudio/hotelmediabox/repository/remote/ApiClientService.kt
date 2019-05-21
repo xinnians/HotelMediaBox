@@ -40,7 +40,7 @@ interface ApiClientService {
     ): Single<WeatherInfo>
 
     @GET
-    fun getTime(
+    fun getInitialData(
             @Url url: String
-    ): Single<TimeInfo>
+    ): Single<InitialData>
 }

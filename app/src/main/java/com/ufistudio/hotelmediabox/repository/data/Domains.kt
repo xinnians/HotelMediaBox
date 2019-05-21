@@ -396,6 +396,8 @@ data class Broadcast(
 ) : Parcelable
 
 @Parcelize
-data class TimeInfo(
-        var time: String
+data class InitialData(
+        var time: String,
+        var timestamp: Long,
+        var guestName: String
 ) : Parcelable

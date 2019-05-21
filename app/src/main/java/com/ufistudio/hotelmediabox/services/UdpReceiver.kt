@@ -62,7 +62,7 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
     }
 
     override fun stopService(name: Intent?): Boolean {
-        Log.d(TAG,"Stop udp receiver service")
+        Log.d(TAG, "Stop udp receiver service")
         socket = null
         return super.stopService(name)
     }
@@ -99,7 +99,11 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
     private fun receiveBroadcast() {
         Log.d(TAG, "receiveBroadcast")
         socket?.disconnect()
-        socket = DatagramSocket(TAG_SERVER_PORT)
+        try {
+            socket = DatagramSocket(TAG_SERVER_PORT)
+        } catch (e: BindException) {
+            Log.e(TAG, "Error = $e")
+        }
         while (true) {
             val recBuf: ByteArray = ByteArray(255)
             mPacket = null
