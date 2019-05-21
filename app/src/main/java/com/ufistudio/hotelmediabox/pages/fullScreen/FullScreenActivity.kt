@@ -132,6 +132,7 @@ class FullScreenActivity : AppCompatActivity() {
 //        mViewModel.getTVHelper().closeAVPlayer()
         TVController.releaseListener(mTVListener)
         TVController.deInitAVPlayer()
+
     }
 
     override fun onStop() {
@@ -139,8 +140,8 @@ class FullScreenActivity : AppCompatActivity() {
         if (mDisposable != null && !mDisposable!!.isDisposed) {
             mDisposable?.dispose()
         }
-//        DVBHelper.getDVBPlayer().closePlayer()
         mExoPlayerHelper.release()
+        dateView?.stopRefreshTimer()
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
