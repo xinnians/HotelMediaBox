@@ -1,12 +1,10 @@
 package com.ufistudio.hotelmediabox.repository.remote
 
 import com.ufistudio.hotelmediabox.repository.data.Broadcast
-import com.ufistudio.hotelmediabox.repository.data.BroadcastRequest
-import com.ufistudio.hotelmediabox.repository.data.TimeInfo
+import com.ufistudio.hotelmediabox.repository.data.InitialData
 import com.ufistudio.hotelmediabox.repository.data.WeatherInfo
 import com.ufistudio.hotelmediabox.repository.remote.RemoteAPI.Companion.getOkHttpClient
 import io.reactivex.Single
-import io.reactivex.schedulers.Schedulers
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Retrofit
@@ -42,7 +40,7 @@ class ApiClient {
                 .baseUrl(url)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.createAsync())
                 .build()
 
         mService = retrofit.create(ApiClientService::class.java)
@@ -54,17 +52,17 @@ class ApiClient {
 
     fun downloadFileWithUrl(url: String): Single<ResponseBody> = mService.download(url)
 
-    fun postCheckStatus(url: String, mac: String, ip: String, room: String, status: String): Single<ResponseBody> {
-        return mService.checkStatus(url, mac, ip, room, status)
+    fun postCheckStatus(url: String, mac: String, ip: String, room: String, status: String, tarVersion: String = "", jVersion: String = ""): Single<ResponseBody> {
+        return mService.checkStatus(url, mac, ip, room, status, tarVersion, jVersion)
     }
 
-    fun postChannel(url: String, body: BroadcastRequest, file: MultipartBody.Part): Single<ResponseBody> {
-        return mService.postChannelList(url, body, file)
+    fun postChannel(url: String, file: MultipartBody.Part): Single<ResponseBody> {
+        return mService.postChannelList(url, file)
     }
 
     fun getSoftwareUpdate(url: String): Single<Broadcast> = mService.softwareUpdate(url)
 
     fun getWeatherInfo(url: String, city: String): Single<WeatherInfo> = mService.getWeatherInfo(url, city)
 
-    fun getTime(url: String): Single<TimeInfo> = mService.getTime(url)
+    fun getInitialData(url: String): Single<InitialData> = mService.getInitialData(url)
 }

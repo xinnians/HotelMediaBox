@@ -193,14 +193,15 @@ data class Config(
 
 @Parcelize
 data class ConfigContent(
-    var language: String = "",
-    var upgradeUrl: String = "",
-    var room: String = "",
-    var timeFormat: String = "",
-    var file_version: String = "",
-    var defaultIp: String = "",
-    var defaultServerIp: String = ""
-
+        var language: String = "",
+        var upgradeUrl: String = "",
+        var room: String = "",
+        var timeFormat: String = "",
+        var file_version: String = "",
+        var defaultIp: String = "",
+        var defaultServerIp: String = "",
+        var j_version: String = "",
+        var tar_version: String = ""
 ) : Parcelable
 
 /*
@@ -418,3 +419,10 @@ data class TouristLocation(
 data class TouristInfo(
     var locationList: ArrayList<TouristLocation>? = ArrayList()
 )
+
+@Parcelize
+data class InitialData(
+        var time: String,
+        var timestamp: Long,
+        var guestName: String
+) : Parcelable

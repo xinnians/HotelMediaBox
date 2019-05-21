@@ -304,10 +304,10 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                                     .load(icon)
                                     .skipMemoryCache(true)
                                     .into(imageView_weather)
-                            textView_value.text = String.format("%s %s", it.high, getString(R.string.symbol_temp))
                         } else {
                             imageView_weather.visibility = View.INVISIBLE
                         }
+                        textView_value.text = String.format("%s %s", it.high, getString(R.string.symbol_temp))
                     }
                 } else {
                     val weather: HomeWeather? = mData?.home?.weather

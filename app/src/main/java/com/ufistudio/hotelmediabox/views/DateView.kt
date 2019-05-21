@@ -3,6 +3,7 @@ package com.ufistudio.hotelmediabox.views
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.SystemClock
 import android.support.constraint.ConstraintLayout
 import android.support.v4.content.ContextCompat
 import android.text.TextUtils
@@ -12,9 +13,6 @@ import android.view.LayoutInflater
 import com.google.gson.Gson
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.repository.data.Config
-import com.ufistudio.hotelmediabox.repository.data.ConfigContent
-import com.ufistudio.hotelmediabox.repository.data.TimeInfo
-import com.ufistudio.hotelmediabox.repository.remote.ApiClient
 import com.ufistudio.hotelmediabox.utils.MiscUtils
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -47,12 +45,12 @@ class DateView : ConstraintLayout {
     }
 
     private fun getTime() {
-        mDateDisposable = Observable.interval(1, 20, TimeUnit.SECONDS)
-                .flatMapSingle { getTimeFromServer() }
+        mDateDisposable = Observable.interval(1, 30, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    textView_date.text = mDf.format(Calendar.getInstance().time)
+                    Log.d(TAG,"Update Time = ${System.currentTimeMillis()}")
+                    textView_date.text = mDf.format(System.currentTimeMillis())
                 }
     }
 
@@ -104,20 +102,5 @@ class DateView : ConstraintLayout {
         } else {
             setDefaultFormat()
         }
-    }
-
-    /**
-     * 從Server 讀取時間
-     */
-    private fun getTimeFromServer(): Single<TimeInfo> {
-        var jsonObject = mGson.fromJson(MiscUtils.getJsonFromStorage("box_config.json"), Config::class.java)
-        if (jsonObject == null) {
-            jsonObject = Config(ConfigContent(defaultServerIp = "10.0.0.1"))
-        }
-
-        return Single.fromCallable { jsonObject }
-                .flatMap {
-                    ApiClient.getInstance()!!.getTime("http:${it.config.defaultServerIp}/api/device/time")
-                }.subscribeOn(Schedulers.io())
     }
 }

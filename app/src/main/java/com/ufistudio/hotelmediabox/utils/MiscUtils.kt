@@ -296,12 +296,14 @@ object MiscUtils {
     /**
      * Get Wifi MAC address
      */
-    fun getWifiMACAddress(context: Context): String? {
+    fun getWifiMACAddress(context: Context): String {
         return (context.getSystemService(Context.WIFI_SERVICE) as WifiManager).connectionInfo.macAddress
     }
 
     /**
      * Get IP address
+     *
+     * 取得的值是錯的
      */
     fun getIpAddress(context: Context): String {
         val ip: Int = (context.getSystemService(Context.WIFI_SERVICE) as WifiManager).connectionInfo.ipAddress
