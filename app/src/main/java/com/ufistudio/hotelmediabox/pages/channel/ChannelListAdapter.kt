@@ -193,7 +193,7 @@ class ChannelListAdapter :
             itemView.text_channelName.text = data.chNum + " " + data.chName
             Glide.with(itemView.context)
                     .load(FileUtils.getFileFromStorage(data.chLogo.normalIconName))
-                    .skipMemoryCache(true)
+//                    .skipMemoryCache(true)
                     .into(itemView.view_icon)
         }
     }
