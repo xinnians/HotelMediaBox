@@ -29,6 +29,7 @@ interface ApiClientService {
     @POST
     fun postChannelList(
             @Url url: String,
+            @Query("device") device: String,
 //            @Body request: BroadcastRequest,
             @Part file: MultipartBody.Part
     ): Single<ResponseBody>
