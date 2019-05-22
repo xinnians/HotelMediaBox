@@ -89,10 +89,6 @@ class MainActivity : PaneViewActivity(), OnPageInteractionListener.Primary {
         mFragmentCacheData = null
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        return super.onKeyDown(keyCode, event)
-    }
-
     override fun setOnKeyListener(listener: OnFragmentKeyListener?) {
         fragmentKeyListener = listener
     }
