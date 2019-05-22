@@ -6,7 +6,6 @@ import android.content.Intent
 import android.os.Binder
 import android.os.Bundle
 import android.os.IBinder
-import android.text.TextUtils
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
@@ -14,12 +13,13 @@ import com.ufistudio.hotelmediabox.receivers.ACTION_UPDATE_APK
 import com.ufistudio.hotelmediabox.receivers.TAG_FORCE
 import com.ufistudio.hotelmediabox.repository.Repository
 import com.ufistudio.hotelmediabox.repository.data.Broadcast
+import com.ufistudio.hotelmediabox.repository.data.Config
 import com.ufistudio.hotelmediabox.repository.provider.preferences.SharedPreferencesProvider
 import com.ufistudio.hotelmediabox.utils.*
-import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import java.io.File
 import java.io.IOException
 import java.net.*
 
@@ -123,6 +123,13 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                 val myBroadcast = gson.fromJson(receiverString, Broadcast::class.java)
                 when (myBroadcast.command.hashCode()) {
                     TAG_CHECK_STATUS -> {
+
+                        //將Server IP 寫回
+                        val config = gson.fromJson(MiscUtils.getJsonFromStorage("box_config.json"), Config::class.java)
+                        config.config.defaultServerIp = myBroadcast.ip
+
+                        FileUtils.writeToFile(File("/data/$TAG_DEFAULT_LOCAL_PATH", "box_config.json"), gson.toJson(config))
+
                         Repository(application, SharedPreferencesProvider(application)).postCheckStatus("http://${myBroadcast.ip}:${myBroadcast.port}${myBroadcast.url}")
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
