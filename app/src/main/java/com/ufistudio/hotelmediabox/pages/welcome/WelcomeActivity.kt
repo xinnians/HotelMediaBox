@@ -44,11 +44,16 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
         mViewModel.initWelcomeProgress.observe(this, Observer { onProgress() })
         mViewModel.initWelcomeSuccess.observe(this, Observer { onSuccess(it) })
         mViewModel.initWelcomeError.observe(this, Observer { onError(it) })
+
+        mViewModel.getInitialDataProgress.observe(this, Observer { onProgress() })
+        mViewModel.getInitialDataSuccess.observe(this, Observer { onSuccess(it) })
+        mViewModel.getInitialDataError.observe(this, Observer { onError(it) })
     }
 
     override fun onStart() {
         super.onStart()
         renderUI()
+        mViewModel.getInitialDataFromServer()
     }
 
     override fun onResume() {
@@ -87,13 +92,16 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
     }
 
     override fun onSuccess(it: Any?) {
-        if (it is Pair<*, *>) {
-            mWelcomeContent = (it.first as Welcome).welcome
 
+        if (it != null && it is InitialData) {
+            text_name.text = it.guestName
+            SystemClock.setCurrentTimeMillis(it.timestamp)
+            return
+        }
 
-            text_name.text = (it.second as InitialData).guestName
+        if (it != null && it is Welcome) {
+            mWelcomeContent = it.welcome
 
-            SystemClock.setCurrentTimeMillis((it.second as InitialData).timestamp)
             mWelcomeContent.let {
                 Glide.with(this)
                         .load(FileUtils.getFileFromStorage(it?.titleImage!!))
@@ -115,6 +123,8 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
                     mPlayer?.isLooping = true
                 }
             }
+        } else {
+            onError(Throwable("OnSuccess response is null"))
         }
     }
 
