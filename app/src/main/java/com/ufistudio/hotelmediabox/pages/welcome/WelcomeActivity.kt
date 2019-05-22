@@ -47,7 +47,7 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
 
         mViewModel.getInitialDataProgress.observe(this, Observer { onProgress() })
         mViewModel.getInitialDataSuccess.observe(this, Observer { onSuccess(it) })
-        mViewModel.getInitialDataError.observe(this, Observer { onError(it) })
+        mViewModel.getInitialDataError.observe(this, Observer { Log.e(TAG,"Get Initial data Error : $it") })
     }
 
     override fun onStart() {
