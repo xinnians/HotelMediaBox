@@ -5,6 +5,7 @@ import io.reactivex.exceptions.OnErrorNotImplementedException
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
+import okhttp3.ResponseBody
 import java.net.ProtocolException
 
 class LoggingInterceptor : Interceptor {
@@ -14,18 +15,11 @@ class LoggingInterceptor : Interceptor {
     }
 
     override fun intercept(chain: Interceptor.Chain?): Response {
-        var request = chain?.request()
+        val request = chain?.request()
 
         val t1 = System.nanoTime()
-        Log.d(
-            TAG, String.format(
-                "Sending request %s on %s%n%s",
-                request?.url(), chain?.connection(), request?.headers()
-            )
-        )
+        Log.d(TAG, String.format("Sending request %s on %s%n%s", request?.url(), chain?.connection(), request?.headers()))
         var response: Response? = null
-
-
 
         try {
             if (request == null) {
@@ -39,13 +33,11 @@ class LoggingInterceptor : Interceptor {
         }
 
         val t2 = System.nanoTime()
-        Log.d(
-            TAG, String.format(
-                "Received response for %s in %.1fms%n%s",
-                response?.request()?.url(), (t2 - t1) / 1e6, request?.headers()
-            )
-        )
+        Log.d(TAG, String.format("Received response for %s in %.1fms%n%s", response?.request()?.url(), (t2 - t1) / 1e6, request?.headers()))
+        var responseData: String? = response?.body()?.string()
+        Log.d(TAG, "response = $responseData")
 
-        return response!!
+        return response?.newBuilder()
+                ?.body(ResponseBody.create(response.body()?.contentType(), responseData))?.build()!!
     }
 }

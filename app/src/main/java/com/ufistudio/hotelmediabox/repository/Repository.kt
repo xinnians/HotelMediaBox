@@ -71,6 +71,10 @@ class Repository(
         return ApiClient.getInstance()!!.getWeatherInfo(url, cityCode)
     }
 
+    fun getInitialData(url: String): Single<InitialData> {
+        return ApiClient.getInstance()!!.getInitialData(url, MiscUtils.getWifiMACAddress(application.baseContext))
+    }
+
     // local
 
     fun getChannelList(): Single<ArrayList<BaseChannel>>? {

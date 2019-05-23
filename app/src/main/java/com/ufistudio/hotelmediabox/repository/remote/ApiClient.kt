@@ -64,5 +64,5 @@ class ApiClient {
 
     fun getWeatherInfo(url: String, city: String): Single<WeatherInfo> = mService.getWeatherInfo(url, city)
 
-    fun getInitialData(url: String): Single<InitialData> = mService.getInitialData(url)
+    fun getInitialData(url: String, mac: String): Single<InitialData> = mService.getInitialData(url, mac)
 }

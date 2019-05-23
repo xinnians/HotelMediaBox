@@ -56,7 +56,7 @@ class WelcomeViewModel(
     fun getInitialDataFromServer() {
         compositeDisposable.add(Single.fromCallable { mGson.fromJson(MiscUtils.getJsonFromStorage("box_config.json"), Config::class.java) }
                 .flatMap {
-                    ApiClient.getInstance()!!.getInitialData("http:${it.config.defaultServerIp}/api/device/initial")
+                    repository.getInitialData("http:${it.config.defaultServerIp}/api/device/initial")
                 }.observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe { getInitialDataProgress.value = true }
                 .doFinally { getInitialDataProgress.value = false }
