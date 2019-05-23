@@ -8,7 +8,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.net.wifi.WifiManager
 import android.os.Build
-import android.os.Environment
 import android.os.PowerManager
 import android.support.v4.content.FileProvider
 import android.text.TextUtils
@@ -18,7 +17,12 @@ import com.google.gson.GsonBuilder
 import com.ufistudio.hotelmediabox.BuildConfig
 import com.ufistudio.hotelmediabox.repository.data.Config
 import java.io.*
+import java.net.NetworkInterface
+import java.net.SocketException
 import java.nio.charset.Charset
+import kotlin.collections.ArrayList
+import java.net.Inet4Address
+
 
 const val TAG_DEFAULT_LOCAL_PATH: String = "/hotel/"
 const val TAG_DEFAULT_CORRECTION_PATH: String = "/correction/"
@@ -83,7 +87,7 @@ object MiscUtils {
      * 若找不到，預設英文
      */
     fun getJsonLanguageAutoSwitch(fileName: String): String {
-        Log.d("neo","安安 $fileName")
+        Log.d("neo", "安安 $fileName")
         val gson = Gson()
         var config: Config? = null
         try {
@@ -125,13 +129,8 @@ object MiscUtils {
     fun getJsonFromStorage(fileName: String, path: String = ""): String {
 
         return FileUtils.getFileFromStorage(fileName, path)?.let { file ->
-            parseJsonFileByInputStream(
-                    FileInputStream(
-                            file
-                    )
-            )
-        }
-                ?: ""
+            parseJsonFileByInputStream(FileInputStream(file))
+        } ?: ""
 
 //        return parseJsonFileByInputStream(FileInputStream(FileUtils.getFileFromStorage(path, fileName)))
     }
@@ -303,12 +302,25 @@ object MiscUtils {
     /**
      * Get IP address
      *
-     * 取得的值是錯的
      */
-    fun getIpAddress(context: Context): String {
-        val ip: Int = (context.getSystemService(Context.WIFI_SERVICE) as WifiManager).connectionInfo.ipAddress
+    fun getIpAddress(): String {
+        try {
+            val enNetI = NetworkInterface.getNetworkInterfaces()
+            while (enNetI.hasMoreElements()) {
+                val netI = enNetI.nextElement()
+                val enumIpAddr = netI.inetAddresses
+                while (enumIpAddr.hasMoreElements()) {
+                    val inetAddress = enumIpAddr.nextElement()
+                    if (inetAddress is Inet4Address && !inetAddress.isLoopbackAddress()) {
+                        return inetAddress.getHostAddress()
+                    }
+                }
+            }
+        } catch (e: SocketException) {
+            Log.e(TAG, "getIpAddress error : $e")
+        }
 
-        return ip.toString()
+        return ""
     }
 
     /**

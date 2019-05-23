@@ -40,7 +40,7 @@ class Repository(
                 .flatMap {
                     ApiClient.getInstance()!!.postCheckStatus(url,
                             MiscUtils.getWifiMACAddress(application.applicationContext),
-                            it.config.defaultIp,
+                            MiscUtils.getIpAddress(),
                             MiscUtils.getRoomNumber(),
                             "1",
                             it.config.tar_version,
@@ -56,8 +56,11 @@ class Repository(
         if (channels != null) {
             val requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), channels)
             multipartBody = MultipartBody.Part.createFormData("channels", "box_channels.json", requestFile)
+        } else {
+            return Single.error(Throwable("box_channel.json could not found"))
         }
-        return ApiClient.getInstance()!!.postChannel(url, multipartBody!!)
+
+        return ApiClient.getInstance()!!.postChannel(url, MiscUtils.getWifiMACAddress(application.applicationContext), multipartBody)
     }
 
     fun getSoftwareUpdate(url: String): Single<Broadcast> {
