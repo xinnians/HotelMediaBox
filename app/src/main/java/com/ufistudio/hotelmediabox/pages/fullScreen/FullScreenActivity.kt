@@ -38,6 +38,10 @@ class FullScreenActivity : AppCompatActivity() {
     private var mTVChannel: TVChannel? = null
 
     private var mTVListener:TVController.OnTVListener = object :TVController.OnTVListener{
+        override fun onScanFinish() {
+
+        }
+
         override fun onChannelChange(tvChannel: TVChannel?) {
         }
 

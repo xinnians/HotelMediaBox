@@ -40,6 +40,23 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
     private val mInfo1: StringBuilder = StringBuilder()
     private val mInfo2: StringBuilder = StringBuilder()
 
+    private var mTVListener: TVController.OnTVListener = object : TVController.OnTVListener {
+        override fun onScanFinish() {
+            mInfo1.append("DVB finish scan.\n")
+            textView_info1.text = mInfo1
+        }
+
+        override fun onChannelChange(tvChannel: TVChannel?) {
+        }
+
+        override fun initDeviceFinish() {
+        }
+
+        override fun initAVPlayerFinish() {
+        }
+
+    }
+
     companion object {
         private val TAG = FactoryActivity::class.simpleName
         val mFactoryCode: String = "1228"
@@ -86,10 +103,12 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
 
     override fun onResume() {
         super.onResume()
+        TVController.registerListener(mTVListener)
     }
 
     override fun onStop() {
         super.onStop()
+        TVController.releaseListener(mTVListener)
     }
 
     override fun onClick(view: View?) {
@@ -189,8 +208,10 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
             }
             FactoryFeature.SCAN_DVB_CHANNELS -> {
                 //TODO 確認有頻點表 然後再掃台將結果寫入channels.json
-
                 TVController.scanChannel()
+                mInfo1.setLength(0)
+                mInfo1.append("DVB start scan.\n")
+                textView_info1.text = mInfo1
 
 //                if (FileUtils.fileIsExists("box_DvbScanConfig.json")) {
 //                    Log.e(TAG, "load DvbScanConfig.json")

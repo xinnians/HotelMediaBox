@@ -42,6 +42,10 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
     private var mSideViewState: HashMap<Int, String> = HashMap<Int, String>()//拿來儲存當前的sideView index與 Back上方的Title
 
     private var mTVListener: TVController.OnTVListener = object : TVController.OnTVListener{
+        override fun onScanFinish() {
+
+        }
+
         override fun onChannelChange(tvChannel: TVChannel?) {
         }
 

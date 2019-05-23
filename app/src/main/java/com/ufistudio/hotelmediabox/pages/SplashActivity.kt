@@ -21,6 +21,10 @@ class SplashActivity : AppCompatActivity() {
     private val TAG = SplashActivity::class.java.simpleName
 
     private var mTVListener: TVController.OnTVListener = object : TVController.OnTVListener {
+        override fun onScanFinish() {
+
+        }
+
         override fun onChannelChange(tvChannel: TVChannel?) {
         }
 

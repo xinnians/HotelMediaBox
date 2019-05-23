@@ -247,10 +247,10 @@ object TVController {
         Log.e(TAG, "[scanChannel] call.")
         sendTCPRequestSingle("j_presetscan")
                 .subscribeOn(singelThreadScheduler)
-                .observeOn(singelThreadScheduler)
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ successResult ->
                     Log.e(TAG, "[j_presetscan] Result : $successResult")
-//                onBroadcastAll(null,TVController.ACTION_TYPE.)
+                    onBroadcastAll(null,TVController.ACTION_TYPE.OnScanFinish)
                 }, { failResult ->
                     Log.e(TAG, "[j_presetscan] throwable : $failResult")
                 })
@@ -422,6 +422,9 @@ object TVController {
                     ACTION_TYPE.InitAVPlayerFinish -> {
                         listener.initAVPlayerFinish()
                     }
+                    TVController.ACTION_TYPE.OnScanFinish -> {
+                        listener.onScanFinish()
+                    }
                 }
             }
         }
@@ -430,12 +433,14 @@ object TVController {
     enum class ACTION_TYPE {
         OnChannelChange,
         InitDeviceFinish,
-        InitAVPlayerFinish
+        InitAVPlayerFinish,
+        OnScanFinish
     }
 
     interface OnTVListener {
         fun onChannelChange(tvChannel: TVChannel?)
         fun initDeviceFinish()
         fun initAVPlayerFinish()
+        fun onScanFinish()
     }
 }
