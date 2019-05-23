@@ -57,11 +57,12 @@ class WelcomeViewModel(
         compositeDisposable.add(Single.fromCallable { mGson.fromJson(MiscUtils.getJsonFromStorage("box_config.json"), Config::class.java) }
                 .flatMap {
                     repository.getInitialData("http:${it.config.defaultServerIp}/api/device/initial")
-                }.observeOn(AndroidSchedulers.mainThread())
+                }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe { getInitialDataProgress.value = true }
                 .doFinally { getInitialDataProgress.value = false }
                 .subscribe({
-
                     Log.d("neo", "initial = $it")
                     getInitialDataSuccess.value = it
                 }, {
