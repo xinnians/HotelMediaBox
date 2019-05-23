@@ -5,7 +5,7 @@ import android.util.Log;
 public class jnitest5 {
 
     private static final String TAG = jnitest5.class.getSimpleName();
-    private static final boolean TAG_INIT_JNI = true;
+    private static final boolean TAG_INIT_JNI = false;
 
     static {
         if (TAG_INIT_JNI)
