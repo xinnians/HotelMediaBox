@@ -137,7 +137,7 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                                     Log.d(TAG, "TAG_CHECK_STATUS success ${it.string()}")
                                 }
                                         , {
-                                    Log.d(TAG, "TAG_CHECK_STATUS error $it.string()")
+                                    Log.d(TAG, "TAG_CHECK_STATUS error $it")
                                 })
                     }
                     TAG_EXPORT_CHANNEL_LIST -> {
@@ -148,14 +148,14 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                                     Log.d(TAG, "TAG_EXPORT_CHANNEL_LIST on progress")
                                 }
                                 .subscribe({
-                                    Log.d(TAG, "TAG_EXPORT_CHANNEL_LIST success $it.string()")
+                                    Log.d(TAG, "TAG_EXPORT_CHANNEL_LIST success ${it.string()}")
                                 }
                                         , {
-                                    Log.d(TAG, "TAG_EXPORT_CHANNEL_LIST error $it.string()")
+                                    Log.d(TAG, "TAG_EXPORT_CHANNEL_LIST error $it")
                                 })
                     }
                     TAG_IMPORT_CHANNEL_LIST -> {
-                        Repository(application, SharedPreferencesProvider(application)).downloadFileWithUrl("http://${myBroadcast.ip}:${myBroadcast.port}${myBroadcast.url}")
+                        Repository(application, SharedPreferencesProvider(application)).downloadFileWithUrl("http://${myBroadcast.ip}:${myBroadcast.port}${myBroadcast.url}?device=${MiscUtils.getWifiMACAddress(applicationContext)}")
                                 .map {
                                     Single.fromCallable { FileUtils.writeResponseBodyToDisk(it, "box_channels.json") }
                                             .subscribeOn(Schedulers.io())

@@ -56,8 +56,8 @@ class ApiClient {
         return mService.checkStatus(url, mac, ip, room, status, tarVersion, jVersion)
     }
 
-    fun postChannel(url: String, mac: String, file: MultipartBody.Part): Single<ResponseBody> {
-        return mService.postChannelList(url, mac, file)
+    fun postChannel(url: String, file: MultipartBody.Part): Single<ResponseBody> {
+        return mService.postChannelList(url, file)
     }
 
     fun getSoftwareUpdate(url: String): Single<Broadcast> = mService.softwareUpdate(url)

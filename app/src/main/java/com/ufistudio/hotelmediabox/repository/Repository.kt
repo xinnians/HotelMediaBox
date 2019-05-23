@@ -51,16 +51,16 @@ class Repository(
 
     fun postChannel(url: String): Single<ResponseBody> {
 
-        val channels: File? = FileUtils.getFileFromStorage("box_channels.json")
+        val channels: File? = FileUtils.getFileFromStorage("box_scanned_channels.json")
         var multipartBody: MultipartBody.Part? = null
         if (channels != null) {
             val requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), channels)
-            multipartBody = MultipartBody.Part.createFormData("channels", "box_channels.json", requestFile)
+            multipartBody = MultipartBody.Part.createFormData("channels", "box_scanned_channels.json", requestFile)
         } else {
-            return Single.error(Throwable("box_channel.json could not found"))
+            return Single.error(Throwable("box_scanned_channels.json could not found"))
         }
 
-        return ApiClient.getInstance()!!.postChannel(url, MiscUtils.getWifiMACAddress(application.applicationContext), multipartBody)
+        return ApiClient.getInstance()!!.postChannel(url, multipartBody)
     }
 
     fun getSoftwareUpdate(url: String): Single<Broadcast> {
