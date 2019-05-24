@@ -34,10 +34,9 @@ class LoggingInterceptor : Interceptor {
 
         val t2 = System.nanoTime()
         Log.d(TAG, String.format("Received response for %s in %.1fms%n%s", response?.request()?.url(), (t2 - t1) / 1e6, request?.headers()))
-        var responseData: String? = response?.body()?.string()
-        Log.d(TAG, "response = $responseData")
+//        var responseData: String? = response?.body()?.string()
+//        Log.d(TAG, "response = $responseData")
 
-        return response?.newBuilder()
-                ?.body(ResponseBody.create(response.body()?.contentType(), responseData))?.build()!!
+        return response!!
     }
 }
