@@ -245,7 +245,7 @@ object TVController {
 
     fun scanChannel() {
         Log.e(TAG, "[scanChannel] call.")
-        sendTCPRequestSingle("j_presetscan")
+        sendTCPRequestSingle("j_presetscan /data/hotel/box_DvbScanConfig.json /data/hotel/box_scanned_channels.json")
                 .subscribeOn(singelThreadScheduler)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ successResult ->
