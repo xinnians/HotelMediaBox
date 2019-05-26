@@ -39,20 +39,33 @@ class FunctionsAdapter : RecyclerView.Adapter<FunctionsAdapter.ViewHolder>() {
     }
 
     override fun onBindViewHolder(p0: FunctionsAdapter.ViewHolder, position: Int) {
+        p0.bind()
         val serverItem = mServerItem[position]
         p0.itemView.text_title.text = serverItem.name
+        p0.itemView.image_icon.background = ContextCompat.getDrawable(mContext, mItem[position].icon)
 
-
-        if (p0.itemView.image_icon.isFocused) {
-            p0.itemView.text_title.setTextColor(ContextCompat.getColor(mContext, R.color.homeIconFrameFocused))
-            p0.itemView.image_icon.background = ContextCompat.getDrawable(mContext, mItem[position].focusedIcon)
-        } else {
-            p0.itemView.text_title.setTextColor(ContextCompat.getColor(mContext, android.R.color.white))
-            p0.itemView.image_icon.background = ContextCompat.getDrawable(mContext, mItem[position].icon)
-        }
+//        if (p0.itemView.image_icon.isFocused) {
+//            p0.itemView.text_title.setTextColor(ContextCompat.getColor(mContext, R.color.homeIconFrameFocused))
+//            p0.itemView.image_icon.background = ContextCompat.getDrawable(mContext, mItem[position].focusedIcon)
+//        } else {
+//            p0.itemView.text_title.setTextColor(ContextCompat.getColor(mContext, android.R.color.white))
+//            p0.itemView.image_icon.background = ContextCompat.getDrawable(mContext, mItem[position].icon)
+//        }
         p0.itemView.tag = mItem[position].page
         p0.itemView.setOnClickListener {
             mListener?.onClick(it)
+        }
+
+        p0.itemView.onFocusChangeListener = object : View.OnFocusChangeListener {
+            override fun onFocusChange(v: View?, hasFocus: Boolean) {
+                if (hasFocus) {
+                    p0.itemView.text_title.setTextColor(ContextCompat.getColor(mContext, R.color.homeIconFrameFocused))
+                    p0.itemView.image_icon.background = ContextCompat.getDrawable(mContext, mItem[position].focusedIcon)
+                } else {
+                    p0.itemView.text_title.setTextColor(ContextCompat.getColor(mContext, android.R.color.white))
+                    p0.itemView.image_icon.background = ContextCompat.getDrawable(mContext, mItem[position].icon)
+                }
+            }
         }
     }
 
@@ -76,5 +89,10 @@ class FunctionsAdapter : RecyclerView.Adapter<FunctionsAdapter.ViewHolder>() {
         mListener = listener
     }
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        fun bind() {
+            itemView.requestFocus()
+            itemView.setFocusable(true)
+        }
+    }
 }

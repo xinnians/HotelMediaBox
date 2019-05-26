@@ -1,10 +1,11 @@
 package com.ufistudio.hotelmediabox
 
 import android.app.Application
+import android.support.multidex.MultiDexApplication
 import android.util.Log
 import com.ufistudio.hotelmediabox.helper.TVHelper
 
-class MyApplication : Application() {
+class MyApplication : MultiDexApplication() {
 
     private val TAG:String = MyApplication::class.java.simpleName
     private var mTVHelper: TVHelper? = null
