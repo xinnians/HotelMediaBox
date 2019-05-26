@@ -2,6 +2,7 @@ package com.ufistudio.hotelmediabox.repository.remote
 
 import com.ufistudio.hotelmediabox.repository.data.Broadcast
 import com.ufistudio.hotelmediabox.repository.data.InitialData
+import com.ufistudio.hotelmediabox.repository.data.StaticIpData
 import com.ufistudio.hotelmediabox.repository.data.WeatherInfo
 import com.ufistudio.hotelmediabox.repository.remote.RemoteAPI.Companion.getOkHttpClient
 import io.reactivex.Single
@@ -65,4 +66,6 @@ class ApiClient {
     fun getWeatherInfo(url: String, city: String): Single<WeatherInfo> = mService.getWeatherInfo(url, city)
 
     fun getInitialData(url: String, mac: String): Single<InitialData> = mService.getInitialData(url, mac)
+
+    fun getStaticIp(url: String, mac: String): Single<StaticIpData> = mService.getStaticIp(url, mac)
 }

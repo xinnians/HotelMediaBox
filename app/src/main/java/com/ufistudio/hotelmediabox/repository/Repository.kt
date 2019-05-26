@@ -75,6 +75,10 @@ class Repository(
         return ApiClient.getInstance()!!.getInitialData(url, MiscUtils.getWifiMACAddress(application.baseContext))
     }
 
+    fun getStaticIp(url: String): Single<StaticIpData> {
+        return ApiClient.getInstance()!!.getStaticIp(url, MiscUtils.getWifiMACAddress(application.baseContext))
+    }
+
     // local
 
     fun getChannelList(): Single<ArrayList<BaseChannel>>? {
