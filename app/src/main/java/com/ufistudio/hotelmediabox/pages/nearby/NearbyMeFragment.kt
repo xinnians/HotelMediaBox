@@ -256,15 +256,15 @@ class NearbyMeFragment : InteractionView<OnPageInteractionListener.Primary>(), O
         checkArrow()
 
         val item = mCurrentContent!![mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!]
-        view_content.findViewById<TextView>(R.id.text_title).text = item.title
-        val mTextViewContent = view_content.findViewById<TextView>(R.id.text_content)
+        (view_content.findViewById(R.id.text_title) as TextView).text = item.title
+        val mTextViewContent = view_content.findViewById(R.id.text_content) as TextView
         mTextViewContent?.movementMethod = ScrollingMovementMethod()
         mTextViewContent?.text = item.content
-        view_content.findViewById<TextView>(R.id.text_current_page).text = (mCurrentContentSelectIndex!![mCurrentCategoryIndex]!! + 1).toString()
-        view_content.findViewById<TextView>(R.id.text_total_page).text = String.format("/%d", mCurrentContent!!.size)
+        (view_content.findViewById(R.id.text_current_page) as TextView).text = (mCurrentContentSelectIndex!![mCurrentCategoryIndex]!! + 1).toString()
+        (view_content.findViewById(R.id.text_total_page) as TextView).text = String.format("/%d", mCurrentContent!!.size)
 
-        val imageView = view_content.findViewById<ImageView>(R.id.image_content)
-        mVideoView = view_content.findViewById<PlayerView>(R.id.videoView)
+        val imageView = view_content.findViewById(R.id.image_content) as ImageView
+        mVideoView = view_content.findViewById(R.id.videoView) as PlayerView
 
         if (item.file_type.hashCode() == TAG_IMAGE.hashCode()) {
             mContentPlaying = false

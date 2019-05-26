@@ -273,12 +273,12 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
         view_content_type1.visibility = View.VISIBLE
         view_content_type2.visibility = View.GONE
         checkArrow()
-        view_content_type1?.findViewById<TextView>(R.id.text_title)!!.text = item.title
-        view_content_type1?.findViewById<TextView>(R.id.text_content)!!.text = item.content
-        view_content_type1?.findViewById<TextView>(R.id.text_current_page)!!.text = (mCurrentContentSelectIndex?.get(mCurrentCategoryIndex)!! + 1).toString()
-        view_content_type1?.findViewById<TextView>(R.id.text_total_page)!!.text = String.format("/%d", mTotalSize?.get(mCurrentCategoryIndex))
-        mVideoView = view_content_type1?.findViewById<PlayerView>(R.id.videoView)
-        val imageView = view_content_type1?.findViewById<ImageView>(R.id.image_content)
+        (view_content_type1?.findViewById(R.id.text_title) as TextView).text = item.title
+        (view_content_type1?.findViewById(R.id.text_content) as TextView).text = item.content
+        (view_content_type1?.findViewById(R.id.text_current_page) as TextView).text = (mCurrentContentSelectIndex?.get(mCurrentCategoryIndex)!! + 1).toString()
+        (view_content_type1?.findViewById(R.id.text_total_page) as TextView).text = String.format("/%d", mTotalSize?.get(mCurrentCategoryIndex))
+        mVideoView = view_content_type1?.findViewById(R.id.videoView) as PlayerView
+        val imageView = view_content_type1?.findViewById(R.id.image_content) as ImageView
 
         if (item.file_type.hashCode() == TAG_IMAGE.hashCode()) {
             mVideoView?.visibility = View.GONE
@@ -286,7 +286,7 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
             Glide.with(context!!)
                     .load(FileUtils.getFileFromStorage(item.file_name))
                     .skipMemoryCache(true)
-                    .into(imageView!!)
+                    .into(imageView)
         } else if (item.file_type.hashCode() == TAG_VIDEO.hashCode()) {
             mContentPlaying = true
             mExoPlayerHelper.initPlayer(context, mVideoView!!)
@@ -313,11 +313,11 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
                 listData.add(totalList[i + mCurrentContentSelectIndex!![mCurrentCategoryIndex]!! * 3])
         }
         mTemplate2Adapter.setData(listData)
-        val recyclerView: RecyclerView = view_content_type2?.findViewById<RecyclerView>(R.id.recyclerview_content)!!
+        val recyclerView: RecyclerView = view_content_type2?.findViewById(R.id.recyclerview_content) as RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         recyclerView.adapter = mTemplate2Adapter
 
-        view?.findViewById<TextView>(R.id.textview_bottom_note)?.text = mTemplate2BottomNote
+        (view?.findViewById(R.id.textview_bottom_note) as TextView).text = mTemplate2BottomNote
     }
 
     /**

@@ -40,7 +40,7 @@ private const val TAG_TEMPLATE_2 = 2
 private const val TAG_TEMPLATE_3 = 3
 
 class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItemClickListener,
-        OnItemFocusListener, ViewModelsCallback {
+    OnItemFocusListener, ViewModelsCallback {
     private lateinit var mViewModel: HotelFacilitiesViewModel
     private var mAdapter: HotelFacilitiesAdapter = HotelFacilitiesAdapter(this, this)
     private var mCurrentCategoryIndex: Int = 0 //當前頁面category index
@@ -56,8 +56,10 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
     private var mData: HotelFacilities? = null
     private var mHomeIcons: ArrayList<HomeIcons>? = null //SideView List
 
-    private var mCurrentContentSelectIndex: HashMap<Int, Int>? = HashMap() //記錄當前在第幾個Item的Content, key = category index, value = content index
-    private var mTotalSize: HashMap<Int, Int>? = HashMap()//所有category內容的size, key = category index, value = category content size
+    private var mCurrentContentSelectIndex: HashMap<Int, Int>? =
+        HashMap() //記錄當前在第幾個Item的Content, key = category index, value = content index
+    private var mTotalSize: HashMap<Int, Int>? =
+        HashMap()//所有category內容的size, key = category index, value = category content size
     private var mCurrentContent: List<HotelFacilitiesContent>? = null // 被選到的category內的Content
     private var mCurrentContentType: Int? = 0 // 被選到的content type
     private var mVideoFrame: ConstraintLayout? = null
@@ -115,9 +117,9 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
     }
 
     override fun onPause() {
-        mVideoView1?.visibility=View.GONE
-        mVideoView2?.visibility=View.GONE
-        mVideoView3?.visibility=View.GONE
+        mVideoView1?.visibility = View.GONE
+        mVideoView2?.visibility = View.GONE
+        mVideoView3?.visibility = View.GONE
         mExoPlayerHelper.stop()
         mExoPlayerHelper.release()
         super.onPause()
@@ -299,20 +301,21 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
         showFullScreenBottomNote()
 
         val item = list!![mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!]
-        view_content_type1.findViewById<TextView>(R.id.text_total_page).text = String.format("/%d", list.size)
-        view_content_type1.findViewById<TextView>(R.id.text_current_page).text = (mCurrentContentSelectIndex!![mCurrentCategoryIndex]!! + 1).toString()
-        mVideoView1 = view_content_type1?.findViewById<PlayerView>(R.id.videoView)
-        val imageView = view_content_type1?.findViewById<ImageView>(R.id.image_photo)
-        mVideoFrame = view_content_type1?.findViewById<ConstraintLayout>(R.id.videoView_frame)
+        (view_content_type1.findViewById(R.id.text_total_page) as TextView).text = String.format("/%d", list.size)
+        (view_content_type1.findViewById(R.id.text_current_page) as TextView).text =
+            (mCurrentContentSelectIndex!![mCurrentCategoryIndex]!! + 1).toString()
+        mVideoView1 = view_content_type1?.findViewById(R.id.videoView) as PlayerView
+        val imageView = view_content_type1?.findViewById(R.id.image_photo) as ImageView
+        mVideoFrame = view_content_type1?.findViewById(R.id.videoView_frame) as ConstraintLayout
 
         if (item.file_type.hashCode() == TAG_IMAGE.hashCode()) {
             mVideoView1?.visibility = View.GONE
             imageView?.visibility = View.VISIBLE
             if (imageView != null) {
                 Glide.with(context!!)
-                        .load(FileUtils.getFileFromStorage(item.file_name))
-                        .skipMemoryCache(true)
-                        .into(imageView)
+                    .load(FileUtils.getFileFromStorage(item.file_name))
+                    .skipMemoryCache(true)
+                    .into(imageView)
             }
         } else if (item.file_type.hashCode() == TAG_VIDEO.hashCode()) {
             mContentPlaying = true
@@ -340,22 +343,22 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
         hideFullScreenBottomNote()
 
         val item = list!![mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!]
-        view_content_type2.findViewById<TextView>(R.id.text_total_page).text = String.format("/%d", list.size)
-        view_content_type2.findViewById<TextView>(R.id.text_current_page).text = (mCurrentContentSelectIndex!![mCurrentCategoryIndex]!! + 1).toString()
-        view_content_type2.findViewById<TextView>(R.id.text_title).text = item.title
-        view_content_type2.findViewById<TextView>(R.id.text_description).text = item.content
+        (view_content_type2.findViewById(R.id.text_total_page) as TextView).text = String.format("/%d", list.size)
+        (view_content_type2.findViewById(R.id.text_current_page) as TextView).text = (mCurrentContentSelectIndex!![mCurrentCategoryIndex]!! + 1).toString()
+        (view_content_type2.findViewById(R.id.text_title) as TextView).text = item.title
+        (view_content_type2.findViewById(R.id.text_description) as TextView).text = item.content
 
-        mVideoView2 = view_content_type2?.findViewById<PlayerView>(R.id.videoView2)
-        val imageView = view_content_type2?.findViewById<ImageView>(R.id.image_photo)
+        mVideoView2 = view_content_type2?.findViewById(R.id.videoView2) as PlayerView
+        val imageView = view_content_type2?.findViewById(R.id.image_photo) as ImageView
 
         if (item.file_type.hashCode() == TAG_IMAGE.hashCode()) {
             mVideoView2?.visibility = View.GONE
             imageView?.visibility = View.VISIBLE
             if (imageView != null) {
                 Glide.with(context!!)
-                        .load(FileUtils.getFileFromStorage(item.file_name))
-                        .skipMemoryCache(true)
-                        .into(imageView)
+                    .load(FileUtils.getFileFromStorage(item.file_name))
+                    .skipMemoryCache(true)
+                    .into(imageView)
             }
         } else if (item.file_type.hashCode() == TAG_VIDEO.hashCode()) {
             mContentPlaying = true
@@ -383,9 +386,9 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
         hideFullScreenBottomNote()
 
         val item = list!![mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!]
-        view_content_type3.findViewById<TextView>(R.id.text_description).text = item.content
-        mVideoView3 = view_content_type3?.findViewById<PlayerView>(R.id.videoView)
-        val imageView = view_content_type3?.findViewById<ImageView>(R.id.image_photo)
+        (view_content_type3.findViewById(R.id.text_description) as TextView).text = item.content
+        mVideoView3 = view_content_type3?.findViewById(R.id.videoView) as PlayerView
+        val imageView = view_content_type3?.findViewById(R.id.image_photo) as ImageView
 
 
 
@@ -394,9 +397,9 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
             imageView?.visibility = View.VISIBLE
             if (imageView != null) {
                 Glide.with(context!!)
-                        .load(FileUtils.getFileFromStorage(item.file_name))
-                        .skipMemoryCache(true)
-                        .into(imageView)
+                    .load(FileUtils.getFileFromStorage(item.file_name))
+                    .skipMemoryCache(true)
+                    .into(imageView)
             }
         } else if (item.file_type.hashCode() == TAG_VIDEO.hashCode()) {
             mContentPlaying = true
