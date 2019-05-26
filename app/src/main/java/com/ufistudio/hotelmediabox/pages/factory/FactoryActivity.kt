@@ -3,32 +3,21 @@ package com.ufistudio.hotelmediabox.pages.factory
 import android.arch.lifecycle.Observer
 import android.content.Intent
 import android.os.Bundle
-import android.os.Environment
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.text.TextUtils
 import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.View
-import android.widget.Toast
-import com.google.gson.Gson
 import com.ufistudio.hotelmediabox.AppInjector
-import com.ufistudio.hotelmediabox.DVBHelper
-import com.ufistudio.hotelmediabox.MyApplication
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.helper.TVController
-import com.ufistudio.hotelmediabox.helper.TVHelper
 import com.ufistudio.hotelmediabox.interfaces.OnItemClickListener
-import com.ufistudio.hotelmediabox.interfaces.OnSimpleListener
 import com.ufistudio.hotelmediabox.interfaces.ViewModelsCallback
 import com.ufistudio.hotelmediabox.pages.welcome.WelcomeActivity
 import com.ufistudio.hotelmediabox.repository.data.*
-import com.ufistudio.hotelmediabox.utils.FileUtils
-import com.ufistudio.hotelmediabox.utils.MiscUtils
-import com.ufistudio.hotelmediabox.utils.TAG_DEFAULT_APK_NAME
+import com.ufistudio.hotelmediabox.utils.*
 import kotlinx.android.synthetic.main.activity_factory.*
-import java.io.File
-import java.io.FileOutputStream
 import java.lang.StringBuilder
 
 class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCallback {
@@ -291,6 +280,11 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
 //                }
 
             }
+            FactoryFeature.FACTORY_DEFAULT -> {
+                //delete chkflag and reboot
+                FileUtils.getFileFromStorage("chkflag")?.delete()
+                MiscUtils.reboot(baseContext)
+            }
         }
     }
 
@@ -312,10 +306,10 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
         if (it == true) {
             if (mDownloadDialog == null)
                 mDownloadDialog = android.app.AlertDialog.Builder(this)
-                        .setTitle("下載中")
-                        .setView(R.layout.view_progress)
-                        .setCancelable(false)
-                        .create()
+                    .setTitle("下載中")
+                    .setView(R.layout.view_progress)
+                    .setCancelable(false)
+                    .create()
 
             mDownloadDialog?.show()
         } else {
@@ -329,11 +323,11 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
         textView_info1.text = mInfo1
         if (mDownloadDialog == null)
             mDownloadDialog = android.app.AlertDialog.Builder(this)
-                    .setTitle("下載失敗")
-                    .setMessage(it?.message)
-                    .setView(R.layout.view_progress)
-                    .setCancelable(false)
-                    .create()
+                .setTitle("下載失敗")
+                .setMessage(it?.message)
+                .setView(R.layout.view_progress)
+                .setCancelable(false)
+                .create()
 
         mDownloadDialog?.show()
     }

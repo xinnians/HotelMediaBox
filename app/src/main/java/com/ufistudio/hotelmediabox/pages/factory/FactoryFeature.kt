@@ -12,6 +12,7 @@ enum class FactoryFeature(var stringRes: Int) {
     SHOW_INSIDE_HOTEL(R.string.factory_show_inside_hotel_files),
     SHOW_OUTSIDE_USB(R.string.factory_show_usb_files),
     CLEAR_INFO(R.string.factory_clear_info_text),
-    SCAN_DVB_CHANNELS(R.string.factory_scan_dvb_channels)
+    SCAN_DVB_CHANNELS(R.string.factory_scan_dvb_channels),
+    FACTORY_DEFAULT(R.string.factory_default)
 
 }

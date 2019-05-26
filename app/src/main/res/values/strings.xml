@@ -29,6 +29,7 @@
     <string name="factory_show_usb_files">Show USB Files</string>
     <string name="factory_clear_info_text">Clear Info Text</string>
     <string name="factory_scan_dvb_channels">Scan DVB T/T2 Channels</string>
+    <string name="factory_default">Factory default</string>
 
     <!--GenreType-->
     <string name="genre_all">All</string>
