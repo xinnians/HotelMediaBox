@@ -9,6 +9,7 @@
     <com.ufistudio.hotelmediabox.views.SideView
         android:id="@+id/sideView"
         android:layout_width="wrap_content"
+        android:visibility="gone"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -169,7 +170,6 @@
         style="@style/MainPrimaryText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
         android:minLines="1"
         android:textSize="@dimen/_12ssp"
         app:layout_constraintEnd_toStartOf="@+id/line1"
@@ -192,8 +192,8 @@
 
     <ImageView
         android:id="@+id/imageView_weather1"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="@dimen/_28sdp"
+        android:layout_height="@dimen/_28sdp"
         android:layout_marginTop="@dimen/_12ssp"
         android:layout_marginBottom="@dimen/_5sdp"
         android:scaleType="fitCenter"
@@ -266,8 +266,8 @@
 
     <ImageView
         android:id="@+id/imageView_weather2"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="@dimen/_28sdp"
+        android:layout_height="@dimen/_28sdp"
         android:layout_marginTop="@dimen/_12ssp"
         android:layout_marginBottom="@dimen/_5sdp"
         android:scaleType="fitCenter"
@@ -340,8 +340,8 @@
 
     <ImageView
         android:id="@+id/imageView_weather3"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="@dimen/_28sdp"
+        android:layout_height="@dimen/_28sdp"
         android:layout_marginTop="@dimen/_12ssp"
         android:layout_marginBottom="@dimen/_5sdp"
         android:scaleType="fitCenter"
@@ -415,8 +415,8 @@
 
     <ImageView
         android:id="@+id/imageView_weather4"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="@dimen/_28sdp"
+        android:layout_height="@dimen/_28sdp"
         android:layout_marginTop="@dimen/_12ssp"
         android:layout_marginBottom="@dimen/_5sdp"
         android:scaleType="fitCenter"
@@ -489,8 +489,8 @@
 
     <ImageView
         android:id="@+id/imageView_weather5"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="@dimen/_28sdp"
+        android:layout_height="@dimen/_28sdp"
         android:layout_marginTop="@dimen/_12ssp"
         android:layout_marginBottom="@dimen/_5sdp"
         android:scaleType="fitCenter"
@@ -563,8 +563,8 @@
 
     <ImageView
         android:id="@+id/imageView_weather6"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="@dimen/_28sdp"
+        android:layout_height="@dimen/_28sdp"
         android:layout_marginTop="@dimen/_12ssp"
         android:layout_marginBottom="@dimen/_5sdp"
         android:scaleType="fitCenter"

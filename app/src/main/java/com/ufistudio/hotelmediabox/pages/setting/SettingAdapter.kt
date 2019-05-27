@@ -85,7 +85,6 @@ class SettingAdapter(private var mClickListener: OnItemClickListener, private va
         holder.itemView.text_title.text = item.title
         if (mSideViewIsShow) {
             holder.itemView.setOnClickListener(null)
-            holder.itemView.onFocusChangeListener = null
             holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.white30))
         } else {
             if (mClearFocus) {

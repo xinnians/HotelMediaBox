@@ -109,8 +109,25 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
 
     override fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         when (keyCode) {
-            KeyEvent.KEYCODE_DPAD_DOWN,
             KeyEvent.KEYCODE_DPAD_UP -> {
+                mData?.categories?.let {
+                    if (mAdapter.getLastPosition() > 0) {
+                        mAdapter.setSelectPosition(mAdapter.getLastPosition() - 1)
+                        recyclerView_service.scrollToPosition(mAdapter.getLastPosition())
+                        mAdapter.notifyDataSetChanged()
+                    }
+                }
+                return true
+            }
+            KeyEvent.KEYCODE_DPAD_DOWN -> {
+                mData?.categories?.let {
+                    if (mAdapter.getLastPosition() + 1 < it.size) {
+                        mAdapter.setSelectPosition(mAdapter.getLastPosition() + 1)
+                        recyclerView_service.scrollToPosition(mAdapter.getLastPosition())
+                        mAdapter.notifyDataSetChanged()
+                    }
+                }
+                return true
             }
             KeyEvent.KEYCODE_DPAD_RIGHT -> {
                 return true
