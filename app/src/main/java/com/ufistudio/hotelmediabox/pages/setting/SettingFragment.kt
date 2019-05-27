@@ -26,6 +26,11 @@ import com.ufistudio.hotelmediabox.repository.data.SettingCategories
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_BACK_TITLE
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_INDEX
 import kotlinx.android.synthetic.main.fragment_setting.*
+import kotlinx.android.synthetic.main.fragment_setting.layout_back
+import kotlinx.android.synthetic.main.fragment_setting.sideView
+import kotlinx.android.synthetic.main.fragment_setting.text_back
+import kotlinx.android.synthetic.main.fragment_setting.view_line
+import kotlinx.android.synthetic.main.fragment_weather.*
 import kotlinx.android.synthetic.main.view_bottom_back_home.*
 import kotlinx.android.synthetic.main.view_bottom_ok_back_home.*
 import kotlinx.android.synthetic.main.view_bottom_up_down_ok_back_home.*
@@ -120,6 +125,7 @@ class SettingFragment : InteractionView<OnPageInteractionListener.Primary>(), Vi
             view_line.visibility = View.VISIBLE
             mAdapter.sideViewIsShow(true)
             mCategoryFocus = false
+            mSideViewFocus = true
             sideView.scrollToPosition(mCurrentSideIndex)
             sideView.setLastPosition(mCurrentSideIndex)
         } else {
@@ -128,6 +134,7 @@ class SettingFragment : InteractionView<OnPageInteractionListener.Primary>(), Vi
             view_line.visibility = View.GONE
             mAdapter.fromSideViewBack(mCurrentCategoryIndex)
             mCategoryFocus = true
+            mSideViewFocus = false
         }
     }
 
@@ -174,24 +181,44 @@ class SettingFragment : InteractionView<OnPageInteractionListener.Primary>(), Vi
         } else {
             when (keyCode) {
                 KeyEvent.KEYCODE_DPAD_UP -> {
-                    mData?.categories?.let {
-                        if (mAdapter.getLastPosition() > 0) {
-                            mAdapter.setSelectPosition(mAdapter.getLastPosition() - 1)
-                            recyclerView_category.scrollToPosition(mAdapter.getLastPosition())
-                            mAdapter.notifyDataSetChanged()
+                    if (mSideViewFocus) {
+                        if (sideView.getSelectPosition() > 0) {
+                            sideView.setLastPosition(sideView.getSelectPosition() - 1)
+                            sideView.scrollToPosition(sideView.getSelectPosition())
+                        }
+                    } else {
+                        mData?.categories?.let {
+                            if (mAdapter.getLastPosition() > 0) {
+                                mAdapter.setSelectPosition(mAdapter.getLastPosition() - 1)
+                                recyclerView_category.scrollToPosition(mAdapter.getLastPosition())
+                                mAdapter.notifyDataSetChanged()
+                            }
                         }
                     }
                     return true
                 }
                 KeyEvent.KEYCODE_DPAD_DOWN -> {
-                    mData?.categories?.let {
-                        if (mAdapter.getLastPosition() + 1 < it.size) {
-                            mAdapter.setSelectPosition(mAdapter.getLastPosition() + 1)
-                            recyclerView_category.scrollToPosition(mAdapter.getLastPosition())
-                            mAdapter.notifyDataSetChanged()
+                    if (mSideViewFocus) {
+                        if (sideView.getSelectPosition() + 1 < sideView.getItemSize()) {
+                            sideView.setLastPosition(sideView.getSelectPosition() + 1)
+                            sideView.scrollToPosition(sideView.getSelectPosition())
+                        }
+                    } else {
+                        mData?.categories?.let {
+                            if (mAdapter.getLastPosition() + 1 < it.size) {
+                                mAdapter.setSelectPosition(mAdapter.getLastPosition() + 1)
+                                recyclerView_category.scrollToPosition(mAdapter.getLastPosition())
+                                mAdapter.notifyDataSetChanged()
+                            }
                         }
                     }
                     return true
+                }
+                KeyEvent.KEYCODE_DPAD_CENTER -> {
+                    if (mSideViewFocus) {
+                        sideView.intoPage()
+                        return true
+                    }
                 }
                 KeyEvent.KEYCODE_BACK -> {
                     if (sideView.isShown) {

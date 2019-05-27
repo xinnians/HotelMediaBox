@@ -3,6 +3,7 @@ package com.ufistudio.hotelmediabox.views
 import android.content.Context
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -45,27 +46,18 @@ class SideViewAdapter : RecyclerView.Adapter<SideViewAdapter.ViewHolder>() {
         val serverItem = mServerItem[position]
 
 
-        holder.itemView.image_icon.background =
-                ContextCompat.getDrawable(mContext, item.icon)
+        holder.itemView.image_icon.background = ContextCompat.getDrawable(mContext, item.icon)
 
         holder.itemView.tag = item.page
         holder.itemView.setOnClickListener { mListener?.onClick(holder.itemView) }
 
-        holder.itemView.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
-            mIsInit = false
-            if (hasFocus) {
-                holder.itemView.text_title.visibility = View.VISIBLE
-                holder.itemView.image_icon.background = ContextCompat.getDrawable(mContext, item.focusedIcon)
-                holder.itemView.text_title.text = serverItem.name
-            } else {
-                holder.itemView.text_title.visibility = View.GONE
-                holder.itemView.image_icon.background = ContextCompat.getDrawable(mContext, item.icon)
-            }
-        }
-        if (mLastIndex == position)
-            holder.itemView.requestFocus()
-        else {
-            holder.itemView.clearFocus()
+        if (mLastIndex == position) {
+            holder.itemView.text_title.visibility = View.VISIBLE
+            holder.itemView.image_icon.background = ContextCompat.getDrawable(mContext, item.focusedIcon)
+            holder.itemView.text_title.text = serverItem.name
+        } else {
+            holder.itemView.text_title.visibility = View.GONE
+            holder.itemView.image_icon.background = ContextCompat.getDrawable(mContext, item.icon)
         }
     }
 
@@ -94,9 +86,20 @@ class SideViewAdapter : RecyclerView.Adapter<SideViewAdapter.ViewHolder>() {
         notifyItemChanged(position)
     }
 
+    fun setScrollPosition(position: Int) {
+        mLastIndex = position
+    }
+
+    fun getSelectPosition(): Int {
+        return mLastIndex
+    }
+
+    fun getSelectItem(): HomeFeatureEnum {
+        return mItem[mLastIndex]
+    }
+
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind() {
-            itemView.isFocusable = true
         }
     }
 }

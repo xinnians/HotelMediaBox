@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
@@ -78,7 +79,27 @@ class SideView : ConstraintLayout, OnItemClickListener {
     }
 
     fun scrollToPosition(position: Int) {
+        mAdapter?.setScrollPosition(position)
         icon_list.scrollToPosition(position)
+        mAdapter?.notifyDataSetChanged()
+    }
+
+    fun getSelectPosition(): Int {
+        return mAdapter?.getSelectPosition() ?: 0
+    }
+
+    fun getItemSize(): Int {
+        return mAdapter?.itemCount ?: 0
+    }
+
+    fun intoPage() {
+        if (mAdapter?.getSelectItem()?.page == -100) {
+            Toast.makeText(context, "尚未實作", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val b = Bundle()
+        b.putParcelableArrayList(Page.ARG_BUNDLE, mFeatureIcons)
+        mAdapter?.getSelectItem()?.let { mInteractionListener?.switchPage(R.id.fragment_container, it.page, b, false, false, true) }
     }
 
     /**
