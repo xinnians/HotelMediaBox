@@ -17,12 +17,12 @@ interface ApiClientService {
     @POST
     fun checkStatus(
             @Url url: String,
-            @Query("mac") mac: String,
-            @Query("ip") ip: String,
-            @Query("room") room: String,
-            @Query("status") status: String,
-            @Query("tar_version") tarVersion: String,
-            @Query("j_version") jVersion: String
+            @Query("mac", encoded = true) mac: String,
+            @Query("ip", encoded = true) ip: String,
+            @Query("room", encoded = true) room: String,
+            @Query("status", encoded = true) status: String,
+            @Query("tar_version", encoded = true) tarVersion: String,
+            @Query("j_version", encoded = true) jVersion: String
     ): Single<ResponseBody>
 
     @Multipart
@@ -36,12 +36,18 @@ interface ApiClientService {
     @GET
     fun getWeatherInfo(
             @Url url: String,
-            @Query("city") city: String
+            @Query("city", encoded = true) city: String
     ): Single<WeatherInfo>
 
     @GET
     fun getInitialData(
             @Url url: String,
-            @Query("device") mac: String
+            @Query("device", encoded = true) mac: String
     ): Single<InitialData>
+
+    @GET
+    fun getStaticIp(
+            @Url url: String,
+            @Query("mac", encoded = true) mac: String
+    ): Single<StaticIpData>
 }

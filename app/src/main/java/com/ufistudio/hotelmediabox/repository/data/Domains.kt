@@ -426,3 +426,10 @@ data class InitialData(
         var timestamp: Long,
         var guestName: String
 ) : Parcelable
+
+@Parcelize
+data class StaticIpData(
+        var defaultIp: String,
+        var defaultMask: String,
+        var gateway: String
+) : Parcelable

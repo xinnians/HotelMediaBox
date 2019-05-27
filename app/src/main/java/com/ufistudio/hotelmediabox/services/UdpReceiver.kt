@@ -39,6 +39,7 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
         private val TAG_IMPORT_CHANNEL_LIST = "importChannelList".hashCode()
         private val TAG_SOFTWARE_UPDATE = "softwareUpdate".hashCode()
         private val TAG_RESOURCE_UPDATE = "resourceUpdate".hashCode()
+        private val TAG_SET_STATIC_IP = "setStaticIp".hashCode()
     }
 
     override fun onBind(intent: Intent?): IBinder {
@@ -220,6 +221,18 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                                     }
                                 }, {
                                     Log.d(TAG, "TAG_RESOURCE_UPDATE download error $it")
+                                })
+                    }
+                    TAG_SET_STATIC_IP -> {
+                        Repository(application, SharedPreferencesProvider(application)).getStaticIp("http://${myBroadcast.ip}:${myBroadcast.port}${myBroadcast.url}")
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe({
+                                    Log.d(TAG, "TAG_SET_STATIC_IP get api success $it")
+                                    val host: XTNetWorkManager.XTHost = XTNetWorkManager.getInstance().XTHost(it.defaultIp, it.gateway, it.defaultMask)
+                                    XTNetWorkManager.getInstance().enableEthernetStaticIP(applicationContext, host)
+                                }, {
+                                    Log.e(TAG, "TAG_SET_STATIC_IP error $it")
                                 })
                     }
                 }
