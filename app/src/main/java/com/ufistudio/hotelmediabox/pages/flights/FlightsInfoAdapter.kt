@@ -2,6 +2,7 @@ package com.ufistudio.hotelmediabox.pages.flights
 
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -56,6 +57,14 @@ class FlightsInfoAdapter(private var mClickListener: OnItemClickListener, privat
         notifyItemChanged(selectIndex)
     }
 
+    fun setSelectPosition(selectIndex: Int) {
+        mSelectIndex = selectIndex
+    }
+
+    fun getLastPosition(): Int {
+        return mSelectIndex
+    }
+
     /**
      *set side view is show
      * @sideViewShow: true:Side view is show
@@ -74,31 +83,21 @@ class FlightsInfoAdapter(private var mClickListener: OnItemClickListener, privat
         holder.itemView.text_title.text = item.title
         if (mSideViewIsShow) {
             holder.itemView.setOnClickListener(null)
-            holder.itemView.onFocusChangeListener = null
             holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.white30))
         } else {
             if (mClearFocus) {
                 holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
-                holder.itemView.clearFocus()
             } else {
                 holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
                 holder.itemView.setTag(TAG_ITEM, item.contents)
                 holder.itemView.setTag(TAG_INDEX, position)
 
                 holder.itemView.setOnClickListener { mClickListener.onClick(holder.itemView) }
-                holder.itemView.setOnFocusChangeListener { v, hasFocus ->
-                    if (hasFocus) {
-                        mFocusListener.onFoucsed(holder.itemView)
-                        holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.colorYellow))
-                    } else {
-                        holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
-                    }
-                }
-
                 if (mSelectIndex == position) {
-                    holder.itemView.requestFocus()
+                    holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.colorYellow))
+                    mFocusListener.onFoucsed(holder.itemView)
                 } else {
-                    holder.itemView.clearFocus()
+                    holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
                 }
             }
         }
@@ -111,7 +110,6 @@ class FlightsInfoAdapter(private var mClickListener: OnItemClickListener, privat
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind() {
-            itemView.isFocusable = true
         }
     }
 }

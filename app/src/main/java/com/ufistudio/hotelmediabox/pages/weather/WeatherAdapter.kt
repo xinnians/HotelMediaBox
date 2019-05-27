@@ -86,7 +86,6 @@ class WeatherAdapter(private var mClickListener: OnItemClickListener, private va
         } else {
             if (mClearFocus) {
                 holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
-                holder.itemView.clearFocus()
             } else {
                 holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
                 holder.itemView.setTag(TAG_ITEM, item.contents)
