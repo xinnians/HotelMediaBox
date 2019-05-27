@@ -42,6 +42,14 @@ class SettingAdapter(private var mClickListener: OnItemClickListener, private va
         notifyItemChanged(selectIndex)
     }
 
+    fun setSelectPosition(selectIndex: Int) {
+        mSelectIndex = selectIndex
+    }
+
+    fun getLastPosition(): Int {
+        return mSelectIndex
+    }
+
     /**
      *set side view is show
      * @sideViewShow: true:Side view is show
@@ -89,18 +97,11 @@ class SettingAdapter(private var mClickListener: OnItemClickListener, private va
                 holder.itemView.setTag(TAG_INDEX, position)
 
                 holder.itemView.setOnClickListener { mClickListener.onClick(holder.itemView) }
-                holder.itemView.setOnFocusChangeListener { v, hasFocus ->
-                    mFocusListener.onFoucsed(holder.itemView)
-                    if (hasFocus) {
-                        holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.colorYellow))
-                    } else {
-                        holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
-                    }
-                }
                 if (mSelectIndex == position) {
-                    holder.itemView.requestFocus()
+                    holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.colorYellow))
+                    mFocusListener.onFoucsed(holder.itemView)
                 } else {
-                    holder.itemView.clearFocus()
+                    holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
                 }
             }
         }
@@ -108,7 +109,6 @@ class SettingAdapter(private var mClickListener: OnItemClickListener, private va
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind() {
-            itemView.isFocusable = true
         }
     }
 }

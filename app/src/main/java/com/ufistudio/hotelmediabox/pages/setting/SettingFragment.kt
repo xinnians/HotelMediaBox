@@ -174,6 +174,24 @@ class SettingFragment : InteractionView<OnPageInteractionListener.Primary>(), Vi
         } else {
             when (keyCode) {
                 KeyEvent.KEYCODE_DPAD_UP -> {
+                    mData?.categories?.let {
+                        if (mAdapter.getLastPosition() > 0) {
+                            mAdapter.setSelectPosition(mAdapter.getLastPosition() - 1)
+                            recyclerView_category.scrollToPosition(mAdapter.getLastPosition())
+                            mAdapter.notifyDataSetChanged()
+                        }
+                    }
+                    return true
+                }
+                KeyEvent.KEYCODE_DPAD_DOWN -> {
+                    mData?.categories?.let {
+                        if (mAdapter.getLastPosition() + 1 < it.size) {
+                            mAdapter.setSelectPosition(mAdapter.getLastPosition() + 1)
+                            recyclerView_category.scrollToPosition(mAdapter.getLastPosition())
+                            mAdapter.notifyDataSetChanged()
+                        }
+                    }
+                    return true
                 }
                 KeyEvent.KEYCODE_BACK -> {
                     if (sideView.isShown) {
