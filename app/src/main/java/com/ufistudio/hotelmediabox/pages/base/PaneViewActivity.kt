@@ -140,7 +140,14 @@ open class PaneViewActivity : BaseActivity(), OnPageInteractionListener.Pane {
         return Page.view(page, args)
     }
 
+    override fun onKeyLongPress(keyCode: Int, event: KeyEvent?): Boolean {
+        return true
+    }
+
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (event?.repeatCount!=0){
+            return true
+        }
         Log.d(TAG, "keycode = $keyCode  ,event = $event")
 
         when (keyCode) {

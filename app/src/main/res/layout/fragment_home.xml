@@ -30,17 +30,198 @@
         app:layout_constraintStart_toEndOf="@+id/videoView_frame"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/list_functions"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/_24sdp"
-        android:layout_marginBottom="@dimen/_45sdp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/videoView_frame" />
+    <!--<android.support.v7.widget.RecyclerView-->
+        <!--android:id="@+id/list_functions"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginEnd="@dimen/_24sdp"-->
+        <!--android:layout_marginBottom="@dimen/_45sdp"-->
+        <!--android:visibility="gone"-->
+        <!--app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--app:layout_constraintEnd_toEndOf="parent"-->
+        <!--app:layout_constraintStart_toStartOf="@+id/videoView_frame" />-->
+
+    <ImageView
+            android:id="@+id/imageView_arrow_left"
+            android:layout_width="@dimen/_8sdp"
+            android:layout_height="@dimen/_13sdp"
+            android:layout_marginStart="@dimen/_9sdp"
+            android:layout_marginTop="@dimen/_52sdp"
+            android:src="@drawable/ic_left_arrow"
+            app:layout_constraintStart_toStartOf="@+id/videoView_frame"
+            app:layout_constraintTop_toBottomOf="@+id/videoView_frame" />
+
+    <android.support.constraint.ConstraintLayout
+            android:id="@+id/layout_frame1"
+            android:layout_width="@dimen/_83sdp"
+            android:layout_height="@dimen/_77sdp"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:layout_marginTop="@dimen/_25sdp"
+            android:background="@drawable/selector_home_icon"
+            app:layout_constraintStart_toEndOf="@+id/imageView_arrow_left"
+            app:layout_constraintTop_toBottomOf="@+id/videoView_frame">
+
+        <ImageView
+                android:id="@+id/image_icon"
+                android:layout_width="@dimen/_28sdp"
+                android:layout_height="@dimen/_28sdp"
+                android:layout_marginStart="@dimen/_12sdp"
+                android:layout_marginTop="@dimen/_12sdp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+                android:id="@+id/text_title"
+                style="@style/MainPrimaryText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="@dimen/_6sdp"
+                android:textSize="@dimen/_11sdp"
+                app:layout_constraintStart_toStartOf="@+id/image_icon"
+                app:layout_constraintTop_toBottomOf="@+id/image_icon" />
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+            android:id="@+id/layout_frame2"
+            android:layout_width="@dimen/_83sdp"
+            android:layout_height="@dimen/_77sdp"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_25sdp"
+            android:layout_marginBottom="@dimen/_55sdp"
+            android:background="@drawable/selector_home_icon"
+            app:layout_constraintStart_toEndOf="@+id/layout_frame1"
+            app:layout_constraintTop_toBottomOf="@+id/videoView_frame">
+
+        <ImageView
+                android:id="@+id/image_icon2"
+                android:layout_width="@dimen/_28sdp"
+                android:layout_height="@dimen/_28sdp"
+                android:layout_marginStart="@dimen/_12sdp"
+                android:layout_marginTop="@dimen/_12sdp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+                android:id="@+id/text_title2"
+                style="@style/MainPrimaryText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="@dimen/_6sdp"
+                android:textSize="@dimen/_11sdp"
+                app:layout_constraintStart_toStartOf="@+id/image_icon2"
+                app:layout_constraintTop_toBottomOf="@+id/image_icon2" />
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+            android:id="@+id/layout_frame3"
+            android:layout_width="@dimen/_83sdp"
+            android:layout_height="@dimen/_77sdp"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_25sdp"
+            android:layout_marginBottom="@dimen/_55sdp"
+            android:background="@drawable/selector_home_icon"
+            app:layout_constraintStart_toEndOf="@+id/layout_frame2"
+            app:layout_constraintTop_toBottomOf="@+id/videoView_frame">
+
+        <ImageView
+                android:id="@+id/image_icon3"
+                android:layout_width="@dimen/_28sdp"
+                android:layout_height="@dimen/_28sdp"
+                android:layout_marginStart="@dimen/_12sdp"
+                android:layout_marginTop="@dimen/_12sdp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+                android:id="@+id/text_title3"
+                style="@style/MainPrimaryText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="@dimen/_6sdp"
+                android:textSize="@dimen/_11sdp"
+                app:layout_constraintStart_toStartOf="@+id/image_icon3"
+                app:layout_constraintTop_toBottomOf="@+id/image_icon3" />
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+            android:id="@+id/layout_frame4"
+            android:layout_width="@dimen/_83sdp"
+            android:layout_height="@dimen/_77sdp"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_25sdp"
+            android:layout_marginBottom="@dimen/_55sdp"
+            android:background="@drawable/selector_home_icon"
+            app:layout_constraintStart_toEndOf="@+id/layout_frame3"
+            app:layout_constraintTop_toBottomOf="@+id/videoView_frame">
+
+        <ImageView
+                android:id="@+id/image_icon4"
+                android:layout_width="@dimen/_28sdp"
+                android:layout_height="@dimen/_28sdp"
+                android:layout_marginStart="@dimen/_12sdp"
+                android:layout_marginTop="@dimen/_12sdp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+                android:id="@+id/text_title4"
+                style="@style/MainPrimaryText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="@dimen/_6sdp"
+                android:textSize="@dimen/_11sdp"
+                app:layout_constraintStart_toStartOf="@+id/image_icon4"
+                app:layout_constraintTop_toBottomOf="@+id/image_icon4" />
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+            android:id="@+id/layout_frame5"
+            android:layout_width="@dimen/_83sdp"
+            android:layout_height="@dimen/_77sdp"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_25sdp"
+            android:layout_marginBottom="@dimen/_55sdp"
+            android:background="@drawable/selector_home_icon"
+            app:layout_constraintStart_toEndOf="@+id/layout_frame4"
+            app:layout_constraintTop_toBottomOf="@+id/videoView_frame">
+
+        <ImageView
+                android:id="@+id/image_icon5"
+                android:layout_width="@dimen/_28sdp"
+                android:layout_height="@dimen/_28sdp"
+                android:layout_marginStart="@dimen/_12sdp"
+                android:layout_marginTop="@dimen/_12sdp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+                android:id="@+id/text_title5"
+                style="@style/MainPrimaryText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="@dimen/_6sdp"
+                android:textSize="@dimen/_11sdp"
+                app:layout_constraintStart_toStartOf="@+id/image_icon5"
+                app:layout_constraintTop_toBottomOf="@+id/image_icon5" />
+    </android.support.constraint.ConstraintLayout>
+
+    <ImageView
+            android:id="@+id/imageView_arrow_right"
+            android:layout_width="@dimen/_8sdp"
+            android:layout_height="@dimen/_13sdp"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:src="@drawable/ic_right_arrow"
+            app:layout_constraintStart_toEndOf="@+id/layout_frame5"
+            app:layout_constraintTop_toTopOf="@+id/imageView_arrow_left" />
+
 
     <include
+        android:id="@+id/include"
         layout="@layout/view_bottom_info"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="0dp" />
@@ -52,8 +233,6 @@
         android:layout_marginStart="@dimen/_24sdp"
         android:layout_marginTop="@dimen/_14sdp"
         android:background="@drawable/selector_ip_tv"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
