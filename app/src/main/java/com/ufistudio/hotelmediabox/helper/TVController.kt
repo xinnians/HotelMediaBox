@@ -325,6 +325,9 @@ object TVController {
     }
 
     fun getCurrentChannel(): TVChannel? {
+        if (mCurrentChannel == null) {
+            mCurrentChannel = getChannelList()?.get(0)
+        }
         return mCurrentChannel
     }
 

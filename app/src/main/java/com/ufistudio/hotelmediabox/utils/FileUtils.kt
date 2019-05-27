@@ -60,8 +60,10 @@ object FileUtils {
             Log.e("FileNotFoundException", "error = $e")
         }
         if (file?.exists()!!) {
+            Log.d("getFileFromStorage", "file is exists")
             return file
         }
+        Log.d("getFileFromStorage", "file is null")
         return null
     }
 
