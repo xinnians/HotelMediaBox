@@ -42,7 +42,7 @@ interface ApiClientService {
     @GET
     fun getInitialData(
             @Url url: String,
-            @Query("device", encoded = true) mac: String
+            @Query("mac", encoded = true) mac: String
     ): Single<InitialData>
 
     @GET

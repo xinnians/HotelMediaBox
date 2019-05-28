@@ -56,6 +56,14 @@ class WeatherAdapter(private var mClickListener: OnItemClickListener, private va
         notifyItemChanged(selectIndex)
     }
 
+    fun setSelectPosition(selectIndex: Int) {
+        mSelectIndex = selectIndex
+    }
+
+    fun getLastPosition(): Int {
+        return mSelectIndex
+    }
+
     /**
      *set side view is show
      * @sideViewShow: true:Side view is show
@@ -74,12 +82,10 @@ class WeatherAdapter(private var mClickListener: OnItemClickListener, private va
         holder.itemView.text_title.text = item.title
         if (mSideViewIsShow) {
             holder.itemView.setOnClickListener(null)
-            holder.itemView.onFocusChangeListener = null
             holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.white30))
         } else {
             if (mClearFocus) {
                 holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
-                holder.itemView.clearFocus()
             } else {
                 holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
                 holder.itemView.setTag(TAG_ITEM, item.contents)
@@ -87,19 +93,12 @@ class WeatherAdapter(private var mClickListener: OnItemClickListener, private va
                 holder.itemView.setTag(TAG_TITLE, item.title)
 
                 holder.itemView.setOnClickListener { mClickListener.onClick(holder.itemView) }
-                holder.itemView.setOnFocusChangeListener { v, hasFocus ->
-                    if (hasFocus) {
-                        mFocusListener.onFoucsed(holder.itemView)
-                        holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.colorYellow))
-                    } else {
-                        holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
-                    }
-                }
-
+                holder.itemView.setOnClickListener { mClickListener.onClick(holder.itemView) }
                 if (mSelectIndex == position) {
-                    holder.itemView.requestFocus()
+                    holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.colorYellow))
+                    mFocusListener.onFoucsed(holder.itemView)
                 } else {
-                    holder.itemView.clearFocus()
+                    holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
                 }
             }
         }
@@ -112,7 +111,6 @@ class WeatherAdapter(private var mClickListener: OnItemClickListener, private va
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind() {
-            itemView.isFocusable = true
         }
     }
 }

@@ -22,6 +22,7 @@ import java.net.SocketException
 import java.nio.charset.Charset
 import kotlin.collections.ArrayList
 import java.net.Inet4Address
+import java.util.*
 
 
 const val TAG_DEFAULT_LOCAL_PATH: String = "/hotel/"
@@ -321,6 +322,40 @@ object MiscUtils {
         }
 
         return ""
+    }
+
+    /**
+     * Get Ethernet mac address
+     */
+    fun getEthernetMacAddress(): String {
+        var macAddress = "Not able to read"
+        try {
+            val allNetworkInterfaces = Collections.list(
+                    NetworkInterface
+                            .getNetworkInterfaces()
+            )
+            for (nif in allNetworkInterfaces) {
+                if (!nif.getName().equals("eth0", ignoreCase = true))
+                    continue
+
+                val macBytes = nif.getHardwareAddress() ?: return macAddress
+
+                val res1 = StringBuilder()
+                for (b in macBytes) {
+                    res1.append(String.format("%02X:", b))
+                }
+
+                if (res1.length > 0) {
+                    res1.deleteCharAt(res1.length - 1)
+                }
+                macAddress = res1.toString()
+            }
+        } catch (ex: Exception) {
+            Log.e(TAG, "getEthernetMacAddress e :" + ex.message)
+            ex.printStackTrace()
+        }
+
+        return macAddress
     }
 
     /**

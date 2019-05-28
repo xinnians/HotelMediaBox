@@ -39,7 +39,8 @@ class Repository(
                 .subscribeOn(Schedulers.io())
                 .flatMap {
                     ApiClient.getInstance()!!.postCheckStatus(url,
-                            MiscUtils.getWifiMACAddress(application.applicationContext),
+//                            MiscUtils.getWifiMACAddress(application.applicationContext),
+                            MiscUtils.getEthernetMacAddress(),
                             MiscUtils.getIpAddress(),
                             MiscUtils.getRoomNumber(),
                             "1",
@@ -72,11 +73,11 @@ class Repository(
     }
 
     fun getInitialData(url: String): Single<InitialData> {
-        return ApiClient.getInstance()!!.getInitialData(url, MiscUtils.getWifiMACAddress(application.baseContext))
+        return ApiClient.getInstance()!!.getInitialData(url, MiscUtils.getEthernetMacAddress())
     }
 
     fun getStaticIp(url: String): Single<StaticIpData> {
-        return ApiClient.getInstance()!!.getStaticIp(url, MiscUtils.getWifiMACAddress(application.baseContext))
+        return ApiClient.getInstance()!!.getStaticIp(url, MiscUtils.getEthernetMacAddress())
     }
 
     // local

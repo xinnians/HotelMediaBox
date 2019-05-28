@@ -109,14 +109,51 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
 
     override fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         when (keyCode) {
-            KeyEvent.KEYCODE_DPAD_DOWN,
             KeyEvent.KEYCODE_DPAD_UP -> {
+                if (mSideViewFocus) {
+                    if (sideView.getSelectPosition() > 0) {
+                        sideView.setLastPosition(sideView.getSelectPosition() - 1)
+                        sideView.scrollToPosition(sideView.getSelectPosition())
+                    }
+                } else {
+                    mData?.categories?.let {
+                        if (mAdapter.getLastPosition() > 0) {
+                            mAdapter.setSelectPosition(mAdapter.getLastPosition() - 1)
+                            recyclerView_service.scrollToPosition(mAdapter.getLastPosition())
+                            mAdapter.notifyDataSetChanged()
+                        }
+                    }
+                }
+                return true
+            }
+            KeyEvent.KEYCODE_DPAD_DOWN -> {
+                if (mSideViewFocus) {
+                    if (sideView.getSelectPosition() + 1 < sideView.getItemSize()) {
+                        sideView.setLastPosition(sideView.getSelectPosition() + 1)
+                        sideView.scrollToPosition(sideView.getSelectPosition())
+                    }
+                } else {
+                    mData?.categories?.let {
+                        if (mAdapter.getLastPosition() + 1 < it.size) {
+                            mAdapter.setSelectPosition(mAdapter.getLastPosition() + 1)
+                            recyclerView_service.scrollToPosition(mAdapter.getLastPosition())
+                            mAdapter.notifyDataSetChanged()
+                        }
+                    }
+                }
+                return true
             }
             KeyEvent.KEYCODE_DPAD_RIGHT -> {
                 return true
             }
             KeyEvent.KEYCODE_DPAD_LEFT -> {
                 return true
+            }
+            KeyEvent.KEYCODE_DPAD_CENTER -> {
+                if (mSideViewFocus) {
+                    sideView.intoPage()
+                    return true
+                }
             }
             KeyEvent.KEYCODE_BACK -> {
                 if (sideView.isShown) {
@@ -142,6 +179,7 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
             view_line.visibility = View.VISIBLE
             mAdapter.sideViewIsShow(true)
             mCategoryFocus = false
+            mSideViewFocus = true
             sideView.scrollToPosition(mCurrentSideIndex)
             sideView.setLastPosition(mCurrentSideIndex)
         } else {
@@ -150,6 +188,7 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
             view_line.visibility = View.GONE
             mAdapter.fromSideViewBack(mCurrentCategoryIndex)
             mCategoryFocus = true
+            mSideViewFocus = false
         }
     }
 

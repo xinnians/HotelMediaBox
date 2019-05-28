@@ -3,7 +3,9 @@ package com.ufistudio.hotelmediabox.pages.home
 import android.arch.lifecycle.Observer
 import android.content.Intent
 import android.graphics.PixelFormat
+import android.opengl.Visibility
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v4.view.ViewPager
 import android.util.Log
@@ -27,18 +29,24 @@ import com.ufistudio.hotelmediabox.pages.fullScreen.FullScreenActivity
 import com.ufistudio.hotelmediabox.pages.weather.WeatherIconEnum
 import com.ufistudio.hotelmediabox.repository.data.*
 import com.ufistudio.hotelmediabox.utils.FileUtils
+import com.ufistudio.hotelmediabox.utils.MiscUtils
+import com.ufistudio.hotelmediabox.utils.XTNetWorkManager
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.view_home_banner.*
 import kotlinx.android.synthetic.main.view_home_weather.*
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), FunctionsAdapter.OnItemClickListener,
     ViewModelsCallback {
     private val TAG_TYPE_1 = 1//Weather Information
     private val TAG_TYPE_2 = 2//Promo Banner
+
+    private val TAG_ENABLE: Int = 1
+    private val TAG_DISABLE: Int = 0
 
     private lateinit var mViewModel: HomeViewModel
     private var mAdapter = FunctionsAdapter()
@@ -132,8 +140,8 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
             }
         })
 
-        list_functions.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        list_functions.adapter = mAdapter
+//        list_functions.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+//        list_functions.adapter = mAdapter
 
         mExoPlayerHelper.initPlayer(context, videoView)
 //        mExoPlayerHelper.setUdpSource(mTestUdpList.get(mChannelIndex))
@@ -269,7 +277,7 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
             }
             KeyEvent.KEYCODE_DPAD_CENTER -> {
 //                mExoPlayerHelper.fullScreen()
-                startActivity(Intent(context, FullScreenActivity::class.java))
+                clickChange()
                 return true
             }
             KeyEvent.KEYCODE_BACK -> {
@@ -277,7 +285,54 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                     mExoPlayerHelper.fullScreen()
                 return true
             }
+            KeyEvent.KEYCODE_DPAD_UP -> {
+                if (focusItem != 0) {
+                    focusItem = 0
+                    focusChange()
+                }
+                return true
+            }
+            KeyEvent.KEYCODE_DPAD_DOWN -> {
+                if (focusItem == 0) {
+                    focusItem = 1
+                    focusChange()
+                }
+                return true
+            }
             KeyEvent.KEYCODE_DPAD_LEFT -> {
+                if (focusItem == 1 && mCurrentPosition != 0) {
+                    focusItem = 5
+                    mCurrentPosition--
+                    mFeatureCurrentList = mFeatureList[mCurrentPosition]!!
+                    mFeatureIconCurrentList = mFeatureIconList[mCurrentPosition]!!
+                    changeFeatureInfo()
+
+                } else {
+                    if (focusItem != 1)
+                        focusItem--
+                }
+                focusChange()
+                return true
+            }
+            KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                //判斷不是最後一列的最後一筆
+                if (mCurrentPosition == mFeatureList.size - 1 && focusItem == mFeatureCurrentList.size) {
+                    return true
+                }
+
+                //判斷item是最後一筆，且還有下一頁，則跳到第一個focus
+                if (focusItem == 5 && mCurrentPosition != mFeatureList.size - 1) {
+                    focusItem = 1
+                    mCurrentPosition++
+                    mFeatureCurrentList = mFeatureList[mCurrentPosition]!!
+                    mFeatureIconCurrentList = mFeatureIconList[mCurrentPosition]!!
+                    changeFeatureInfo()
+                } else {
+                    focusItem++
+                }
+
+                focusChange()
+                return true
             }
         }
         return false
@@ -300,7 +355,10 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                 mFeatureIcons = mData?.home?.icons
 
                 //for setting page reset language use
-                if (activity?.intent?.extras?.getBoolean(Page.ARG_BUNDLE) != null && activity?.intent?.extras?.getBoolean(Page.ARG_BUNDLE)!!) {
+                if (activity?.intent?.extras?.getBoolean(Page.ARG_BUNDLE) != null && activity?.intent?.extras?.getBoolean(
+                                Page.ARG_BUNDLE
+                        )!!
+                ) {
                     val b: Bundle = Bundle()
                     b.putParcelableArrayList(Page.ARG_BUNDLE, mFeatureIcons)
                     getInteractionListener().switchPage(R.id.fragment_container, Page.SETTING, b, true, false, true)
@@ -329,11 +387,88 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
             if (mData?.home?.stage_type?.type != null && mFeatureIcons != null) {
                 mIsRendered = true
                 switchWedge(mData?.home?.stage_type?.type)
-                mAdapter.setData(mFeatureIcons)
+//                mAdapter.setData(mFeatureIcons)
+                mFeatureIcons?.let {
+                    var index = 0
+                    for (item in it) {
+                        if (item.enable == TAG_ENABLE) {
+                            val enumItem = HomeFeatureEnum.findItemById(item.id)
+                            enumItem?.let {
+                                mFeatureCurrentList.add(enumItem)
+                                mFeatureIconCurrentList.add(item)
+
+                                Log.d("neo", "index  = $index")
+                                mFeatureList[index] = mFeatureCurrentList
+                                mFeatureIconList[index] = mFeatureIconCurrentList
+                                if (mFeatureCurrentList.size == 5) {
+                                    mFeatureCurrentList = ArrayList()
+                                    mFeatureIconCurrentList = ArrayList()
+                                    index = index + 1
+                                }
+                            }
+                        }
+                    }
+                    mFeatureCurrentList = mFeatureList[mCurrentPosition]!!
+                    mFeatureIconCurrentList = mFeatureIconList[mCurrentPosition]!!
+                }
+
+
+                Log.d("neo", "mFeatureList = ${mFeatureList.size}")
+                changeFeatureInfo()
+
+
             }
         }
 
-        list_functions?.requestFocus(FOCUS_LEFT)
+//        list_functions?.requestFocus(FOCUS_LEFT)
+
+        focusChange()
+//        layout_frame2?.requestFocus()
+//        layout_frame3?.requestFocus()
+//        layout_frame4?.requestFocus()
+//        layout_frame5?.requestFocus()
+//        layout_frame1?.requestFocus()
+//        videoView_frame?.requestFocus()
+    }
+
+    fun changeFeatureInfo() {
+        if (mFeatureCurrentList.size > 0) {
+            layout_frame1.visibility = View.VISIBLE
+            image_icon.background = ContextCompat.getDrawable(context!!, mFeatureCurrentList[0].icon)
+            text_title.text = mFeatureIconCurrentList[0].name
+        } else {
+            layout_frame1.visibility = View.GONE
+        }
+        if (mFeatureCurrentList.size > 1) {
+            layout_frame2.visibility = View.VISIBLE
+            image_icon2.background = ContextCompat.getDrawable(context!!, mFeatureCurrentList[1].icon)
+            text_title2.text = mFeatureIconCurrentList[1].name
+        } else {
+            layout_frame2.visibility = View.GONE
+        }
+        if (mFeatureCurrentList.size > 2) {
+            layout_frame3.visibility = View.VISIBLE
+            image_icon3.background = ContextCompat.getDrawable(context!!, mFeatureCurrentList[2].icon)
+            text_title3.text = mFeatureIconCurrentList[2].name
+        } else {
+            layout_frame3.visibility = View.GONE
+        }
+
+        if (mFeatureCurrentList.size > 3) {
+            layout_frame4.visibility = View.VISIBLE
+            image_icon4.background = ContextCompat.getDrawable(context!!, mFeatureCurrentList[3].icon)
+            text_title4.text = mFeatureIconCurrentList[3].name
+        } else {
+            layout_frame4.visibility = View.GONE
+        }
+        if (mFeatureCurrentList.size > 4) {
+            layout_frame5.visibility = View.VISIBLE
+            image_icon5.background = ContextCompat.getDrawable(context!!, mFeatureCurrentList[4].icon)
+            text_title5.text = mFeatureIconCurrentList[4].name
+        } else {
+
+            layout_frame5.visibility = View.GONE
+        }
     }
 
     /**
@@ -459,6 +594,181 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                     },{
                         image_banner?.arrowScroll(View.FOCUS_RIGHT)
                     })
+            }
+        }
+    }
+
+    var focusItem = 0
+    fun focusChange() {
+        Log.d("neo", "foucsTiem = $focusItem")
+        when (focusItem) {
+            0 -> {
+                videoView_frame.setBackgroundResource(R.color.homeIconFrameFocused)
+                layout_frame1.setBackgroundResource(R.drawable.home_icon_frame_frame_default)
+                layout_frame2.setBackgroundResource(R.drawable.home_icon_frame_frame_default)
+                layout_frame3.setBackgroundResource(R.drawable.home_icon_frame_frame_default)
+                layout_frame4.setBackgroundResource(R.drawable.home_icon_frame_frame_default)
+                layout_frame5.setBackgroundResource(R.drawable.home_icon_frame_frame_default)
+
+                context?.let { text_title.setTextColor(ContextCompat.getColor(it, android.R.color.white)) }
+                context?.let { text_title2.setTextColor(ContextCompat.getColor(it, android.R.color.white)) }
+                context?.let { text_title3.setTextColor(ContextCompat.getColor(it, android.R.color.white)) }
+                context?.let { text_title4.setTextColor(ContextCompat.getColor(it, android.R.color.white)) }
+                context?.let { text_title5.setTextColor(ContextCompat.getColor(it, android.R.color.white)) }
+                if (mFeatureCurrentList.size > 0)
+                    image_icon.setBackgroundResource(mFeatureCurrentList[0].icon)
+                if (mFeatureCurrentList.size > 1)
+                    image_icon2.setBackgroundResource(mFeatureCurrentList[1].icon)
+                if (mFeatureCurrentList.size > 2)
+                    image_icon3.setBackgroundResource(mFeatureCurrentList[2].icon)
+                if (mFeatureCurrentList.size > 3)
+                    image_icon4.setBackgroundResource(mFeatureCurrentList[3].icon)
+                if (mFeatureCurrentList.size > 4)
+                    image_icon5.setBackgroundResource(mFeatureCurrentList[4].icon)
+            }
+            1 -> {
+
+                videoView_frame.setBackgroundResource(R.color.videoBackground)
+                layout_frame1.setBackgroundResource(R.drawable.home_icon_frame_frame_focused)
+                layout_frame2.setBackgroundResource(R.drawable.home_icon_frame_frame_default)
+                layout_frame3.setBackgroundResource(R.drawable.home_icon_frame_frame_default)
+                layout_frame4.setBackgroundResource(R.drawable.home_icon_frame_frame_default)
+                layout_frame5.setBackgroundResource(R.drawable.home_icon_frame_frame_default)
+
+                context?.let { text_title.setTextColor(ContextCompat.getColor(it, R.color.homeIconFrameFocused)) }
+                context?.let { text_title2.setTextColor(ContextCompat.getColor(it, android.R.color.white)) }
+                context?.let { text_title3.setTextColor(ContextCompat.getColor(it, android.R.color.white)) }
+                context?.let { text_title4.setTextColor(ContextCompat.getColor(it, android.R.color.white)) }
+                context?.let { text_title5.setTextColor(ContextCompat.getColor(it, android.R.color.white)) }
+
+                if (mFeatureCurrentList.size > 0)
+                    image_icon.setBackgroundResource(mFeatureCurrentList[0].focusedIcon)
+                if (mFeatureCurrentList.size > 1)
+                    image_icon2.setBackgroundResource(mFeatureCurrentList[1].icon)
+                if (mFeatureCurrentList.size > 2)
+                    image_icon3.setBackgroundResource(mFeatureCurrentList[2].icon)
+                if (mFeatureCurrentList.size > 3)
+                    image_icon4.setBackgroundResource(mFeatureCurrentList[3].icon)
+                if (mFeatureCurrentList.size > 4)
+                    image_icon5.setBackgroundResource(mFeatureCurrentList[4].icon)
+            }
+            2 -> {
+                videoView_frame.setBackgroundResource(R.color.videoBackground)
+                layout_frame1.setBackgroundResource(R.drawable.home_icon_frame_frame_default)
+                layout_frame2.setBackgroundResource(R.drawable.home_icon_frame_frame_focused)
+                layout_frame3.setBackgroundResource(R.drawable.home_icon_frame_frame_default)
+                layout_frame4.setBackgroundResource(R.drawable.home_icon_frame_frame_default)
+                layout_frame5.setBackgroundResource(R.drawable.home_icon_frame_frame_default)
+
+                context?.let { text_title.setTextColor(ContextCompat.getColor(it, android.R.color.white)) }
+                context?.let { text_title2.setTextColor(ContextCompat.getColor(it, R.color.homeIconFrameFocused)) }
+                context?.let { text_title3.setTextColor(ContextCompat.getColor(it, android.R.color.white)) }
+                context?.let { text_title4.setTextColor(ContextCompat.getColor(it, android.R.color.white)) }
+                context?.let { text_title5.setTextColor(ContextCompat.getColor(it, android.R.color.white)) }
+
+                if (mFeatureCurrentList.size > 0)
+                    image_icon.setBackgroundResource(mFeatureCurrentList[0].icon)
+                if (mFeatureCurrentList.size > 1)
+                    image_icon2.setBackgroundResource(mFeatureCurrentList[1].focusedIcon)
+                if (mFeatureCurrentList.size > 2)
+                    image_icon3.setBackgroundResource(mFeatureCurrentList[2].icon)
+                if (mFeatureCurrentList.size > 3)
+                    image_icon4.setBackgroundResource(mFeatureCurrentList[3].icon)
+                if (mFeatureCurrentList.size > 4)
+                    image_icon5.setBackgroundResource(mFeatureCurrentList[4].icon)
+            }
+            3 -> {
+                videoView_frame.setBackgroundResource(R.color.videoBackground)
+                layout_frame1.setBackgroundResource(R.drawable.home_icon_frame_frame_default)
+                layout_frame2.setBackgroundResource(R.drawable.home_icon_frame_frame_default)
+                layout_frame3.setBackgroundResource(R.drawable.home_icon_frame_frame_focused)
+                layout_frame4.setBackgroundResource(R.drawable.home_icon_frame_frame_default)
+                layout_frame5.setBackgroundResource(R.drawable.home_icon_frame_frame_default)
+
+                context?.let { text_title.setTextColor(ContextCompat.getColor(it, android.R.color.white)) }
+                context?.let { text_title2.setTextColor(ContextCompat.getColor(it, android.R.color.white)) }
+                context?.let { text_title3.setTextColor(ContextCompat.getColor(it, R.color.homeIconFrameFocused)) }
+                context?.let { text_title4.setTextColor(ContextCompat.getColor(it, android.R.color.white)) }
+                context?.let { text_title5.setTextColor(ContextCompat.getColor(it, android.R.color.white)) }
+
+                if (mFeatureCurrentList.size > 0)
+                    image_icon.setBackgroundResource(mFeatureCurrentList[0].icon)
+                if (mFeatureCurrentList.size > 1)
+                    image_icon2.setBackgroundResource(mFeatureCurrentList[1].icon)
+                if (mFeatureCurrentList.size > 2)
+                    image_icon3.setBackgroundResource(mFeatureCurrentList[2].focusedIcon)
+                if (mFeatureCurrentList.size > 3)
+                    image_icon4.setBackgroundResource(mFeatureCurrentList[3].icon)
+                if (mFeatureCurrentList.size > 4)
+                    image_icon5.setBackgroundResource(mFeatureCurrentList[4].icon)
+            }
+            4 -> {
+                videoView_frame.setBackgroundResource(R.color.videoBackground)
+                layout_frame1.setBackgroundResource(R.drawable.home_icon_frame_frame_default)
+                layout_frame2.setBackgroundResource(R.drawable.home_icon_frame_frame_default)
+                layout_frame3.setBackgroundResource(R.drawable.home_icon_frame_frame_default)
+                layout_frame4.setBackgroundResource(R.drawable.home_icon_frame_frame_focused)
+                layout_frame5.setBackgroundResource(R.drawable.home_icon_frame_frame_default)
+
+                context?.let { text_title.setTextColor(ContextCompat.getColor(it, android.R.color.white)) }
+                context?.let { text_title2.setTextColor(ContextCompat.getColor(it, android.R.color.white)) }
+                context?.let { text_title3.setTextColor(ContextCompat.getColor(it, android.R.color.white)) }
+                context?.let { text_title4.setTextColor(ContextCompat.getColor(it, R.color.homeIconFrameFocused)) }
+                context?.let { text_title5.setTextColor(ContextCompat.getColor(it, android.R.color.white)) }
+
+                if (mFeatureCurrentList.size > 0)
+                    image_icon.setBackgroundResource(mFeatureCurrentList[0].icon)
+                if (mFeatureCurrentList.size > 1)
+                    image_icon2.setBackgroundResource(mFeatureCurrentList[1].icon)
+                if (mFeatureCurrentList.size > 2)
+                    image_icon3.setBackgroundResource(mFeatureCurrentList[2].icon)
+                if (mFeatureCurrentList.size > 3)
+                    image_icon4.setBackgroundResource(mFeatureCurrentList[3].focusedIcon)
+                if (mFeatureCurrentList.size > 4)
+                    image_icon5.setBackgroundResource(mFeatureCurrentList[4].icon)
+            }
+            5 -> {
+                videoView_frame.setBackgroundResource(R.color.videoBackground)
+                layout_frame1.setBackgroundResource(R.drawable.home_icon_frame_frame_default)
+                layout_frame2.setBackgroundResource(R.drawable.home_icon_frame_frame_default)
+                layout_frame3.setBackgroundResource(R.drawable.home_icon_frame_frame_default)
+                layout_frame4.setBackgroundResource(R.drawable.home_icon_frame_frame_default)
+                layout_frame5.setBackgroundResource(R.drawable.home_icon_frame_frame_focused)
+
+                context?.let { text_title.setTextColor(ContextCompat.getColor(it, android.R.color.white)) }
+                context?.let { text_title2.setTextColor(ContextCompat.getColor(it, android.R.color.white)) }
+                context?.let { text_title3.setTextColor(ContextCompat.getColor(it, android.R.color.white)) }
+                context?.let { text_title4.setTextColor(ContextCompat.getColor(it, android.R.color.white)) }
+                context?.let { text_title5.setTextColor(ContextCompat.getColor(it, R.color.homeIconFrameFocused)) }
+
+                if (mFeatureCurrentList.size > 0)
+                    image_icon.setBackgroundResource(mFeatureCurrentList[0].icon)
+                if (mFeatureCurrentList.size > 1)
+                    image_icon2.setBackgroundResource(mFeatureCurrentList[1].icon)
+                if (mFeatureCurrentList.size > 2)
+                    image_icon3.setBackgroundResource(mFeatureCurrentList[2].icon)
+                if (mFeatureCurrentList.size > 3)
+                    image_icon4.setBackgroundResource(mFeatureCurrentList[3].icon)
+                if (mFeatureCurrentList.size > 4)
+                    image_icon5.setBackgroundResource(mFeatureCurrentList[4].focusedIcon)
+            }
+        }
+    }
+
+    fun clickChange() {
+        when (focusItem) {
+            0 -> {
+                startActivity(Intent(context, FullScreenActivity::class.java))
+            }
+            else -> {
+                val page: Int = mFeatureCurrentList[focusItem - 1].page // 因為focusItem = 0是播放器，所以要 -1
+                if (page == -100) {
+                    Toast.makeText(context, "尚未實作", Toast.LENGTH_SHORT).show()
+                    return
+                }
+                val b = Bundle()
+                b.putParcelableArrayList(Page.ARG_BUNDLE, mFeatureIcons)
+                getInteractionListener().switchPage(R.id.fragment_container, page, b, true, false, true)
             }
         }
     }

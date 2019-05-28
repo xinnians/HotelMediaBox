@@ -24,6 +24,12 @@ import com.ufistudio.hotelmediabox.utils.FileUtils
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_BACK_TITLE
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_INDEX
 import kotlinx.android.synthetic.main.fragment_flights_info.*
+import kotlinx.android.synthetic.main.fragment_flights_info.layout_back
+import kotlinx.android.synthetic.main.fragment_flights_info.recyclerView_service
+import kotlinx.android.synthetic.main.fragment_flights_info.sideView
+import kotlinx.android.synthetic.main.fragment_flights_info.text_back
+import kotlinx.android.synthetic.main.fragment_flights_info.view_line
+import kotlinx.android.synthetic.main.fragment_weather.*
 import kotlinx.android.synthetic.main.view_bottom_back_home.*
 import kotlinx.android.synthetic.main.view_bottom_ok_back_home.*
 
@@ -103,13 +109,53 @@ class FlightsInfoFragment : InteractionView<OnPageInteractionListener.Primary>()
 
     override fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         when (keyCode) {
-            KeyEvent.KEYCODE_DPAD_DOWN,
             KeyEvent.KEYCODE_DPAD_UP -> {
                 if (mContentFocus) {
                     return true
                 } else {
-                    //若不是在ContentFocus，則將當前在播放的label設為false好讓focus可以更新
-                    mContentPlaying = false
+                    if (mSideViewFocus) {
+                        if (sideView.getSelectPosition() > 0) {
+                            sideView.setLastPosition(sideView.getSelectPosition() - 1)
+                            sideView.scrollToPosition(sideView.getSelectPosition())
+                        }
+                    } else {
+                        //若不是在ContentFocus，則將當前在播放的label設為false好讓focus可以更新
+                        mContentPlaying = false
+                        mData?.categories?.let {
+                            if (mAdapter.getLastPosition() > 0) {
+                                mAdapter.setSelectPosition(mAdapter.getLastPosition() - 1)
+                                recyclerView_service.scrollToPosition(mAdapter.getLastPosition())
+                                mAdapter.notifyDataSetChanged()
+                            }
+                        }
+                    }
+                    return true
+                }
+            }
+            KeyEvent.KEYCODE_DPAD_DOWN -> {
+                if (mSideViewFocus) {
+                    if (sideView.getSelectPosition() + 1 < sideView.getItemSize()) {
+                        sideView.setLastPosition(sideView.getSelectPosition() + 1)
+                        sideView.scrollToPosition(sideView.getSelectPosition())
+                    }
+                } else {
+                    if (mCategoryFocus) {
+                        mContentPlaying = false
+                        mData?.categories?.let {
+                            if (mAdapter.getLastPosition() + 1 < it.size) {
+                                mAdapter.setSelectPosition(mAdapter.getLastPosition() + 1)
+                                recyclerView_service.scrollToPosition(mAdapter.getLastPosition())
+                                mAdapter.notifyDataSetChanged()
+                            }
+                        }
+                        return true
+                    }
+                }
+            }
+            KeyEvent.KEYCODE_DPAD_CENTER -> {
+                if (mSideViewFocus) {
+                    sideView.intoPage()
+                    return true
                 }
             }
             KeyEvent.KEYCODE_DPAD_RIGHT -> {
@@ -167,6 +213,7 @@ class FlightsInfoFragment : InteractionView<OnPageInteractionListener.Primary>()
             view_line.visibility = View.VISIBLE
             mAdapter.sideViewIsShow(true)
             mCategoryFocus = false
+            mSideViewFocus = true
             sideView.scrollToPosition(mCurrentSideIndex)
             sideView.setLastPosition(mCurrentSideIndex)
         } else {
@@ -175,6 +222,7 @@ class FlightsInfoFragment : InteractionView<OnPageInteractionListener.Primary>()
             view_line.visibility = View.GONE
             mAdapter.fromSideViewBack(mCurrentCategoryIndex)
             mCategoryFocus = true
+            mSideViewFocus = false
         }
     }
 
