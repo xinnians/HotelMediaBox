@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.PixelFormat
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v4.view.ViewPager
 import android.util.Log
 import android.view.*
 import com.ufistudio.hotelmediabox.R
@@ -26,8 +27,6 @@ import com.ufistudio.hotelmediabox.pages.fullScreen.FullScreenActivity
 import com.ufistudio.hotelmediabox.pages.weather.WeatherIconEnum
 import com.ufistudio.hotelmediabox.repository.data.*
 import com.ufistudio.hotelmediabox.utils.FileUtils
-import com.ufistudio.hotelmediabox.utils.GlideImageLoader
-import com.youth.banner.BannerConfig
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -37,7 +36,7 @@ import kotlinx.android.synthetic.main.view_home_weather.*
 import java.util.concurrent.TimeUnit
 
 class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), FunctionsAdapter.OnItemClickListener,
-        ViewModelsCallback {
+    ViewModelsCallback {
     private val TAG_TYPE_1 = 1//Weather Information
     private val TAG_TYPE_2 = 2//Promo Banner
 
@@ -59,6 +58,17 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
     private var mViewChannelName: TextView? = null
     private var mViewChannelLogo: ImageView? = null
     private var mTVChannel: TVChannel? = null
+
+    private var mFeatureList: HashMap<Int, ArrayList<HomeFeatureEnum>> =
+        HashMap() //所有的Feature列表 Int:第幾列, ArrayList<HomeFeatureEnum>:每一頁的Icon
+    private var mFeatureCurrentList: ArrayList<HomeFeatureEnum> = ArrayList()      //當前的Feature列表
+    private var mFeatureIconList: HashMap<Int, ArrayList<HomeIcons>> = HashMap() //Home Icon相關資料，基本上跟著mFeatureList走
+    private var mFeatureIconCurrentList: ArrayList<HomeIcons> =
+        ArrayList()      //當前的Home Icon相關資料，基本上跟著mFeatureCurrentList走
+    private var mCurrentPosition: Int = 0                                        //當前的Feature在第幾頁
+    private var mBannerList: ArrayList<ImageView>? = ArrayList()
+    private var mBannerAdapter: BannerAdapter? = null
+    private var mBannerDisposable: Disposable? = null
 
     private var mTVListener: TVController.OnTVListener = object : TVController.OnTVListener {
         override fun onScanFinish() {
@@ -159,10 +169,14 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
         text_channel?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
         image_channel?.let { viewLogo ->
 
-            Log.e("Ian","mTVChannel?.chLogo?.normalIconName : ${mTVChannel?.chLogo?.normalIconName.toString()}")
+            Log.e("Ian", "mTVChannel?.chLogo?.normalIconName : ${mTVChannel?.chLogo?.normalIconName.toString()}")
             Glide.with(this)
-                .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.normalIconName
-                    ?: ""))
+                .load(
+                    FileUtils.getFileFromStorage(
+                        mTVChannel?.chLogo?.normalIconName
+                            ?: ""
+                    )
+                )
                 .skipMemoryCache(true)
                 .into(viewLogo)
         }
@@ -180,6 +194,9 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
 
     override fun onStop() {
         super.onStop()
+        if (mBannerDisposable != null && !mBannerDisposable!!.isDisposed) {
+            mBannerDisposable?.dispose()
+        }
         if (mDisposable != null && !mDisposable!!.isDisposed) {
             mDisposable?.dispose()
         }
@@ -195,12 +212,19 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                 mTVChannel = TVController.chooseUp()
                 text_channel?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
                 image_channel?.let { viewLogo ->
-                    Log.e("Ian","mTVChannel?.chLogo?.normalIconName : ${mTVChannel?.chLogo?.normalIconName.toString()}")
+                    Log.e(
+                        "Ian",
+                        "mTVChannel?.chLogo?.normalIconName : ${mTVChannel?.chLogo?.normalIconName.toString()}"
+                    )
                     Glide.with(this)
-                            .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.normalIconName
-                                    ?: ""))
-                            .skipMemoryCache(true)
-                            .into(viewLogo)
+                        .load(
+                            FileUtils.getFileFromStorage(
+                                mTVChannel?.chLogo?.normalIconName
+                                    ?: ""
+                            )
+                        )
+                        .skipMemoryCache(true)
+                        .into(viewLogo)
                 }
                 setPlayTimer()
 
@@ -225,12 +249,19 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                 mTVChannel = TVController.chooseDown()
                 text_channel?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
                 image_channel?.let { viewLogo ->
-                    Log.e("Ian","mTVChannel?.chLogo?.normalIconName : ${mTVChannel?.chLogo?.normalIconName.toString()}")
+                    Log.e(
+                        "Ian",
+                        "mTVChannel?.chLogo?.normalIconName : ${mTVChannel?.chLogo?.normalIconName.toString()}"
+                    )
                     Glide.with(this)
-                            .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.normalIconName
-                                    ?: ""))
-                            .skipMemoryCache(true)
-                            .into(viewLogo)
+                        .load(
+                            FileUtils.getFileFromStorage(
+                                mTVChannel?.chLogo?.normalIconName
+                                    ?: ""
+                            )
+                        )
+                        .skipMemoryCache(true)
+                        .into(viewLogo)
                 }
                 setPlayTimer()
 
@@ -322,9 +353,9 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                         if (icon != -1) {
                             imageView_weather.visibility = View.VISIBLE
                             Glide.with(this)
-                                    .load(icon)
-                                    .skipMemoryCache(true)
-                                    .into(imageView_weather)
+                                .load(icon)
+                                .skipMemoryCache(true)
+                                .into(imageView_weather)
                         } else {
                             imageView_weather.visibility = View.INVISIBLE
                         }
@@ -347,12 +378,87 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
             TAG_TYPE_2 -> {
                 include_weather.visibility = View.INVISIBLE
                 include_home_banner.visibility = View.VISIBLE
-                image_banner.setBannerStyle(BannerConfig.NOT_INDICATOR)
-                image_banner.setImages(mData?.home?.promo_banner?.toList())
-                    .setImageLoader(GlideImageLoader())
-                    .setDelayTime(3000)
-                    .start()
 
+                mData?.home?.promo_banner?.toList()?.let { list ->
+                    context?.let {
+                        var view: ImageView = ImageView(it)
+                        view.scaleType = ImageView.ScaleType.FIT_XY
+                        Glide.with(it)
+                            .load(FileUtils.getFileFromStorage(list.last().image))
+                            .into(view)
+                        mBannerList?.add(view)
+                    }
+                    for (item in list) {
+                        context?.let {
+                            var view: ImageView = ImageView(it)
+                            view.scaleType = ImageView.ScaleType.FIT_XY
+                            Glide.with(it)
+                                .load(FileUtils.getFileFromStorage(item.image))
+                                .into(view)
+                            mBannerList?.add(view)
+                        }
+                    }
+                    context?.let {
+                        var view: ImageView = ImageView(it)
+                        view.scaleType = ImageView.ScaleType.FIT_XY
+                        Glide.with(it)
+                            .load(FileUtils.getFileFromStorage(list.first().image))
+                            .into(view)
+                        mBannerList?.add(view)
+                    }
+                }
+                mBannerAdapter = mBannerList?.let { BannerAdapter(it) }
+                image_banner.adapter = mBannerAdapter
+                image_banner.currentItem = 1
+                image_banner.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+
+                    var currentPosition: Int = 0
+
+                    override fun onPageScrollStateChanged(state: Int) {
+                        // ViewPager.SCROLL_STATE_IDLE 标识的状态是当前页面完全展现，并且没有动画正在进行中，如果不
+                        // 是此状态下执行 setCurrentItem 方法回在首位替换的时候会出现跳动！
+                        if (state != ViewPager.SCROLL_STATE_IDLE) return
+
+                        mBannerList?.let { list ->
+                            // 当视图在第一个时，将页面号设置为图片的最后一张。
+                            if (currentPosition == 0) {
+                                image_banner.setCurrentItem(list.size - 2, false)
+
+                            } else if (currentPosition == list.size - 1) {
+                                // 当视图在最后一个是,将页面号设置为图片的第一张。
+                                image_banner.setCurrentItem(1, false)
+                            }
+                        }
+                    }
+
+                    override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+                    }
+
+                    override fun onPageSelected(position: Int) {
+                        currentPosition = position
+                    }
+                })
+                image_banner.setOnKeyListener(object:View.OnKeyListener{
+                    override fun onKey(v: View?, keyCode: Int, event: KeyEvent?): Boolean {
+                        return false
+                    }
+
+                })
+
+
+                if (mBannerDisposable != null && !mBannerDisposable!!.isDisposed) {
+                    mBannerDisposable?.dispose()
+                }
+                mBannerDisposable = Observable.interval(0,4,TimeUnit.SECONDS)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                        onNext-> image_banner?.arrowScroll(View.FOCUS_RIGHT)
+                    },{
+                        onError ->
+                    },{
+                        image_banner?.arrowScroll(View.FOCUS_RIGHT)
+                    })
             }
         }
     }
@@ -363,10 +469,10 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
         }
 
         mDisposable = Observable.timer(400, TimeUnit.MILLISECONDS)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        {}, { onError -> Log.e(TAG, "error:$onError") }, {
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {}, { onError -> Log.e(TAG, "error:$onError") }, {
                     //                    mViewModel.getTVHelper().playCurrent()?.subscribe()
                     TVController.playCurrent()
                 })

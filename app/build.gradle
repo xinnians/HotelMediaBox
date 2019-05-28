@@ -115,6 +115,5 @@ dependencies {
     implementation 'com.airbnb.android:lottie:2.7.0'
     implementation files('libs/classes.jar')
 
-    implementation 'com.youth.banner:banner:1.4.10'
-
+    implementation 'com.android.support:multidex:1.0.3'
 }
