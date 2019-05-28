@@ -30,6 +30,8 @@ import com.ufistudio.hotelmediabox.repository.data.*
 import com.ufistudio.hotelmediabox.utils.FileUtils
 import com.ufistudio.hotelmediabox.utils.MiscUtils
 import com.ufistudio.hotelmediabox.utils.XTNetWorkManager
+import com.ufistudio.hotelmediabox.utils.GlideImageLoader
+import com.youth.banner.BannerConfig
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -167,6 +169,18 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
 //            }
 //
 //        }, {})
+        mTVChannel = TVController.getCurrentChannel()
+        text_channel?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
+        image_channel?.let { viewLogo ->
+
+            Log.e("Ian","mTVChannel?.chLogo?.normalIconName : ${mTVChannel?.chLogo?.normalIconName.toString()}")
+            Glide.with(this)
+                .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.normalIconName
+                    ?: ""))
+                .skipMemoryCache(true)
+                .into(viewLogo)
+        }
+
         TVController.registerListener(mTVListener)
         TVController.initAVPlayer(TVController.SCREEN_TYPE.HOMEPAGE)
     }
@@ -193,8 +207,9 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
 
 //                mTVChannel = mViewModel.getTVHelper().chooseUp()
                 mTVChannel = TVController.chooseUp()
-                mViewChannelName?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
-                mViewChannelLogo?.let { viewLogo ->
+                text_channel?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
+                image_channel?.let { viewLogo ->
+                    Log.e("Ian","mTVChannel?.chLogo?.normalIconName : ${mTVChannel?.chLogo?.normalIconName.toString()}")
                     Glide.with(this)
                             .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.normalIconName
                                     ?: ""))
@@ -222,8 +237,9 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
 
 //                mTVChannel = mViewModel.getTVHelper().chooseDown()
                 mTVChannel = TVController.chooseDown()
-                mViewChannelName?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
-                mViewChannelLogo?.let { viewLogo ->
+                text_channel?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
+                image_channel?.let { viewLogo ->
+                    Log.e("Ian","mTVChannel?.chLogo?.normalIconName : ${mTVChannel?.chLogo?.normalIconName.toString()}")
                     Glide.with(this)
                             .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.normalIconName
                                     ?: ""))
@@ -439,6 +455,7 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
 
         when (type) {
             TAG_TYPE_1 -> {
+                include_home_banner.visibility = View.INVISIBLE
                 include_weather.visibility = View.VISIBLE
                 if (mWeatherData != null) {
                     mWeatherData?.forecasts?.get(0)?.let {
@@ -469,11 +486,13 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
 
             }
             TAG_TYPE_2 -> {
-
-                Glide.with(this)
-                        .load(FileUtils.getFileFromStorage(mData?.home?.promo_banner!![0].image))
-                        .skipMemoryCache(true)
-                        .into(image_banner)
+                include_weather.visibility = View.INVISIBLE
+                include_home_banner.visibility = View.VISIBLE
+                image_banner.setBannerStyle(BannerConfig.NOT_INDICATOR)
+                image_banner.setImages(mData?.home?.promo_banner?.toList())
+                    .setImageLoader(GlideImageLoader())
+                    .setDelayTime(3000)
+                    .start()
 
             }
         }

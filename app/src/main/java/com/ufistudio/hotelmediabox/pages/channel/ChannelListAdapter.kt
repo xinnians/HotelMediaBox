@@ -104,7 +104,10 @@ class ChannelListAdapter :
             return null
         }
         if (mSelectPosition == 0 && mFilterItems?.size ?: 0 > 0) {
-            return mFilterItems?.get(0)
+            mSelectPosition = mFilterItems?.size?.minus(1) ?: 0
+            notifyDataSetChanged()
+            mCurrentTVChannel = mFilterItems?.get(mSelectPosition)
+            return mCurrentTVChannel
         }
         mSelectPosition -= 1
         notifyDataSetChanged()
@@ -117,7 +120,10 @@ class ChannelListAdapter :
             return null
         }
         if ((mFilterItems?.size ?: 0) - 1 == mSelectPosition) {
-            return mFilterItems?.get(mSelectPosition)
+            mSelectPosition = 0
+            notifyDataSetChanged()
+            mCurrentTVChannel = mFilterItems?.get(mSelectPosition)
+            return mCurrentTVChannel
         }
         mSelectPosition++
         notifyDataSetChanged()

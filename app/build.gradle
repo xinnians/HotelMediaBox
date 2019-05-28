@@ -10,7 +10,7 @@ android {
         applicationId "com.ufistudio.hotelmediabox"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 3
+        versionCode 4
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -116,4 +116,7 @@ dependencies {
     implementation 'com.airbnb.android:lottie:2.7.0'
     implementation files('libs/classes.jar')
     implementation 'com.android.support:multidex:1.0.3'
+
+    implementation 'com.youth.banner:banner:1.4.10'
+
 }

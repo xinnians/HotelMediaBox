@@ -325,6 +325,9 @@ object TVController {
     }
 
     fun getCurrentChannel(): TVChannel? {
+        if (mCurrentChannel == null) {
+            mCurrentChannel = getChannelList()?.get(0)
+        }
         return mCurrentChannel
     }
 
@@ -373,12 +376,18 @@ object TVController {
             val stdIn = BufferedReader(InputStreamReader(ByteArrayInputStream(msg.toByteArray())))
             var userInput: String = ""
 
-            while (stdIn.readLine()?.apply { userInput = this } != null) {
-                out?.println(userInput)
-                //TODO 這邊會connect reset 需要包起來
-                result = input?.readLine()
-                Log.e(TAG, "echo: $result")
+            try {
+                while (stdIn.readLine()?.apply { userInput = this } != null) {
+                    out?.println(userInput)
+                    //TODO 這邊會connect reset 需要包起來
+                    result = input?.readLine()
+                    Log.e(TAG, "echo: $result")
+                }
+            }catch (e: Exception){
+                Log.e(TAG,"readLine exception: $e")
             }
+
+
 
 //            Log.e(TAG, "command finish.")
 
