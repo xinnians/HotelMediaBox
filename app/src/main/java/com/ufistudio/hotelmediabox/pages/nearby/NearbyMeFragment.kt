@@ -115,14 +115,38 @@ class NearbyMeFragment : InteractionView<OnPageInteractionListener.Primary>(), O
 
     override fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         when (keyCode) {
-            KeyEvent.KEYCODE_DPAD_DOWN,
+            KeyEvent.KEYCODE_DPAD_DOWN ->{
+                if (mContentFocus) {
+                    return true
+                } else {
+                    //若不是在ContentFocus，則將當前在播放的label設為false好讓focus可以更新
+                    mContentPlaying = false
+                    mData?.categories?.let {
+                        if (mAdapter.getLastPosition() + 1 < it.size) {
+                            mAdapter.setSelectPosition(mAdapter.getLastPosition() + 1)
+                            recyclerView_service.scrollToPosition(mAdapter.getLastPosition())
+                            mAdapter.notifyDataSetChanged()
+                        }
+                    }
+
+                }
+                return true
+            }
             KeyEvent.KEYCODE_DPAD_UP -> {
                 if (mContentFocus) {
                     return true
                 } else {
                     //若不是在ContentFocus，則將當前在播放的label設為false好讓focus可以更新
                     mContentPlaying = false
+                    mData?.categories?.let {
+                        if (mAdapter.getLastPosition() > 0) {
+                            mAdapter.setSelectPosition(mAdapter.getLastPosition() - 1)
+                            recyclerView_service.scrollToPosition(mAdapter.getLastPosition())
+                            mAdapter.notifyDataSetChanged()
+                        }
+                    }
                 }
+                return true
             }
             KeyEvent.KEYCODE_DPAD_RIGHT -> {
                 if (!sideView.isShown && mCategoryFocus) {
