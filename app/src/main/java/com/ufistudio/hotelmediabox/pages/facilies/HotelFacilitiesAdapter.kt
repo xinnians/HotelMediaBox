@@ -85,19 +85,12 @@ class HotelFacilitiesAdapter(private var mClickListener: OnItemClickListener, pr
                 holder.itemView.setTag(TAG_INDEX, position)
 
                 holder.itemView.setOnClickListener { mClickListener.onClick(holder.itemView) }
-                holder.itemView.setOnFocusChangeListener { v, hasFocus ->
-                    if (hasFocus) {
-                        mFocusListener.onFoucsed(holder.itemView)
-                        holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.colorYellow))
-                    } else {
-                        holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
-                    }
-                }
 
                 if (mSelectIndex == position) {
-                    holder.itemView.requestFocus()
+                    mFocusListener.onFoucsed(holder.itemView)
+                    holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.colorYellow))
                 } else {
-                    holder.itemView.clearFocus()
+                    holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
                 }
             }
         }
@@ -110,7 +103,16 @@ class HotelFacilitiesAdapter(private var mClickListener: OnItemClickListener, pr
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind() {
-            itemView.isFocusable = true
+            itemView.isFocusable = false
         }
     }
+
+    fun setSelectPosition(selectIndex: Int) {
+        mSelectIndex = selectIndex
+    }
+
+    fun getLastPosition(): Int {
+        return mSelectIndex
+    }
+
 }
