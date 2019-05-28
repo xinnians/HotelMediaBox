@@ -30,6 +30,10 @@ import com.ufistudio.hotelmediabox.utils.FileUtils
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_BACK_TITLE
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_INDEX
 import kotlinx.android.synthetic.main.fragment_room_service.*
+import kotlinx.android.synthetic.main.fragment_room_service.layout_back
+import kotlinx.android.synthetic.main.fragment_room_service.sideView
+import kotlinx.android.synthetic.main.fragment_room_service.text_back
+import kotlinx.android.synthetic.main.fragment_room_service.view_line
 import kotlinx.android.synthetic.main.view_bottom_back_home.*
 
 private const val TAG_IMAGE = "image"
@@ -50,6 +54,7 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
     private var mContentFocus: Boolean = false //判斷目前focus是否在右邊的view
     private var mCategoryFocus: Boolean = false
     private var mContentPlaying: Boolean = false //判斷目前是否有開始播放影片了
+    private var mSideViewFocus: Boolean = false
     private var mSideViewState: HashMap<Int, String> = HashMap<Int, String>()//拿來儲存當前的sideView index與 Back上方的Title
     private val mTemplate2Adapter: TemplateType2RecyclerViewAdapter = TemplateType2RecyclerViewAdapter()
 
@@ -115,14 +120,47 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
 
     override fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         when (keyCode) {
-            KeyEvent.KEYCODE_DPAD_UP,
-            KeyEvent.KEYCODE_DPAD_DOWN -> {
+            KeyEvent.KEYCODE_DPAD_UP -> {
                 if (mContentFocus) {
                     return true
                 } else {
+                    if (mSideViewFocus) {
+                        if (sideView.getSelectPosition() > 0) {
+                            sideView.setLastPosition(sideView.getSelectPosition() - 1)
+                            sideView.scrollToPosition(sideView.getSelectPosition())
+                        }
+                    } else {
+                        //若不是在ContentFocus，則將當前在播放的label設為false好讓focus可以更新
+                        mContentPlaying = false
+                        mData?.categories?.let {
+                            if (mAdapter.getLastPosition() > 0) {
+                                mAdapter.setSelectPosition(mAdapter.getLastPosition() - 1)
+                                recyclerView_service.scrollToPosition(mAdapter.getLastPosition())
+                                mAdapter.notifyDataSetChanged()
+                            }
+                        }
+                    }
+                }
+                return true
+            }
+            KeyEvent.KEYCODE_DPAD_DOWN -> {
+                if (mSideViewFocus) {
+                    if (sideView.getSelectPosition() + 1 < sideView.getItemSize()) {
+                        sideView.setLastPosition(sideView.getSelectPosition() + 1)
+                        sideView.scrollToPosition(sideView.getSelectPosition())
+                    }
+                } else {
                     //若不是在ContentFocus，則將當前在播放的label設為false好讓focus可以更新
                     mContentPlaying = false
+                    mData?.categories?.let {
+                        if (mAdapter.getLastPosition() + 1 < it.size) {
+                            mAdapter.setSelectPosition(mAdapter.getLastPosition() + 1)
+                            recyclerView_service.scrollToPosition(mAdapter.getLastPosition())
+                            mAdapter.notifyDataSetChanged()
+                        }
+                    }
                 }
+                return true
             }
             KeyEvent.KEYCODE_DPAD_RIGHT -> {
                 if (!sideView.isShown && mCategoryFocus) {
@@ -137,6 +175,12 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
                     }
                 }
                 return true
+            }
+            KeyEvent.KEYCODE_DPAD_CENTER -> {
+                if (mSideViewFocus) {
+                    sideView.intoPage()
+                    return true
+                }
             }
             KeyEvent.KEYCODE_DPAD_LEFT -> {
                 if (mContentFocus) {
@@ -179,6 +223,7 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
             mAdapter.sideViewIsShow(true)
             mCategoryFocus = false
             mContentFocus = false
+            mSideViewFocus = true
             sideView.scrollToPosition(mCurrentSideIndex)
             sideView.setLastPosition(mCurrentSideIndex)
         } else {
@@ -187,6 +232,7 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
             view_line.visibility = View.GONE
             mAdapter.fromSideViewBack(mCurrentCategoryIndex)
             mCategoryFocus = true
+            mSideViewFocus = false
         }
     }
 
@@ -290,7 +336,8 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
         } else if (item.file_type.hashCode() == TAG_VIDEO.hashCode()) {
             mContentPlaying = true
             mExoPlayerHelper.initPlayer(context, mVideoView!!)
-            mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(item.file_name)?.absolutePath?:""))
+            mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(item.file_name)?.absolutePath
+                    ?: ""))
             mVideoView!!.visibility = View.VISIBLE
             imageView?.visibility = View.INVISIBLE
         } else {

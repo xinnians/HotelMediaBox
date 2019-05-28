@@ -26,6 +26,10 @@ import com.ufistudio.hotelmediabox.utils.FileUtils
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_BACK_TITLE
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_INDEX
 import kotlinx.android.synthetic.main.fragment_vod.*
+import kotlinx.android.synthetic.main.fragment_vod.layout_back
+import kotlinx.android.synthetic.main.fragment_vod.sideView
+import kotlinx.android.synthetic.main.fragment_vod.text_back
+import kotlinx.android.synthetic.main.fragment_vod.view_line
 import kotlinx.android.synthetic.main.view_bottom_back_home.*
 import kotlinx.android.synthetic.main.view_bottom_watch_back_home.*
 
@@ -41,6 +45,8 @@ class VodFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItem
     private var mIsRendered: Boolean = false //判斷是否已經塞資料
     private var mIsBack: Boolean = false //判斷是否從content回到category
     private var mSideViewState: HashMap<Int, String> = HashMap<Int, String>()//拿來儲存當前的sideView index與 Back上方的Title
+
+    private var mSideViewFocus: Boolean = false
 
     private var mData: Vod? = null
     private var mHomeIcons: ArrayList<HomeIcons>? = null //SideView List
@@ -114,15 +120,48 @@ class VodFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItem
 
     override fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         when (keyCode) {
-            KeyEvent.KEYCODE_DPAD_DOWN,
             KeyEvent.KEYCODE_DPAD_UP -> {
                 if (mContentFocus) {
                     return true
                 } else {
+                    if (mSideViewFocus) {
+                        if (sideView.getSelectPosition() > 0) {
+                            sideView.setLastPosition(sideView.getSelectPosition() - 1)
+                            sideView.scrollToPosition(sideView.getSelectPosition())
+                        }
+                    } else {
+                        //若不是在ContentFocus，則將當前在播放的label設為false好讓focus可以更新
+                        mContentPlaying = false
+                        mIsBack = false
+                        mData?.categories?.let {
+                            if (mAdapter.getLastPosition() > 0) {
+                                mAdapter.setSelectPosition(mAdapter.getLastPosition() - 1)
+                                recyclerView_service.scrollToPosition(mAdapter.getLastPosition())
+                                mAdapter.notifyDataSetChanged()
+                            }
+                        }
+                    }
+                    return true
+                }
+            }
+            KeyEvent.KEYCODE_DPAD_DOWN->{
+                if (mSideViewFocus) {
+                    if (sideView.getSelectPosition() + 1 < sideView.getItemSize()) {
+                        sideView.setLastPosition(sideView.getSelectPosition() + 1)
+                        sideView.scrollToPosition(sideView.getSelectPosition())
+                    }
+                } else {
                     //若不是在ContentFocus，則將當前在播放的label設為false好讓focus可以更新
                     mContentPlaying = false
-                    mIsBack = false
+                    mData?.categories?.let {
+                        if (mAdapter.getLastPosition() + 1 < it.size) {
+                            mAdapter.setSelectPosition(mAdapter.getLastPosition() + 1)
+                            recyclerView_service.scrollToPosition(mAdapter.getLastPosition())
+                            mAdapter.notifyDataSetChanged()
+                        }
+                    }
                 }
+                return true
             }
             KeyEvent.KEYCODE_DPAD_RIGHT -> {
                 if (!sideView.isShown && mCategoryFocus) {
@@ -168,12 +207,17 @@ class VodFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItem
                 return true
             }
             KeyEvent.KEYCODE_DPAD_CENTER -> {
-                val i = Intent(context!!, VodFullScreenActivity::class.java)
-                val b = Bundle()
-                b.putParcelable("bottom_note", mNoteBottom)
-                b.putString("a","aaa")
-                i.putExtras(b)
-                startActivity(i)
+                if (mSideViewFocus) {
+                    sideView.intoPage()
+                    return true
+                }else {
+                    val i = Intent(context!!, VodFullScreenActivity::class.java)
+                    val b = Bundle()
+                    b.putParcelable("bottom_note", mNoteBottom)
+                    b.putString("a", "aaa")
+                    i.putExtras(b)
+                    startActivity(i)
+                }
             }
         }
         //TODO 串接ok鍵播放預告片
@@ -194,6 +238,7 @@ class VodFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItem
             mAdapter.sideViewIsShow(true)
             mCategoryFocus = false
             mContentFocus = false
+            mSideViewFocus = true
             sideView.scrollToPosition(mCurrentSideIndex)
             sideView.setLastPosition(mCurrentSideIndex)
         } else {
@@ -202,6 +247,7 @@ class VodFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItem
             view_line.visibility = View.GONE
             mAdapter.fromSideViewBack(mCurrentCategoryIndex)
             mCategoryFocus = true
+            mSideViewFocus = false
         }
     }
 
