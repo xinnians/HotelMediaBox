@@ -145,9 +145,9 @@ open class PaneViewActivity : BaseActivity(), OnPageInteractionListener.Pane {
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        if (event?.repeatCount!=0){
-            return true
-        }
+//        if (event?.repeatCount!=0){
+//            return true
+//        }
         Log.d(TAG, "keycode = $keyCode  ,event = $event")
 
         when (keyCode) {
