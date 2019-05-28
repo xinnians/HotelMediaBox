@@ -43,6 +43,14 @@ class VodAdapter(private var mClickListener: OnItemClickListener, private var mF
         notifyItemChanged(selectIndex)
     }
 
+    fun setSelectPosition(selectIndex: Int) {
+        mSelectIndex = selectIndex
+    }
+
+    fun getLastPosition(): Int {
+        return mSelectIndex
+    }
+
     fun fromSideViewBack(selectIndex: Int) {
         mSideViewIsShow = false
         mSelectIndex = selectIndex
@@ -73,31 +81,21 @@ class VodAdapter(private var mClickListener: OnItemClickListener, private var mF
         holder.itemView.text_title.text = item.title
         if (mSideViewIsShow) {
             holder.itemView.setOnClickListener(null)
-            holder.itemView.onFocusChangeListener = null
             holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.white30))
         } else {
             if (mClearFocus) {
                 holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
-                holder.itemView.clearFocus()
             } else {
                 holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
                 holder.itemView.setTag(TAG_ITEM, item)
                 holder.itemView.setTag(TAG_INDEX, position)
 
                 holder.itemView.setOnClickListener { mClickListener.onClick(holder.itemView) }
-                holder.itemView.setOnFocusChangeListener { v, hasFocus ->
-                    if (hasFocus) {
-                        mFocusListener.onFoucsed(holder.itemView)
-                        holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.colorYellow))
-                    } else {
-                        holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
-                    }
-                }
-
                 if (mSelectIndex == position) {
-                    holder.itemView.requestFocus()
+                    holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.colorYellow))
+                    mFocusListener.onFoucsed(holder.itemView)
                 } else {
-                    holder.itemView.clearFocus()
+                    holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
                 }
             }
         }
@@ -110,7 +108,6 @@ class VodAdapter(private var mClickListener: OnItemClickListener, private var mF
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind() {
-            itemView.isFocusable = true
         }
     }
 }

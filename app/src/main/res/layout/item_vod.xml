@@ -10,8 +10,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_9sdp"
         android:layout_marginBottom="@dimen/_9sdp"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
         android:textSize="@dimen/_11ssp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
