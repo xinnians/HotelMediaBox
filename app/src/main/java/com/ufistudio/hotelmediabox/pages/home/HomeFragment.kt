@@ -28,12 +28,15 @@ import com.ufistudio.hotelmediabox.pages.fullScreen.FullScreenActivity
 import com.ufistudio.hotelmediabox.pages.weather.WeatherIconEnum
 import com.ufistudio.hotelmediabox.repository.data.*
 import com.ufistudio.hotelmediabox.utils.FileUtils
+import com.ufistudio.hotelmediabox.utils.MiscUtils
+import com.ufistudio.hotelmediabox.utils.XTNetWorkManager
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.view_home_banner.*
 import kotlinx.android.synthetic.main.view_home_weather.*
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), FunctionsAdapter.OnItemClickListener,
@@ -271,20 +274,11 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                 return true
             }
             KeyEvent.KEYCODE_DPAD_RIGHT -> {
-
-
-                Log.d("neo", "a = $mCurrentPosition")
-                Log.d("neo", "b = ${mFeatureList.size - 1}")
-                Log.d("neo", "c = ${focusItem}")
-                Log.d("neo", "d = ${mFeatureCurrentList.size}")
-
                 //判斷不是最後一列的最後一筆
                 if (mCurrentPosition == mFeatureList.size - 1 && focusItem == mFeatureCurrentList.size) {
                     return true
                 }
 
-                Log.d("neo", "a = $mCurrentPosition")
-                Log.d("neo", "b = ${mFeatureList.size - 1}")
                 //判斷item是最後一筆，且還有下一頁，則跳到第一個focus
                 if (focusItem == 5 && mCurrentPosition != mFeatureList.size - 1) {
                     focusItem = 1
@@ -548,8 +542,8 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                 layout_frame5.setBackgroundResource(R.drawable.home_icon_frame_frame_default)
 
                 context?.let { text_title.setTextColor(ContextCompat.getColor(it, android.R.color.white)) }
-                context?.let { text_title2.setTextColor(ContextCompat.getColor(it, android.R.color.white)) }
-                context?.let { text_title3.setTextColor(ContextCompat.getColor(it, R.color.homeIconFrameFocused)) }
+                context?.let { text_title2.setTextColor(ContextCompat.getColor(it, R.color.homeIconFrameFocused)) }
+                context?.let { text_title3.setTextColor(ContextCompat.getColor(it, android.R.color.white)) }
                 context?.let { text_title4.setTextColor(ContextCompat.getColor(it, android.R.color.white)) }
                 context?.let { text_title5.setTextColor(ContextCompat.getColor(it, android.R.color.white)) }
 
