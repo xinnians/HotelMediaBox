@@ -44,6 +44,7 @@ class TouristFragment : InteractionView<OnPageInteractionListener.Primary>(), On
     private var mCurrentSideIndex: Int = -1 //當前頁面side view index
     private var mTotalSize: HashMap<Int, Int>? =
         HashMap()//所有category內容的size, key = category index, value = category content size
+    private var mData: ArrayList<TouristLocation>? = ArrayList()
 
     companion object {
         fun newInstance(): TouristFragment = TouristFragment()
@@ -82,14 +83,38 @@ class TouristFragment : InteractionView<OnPageInteractionListener.Primary>(), On
 
     override fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         when (keyCode) {
-            KeyEvent.KEYCODE_DPAD_DOWN,
+            KeyEvent.KEYCODE_DPAD_DOWN -> {
+                if (mContentFocus) {
+                    return true
+                } else {
+                    //若不是在ContentFocus，則將mCurrentContentIndex設為0
+                    mCurrentContentIndex = 0
+                    mData?.let {
+                        if (mAdapter.getLastPosition() + 1 < it.size) {
+                            mAdapter.setSelectPosition(mAdapter.getLastPosition() + 1)
+                            recyclerView_service.scrollToPosition(mAdapter.getLastPosition())
+                            mAdapter.notifyDataSetChanged()
+                        }
+                    }
+                }
+                return true
+            }
             KeyEvent.KEYCODE_DPAD_UP -> {
                 if (mContentFocus) {
                     return true
                 } else {
                     //若不是在ContentFocus，則將mCurrentContentIndex設為0
                     mCurrentContentIndex = 0
+                    mData?.let {
+                        if (mAdapter.getLastPosition() > 0) {
+                            mAdapter.setSelectPosition(mAdapter.getLastPosition() - 1)
+                            recyclerView_service.scrollToPosition(mAdapter.getLastPosition())
+                            mAdapter.notifyDataSetChanged()
+                        }
+                    }
+
                 }
+                return true
             }
             KeyEvent.KEYCODE_DPAD_RIGHT -> {
                 if (!sideView.isShown && mCategoryFocus) {
@@ -150,6 +175,7 @@ class TouristFragment : InteractionView<OnPageInteractionListener.Primary>(), On
         for (i in 0 until (data?.first?.locationList?.size ?: 0)) {
             mTotalSize?.set(i, data?.first?.locationList?.get(i)?.attractionsList?.size ?: 0)
         }
+        mData = data?.first?.locationList
         mAdapter.setData(data?.first?.locationList ?: ArrayList())
 
         textView_back.text = data?.second?.note?.back
@@ -173,7 +199,7 @@ class TouristFragment : InteractionView<OnPageInteractionListener.Primary>(), On
         mCurrentContent = item
 
 
-        Log.e(TAG,"mCurrentCategoryIndex : $mCurrentCategoryIndex")
+        Log.e(TAG, "mCurrentCategoryIndex : $mCurrentCategoryIndex")
         renderViewContent()
     }
 
