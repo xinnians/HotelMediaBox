@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Binder
 import android.os.Bundle
 import android.os.IBinder
+import android.text.TextUtils
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
@@ -156,7 +157,7 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                                 })
                     }
                     TAG_IMPORT_CHANNEL_LIST -> {
-                        Repository(application, SharedPreferencesProvider(application)).downloadFileWithUrl("http://${myBroadcast.ip}:${myBroadcast.port}${myBroadcast.url}?device=${MiscUtils.getWifiMACAddress(applicationContext)}")
+                        Repository(application, SharedPreferencesProvider(application)).downloadFileWithUrl("http://${myBroadcast.ip}:${myBroadcast.port}${myBroadcast.url}?device=${MiscUtils.getEthernetMacAddress()}")
                                 .map {
                                     Single.fromCallable { FileUtils.writeResponseBodyToDisk(it, "box_channels.json") }
                                             .subscribeOn(Schedulers.io())
@@ -229,8 +230,12 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe({
                                     Log.d(TAG, "TAG_SET_STATIC_IP get api success $it")
-                                    val host: XTNetWorkManager.XTHost = XTNetWorkManager.getInstance().XTHost(it.defaultIp, it.gateway, it.defaultMask)
-                                    XTNetWorkManager.getInstance().enableEthernetStaticIP(applicationContext, host)
+                                    if (!TextUtils.isEmpty(it.defaultIp)) {
+                                        val host: XTNetWorkManager.XTHost = XTNetWorkManager.getInstance().XTHost(it.defaultIp, it.gateway, it.defaultMask)
+                                        XTNetWorkManager.getInstance().enableEthernetStaticIP(applicationContext, host)
+                                    } else {
+                                        XTNetWorkManager.getInstance().enableEthernetDHCP(applicationContext)
+                                    }
                                 }, {
                                     Log.e(TAG, "TAG_SET_STATIC_IP error $it")
                                 })
