@@ -73,12 +73,10 @@ class HotelFacilitiesAdapter(private var mClickListener: OnItemClickListener, pr
         holder.itemView.text_title.text = item.title
         if (mSideViewIsShow) {
             holder.itemView.setOnClickListener(null)
-            holder.itemView.onFocusChangeListener = null
             holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.white30))
         } else {
             if (mClearFocus) {
                 holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
-                holder.itemView.clearFocus()
             } else {
                 holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
                 holder.itemView.setTag(TAG_ITEM, item)
@@ -103,7 +101,6 @@ class HotelFacilitiesAdapter(private var mClickListener: OnItemClickListener, pr
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind() {
-            itemView.isFocusable = false
         }
     }
 
