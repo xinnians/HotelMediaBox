@@ -45,6 +45,8 @@ class TouristFragment : InteractionView<OnPageInteractionListener.Primary>(), On
     private var mTotalSize: HashMap<Int, Int>? =
         HashMap()//所有category內容的size, key = category index, value = category content size
     private var mData: ArrayList<TouristLocation>? = ArrayList()
+    private var mSideViewFocus: Boolean = false
+
 
     companion object {
         fun newInstance(): TouristFragment = TouristFragment()
@@ -87,13 +89,20 @@ class TouristFragment : InteractionView<OnPageInteractionListener.Primary>(), On
                 if (mContentFocus) {
                     return true
                 } else {
-                    //若不是在ContentFocus，則將mCurrentContentIndex設為0
-                    mCurrentContentIndex = 0
-                    mData?.let {
-                        if (mAdapter.getLastPosition() + 1 < it.size) {
-                            mAdapter.setSelectPosition(mAdapter.getLastPosition() + 1)
-                            recyclerView_service.scrollToPosition(mAdapter.getLastPosition())
-                            mAdapter.notifyDataSetChanged()
+                    if (mSideViewFocus) {
+                        if (sideView.getSelectPosition() + 1 < sideView.getItemSize()) {
+                            sideView.setLastPosition(sideView.getSelectPosition() + 1)
+                            sideView.scrollToPosition(sideView.getSelectPosition())
+                        }
+                    } else {
+                        //若不是在ContentFocus，則將mCurrentContentIndex設為0
+                        mCurrentContentIndex = 0
+                        mData?.let {
+                            if (mAdapter.getLastPosition() + 1 < it.size) {
+                                mAdapter.setSelectPosition(mAdapter.getLastPosition() + 1)
+                                recyclerView_service.scrollToPosition(mAdapter.getLastPosition())
+                                mAdapter.notifyDataSetChanged()
+                            }
                         }
                     }
                 }
@@ -103,16 +112,22 @@ class TouristFragment : InteractionView<OnPageInteractionListener.Primary>(), On
                 if (mContentFocus) {
                     return true
                 } else {
-                    //若不是在ContentFocus，則將mCurrentContentIndex設為0
-                    mCurrentContentIndex = 0
-                    mData?.let {
-                        if (mAdapter.getLastPosition() > 0) {
-                            mAdapter.setSelectPosition(mAdapter.getLastPosition() - 1)
-                            recyclerView_service.scrollToPosition(mAdapter.getLastPosition())
-                            mAdapter.notifyDataSetChanged()
+                    if (mSideViewFocus) {
+                        if (sideView.getSelectPosition() > 0) {
+                            sideView.setLastPosition(sideView.getSelectPosition() - 1)
+                            sideView.scrollToPosition(sideView.getSelectPosition())
+                        }
+                    } else {
+                        //若不是在ContentFocus，則將mCurrentContentIndex設為0
+                        mCurrentContentIndex = 0
+                        mData?.let {
+                            if (mAdapter.getLastPosition() > 0) {
+                                mAdapter.setSelectPosition(mAdapter.getLastPosition() - 1)
+                                recyclerView_service.scrollToPosition(mAdapter.getLastPosition())
+                                mAdapter.notifyDataSetChanged()
+                            }
                         }
                     }
-
                 }
                 return true
             }
@@ -159,6 +174,12 @@ class TouristFragment : InteractionView<OnPageInteractionListener.Primary>(), On
                     }
                 }
                 return true
+            }
+            KeyEvent.KEYCODE_DPAD_CENTER -> {
+                if (mSideViewFocus) {
+                    sideView.intoPage()
+                    return true
+                }
             }
         }
         return super.onFragmentKeyDown(keyCode, event)
@@ -277,6 +298,7 @@ class TouristFragment : InteractionView<OnPageInteractionListener.Primary>(), On
             mAdapter.sideViewIsShow(true)
             mCategoryFocus = false
             mContentFocus = false
+            mSideViewFocus = true
             sideView.scrollToPosition(mCurrentSideIndex)
             sideView.setLastPosition(mCurrentSideIndex)
         } else {
@@ -285,6 +307,7 @@ class TouristFragment : InteractionView<OnPageInteractionListener.Primary>(), On
             view_line.visibility = View.GONE
             mAdapter.fromSideViewBack(mCurrentCategoryIndex)
             mCategoryFocus = true
+            mSideViewFocus = false
         }
     }
 

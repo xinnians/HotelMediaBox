@@ -77,13 +77,11 @@ class TouristAdapter(private var mClickListener: OnItemClickListener, private va
         Log.e(TAG,"[onBindViewHolder] position : $position, mClearFocus : $mClearFocus, titleText : ${holder.itemView.text_title.text}")
         if (mSideViewIsShow) {
             holder.itemView.setOnClickListener(null)
-            holder.itemView.onFocusChangeListener = null
             holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.white30))
         } else {
             if (mClearFocus && mSelectIndex == position) {
                 Log.e(TAG,"[onBindViewHolder] 進 mClearFocus == true 判斷")
                 holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
-                holder.itemView.clearFocus()
             } else {
                 Log.e(TAG,"[onBindViewHolder] 進 mClearFocus == false 判斷")
                 holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
@@ -110,7 +108,6 @@ class TouristAdapter(private var mClickListener: OnItemClickListener, private va
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind() {
-            itemView.isFocusable = false
         }
     }
 
