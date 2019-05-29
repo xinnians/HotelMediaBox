@@ -40,6 +40,8 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
     private var mDisposable: Disposable? = null
     private var mCurrentSideIndex: Int = -1 //當前頁面side view index
     private var mSideViewState: HashMap<Int, String> = HashMap<Int, String>()//拿來儲存當前的sideView index與 Back上方的Title
+    private var mSideViewFocus: Boolean = false
+
 
     private var mTVListener: TVController.OnTVListener = object : TVController.OnTVListener{
         override fun onScanFinish() {
@@ -54,8 +56,6 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
 
         override fun initAVPlayerFinish() {
             TVController.playCurrent()
-            TVController.getCurrentChannel()?.let { mChannelListAdapter.setCurrentTVChannel(it) }
-            view_channel_list?.scrollToPosition(mChannelListAdapter.getSelectPosition())
         }
 
     }
@@ -93,16 +93,11 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
     override fun onResume() {
         super.onResume()
         mExoPlayerHelper.initPlayer(context, videoView)
-//        mViewModel.getTVHelper().initAVPlayer(TVHelper.SCREEN_TYPE.CHANNELPAGE)
-//        mViewModel.getTVHelper().getCurrentChannel()?.let { mChannelListAdapter.setCurrentTVChannel(it) }
         TVController.registerListener(mTVListener)
         TVController.initAVPlayer(TVController.SCREEN_TYPE.CHANNELPAGE)
         switchFocus(false)
-//        mViewModel.getTVHelper().playCurrent()?.observeOn(AndroidSchedulers.mainThread())?.subscribe({
-//            mViewModel.getTVHelper().getCurrentChannel()?.let { tvChannel ->
-//                textChannelName?.text = tvChannel.chNum + ": " + tvChannel.chName + " (${tvChannel.chIp.frequency}mhz,${tvChannel.chIp.dvbParameter})"
-//            }
-//        }, {})
+        TVController.getCurrentChannel()?.let { mChannelListAdapter.setCurrentTVChannel(it) }
+        view_channel_list?.scrollToPosition(mChannelListAdapter.getSelectPosition())
     }
 
     override fun onPause() {
@@ -214,7 +209,7 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
     }
 
     override fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        Log.e(TAG, "event:${event?.characters ?: ""}, keycode:$keyCode")
+        Log.e(TAG, "event:${event?.characters ?: ""}, keycode:$keyCode, GenreFocus:$mGenreFocus, ListFocus:$mListFocus, SideViewFocus:$mSideViewFocus")
 
         when (keyCode) {
             KeyEvent.KEYCODE_DPAD_UP -> {
@@ -223,25 +218,32 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
                 } else if (mListFocus) {
                     mChannelListAdapter.selectDownItem()?.let { channel ->
                         var name =
-                                channel.chNum + ": " + channel.chName + " (${channel.chIp.frequency}mhz,${channel.chIp.dvbParameter})"
+                            channel.chNum + ": " + channel.chName + " (${channel.chIp.frequency}mhz,${channel.chIp.dvbParameter})"
                         text_channel_info.text = name
                         onChannelSelectListener(channel) }
                     view_channel_list.scrollToPosition(mChannelListAdapter.getSelectPosition())
-
+                } else if(mSideViewFocus){
+                    if (sideView.getSelectPosition() > 0) {
+                        sideView.setLastPosition(sideView.getSelectPosition() - 1)
+                        sideView.scrollToPosition(sideView.getSelectPosition())
+                    }
                 }
             }
             KeyEvent.KEYCODE_DPAD_DOWN -> {
                 if (mGenreFocus) {
                     mChannelListAdapter.setGenreFilter(mGenreAdapter.selectUp().name)
                 } else if (mListFocus) {
-
                     mChannelListAdapter.selectUPItem()?.let { channel ->
                         var name =
-                                channel.chNum + ": " + channel.chName + " (${channel.chIp.frequency}mhz,${channel.chIp.dvbParameter})"
+                            channel.chNum + ": " + channel.chName + " (${channel.chIp.frequency}mhz,${channel.chIp.dvbParameter})"
                         text_channel_info.text = name
                         onChannelSelectListener(channel) }
                     view_channel_list.scrollToPosition(mChannelListAdapter.getSelectPosition())
-
+                } else if(mSideViewFocus){
+                    if (sideView.getSelectPosition() + 1 < sideView.getItemSize()) {
+                        sideView.setLastPosition(sideView.getSelectPosition() + 1)
+                        sideView.scrollToPosition(sideView.getSelectPosition())
+                    }
                 }
             }
             KeyEvent.KEYCODE_DPAD_LEFT -> {
@@ -252,6 +254,10 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
             }
             KeyEvent.KEYCODE_DPAD_CENTER -> {
                 if (!mGenreFocus) {
+                    if (mSideViewFocus) {
+                        sideView.intoPage()
+                        return true
+                    }
                     startActivity(Intent(context, FullScreenActivity::class.java))
                 }
             }
@@ -298,6 +304,7 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
             view_line.visibility = View.VISIBLE
             switchFocus(false)
             mListFocus = false
+            mSideViewFocus = true
             sideView.scrollToPosition(mCurrentSideIndex)
             sideView.setLastPosition(mCurrentSideIndex)
         } else {
@@ -305,6 +312,7 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
             layout_back.visibility = View.VISIBLE
             view_line.visibility = View.GONE
             switchFocus(true)
+            mSideViewFocus = false
         }
     }
 }

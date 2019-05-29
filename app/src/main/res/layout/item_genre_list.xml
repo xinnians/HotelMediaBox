@@ -8,8 +8,6 @@
         android:id="@+id/text_genre_type"
         android:layout_width="0dp"
         android:layout_height="@dimen/_27sdp"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
         android:gravity="center"
         android:textColor="@color/color_genre"
         android:textSize="@dimen/_9ssp"
