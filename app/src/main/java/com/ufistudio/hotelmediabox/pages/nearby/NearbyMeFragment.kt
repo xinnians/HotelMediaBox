@@ -58,6 +58,8 @@ class NearbyMeFragment : InteractionView<OnPageInteractionListener.Primary>(), O
     private var mExoPlayerHelper: ExoPlayerHelper = ExoPlayerHelper()
 
     private var mNoteBottom: NoteButton? = null//右下角提示資訊
+    private var mSideViewFocus: Boolean = false
+
 
     companion object {
         fun newInstance(): NearbyMeFragment = NearbyMeFragment()
@@ -119,16 +121,22 @@ class NearbyMeFragment : InteractionView<OnPageInteractionListener.Primary>(), O
                 if (mContentFocus) {
                     return true
                 } else {
-                    //若不是在ContentFocus，則將當前在播放的label設為false好讓focus可以更新
-                    mContentPlaying = false
-                    mData?.categories?.let {
-                        if (mAdapter.getLastPosition() + 1 < it.size) {
-                            mAdapter.setSelectPosition(mAdapter.getLastPosition() + 1)
-                            recyclerView_service.scrollToPosition(mAdapter.getLastPosition())
-                            mAdapter.notifyDataSetChanged()
+                    if (mSideViewFocus) {
+                        if (sideView.getSelectPosition() + 1 < sideView.getItemSize()) {
+                            sideView.setLastPosition(sideView.getSelectPosition() + 1)
+                            sideView.scrollToPosition(sideView.getSelectPosition())
+                        }
+                    } else {
+                        //若不是在ContentFocus，則將當前在播放的label設為false好讓focus可以更新
+                        mContentPlaying = false
+                        mData?.categories?.let {
+                            if (mAdapter.getLastPosition() + 1 < it.size) {
+                                mAdapter.setSelectPosition(mAdapter.getLastPosition() + 1)
+                                recyclerView_service.scrollToPosition(mAdapter.getLastPosition())
+                                mAdapter.notifyDataSetChanged()
+                            }
                         }
                     }
-
                 }
                 return true
             }
@@ -136,13 +144,20 @@ class NearbyMeFragment : InteractionView<OnPageInteractionListener.Primary>(), O
                 if (mContentFocus) {
                     return true
                 } else {
-                    //若不是在ContentFocus，則將當前在播放的label設為false好讓focus可以更新
-                    mContentPlaying = false
-                    mData?.categories?.let {
-                        if (mAdapter.getLastPosition() > 0) {
-                            mAdapter.setSelectPosition(mAdapter.getLastPosition() - 1)
-                            recyclerView_service.scrollToPosition(mAdapter.getLastPosition())
-                            mAdapter.notifyDataSetChanged()
+                    if (mSideViewFocus) {
+                        if (sideView.getSelectPosition() > 0) {
+                            sideView.setLastPosition(sideView.getSelectPosition() - 1)
+                            sideView.scrollToPosition(sideView.getSelectPosition())
+                        }
+                    } else {
+                        //若不是在ContentFocus，則將當前在播放的label設為false好讓focus可以更新
+                        mContentPlaying = false
+                        mData?.categories?.let {
+                            if (mAdapter.getLastPosition() > 0) {
+                                mAdapter.setSelectPosition(mAdapter.getLastPosition() - 1)
+                                recyclerView_service.scrollToPosition(mAdapter.getLastPosition())
+                                mAdapter.notifyDataSetChanged()
+                            }
                         }
                     }
                 }
@@ -186,6 +201,12 @@ class NearbyMeFragment : InteractionView<OnPageInteractionListener.Primary>(), O
                 }
                 return true
             }
+            KeyEvent.KEYCODE_DPAD_CENTER -> {
+                if (mSideViewFocus) {
+                    sideView.intoPage()
+                    return true
+                }
+            }
         }
         return super.onFragmentKeyDown(keyCode, event)
     }
@@ -203,6 +224,7 @@ class NearbyMeFragment : InteractionView<OnPageInteractionListener.Primary>(), O
             mAdapter.sideViewIsShow(true)
             mCategoryFocus = false
             mContentFocus = false
+            mSideViewFocus = true
             sideView.scrollToPosition(mCurrentSideIndex)
             sideView.setLastPosition(mCurrentSideIndex)
         } else {
@@ -211,6 +233,7 @@ class NearbyMeFragment : InteractionView<OnPageInteractionListener.Primary>(), O
             view_line.visibility = View.GONE
             mAdapter.fromSideViewBack(mCurrentCategoryIndex)
             mCategoryFocus = true
+            mSideViewFocus = false
         }
     }
 
@@ -282,7 +305,7 @@ class NearbyMeFragment : InteractionView<OnPageInteractionListener.Primary>(), O
         val item = mCurrentContent!![mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!]
         (view_content.findViewById(R.id.text_title) as TextView).text = item.title
         val mTextViewContent = view_content.findViewById(R.id.text_content) as TextView
-        mTextViewContent?.movementMethod = ScrollingMovementMethod()
+//        mTextViewContent?.movementMethod = ScrollingMovementMethod()
         mTextViewContent?.text = item.content
         (view_content.findViewById(R.id.text_current_page) as TextView).text = (mCurrentContentSelectIndex!![mCurrentCategoryIndex]!! + 1).toString()
         (view_content.findViewById(R.id.text_total_page) as TextView).text = String.format("/%d", mCurrentContent!!.size)
