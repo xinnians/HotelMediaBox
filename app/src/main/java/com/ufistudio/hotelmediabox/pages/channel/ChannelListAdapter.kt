@@ -12,8 +12,7 @@ import com.ufistudio.hotelmediabox.repository.data.TVChannel
 import com.ufistudio.hotelmediabox.utils.FileUtils
 import kotlinx.android.synthetic.main.item_channel_list.view.*
 
-class ChannelListAdapter :
-        RecyclerView.Adapter<ChannelListAdapter.ViewHolder>() {
+class ChannelListAdapter : RecyclerView.Adapter<ChannelListAdapter.ViewHolder>() {
 
     private var mOriginalItems: ArrayList<TVChannel>? = null
     private var mFilterItems: ArrayList<TVChannel>? = null
@@ -48,25 +47,25 @@ class ChannelListAdapter :
             if (position == mSelectPosition) {
                 if (mIsFocus) {
                     holder.itemView.layout_frame.background =
-                            ContextCompat.getDrawable(mContext, R.drawable.home_icon_frame_frame_focused)
+                        ContextCompat.getDrawable(mContext, R.drawable.home_icon_frame_frame_focused)
                     holder.itemView.text_channelName.setTextColor(ContextCompat.getColor(mContext, R.color.colorYellow))
                 } else {
                     holder.itemView.layout_frame.background =
-                            ContextCompat.getDrawable(mContext, R.drawable.home_icon_frame_frame_default)
+                        ContextCompat.getDrawable(mContext, R.drawable.home_icon_frame_frame_default)
                     holder.itemView.text_channelName.setTextColor(
-                            ContextCompat.getColor(
-                                    mContext,
-                                    android.R.color.white
-                            )
+                        ContextCompat.getColor(
+                            mContext,
+                            android.R.color.white
+                        )
                     )
                 }
             } else {
                 holder.itemView.layout_frame.setBackgroundResource(0)
                 holder.itemView.text_channelName.setTextColor(
-                        ContextCompat.getColor(
-                                mContext,
-                                android.R.color.white
-                        )
+                    ContextCompat.getColor(
+                        mContext,
+                        android.R.color.white
+                    )
                 )
             }
 
@@ -187,7 +186,7 @@ class ChannelListAdapter :
         mGenreType = genreType
         mFilterItems = if (genreType == "All" || genreType == "") {
             ArrayList(mOriginalItems)
-        } else ArrayList(mOriginalItems?.filter { it.chType == genreType })
+        } else ArrayList(mOriginalItems?.filter { it.chGenre == genreType })
         clearSelectPosition()
         notifyDataSetChanged()
     }
@@ -198,9 +197,9 @@ class ChannelListAdapter :
 //            Log.e("ChannelListAdapter", "TVChannel:$data")
             itemView.text_channelName.text = data.chNum + " " + data.chName
             Glide.with(itemView.context)
-                    .load(FileUtils.getFileFromStorage(data.chLogo.normalIconName))
+                .load(FileUtils.getFileFromStorage(data.chLogo.normalIconName))
 //                    .skipMemoryCache(true)
-                    .into(itemView.view_icon)
+                .into(itemView.view_icon)
         }
     }
 }
