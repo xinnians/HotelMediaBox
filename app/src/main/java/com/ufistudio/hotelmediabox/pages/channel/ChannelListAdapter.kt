@@ -3,6 +3,7 @@ package com.ufistudio.hotelmediabox.pages.channel
 import android.content.Context
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -142,14 +143,17 @@ class ChannelListAdapter : RecyclerView.Adapter<ChannelListAdapter.ViewHolder>()
     }
 
     fun setCurrentTVChannel(channel: TVChannel) {
+        Log.e("channelListAdapter","[setCurrentTVChannel] $channel")
         if (mFilterItems?.contains(channel) == true) {
+            Log.e("channelListAdapter","[setCurrentTVChannel] mFilterItems?.contains(channel) == true")
             mCurrentTVChannel = channel
             mSelectPosition = mFilterItems?.indexOf(mCurrentTVChannel!!) ?: 0
         } else {
+            Log.e("channelListAdapter","[setCurrentTVChannel] mFilterItems?.contains(channel) == false")
             mCurrentTVChannel = null
             mSelectPosition = 0
         }
-
+        notifyDataSetChanged()
     }
 
     fun getSelectPosition(): Int {

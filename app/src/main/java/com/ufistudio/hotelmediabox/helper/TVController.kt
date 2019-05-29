@@ -1,7 +1,6 @@
 package com.ufistudio.hotelmediabox.helper
 
 import android.util.Log
-import android.widget.Toast
 import com.google.gson.Gson
 import com.ufistudio.hotelmediabox.repository.data.Channels
 import com.ufistudio.hotelmediabox.repository.data.TVChannel
@@ -137,11 +136,6 @@ object TVController {
             mCurrentChannel = getChannelList()?.get(0)
         }
         mCurrentChannel?.let { tvChannel ->
-            //            return MiscUtils.sendTCPRequestSingle("j_play ${tvChannel.chIp.dvbParameter}")
-//                .map { result ->
-//                    if (result == RESULT_SUCCESS) mCurrentPlayProgram = tvChannel.chIp.dvbParameter
-//                    return@map result
-//                }
             play(tvChannel)
         }
 
@@ -151,25 +145,19 @@ object TVController {
 
     //TODO 應該再增加個play method並在裡面做好鎖頻的判斷以及dvb和iptv的切換邏輯
     fun play(channel: TVChannel) {
-        Log.i(TAG, "[play] call")
+        Log.i(TAG, "[play] call $channel")
         if (getChannelList() == null || getChannelList()?.size ?: 0 == 0) {
             Log.i(TAG, "[play] channelList null.")
             return
         }
-//        return Single.just(RESULT_SUCCESS)
-//            .flatMap { stop("1") }
-//            .flatMap { setChannel(channel.chIp.frequency + " " + channel.chIp.bandwidth) }
-//            .flatMap { DVBUtils().sendTCPRequestSingle("j_play ${channel.chIp.dvbParameter}") }
-//            .map { result ->
-//                mCurrentChannel = channel
-//                return@map result
-//            }
 
         mPlayDisposable?.let {
             if (!it.isDisposed) {
                 it.dispose()
             }
         }
+
+        mCurrentChannel = channel
 
         mPlayDisposable = sendTCPRequestSingle("j_stopplay 1")
                 .flatMap {
@@ -186,7 +174,6 @@ object TVController {
                 }
                 .flatMap { sendTCPRequestSingle("j_play ${channel.chIp.dvbParameter}") }
                 .retry(1)
-                .map { mCurrentChannel = channel }
                 .subscribeOn(singelThreadScheduler)
                 .observeOn(singelThreadScheduler)
                 .subscribe({ successResult ->
@@ -222,26 +209,6 @@ object TVController {
                     Log.e(TAG, "[deInitAVPlayer] throwable : $failResult")
                 })
     }
-
-//    fun deInitWindow(): Single<String> {
-//        Log.e(TAG, "[deInitWindow] call.")
-//        return deInitAVPlayer()
-//            .flatMap { result ->
-//                Log.e(TAG, "[deInitAVPlayer] result = $result")
-//                return@flatMap DVBUtils().sendTCPRequestSingle("jv_win_deinit")
-//            }
-//    }
-
-//    fun setChannel(channelParameter: String): Single<String> {
-//        if (mCurrentLockFrequency == channelParameter) {
-//            return Single.just(RESULT_SUCCESS)
-//        }
-//        return DVBUtils().sendTCPRequestSingle("j_setchan $channelParameter")
-//            .map { result ->
-//                if (result == RESULT_SUCCESS) mCurrentLockFrequency = channelParameter
-//                return@map result
-//            }
-//    }
 
     fun scanChannel() {
         Log.e(TAG, "[scanChannel] call.")
@@ -308,10 +275,8 @@ object TVController {
                     var channel: TVChannel
                     if (position != 0) {
                         channel = channelList[position - 1]
-//                        play(channel).subscribe({ mCurrentPlayProgram = channel.chIp.dvbParameter }, {})
                     } else {
                         channel = channelList.last()
-//                        play(channel).subscribe({ mCurrentPlayProgram = channel.chIp.dvbParameter }, {})
                     }
                     mCurrentPlayProgram = channel.chIp.dvbParameter
                     mCurrentChannel = channel
@@ -326,8 +291,10 @@ object TVController {
 
     fun getCurrentChannel(): TVChannel? {
         if (mCurrentChannel == null) {
+            Log.e(TAG,"[getCurrentChannel] mCurrentChannel == null")
             mCurrentChannel = getChannelList()?.get(0)
         }
+        Log.e(TAG,"[getCurrentChannel] $mCurrentChannel")
         return mCurrentChannel
     }
 

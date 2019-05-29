@@ -55,6 +55,7 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
         override fun initAVPlayerFinish() {
             TVController.playCurrent()
             TVController.getCurrentChannel()?.let { mChannelListAdapter.setCurrentTVChannel(it) }
+            view_channel_list?.scrollToPosition(mChannelListAdapter.getSelectPosition())
         }
 
     }
@@ -194,9 +195,18 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
         mGenreAdapter.setFocus(isGenre)
         mChannelListAdapter.setFocus(!isGenre)
         if (!isGenre) {
-            mChannelListAdapter.getCurrentTVChannel()?.let { channel ->
+//            mChannelListAdapter.getCurrentTVChannel()?.let { channel ->
+//                Log.e(TAG, "[switchFocus] $channel")
+//                var name =
+//                        channel.chNum + ": " + channel.chName + " (${channel.chIp.frequency}mhz,${channel.chIp.dvbParameter})"
+//                text_channel_info.text = name
+//                onChannelSelectListener(channel)
+//            }
+
+            TVController.getCurrentChannel()?.let { channel ->
+                Log.e(TAG, "[switchFocus] $channel")
                 var name =
-                        channel.chNum + ": " + channel.chName + " (${channel.chIp.frequency}mhz,${channel.chIp.dvbParameter})"
+                    channel.chNum + ": " + channel.chName + " (${channel.chIp.frequency}mhz,${channel.chIp.dvbParameter})"
                 text_channel_info.text = name
                 onChannelSelectListener(channel)
             }
