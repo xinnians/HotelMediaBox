@@ -429,7 +429,7 @@ data class InitialData(
 
 @Parcelize
 data class StaticIpData(
-        var defaultIp: String,
-        var defaultMask: String,
-        var gateway: String
+        var defaultIp: String?,
+        var defaultMask: String?,
+        var gateway: String? = "0.0.0.0"
 ) : Parcelable

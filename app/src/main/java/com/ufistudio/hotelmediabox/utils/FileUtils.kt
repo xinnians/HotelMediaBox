@@ -118,6 +118,8 @@ object FileUtils {
         try {
             val path: String = fileIsExist(filePath)
             val file: File = File(path, name)
+
+            Log.d(TAG,"canWrite: ${file.canWrite()}, canRead: ${file.canRead()}")
             var inputStream: InputStream? = null
             var outputStream: OutputStream? = null
             try {
@@ -144,6 +146,7 @@ object FileUtils {
                 return true
             } catch (e: IOException) {
                 listener?.savingFileError(e)
+                Log.e(TAG,"[writeResponseBodyToDisk] first save error = $e")
                 return false
             } finally {
                 inputStream?.close()
@@ -152,6 +155,7 @@ object FileUtils {
             }
         } catch (e: IOException) {
             listener?.savingFileError(e)
+            Log.e(TAG,"[writeResponseBodyToDisk] second save error = $e")
             return false
         }
 

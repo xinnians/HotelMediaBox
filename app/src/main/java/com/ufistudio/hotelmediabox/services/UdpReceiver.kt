@@ -231,7 +231,7 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                                 .subscribe({
                                     Log.d(TAG, "TAG_SET_STATIC_IP get api success $it")
                                     if (!TextUtils.isEmpty(it.defaultIp)) {
-                                        val host: XTNetWorkManager.XTHost = XTNetWorkManager.getInstance().XTHost(it.defaultIp, it.gateway, it.defaultMask)
+                                        val host: XTNetWorkManager.XTHost = XTNetWorkManager.getInstance().XTHost(it.defaultIp, it.gateway?:"0.0.0.0", it.defaultMask?:"")
                                         XTNetWorkManager.getInstance().enableEthernetStaticIP(applicationContext, host)
                                     } else {
                                         XTNetWorkManager.getInstance().enableEthernetDHCP(applicationContext)
