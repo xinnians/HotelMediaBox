@@ -35,9 +35,9 @@ import kotlinx.android.synthetic.main.view_bottom_ok_back_home.*
 private const val TAG_IMAGE = "image"
 private const val TAG_VIDEO = "video"
 
-private const val TAG_TEMPLATE_1 = 1
-private const val TAG_TEMPLATE_2 = 2
-private const val TAG_TEMPLATE_3 = 3
+private const val TAG_TEMPLATE_1 = 3
+private const val TAG_TEMPLATE_2 = 1
+private const val TAG_TEMPLATE_3 = 2
 
 class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItemClickListener,
     OnItemFocusListener, ViewModelsCallback {

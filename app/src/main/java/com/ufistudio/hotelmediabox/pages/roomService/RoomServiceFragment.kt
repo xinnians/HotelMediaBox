@@ -39,7 +39,7 @@ import kotlinx.android.synthetic.main.view_bottom_back_home.*
 private const val TAG_IMAGE = "image"
 private const val TAG_VIDEO = "video"
 private const val TAG_TEMPLATE1 = 1
-private const val TAG_TEMPLATE2 = 2
+private const val TAG_TEMPLATE2 = 4
 
 class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItemClickListener,
         OnItemFocusListener, ViewModelsCallback {
