@@ -102,8 +102,10 @@ object MiscUtils {
             return ""
         }
 
+        Log.e(TAG,"[getJsonLanguageAutoSwitch] config.config.language: ${config.config.language}")
+
         var finalName: String = ""
-        finalName = if (File("/data/$TAG_DEFAULT_LOCAL_PATH${fileName}_${config.config.language}.json").exists()) {
+        finalName = if (File("/data/${TAG_DEFAULT_LOCAL_PATH}box_${fileName}_${config.config.language}.json").exists()) {
             "box_${fileName}_${config.config.language}.json"
         } else {
             "box_${fileName}_en.json"
