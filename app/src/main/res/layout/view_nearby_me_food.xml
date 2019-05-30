@@ -68,6 +68,7 @@
         android:layout_marginEnd="@dimen/_26sdp"
         android:scrollbars="vertical"
         android:text="324gfsdfdfglfdjgklfdjdfkjh"
+        android:textSize="@dimen/_9ssp"
         app:layout_constraintBottom_toBottomOf="@+id/image_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/image_content"

@@ -67,7 +67,7 @@
         android:layout_marginStart="@dimen/_7sdp"
         android:layout_marginEnd="@dimen/_27sdp"
         android:layout_marginBottom="@dimen/_10sdp"
-        android:textSize="@dimen/_14ssp"
+        android:textSize="@dimen/_9ssp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
