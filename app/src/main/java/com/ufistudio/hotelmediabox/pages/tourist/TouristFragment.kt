@@ -201,7 +201,6 @@ class TouristFragment : InteractionView<OnPageInteractionListener.Primary>(), On
 
         textView_back.text = data?.second?.note?.back
         textView_home.text = data?.second?.note?.home
-        textView_ok.text = data?.second?.note?.fullScreen
     }
 
     private fun onInitError(t: Throwable?) {
@@ -280,7 +279,7 @@ class TouristFragment : InteractionView<OnPageInteractionListener.Primary>(), On
      * Init Side View
      */
     private fun initSideView() {
-        mSideViewState.putAll(sideView.setFocus(mHomeIcons, HomeFeatureEnum.NEAR_BY))
+        mSideViewState.putAll(sideView.setFocus(mHomeIcons, HomeFeatureEnum.TOURIST_INFO))
         mCurrentSideIndex = mSideViewState[ARG_CURRENT_INDEX]!!.toInt()
         text_back.text = mSideViewState[ARG_CURRENT_BACK_TITLE]
     }
