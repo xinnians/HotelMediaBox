@@ -235,7 +235,7 @@
         android:layout_height="@dimen/_17sdp"
         android:layout_marginEnd="@dimen/_6sdp"
         android:layout_marginBottom="@dimen/_8sdp"
-        android:src="@drawable/ic_play"
+        android:src="@drawable/ic_ok"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/textView13" />
 

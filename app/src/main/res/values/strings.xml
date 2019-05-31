@@ -16,7 +16,7 @@
 
     <!--TV channel-->
     <string name="tv_channel_back">Back</string>
-    <string name="tv_channel_watch_channel">Watch Channel</string>
+    <string name="tv_channel_watch_channel">Full Screen</string>
 
     <!--Factory-->
     <string name="factory_import_json_files">Import json files</string>
