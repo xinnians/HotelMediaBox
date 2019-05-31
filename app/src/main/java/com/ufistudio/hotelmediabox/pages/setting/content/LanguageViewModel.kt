@@ -12,9 +12,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 
 class LanguageViewModel(
-        application: Application,
-        private val compositeDisposable: CompositeDisposable,
-        private val repository: Repository
+    application: Application,
+    private val compositeDisposable: CompositeDisposable,
+    private val repository: Repository
 ) : BaseViewModel(application, compositeDisposable) {
     val initConfigServiceSuccess = MutableLiveData<Config>()
     val initConfigServiceProgress = MutableLiveData<Boolean>()
@@ -25,18 +25,13 @@ class LanguageViewModel(
     }
 
     fun getConfig() {
-        val json = getConfigJsonObject()
-        if (json != null) {
-            compositeDisposable.add(Single.fromCallable { json }
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnSubscribe { initConfigServiceProgress.value = true }
-                    .doFinally { initConfigServiceProgress.value = false }
-                    .subscribe({ initConfigServiceSuccess.value = it }
-                            , { initConfigServiceError.value = it })
-            )
-        } else {
-            initConfigServiceError.value = Throwable("jsonObject is null")
-        }
+        compositeDisposable.add(Single.fromCallable { getConfigJsonObject() }
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { initConfigServiceProgress.value = true }
+            .doFinally { initConfigServiceProgress.value = false }
+            .subscribe({ initConfigServiceSuccess.value = it }
+                , { initConfigServiceError.value = it })
+        )
     }
 
     private fun getConfigJsonObject(): Config? {

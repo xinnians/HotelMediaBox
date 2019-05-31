@@ -41,6 +41,7 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
         private val TAG_SOFTWARE_UPDATE = "softwareUpdate".hashCode()
         private val TAG_RESOURCE_UPDATE = "resourceUpdate".hashCode()
         private val TAG_SET_STATIC_IP = "setStaticIp".hashCode()
+        private val TAG_REBOOT_DEVICE = "rebootDevice".hashCode()
     }
 
     override fun onBind(intent: Intent?): IBinder {
@@ -231,7 +232,8 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                                 .subscribe({
                                     Log.d(TAG, "TAG_SET_STATIC_IP get api success $it")
                                     if (!TextUtils.isEmpty(it.defaultIp)) {
-                                        val host: XTNetWorkManager.XTHost = XTNetWorkManager.getInstance().XTHost(it.defaultIp, it.gateway?:"0.0.0.0", it.defaultMask?:"")
+                                        val host: XTNetWorkManager.XTHost = XTNetWorkManager.getInstance().XTHost(it.defaultIp, it.gateway
+                                                ?: "0.0.0.0", it.defaultMask ?: "")
                                         XTNetWorkManager.getInstance().enableEthernetStaticIP(applicationContext, host)
                                     } else {
                                         XTNetWorkManager.getInstance().enableEthernetDHCP(applicationContext)
@@ -239,6 +241,9 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                                 }, {
                                     Log.e(TAG, "TAG_SET_STATIC_IP error $it")
                                 })
+                    }
+                    TAG_REBOOT_DEVICE -> {
+                        MiscUtils.reboot(baseContext)
                     }
                 }
             } catch (e: JsonSyntaxException) {
