@@ -158,21 +158,6 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
 
     override fun onResume() {
         super.onResume()
-//        mViewModel.getTVHelper().initAVPlayer(TVHelper.SCREEN_TYPE.HOMEPAGE)
-//        mViewModel.getTVHelper().playCurrent()?.observeOn(AndroidSchedulers.mainThread())?.subscribe({
-//
-//            mViewModel.getTVHelper().getCurrentChannel()?.let { tvChannel ->
-//                mViewChannelName?.text = tvChannel.chNum + " " + tvChannel.chName
-//                mViewChannelLogo?.let { viewLogo ->
-//                    Glide.with(this)
-//                        .load(FileUtils.getFileFromStorage(tvChannel.chLogo.fileName))
-//                        .skipMemoryCache(true)
-//                        .into(viewLogo)
-//                }
-//
-//            }
-//
-//        }, {})
         mTVChannel = TVController.getCurrentChannel()
         text_channel?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
         image_channel?.let { viewLogo ->
@@ -195,7 +180,6 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
 
     override fun onPause() {
         super.onPause()
-//        mViewModel.getTVHelper().closeAVPlayer()
         TVController.releaseListener(mTVListener)
         TVController.deInitAVPlayer()
     }
@@ -216,7 +200,6 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
         when (keyCode) {
             KeyEvent.KEYCODE_CHANNEL_UP -> {
 
-//                mTVChannel = mViewModel.getTVHelper().chooseUp()
                 mTVChannel = TVController.chooseUp()
                 text_channel?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
                 image_channel?.let { viewLogo ->
@@ -235,20 +218,6 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                         .into(viewLogo)
                 }
                 setPlayTimer()
-
-
-//                mViewModel.getTVHelper().playUp()?.observeOn(AndroidSchedulers.mainThread())?.subscribe({
-//                    mViewModel.getTVHelper().getCurrentChannel()?.let { tvChannel ->
-//                        mViewChannelName?.text = tvChannel.chNum + " " + tvChannel.chName
-//                        mViewChannelLogo?.let { viewLogo ->
-//                            Glide.with(this)
-//                                .load(FileUtils.getFileFromStorage(tvChannel.chLogo.fileName))
-//                                .into(viewLogo)
-//                        }
-//
-//                    }
-//
-//                }, {})
                 return true
             }
             KeyEvent.KEYCODE_CHANNEL_DOWN -> {
