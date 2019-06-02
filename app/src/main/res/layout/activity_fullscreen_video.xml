@@ -10,5 +10,6 @@
         android:id="@+id/player_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:controller_layout_id="@layout/view_ip_tv_controller" />
+        app:controller_layout_id="@layout/view_ip_tv_controller"
+        app:surface_type="texture_view" />
 </android.support.constraint.ConstraintLayout>

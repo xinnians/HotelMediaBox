@@ -130,6 +130,7 @@
         app:layout_constraintEnd_toStartOf="@+id/imageView_arrow_right"
         app:layout_constraintStart_toEndOf="@+id/imageView_arrow_left"
         app:layout_constraintTop_toTopOf="parent"
+        app:surface_type="texture_view"
         app:use_controller="false" />
 
     <ImageView

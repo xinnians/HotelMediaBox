@@ -24,6 +24,7 @@
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:surface_type="texture_view"
         app:use_controller="false" />
 
     <TextView

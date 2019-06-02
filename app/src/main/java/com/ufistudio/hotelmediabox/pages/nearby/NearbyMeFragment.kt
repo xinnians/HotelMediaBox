@@ -313,12 +313,14 @@ class NearbyMeFragment : InteractionView<OnPageInteractionListener.Primary>(), O
         val imageView = view_content.findViewById(R.id.image_content) as ImageView
         mVideoView = view_content.findViewById(R.id.videoView) as PlayerView
 
+        mExoPlayerHelper.stop()
+        mExoPlayerHelper.release()
         if (item.file_type.hashCode() == TAG_IMAGE.hashCode()) {
             mContentPlaying = false
             mVideoView?.visibility = View.GONE
             imageView.visibility = View.VISIBLE
             if (imageView != null) {
-                Log.d("neo", "image = test")
+
                 Glide.with(context!!)
                         .load(FileUtils.getFileFromStorage(item.file_name))
                         .skipMemoryCache(true)
@@ -327,9 +329,6 @@ class NearbyMeFragment : InteractionView<OnPageInteractionListener.Primary>(), O
         } else if (item.file_type.hashCode() == TAG_VIDEO.hashCode()) {
 
             if (mVideoView != null) {
-                Log.d("neo", "vide test")
-                mExoPlayerHelper.stop()
-                mExoPlayerHelper.release()
                 mExoPlayerHelper.initPlayer(context, mVideoView!!)
                 mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(item.file_name)?.absolutePath))
                 mVideoView?.visibility = View.VISIBLE

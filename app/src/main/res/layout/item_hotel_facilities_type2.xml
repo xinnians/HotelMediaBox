@@ -57,6 +57,7 @@
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="@id/text_title"
         app:layout_constraintTop_toBottomOf="@id/text_title"
+        app:surface_type="texture_view"
         app:use_controller="false" />
 
     <TextView
