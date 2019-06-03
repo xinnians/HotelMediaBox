@@ -95,9 +95,10 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
         mExoPlayerHelper.initPlayer(context, videoView)
         TVController.registerListener(mTVListener)
         TVController.initAVPlayer(TVController.SCREEN_TYPE.CHANNELPAGE)
-        switchFocus(false)
+
         TVController.getCurrentChannel()?.let { mChannelListAdapter.setCurrentTVChannel(it) }
         view_channel_list?.scrollToPosition(mChannelListAdapter.getSelectPosition())
+        switchFocus(false)
     }
 
     override fun onPause() {
@@ -190,21 +191,21 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
         mGenreAdapter.setFocus(isGenre)
         mChannelListAdapter.setFocus(!isGenre)
         if (!isGenre) {
-//            mChannelListAdapter.getCurrentTVChannel()?.let { channel ->
-//                Log.e(TAG, "[switchFocus] $channel")
-//                var name =
-//                        channel.chNum + ": " + channel.chName + " (${channel.chIp.frequency}mhz,${channel.chIp.dvbParameter})"
-//                text_channel_info.text = name
-//                onChannelSelectListener(channel)
-//            }
-
-            TVController.getCurrentChannel()?.let { channel ->
+            mChannelListAdapter.getCurrentTVChannel()?.let { channel ->
                 Log.e(TAG, "[switchFocus] $channel")
                 var name =
-                    channel.chNum + ": " + channel.chName + " (${channel.chIp.frequency}mhz,${channel.chIp.dvbParameter})"
+                        channel.chNum + ": " + channel.chName + " (${channel.chIp.frequency}mhz,${channel.chIp.dvbParameter})"
                 text_channel_info.text = name
                 onChannelSelectListener(channel)
             }
+
+//            TVController.getCurrentChannel()?.let { channel ->
+//                Log.e(TAG, "[switchFocus] $channel")
+//                var name =
+//                    channel.chNum + ": " + channel.chName + " (${channel.chIp.frequency}mhz,${channel.chIp.dvbParameter})"
+//                text_channel_info.text = name
+//                onChannelSelectListener(channel)
+//            }
         }
     }
 
