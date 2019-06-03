@@ -94,7 +94,7 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
     override fun onSuccess(it: Any?) {
 
         if (it != null && it is InitialData) {
-            text_name.text = it.guestName
+            text_name.text = if(it.guestName.isEmpty()) "Guest" else it.guestName
             SystemClock.setCurrentTimeMillis(it.timestamp)
             return
         }
