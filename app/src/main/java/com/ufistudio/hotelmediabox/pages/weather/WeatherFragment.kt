@@ -364,7 +364,7 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
     override fun onSuccess(it: Any?) {
         if (it != null) {
             if (it is WeatherInfo) {
-                if (TextUtils.equals(it.location.city, mCityCode)) {
+                if (it.location != null && !TextUtils.isEmpty(it.location.city) && TextUtils.equals(it.location.city, mCityCode)) {
                     mWeatherData = it
                     renderView()
                 }
