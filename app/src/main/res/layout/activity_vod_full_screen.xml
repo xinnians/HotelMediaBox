@@ -13,7 +13,8 @@
         app:layout_constraintBottom_toBottomOf="@+id/constraintLayout4"
         app:layout_constraintEnd_toEndOf="@+id/constraintLayout4"
         app:layout_constraintStart_toStartOf="@+id/constraintLayout4"
-        app:layout_constraintTop_toTopOf="@+id/constraintLayout4" />
+        app:layout_constraintTop_toTopOf="@+id/constraintLayout4"
+        app:surface_type="texture_view" />
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/constraintLayout4"
