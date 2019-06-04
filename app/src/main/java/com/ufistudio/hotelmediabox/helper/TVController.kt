@@ -3,8 +3,12 @@ package com.ufistudio.hotelmediabox.helper
 import android.util.Log
 import com.google.gson.Gson
 import com.ufistudio.hotelmediabox.repository.data.Channels
+import com.ufistudio.hotelmediabox.repository.data.Config
+import com.ufistudio.hotelmediabox.repository.data.JVersion
 import com.ufistudio.hotelmediabox.repository.data.TVChannel
+import com.ufistudio.hotelmediabox.utils.FileUtils
 import com.ufistudio.hotelmediabox.utils.MiscUtils
+import com.ufistudio.hotelmediabox.utils.TAG_DEFAULT_LOCAL_PATH
 import io.reactivex.Single
 import io.reactivex.SingleEmitter
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -296,6 +300,29 @@ object TVController {
         }
         Log.e(TAG,"[getCurrentChannel] $mCurrentChannel")
         return mCurrentChannel
+    }
+
+    fun updateJVersionAndAppVersionToFile(appVersion: String = ""){
+        var gson: Gson = Gson()
+
+        Log.e(TAG, "[updateJVersionToFile] call.")
+        sendTCPRequestSingle("j_ver")
+            .subscribeOn(singelThreadScheduler)
+            .observeOn(singelThreadScheduler)
+            .subscribe({ successResult ->
+                Log.e(TAG, "[updateJVersionToFile] Result : $successResult")
+                var JVersion = gson.fromJson(successResult,JVersion::class.java)
+                Log.e(TAG, "[updateJVersionToFile] JVersion Result : $JVersion")
+                val config = gson.fromJson(MiscUtils.getJsonFromStorage("box_config.json"), Config::class.java)
+                config.config.j_version = "${JVersion.process}-${JVersion.ver}-${JVersion.build}-${JVersion.chanlistver}"
+                config.config.apk_version = appVersion
+
+                FileUtils.writeToFile(File("/data/$TAG_DEFAULT_LOCAL_PATH", "box_config.json"), gson.toJson(config))
+            }, { failResult ->
+                Log.e(TAG, "[updateJVersionToFile] throwable : $failResult")
+            })
+
+
     }
 
     fun sendTCPRequestSingle(msg: String): Single<String> {

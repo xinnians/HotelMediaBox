@@ -14,6 +14,7 @@ import android.view.View
 import com.bumptech.glide.Glide
 import com.ufistudio.hotelmediabox.AppInjector
 import com.ufistudio.hotelmediabox.R
+import com.ufistudio.hotelmediabox.helper.TVController.updateJVersionAndAppVersionToFile
 import com.ufistudio.hotelmediabox.interfaces.ViewModelsCallback
 import com.ufistudio.hotelmediabox.pages.MainActivity
 import com.ufistudio.hotelmediabox.pages.base.PaneViewActivity
@@ -54,6 +55,7 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
         super.onStart()
         renderUI()
         mViewModel.getInitialDataFromServer()
+        updateJVersionAndAppVersionToFile(MiscUtils.getLocalVersionName(this) + "." + MiscUtils.getLocalVersion(this))
     }
 
     override fun onResume() {
