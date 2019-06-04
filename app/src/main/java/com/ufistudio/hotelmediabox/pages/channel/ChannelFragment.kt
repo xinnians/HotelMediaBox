@@ -103,7 +103,6 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
 
     override fun onPause() {
         super.onPause()
-//        mViewModel.getTVHelper().closeAVPlayer()
         TVController.releaseListener(mTVListener)
         TVController.deInitAVPlayer()
     }
@@ -113,7 +112,6 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
             mDisposable?.dispose()
         }
         mExoPlayerHelper.release()
-//        DVBHelper.getDVBPlayer().closePlayer()
         super.onStop()
     }
 
@@ -147,9 +145,6 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
         mChannelListAdapter.setItemClickListener(object : ChannelListAdapter.OnItemClickListener {
             override fun onClick(view: View) {
                 Log.e(TAG, "mChannelListAdapter onClick()")
-//                activity?.startActivity(Intent(activity, FullScreenActivity::class.java))
-//                mExoPlayerHelper.fullScreen()
-
                 startActivity(Intent(context, FullScreenActivity::class.java))
             }
         })
@@ -170,7 +165,6 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
 
                     if (channelInfo.chType == "DVBT") {
 
-//                        mViewModel.getTVHelper().play(channelInfo).subscribe()
                         TVController.play(channelInfo)
 
                     } else {
@@ -278,19 +272,6 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
         }
 
         return super.onFragmentKeyDown(keyCode, event)
-    }
-
-    private fun initChannelsSuccess(list: ArrayList<TVChannel>) {
-        mChannelListAdapter.setItems(list)
-        switchFocus(false)
-    }
-
-    private fun initChannelsProgress(isProgress: Boolean) {
-        Log.e(TAG, "initChannelsProgress call. isProgress:$isProgress")
-    }
-
-    private fun initChannelsError(throwable: Throwable) {
-        Log.e(TAG, "initChannelsError call. ${throwable.message}")
     }
 
     /**
