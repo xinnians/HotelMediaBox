@@ -368,6 +368,7 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
             if (mVideoView1 != null) {
                 mExoPlayerHelper.initPlayer(context, mVideoView1!!)
                 mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(item.file_name)?.absolutePath))
+                mExoPlayerHelper.repeatMode()
                 mVideoView1?.visibility = View.VISIBLE
             }
             imageView?.visibility = View.INVISIBLE

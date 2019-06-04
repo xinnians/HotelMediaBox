@@ -338,6 +338,7 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
             mExoPlayerHelper.initPlayer(context, mVideoView!!)
             mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(item.file_name)?.absolutePath
                     ?: ""))
+            mExoPlayerHelper.repeatMode()
             mVideoView!!.visibility = View.VISIBLE
             imageView?.visibility = View.INVISIBLE
         } else {
