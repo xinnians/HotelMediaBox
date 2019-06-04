@@ -20,6 +20,7 @@ import android.text.TextWatcher
 import android.widget.EditText
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.pages.factory.FactoryActivity
+import com.ufistudio.hotelmediabox.pages.fullScreen.FullScreenActivity
 import com.ufistudio.hotelmediabox.receivers.ACTION_UPDATE_APK
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -30,6 +31,7 @@ import kotlin.collections.ArrayList
 
 const val TAG_KEY_AUDIO: Int = 300
 const val TAG_KEY_HOME: Int = 302
+const val TAG_kEY_TV: Int = 170
 
 open class PaneViewActivity : BaseActivity(), OnPageInteractionListener.Pane {
 
@@ -157,6 +159,10 @@ open class PaneViewActivity : BaseActivity(), OnPageInteractionListener.Pane {
             }
             TAG_KEY_HOME -> {
                 startActivity(Intent(this, MainActivity::class.java))
+                return true
+            }
+            TAG_kEY_TV -> {
+                startActivity(Intent(this, FullScreenActivity::class.java))
                 return true
             }
         }

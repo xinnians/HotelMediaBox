@@ -225,10 +225,11 @@ class FullScreenActivity : AppCompatActivity() {
             KeyEvent.KEYCODE_INFO ->{
                 showInfo()
             }
-//            KeyEvent.KEYCODE_BACK -> {
-////                this.onBackPressed()
-//                finish()
-//            }
+            KeyEvent.KEYCODE_BACK -> {
+                startActivity(Intent(this, MainActivity::class.java))
+                finish()
+                return true
+            }
         }
         return super.onKeyDown(keyCode, event)
     }
