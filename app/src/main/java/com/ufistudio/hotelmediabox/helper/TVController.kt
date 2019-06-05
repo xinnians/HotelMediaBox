@@ -314,10 +314,12 @@ object TVController {
                 var JVersion = gson.fromJson(successResult,JVersion::class.java)
                 Log.e(TAG, "[updateJVersionToFile] JVersion Result : $JVersion")
                 val config = gson.fromJson(MiscUtils.getJsonFromStorage("box_config.json"), Config::class.java)
-                config.config.j_version = "${JVersion.process}-${JVersion.ver}-${JVersion.build}-${JVersion.chanlistver}"
-                config.config.apk_version = appVersion
+                if(config!= null || config?.config != null){
+                    config.config.j_version = "${JVersion.process}-${JVersion.ver}-${JVersion.build}-${JVersion.chanlistver}"
+                    config.config.apk_version = appVersion
 
-                FileUtils.writeToFile(File("/data/$TAG_DEFAULT_LOCAL_PATH", "box_config.json"), gson.toJson(config))
+                    FileUtils.writeToFile(File("/data/$TAG_DEFAULT_LOCAL_PATH", "box_config.json"), gson.toJson(config))
+                }
             }, { failResult ->
                 Log.e(TAG, "[updateJVersionToFile] throwable : $failResult")
             })
