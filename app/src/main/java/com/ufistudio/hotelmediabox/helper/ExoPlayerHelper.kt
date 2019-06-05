@@ -13,6 +13,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.exoplayer2.ExoPlayerFactory
+import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ExtractorMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
@@ -24,7 +25,7 @@ import com.google.android.exoplayer2.upstream.UdpDataSource
 import com.ufistudio.hotelmediabox.R
 
 open class ExoPlayerHelper {
-    private var mPlayer: SimpleExoPlayer?=null
+    private var mPlayer: SimpleExoPlayer? = null
     private lateinit var mVideoView: PlayerView
     private var mContext: Context? = null
     private var mVideoFrameParams: ConstraintLayout.LayoutParams? = null
@@ -45,7 +46,7 @@ open class ExoPlayerHelper {
      * @playWhenReady: If you want play when ready , default:true
      */
     fun setUdpSource(udpUrl: String, playWhenReady: Boolean = true) {
-        Log.d("setUdpSource","setUdpSource udp url = $udpUrl")
+        Log.d("setUdpSource", "setUdpSource udp url = $udpUrl")
         val udpDataSource = UdpDataSource()
         val dataSpec = DataSpec(Uri.parse(udpUrl))
         try {
@@ -123,7 +124,7 @@ open class ExoPlayerHelper {
                 .load(ColorDrawable(ContextCompat.getColor(mContext!!, android.R.color.holo_blue_dark)))
                 .skipMemoryCache(true)
                 .apply(requestOptions)
-                .into((mVideoView.findViewById(R.id.image_bottom_channel)as ImageView))
+                .into((mVideoView.findViewById(R.id.image_bottom_channel) as ImageView))
     }
 
     /**
@@ -147,6 +148,13 @@ open class ExoPlayerHelper {
     fun release() {
         mPlayer?.release()
         mIsFullscreen = false
+    }
+
+    /**
+     * Set video repeat play
+     */
+    fun repeatMode() {
+        mPlayer?.repeatMode = Player.REPEAT_MODE_ALL
     }
 
     /**
