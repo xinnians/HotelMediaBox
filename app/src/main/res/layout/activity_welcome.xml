@@ -52,6 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/_3sdp"
+            android:layout_marginEnd="@dimen/_5sdp"
             android:textSize="@dimen/_17ssp"
             app:layout_constraintBottom_toTopOf="@+id/text_room"
             app:layout_constraintEnd_toStartOf="@+id/guideline" />
