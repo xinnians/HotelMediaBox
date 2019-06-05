@@ -1,5 +1,6 @@
 package com.ufistudio.hotelmediabox.pages.channel
 
+import android.arch.lifecycle.Observer
 import android.content.Intent
 import android.graphics.PixelFormat
 import android.os.Bundle
@@ -14,13 +15,12 @@ import com.ufistudio.hotelmediabox.helper.TVController
 import com.ufistudio.hotelmediabox.pages.base.InteractionView
 import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.pages.fullScreen.FullScreenActivity
-import com.ufistudio.hotelmediabox.repository.data.TVChannel
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import com.ufistudio.hotelmediabox.pages.home.HomeFeatureEnum
-import com.ufistudio.hotelmediabox.repository.data.HomeIcons
+import com.ufistudio.hotelmediabox.repository.data.*
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_BACK_TITLE
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_INDEX
 import kotlinx.android.synthetic.main.fragment_channel.*
@@ -70,6 +70,14 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
         mViewModel = AppInjector.obtainViewModel(this)
         mExoPlayerHelper = ExoPlayerHelper()
         mHomeIcons = arguments?.getParcelableArrayList(Page.ARG_BUNDLE)
+
+        mViewModel.initNoteButtonSuccess.observe(this, Observer { onInitNoteButtonSuccess(it!!) })
+        mViewModel.initNoteButtonProgress.observe(this, Observer { onInitNoteButtonProgress(it!!) })
+        mViewModel.initNoteButtonError.observe(this, Observer { onInitNoteButtonError(it!!) })
+
+        mViewModel.initGenreSuccess.observe(this, Observer { onInitGenreSuccess(it!!) })
+        mViewModel.initGenreProgress.observe(this, Observer { onInitGenreProgress(it!!) })
+        mViewModel.initGenreError.observe(this, Observer { onInitGenreError(it!!) })
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -83,6 +91,8 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
         displaySideView(false)
         sideView.setAdapterList(mHomeIcons)
         sideView.setInteractionListener(getInteractionListener())
+        mViewModel.initNoteButton()
+        mViewModel.initGenre()
     }
 
     override fun onStart() {
@@ -209,7 +219,7 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
         when (keyCode) {
             KeyEvent.KEYCODE_DPAD_UP -> {
                 if (mGenreFocus) {
-                    mChannelListAdapter.setGenreFilter(mGenreAdapter.selectDown().name)
+                    mChannelListAdapter.setGenreFilter(mGenreAdapter.selectDown())
                 } else if (mListFocus) {
                     mChannelListAdapter.selectDownItem()?.let { channel ->
                         var name =
@@ -226,7 +236,7 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
             }
             KeyEvent.KEYCODE_DPAD_DOWN -> {
                 if (mGenreFocus) {
-                    mChannelListAdapter.setGenreFilter(mGenreAdapter.selectUp().name)
+                    mChannelListAdapter.setGenreFilter(mGenreAdapter.selectUp())
                 } else if (mListFocus) {
                     mChannelListAdapter.selectUPItem()?.let { channel ->
                         var name =
@@ -296,5 +306,32 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
             switchFocus(true)
             mSideViewFocus = false
         }
+    }
+
+    private fun onInitNoteButtonSuccess(data: NoteButton){
+        textView_fullscreen.text = data.note?.fullScreen
+        textView_back.text = data.note?.back
+        textView_home.text = data.note?.home
+    }
+
+    private fun onInitNoteButtonProgress(isProgress: Boolean) {
+
+    }
+
+    private fun onInitNoteButtonError(throwable: Throwable) {
+
+    }
+
+    private fun onInitGenreSuccess(data: GenreList){
+        Log.e(TAG,"[onInitGenreSuccess] data : $data")
+        mGenreAdapter.setItems(data.GenreType)
+    }
+
+    private fun onInitGenreProgress(isProgress: Boolean) {
+
+    }
+
+    private fun onInitGenreError(throwable: Throwable) {
+
     }
 }

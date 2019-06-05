@@ -441,3 +441,12 @@ data class JVersion(
     var build: String = "",
     var chanlistver: String =""
 )
+
+data class GenreList(
+    var GenreType: ArrayList<GenreType> = ArrayList()
+)
+
+data class GenreType(
+    var key: String = "",
+    var display: String =""
+)

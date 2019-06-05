@@ -6,12 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.ufistudio.hotelmediabox.R
+import com.ufistudio.hotelmediabox.repository.data.GenreType
 import kotlinx.android.synthetic.main.item_genre_list.view.*
 
 class ChannelGenreAdapter : RecyclerView.Adapter<ChannelGenreAdapter.ViewHolder>() {
 
     private var mIsFocus: Boolean = false
     private var mSelectPosition: Int = 0
+    private var mGenreList: ArrayList<GenreType>? = arrayListOf()
 
     interface OnItemClickListener {
         fun onClick(view: View)
@@ -24,12 +26,12 @@ class ChannelGenreAdapter : RecyclerView.Adapter<ChannelGenreAdapter.ViewHolder>
         return ViewHolder(view)
     }
 
-    override fun getItemCount(): Int = GenreType.values().size
+    override fun getItemCount(): Int = mGenreList?.size ?: 0
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = GenreType.values()[position]
+        val item = mGenreList?.get(position)
         holder.bind()
-        holder.itemView.text_genre_type.text = holder.itemView.context.getString(item.stringRes)
+        holder.itemView.text_genre_type.text = item?.display ?: ""
         holder.itemView.text_genre_type.tag = item
         holder.itemView.text_genre_type.setTextColor(
             if (position == mSelectPosition && mIsFocus)
@@ -46,26 +48,48 @@ class ChannelGenreAdapter : RecyclerView.Adapter<ChannelGenreAdapter.ViewHolder>
         mListener = listener
     }
 
-    fun selectUp():GenreType {
-        if (mSelectPosition == GenreType.values().size-1) return GenreType.values().last()
-        mSelectPosition++
-        notifyDataSetChanged()
-        return GenreType.values()[mSelectPosition]
+    fun selectUp():String {
+        mGenreList?.let { list ->
+            if(list.size == 0){
+                return ""
+            }else{
+                if (mSelectPosition == list.size -1) return list.last().key
+                mSelectPosition++
+                notifyDataSetChanged()
+                return list[mSelectPosition].key
+            }
+        }
+        return ""
     }
 
-    fun selectDown():GenreType {
-        if (mSelectPosition == 0) return GenreType.values().first()
-        mSelectPosition--
-        notifyDataSetChanged()
-        return GenreType.values()[mSelectPosition]
+    fun selectDown():String {
+        mGenreList?.let { list ->
+            if(list.size == 0){
+                return ""
+            }else{
+                if (mSelectPosition == 0) return list.first().key
+                mSelectPosition--
+                notifyDataSetChanged()
+                return list[mSelectPosition].key
+            }
+        }
+        return ""
     }
 
     fun getSelectType(): String{
-        return GenreType.values()[mSelectPosition].name
+        mGenreList?.let { list ->
+            return list[mSelectPosition].key
+        }
+        return ""
     }
 
     fun setFocus(isFocus: Boolean){
         mIsFocus = isFocus
+        notifyDataSetChanged()
+    }
+
+    fun setItems(items: ArrayList<GenreType>?) {
+        this.mGenreList = items
         notifyDataSetChanged()
     }
 
