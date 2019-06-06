@@ -15,7 +15,8 @@ data class ConnectDetail(
     var port: String = "",
     var frequency: String = "",
     var bandwidth: String = "",
-    var dvbParameter: String = ""
+    var dvbParameter: String = "",
+    var frequencyParameter: String = ""
 ) : Parcelable
 
 abstract class BaseChannel {
@@ -369,16 +370,18 @@ data class NoteButton(
 
 @Parcelize
 data class Note(
-    var home: String,
-    var back: String,
-    var fullScreen: String,
-    var toScroll: String,
-    var select: String,
-    var watch_movie: String,
-    var rewind: String,
-    var play_pause: String,
-    var fast_forward: String,
-    var stop: String
+    var home: String = "Home",
+    var back: String = "Back",
+    var fullScreen: String = "Full Screen",
+    var toScroll: String = "To Scroll",
+    var select: String = "Select",
+    var watch_movie: String = "Watch Movie",
+    var rewind: String = "Rewind",
+    var play_pause: String = "Play/Pause",
+    var fast_forward: String = "Fast Forward",
+    var stop: String = "Stop",
+    var navigation: String = "Navigation",
+    var channels: String = "Channels"
 ) : Parcelable
 
 /*
@@ -426,7 +429,8 @@ data class TouristInfo(
 data class InitialData(
         var time: String,
         var timestamp: Long,
-        var guestName: String
+        var guestName: String = "",
+        var timezone: String = "Asia/Taipei"
 ) : Parcelable
 
 @Parcelize

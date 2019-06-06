@@ -171,6 +171,7 @@ class TouristFragment : InteractionView<OnPageInteractionListener.Primary>(), On
                         mContentFocus = false
                         mCategoryFocus = true
                         mAdapter.selectLast(mCurrentCategoryIndex)
+                        checkArrow()
                     }
                 }
                 return true
@@ -178,6 +179,16 @@ class TouristFragment : InteractionView<OnPageInteractionListener.Primary>(), On
             KeyEvent.KEYCODE_DPAD_CENTER -> {
                 if (mSideViewFocus) {
                     sideView.intoPage()
+                    return true
+                }else{
+                    if (!sideView.isShown && mCategoryFocus) {
+                        mAdapter.clearFocus(mCurrentCategoryIndex)
+                        mCategoryFocus = false
+                        mContentFocus = true
+                        mCurrentContentIndex = 1
+                        renderViewContent()
+                        checkArrow()
+                    }
                     return true
                 }
             }

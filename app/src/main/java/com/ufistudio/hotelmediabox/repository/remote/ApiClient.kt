@@ -59,8 +59,8 @@ class ApiClient {
 
     fun downloadFileWithUrl(url: String): Single<ResponseBody> = mService.download(url)
 
-    fun postCheckStatus(url: String, mac: String, ip: String, room: String, status: String, tarVersion: String = "", jVersion: String = ""): Single<ResponseBody> {
-        return mService.checkStatus(url, mac, ip, room, status, tarVersion, jVersion)
+    fun postCheckStatus(url: String, mac: String, ip: String, room: String, status: String, tarVersion: String = "", jVersion: String = "", apkVersion: String = ""): Single<ResponseBody> {
+        return mService.checkStatus(url, mac, ip, room, status, tarVersion, jVersion, apkVersion)
     }
 
     fun postChannel(url: String, file: MultipartBody.Part): Single<ResponseBody> {
