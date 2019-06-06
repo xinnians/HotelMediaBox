@@ -15,7 +15,8 @@ data class ConnectDetail(
     var port: String = "",
     var frequency: String = "",
     var bandwidth: String = "",
-    var dvbParameter: String = ""
+    var dvbParameter: String = "",
+    var frequencyParameter: String = ""
 ) : Parcelable
 
 abstract class BaseChannel {

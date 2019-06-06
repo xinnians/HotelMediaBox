@@ -165,7 +165,9 @@ object TVController {
 
         mPlayDisposable = sendTCPRequestSingle("j_stopplay 1")
                 .flatMap {
-                    var channelParameter = channel.chIp.frequency + " " + channel.chIp.bandwidth
+//                    var channelParameter = channel.chIp.frequency + " " + channel.chIp.bandwidth
+                    var channelParameter = if(channel.chIp.frequencyParameter.isNullOrEmpty()) channel.chIp.frequency + " " + channel.chIp.bandwidth else channel.chIp.frequencyParameter
+
                     if (mCurrentLockFrequency == channelParameter) {
                         return@flatMap Single.fromCallable { RESULT_SUCCESS }
                     }
