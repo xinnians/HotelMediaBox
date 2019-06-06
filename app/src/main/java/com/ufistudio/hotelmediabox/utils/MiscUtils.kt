@@ -17,18 +17,24 @@ import com.google.gson.GsonBuilder
 import com.ufistudio.hotelmediabox.BuildConfig
 import com.ufistudio.hotelmediabox.repository.data.Config
 import java.io.*
+import java.math.BigInteger
 import java.net.NetworkInterface
 import java.net.SocketException
 import java.nio.charset.Charset
 import kotlin.collections.ArrayList
 import java.net.Inet4Address
+import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
 import java.util.*
+import java.util.zip.CRC32
+import java.util.zip.CheckedInputStream
 
 
 const val TAG_DEFAULT_LOCAL_PATH: String = "/hotel/"
 const val TAG_DEFAULT_CORRECTION_PATH: String = "/correction/"
 const val TAG_DEFAULT_APK_NAME: String = "box_hotel.apk"
 const val TAG_DEFAULT_HOTEL_TAR_FILE_NAME: String = "hotel.tar"
+const val TAG_HOTEL_VERIFY_TAR_FILE_NAME: String = "hotel_verify.tar"
 
 object MiscUtils {
 
@@ -102,7 +108,7 @@ object MiscUtils {
             return ""
         }
 
-        Log.e(TAG,"[getJsonLanguageAutoSwitch] config.config.language: ${config.config.language}")
+        Log.e(TAG, "[getJsonLanguageAutoSwitch] config.config.language: ${config.config.language}")
 
         var finalName: String = ""
         finalName = if (File("/data/${TAG_DEFAULT_LOCAL_PATH}box_${fileName}_${config.config.language}.json").exists()) {
@@ -130,10 +136,15 @@ object MiscUtils {
 //        return ""
 //    }
     fun getJsonFromStorage(fileName: String, path: String = ""): String {
-
-        return FileUtils.getFileFromStorage(fileName, path)?.let { file ->
-            parseJsonFileByInputStream(FileInputStream(file))
-        } ?: ""
+        if (!TextUtils.isEmpty(path)) {
+            return FileUtils.getFileFromStorage(fileName, path)?.let { file ->
+                parseJsonFileByInputStream(FileInputStream(file))
+            } ?: ""
+        }else{
+            return FileUtils.getFileFromStorage(fileName)?.let { file ->
+                parseJsonFileByInputStream(FileInputStream(file))
+            } ?: ""
+        }
 
 //        return parseJsonFileByInputStream(FileInputStream(FileUtils.getFileFromStorage(path, fileName)))
     }
