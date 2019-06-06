@@ -8,6 +8,7 @@ import com.ufistudio.hotelmediabox.helper.TVHelper
 import com.ufistudio.hotelmediabox.repository.Repository
 import com.ufistudio.hotelmediabox.repository.data.Config
 import com.ufistudio.hotelmediabox.repository.data.Home
+import com.ufistudio.hotelmediabox.repository.data.NoteButton
 import com.ufistudio.hotelmediabox.repository.data.WeatherInfo
 import com.ufistudio.hotelmediabox.repository.viewModel.BaseViewModel
 import com.ufistudio.hotelmediabox.utils.MiscUtils
@@ -70,6 +71,21 @@ class HomeViewModel(
                                     .subscribe({ getWeatherInfoSuccess.value = it }
                                             , { getWeatherInfoError.value = it })
                         }.subscribe()
+        )
+    }
+
+    val initNoteButtonSuccess = MutableLiveData<NoteButton?>()
+    val initNoteButtonProgress = MutableLiveData<Boolean>()
+    val initNoteButtonError = MutableLiveData<Throwable>()
+
+    fun initNoteButton(){
+        compositeDisposable.add(Single.fromCallable { mGson.fromJson(MiscUtils.getJsonLanguageAutoSwitch("bottom_note"), NoteButton::class.java) ?: NoteButton() }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { initNoteButtonProgress.value = true }
+            .doFinally { initNoteButtonProgress.value = false }
+            .subscribe({ initNoteButtonSuccess.value = it }
+                , { initNoteButtonError.value = it })
         )
     }
 }

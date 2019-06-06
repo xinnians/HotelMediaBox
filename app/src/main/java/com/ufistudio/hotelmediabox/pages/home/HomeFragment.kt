@@ -3,10 +3,8 @@ package com.ufistudio.hotelmediabox.pages.home
 import android.arch.lifecycle.Observer
 import android.content.Intent
 import android.graphics.PixelFormat
-import android.opengl.Visibility
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
-import android.support.v7.widget.LinearLayoutManager
 import android.support.v4.view.ViewPager
 import android.util.Log
 import android.view.*
@@ -16,7 +14,6 @@ import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.helper.ExoPlayerHelper
 import kotlinx.android.synthetic.main.fragment_home.*
 import android.view.KeyEvent
-import android.view.View.FOCUS_LEFT
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -29,15 +26,13 @@ import com.ufistudio.hotelmediabox.pages.fullScreen.FullScreenActivity
 import com.ufistudio.hotelmediabox.pages.weather.WeatherIconEnum
 import com.ufistudio.hotelmediabox.repository.data.*
 import com.ufistudio.hotelmediabox.utils.FileUtils
-import com.ufistudio.hotelmediabox.utils.MiscUtils
-import com.ufistudio.hotelmediabox.utils.XTNetWorkManager
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.view_bottom_info.*
 import kotlinx.android.synthetic.main.view_home_banner.*
 import kotlinx.android.synthetic.main.view_home_weather.*
-import java.io.File
 import java.util.concurrent.TimeUnit
 
 class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), FunctionsAdapter.OnItemClickListener,
@@ -123,6 +118,10 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
         mViewModel.getWeatherInfoSuccess.observe(this, Observer { onSuccess(it!!) })
         mViewModel.getWeatherInfoError.observe(this, Observer { onError(it!!) })
 
+        mViewModel.initNoteButtonSuccess.observe(this, Observer { onInitNoteButtonSuccess(it!!) })
+        mViewModel.initNoteButtonProgress.observe(this, Observer { onInitNoteButtonProgress(it!!) })
+        mViewModel.initNoteButtonError.observe(this, Observer { onInitNoteButtonError(it!!) })
+
         mExoPlayerHelper = ExoPlayerHelper()
     }
 
@@ -153,6 +152,7 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
 
         }
         mAdapter.setItemClickListener(this)
+        mViewModel.initNoteButton()
         renderView()
     }
 
@@ -755,5 +755,19 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                     //                    mViewModel.getTVHelper().playCurrent()?.subscribe()
                     TVController.playCurrent()
                 })
+    }
+
+    private fun onInitNoteButtonSuccess(data: NoteButton){
+        textView_channels.text = data.note?.channels
+        textView_navigation.text = data.note?.navigation
+        textView_select.text = data.note?.select
+    }
+
+    private fun onInitNoteButtonProgress(isProgress: Boolean) {
+
+    }
+
+    private fun onInitNoteButtonError(throwable: Throwable) {
+
     }
 }
