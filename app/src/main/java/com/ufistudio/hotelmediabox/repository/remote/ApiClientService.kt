@@ -22,7 +22,8 @@ interface ApiClientService {
             @Query("room", encoded = true) room: String,
             @Query("status", encoded = true) status: String,
             @Query("tar_version", encoded = true) tarVersion: String,
-            @Query("j_version", encoded = true) jVersion: String
+            @Query("j_version", encoded = true) jVersion: String,
+            @Query("apk_version",encoded = true) apkVersion: String
     ): Single<ResponseBody>
 
     @Multipart

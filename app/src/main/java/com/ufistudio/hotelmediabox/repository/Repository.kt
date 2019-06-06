@@ -45,7 +45,8 @@ class Repository(
                             MiscUtils.getRoomNumber(),
                             "1",
                             it.config.tar_version,
-                            it.config.j_version
+                            it.config.j_version,
+                            it.config.apk_version
                     )
                 }
     }
