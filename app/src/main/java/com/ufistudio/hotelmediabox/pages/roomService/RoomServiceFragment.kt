@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.TextUtils
 import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -326,24 +327,30 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
         mVideoView = view_content_type1?.findViewById(R.id.videoView) as PlayerView
         val imageView = view_content_type1?.findViewById(R.id.image_content) as ImageView
 
-        if (item.file_type.hashCode() == TAG_IMAGE.hashCode()) {
-            mVideoView?.visibility = View.GONE
-            imageView?.visibility = View.VISIBLE
-            Glide.with(context!!)
-                    .load(FileUtils.getFileFromStorage(item.file_name))
-                    .skipMemoryCache(true)
-                    .into(imageView)
-        } else if (item.file_type.hashCode() == TAG_VIDEO.hashCode()) {
-            mContentPlaying = true
-            mExoPlayerHelper.initPlayer(context, mVideoView!!)
-            mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(item.file_name)?.absolutePath
-                    ?: ""))
-            mExoPlayerHelper.repeatMode()
-            mVideoView!!.visibility = View.VISIBLE
-            imageView?.visibility = View.INVISIBLE
-        } else {
+        if (TextUtils.isEmpty(item.file_type)){
             mVideoView!!.visibility = View.GONE
             imageView?.visibility = View.INVISIBLE
+        }else {
+
+            if (item.file_type.hashCode() == TAG_IMAGE.hashCode()) {
+                mVideoView?.visibility = View.GONE
+                imageView?.visibility = View.VISIBLE
+                Glide.with(context!!)
+                        .load(FileUtils.getFileFromStorage(item.file_name))
+                        .skipMemoryCache(true)
+                        .into(imageView)
+            } else if (item.file_type.hashCode() == TAG_VIDEO.hashCode()) {
+                mContentPlaying = true
+                mExoPlayerHelper.initPlayer(context, mVideoView!!)
+                mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(item.file_name)?.absolutePath
+                        ?: ""))
+                mExoPlayerHelper.repeatMode()
+                mVideoView!!.visibility = View.VISIBLE
+                imageView?.visibility = View.INVISIBLE
+            } else {
+                mVideoView!!.visibility = View.GONE
+                imageView?.visibility = View.INVISIBLE
+            }
         }
     }
 
