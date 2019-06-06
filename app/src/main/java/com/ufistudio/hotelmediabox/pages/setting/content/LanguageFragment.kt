@@ -195,7 +195,7 @@ class LanguageFragment : InteractionView<OnPageInteractionListener.Primary>(), O
                     mCurrentLanguageCode = mData?.content!![i].code
                     mCurrentIndex = i
                     textView3.text = mData?.content!![i].title
-                    textView4.text = mData?.content!![if (i + 1 < mData?.content!!.size) i + 1 else -(i - mData?.content!!.size)].title
+                    textView4.text = mData?.content!![if (i + 1 < mData?.content!!.size) i + 1 else -(i - mData?.content!!.size) - 1].title
                     textView5.text = mData?.content!![if (i + 2 < mData?.content!!.size) i + 2 else -(i - mData?.content!!.size)].title
                     break
                 }
