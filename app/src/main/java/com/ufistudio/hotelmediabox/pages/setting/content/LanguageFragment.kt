@@ -190,13 +190,14 @@ class LanguageFragment : InteractionView<OnPageInteractionListener.Primary>(), O
         if (mData?.content != null) {
             for (i in 0 until mData?.content!!.size) {
                 if (TextUtils.equals(languageCode, mData?.content!![i].code)) {
-                    textView1.text = mData?.content!![if (i - 2 >= 0) i - 2 else mData?.content!!.size + i - 2].title
-                    textView2.text = mData?.content!![if (i - 1 >= 0) i - 1 else mData?.content!!.size + i - 1].title
                     mCurrentLanguageCode = mData?.content!![i].code
                     mCurrentIndex = i
-                    textView3.text = mData?.content!![i].title
-                    textView4.text = mData?.content!![if (i + 1 < mData?.content!!.size) i + 1 else -(i - mData?.content!!.size) - 1].title
-                    textView5.text = mData?.content!![if (i + 2 < mData?.content!!.size) i + 2 else -(i - mData?.content!!.size)].title
+                    textView1.text = mData?.content!![if (mCurrentIndex - 2 >= 0) mCurrentIndex - 2 else mData?.content!!.size + mCurrentIndex - 2].title
+                    textView2.text = mData?.content!![if (mCurrentIndex - 1 >= 0) mCurrentIndex - 1 else mData?.content!!.size + mCurrentIndex - 1].title
+                    textView3.text = mData?.content!![mCurrentIndex].title
+                    textView4.text = mData?.content!![if (mCurrentIndex + 1 < mData?.content!!.size) mCurrentIndex + 1 else (mCurrentIndex + 1 - mData?.content!!.size)].title
+                    textView5.text = mData?.content!![if (mCurrentIndex + 2 < mData?.content!!.size) mCurrentIndex + 2 else (mCurrentIndex + 2 - mData?.content!!.size)].title
+
                     break
                 }
             }
