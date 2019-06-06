@@ -17,12 +17,15 @@ import com.ufistudio.hotelmediabox.repository.data.Broadcast
 import com.ufistudio.hotelmediabox.repository.data.Config
 import com.ufistudio.hotelmediabox.repository.provider.preferences.SharedPreferencesProvider
 import com.ufistudio.hotelmediabox.utils.*
+import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.view_date.view.*
 import java.io.File
 import java.io.IOException
 import java.net.*
+import java.util.concurrent.TimeUnit
 
 class UdpReceiver : IntentService("UdpReceiver"), Runnable {
     //    val TAG_SERVER_IP = "192.168.2.8"
@@ -210,20 +213,38 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                                 .subscribe()
                     }
                     TAG_RESOURCE_UPDATE -> {
-                        //將 hotel.tar下載到/data/correction資料夾內
-                        Repository(application, SharedPreferencesProvider(application)).downloadFileWithUrl("http://${myBroadcast.ip}:${myBroadcast.port}${myBroadcast.url}")
-                                .flatMap { Single.fromCallable { FileUtils.writeResponseBodyToDisk(it, TAG_DEFAULT_HOTEL_TAR_FILE_NAME, TAG_DEFAULT_CORRECTION_PATH) } }
-                                .subscribe({
-                                    if (FileUtils.fileIsExists(TAG_DEFAULT_HOTEL_TAR_FILE_NAME, TAG_DEFAULT_CORRECTION_PATH)) {
-                                        Log.d(TAG, "TAG_RESOURCE_UPDATE download success")
-                                        FileUtils.getFileFromStorage("chkflag")?.delete()
-                                        MiscUtils.reboot(baseContext)
-                                    } else {
-                                        Log.d(TAG, "TAG_RESOURCE_UPDATE download finish, but can not find file")
-                                    }
-                                }, {
-                                    Log.d(TAG, "TAG_RESOURCE_UPDATE download error $it")
-                                })
+                        var retried: Boolean = false
+
+                        fun downloadResource() {
+                            //將 hotel.tar下載到/data/correction資料夾內
+                            Repository(application, SharedPreferencesProvider(application)).downloadFileWithUrl("http://${myBroadcast.ip}:${myBroadcast.port}${myBroadcast.url}")
+                                    .flatMap { Single.fromCallable { FileUtils.writeResponseBodyToDisk(it, TAG_HOTEL_VERIFY_TAR_FILE_NAME, TAG_DEFAULT_CORRECTION_PATH) } }
+                                    .retry(1)
+                                    .subscribe({
+                                        if (FileUtils.fileIsExists(TAG_HOTEL_VERIFY_TAR_FILE_NAME, TAG_DEFAULT_CORRECTION_PATH)) {
+                                            FileUtils.getFileFromStorage(TAG_HOTEL_VERIFY_TAR_FILE_NAME, "/data$TAG_DEFAULT_CORRECTION_PATH")?.let {
+                                                val checkSum = MD5Utils.getMD5CheckSum(it)
+                                                Log.d(TAG, "TAG_RESOURCE_UPDATE resource check sum = $checkSum")
+                                                if (TextUtils.equals(checkSum, myBroadcast.md5)) {
+                                                    Log.d(TAG, "TAG_RESOURCE_UPDATE download success")
+                                                    val fileHotelTar = File("/data$TAG_DEFAULT_CORRECTION_PATH", TAG_DEFAULT_HOTEL_TAR_FILE_NAME)
+                                                    it.renameTo(fileHotelTar)
+
+                                                    FileUtils.getFileFromStorage("chkflag")?.delete()
+                                                    MiscUtils.reboot(baseContext)
+                                                } else {
+                                                    Log.d(TAG, "TAG_RESOURCE_UPDATE CheckSum is not correct with server value : ${myBroadcast.md5}")
+                                                }
+                                            }
+
+                                        } else {
+                                            Log.d(TAG, "TAG_RESOURCE_UPDATE download finish, but can not find file")
+                                        }
+                                    }, {
+                                        Log.d(TAG, "TAG_RESOURCE_UPDATE download error $it")
+                                    })
+                        }
+                        downloadResource()
                     }
                     TAG_SET_STATIC_IP -> {
                         Repository(application, SharedPreferencesProvider(application)).getStaticIp("http://${myBroadcast.ip}:${myBroadcast.port}${myBroadcast.url}")

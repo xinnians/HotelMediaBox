@@ -49,10 +49,10 @@ object FileUtils {
      * @path: the file path, Base is /sdcard/hotel/........
      * @fileName: This is your file name, ex: welcome.json
      */
-    fun getFileFromStorage(fileName: String, path: String = ""): File? {
+    fun getFileFromStorage(fileName: String, path: String = "/data$TAG_DEFAULT_LOCAL_PATH"): File? {
         var file: File? = null
         try {
-            file = File(String.format("%s%s%s", "/data", TAG_DEFAULT_LOCAL_PATH, path), fileName)
+            file = File(path, fileName)
             Log.d("getFileFromStorage", "file path = ${file.absolutePath}")
         } catch (e: NullPointerException) {
             Log.e("getFileFromStorage", "error = $e")
@@ -92,7 +92,7 @@ object FileUtils {
     fun fileIsExists(fileName: String, path: String = TAG_DEFAULT_LOCAL_PATH): Boolean {
         try {
             var file = File("/data", path + fileName)
-            Log.d(TAG,"fileIsExists = $file")
+            Log.d(TAG, "fileIsExists = $file")
             if (!file.exists()) {
                 return false
             }
@@ -119,7 +119,7 @@ object FileUtils {
             val path: String = fileIsExist(filePath)
             val file: File = File(path, name)
 
-            Log.d(TAG,"canWrite: ${file.canWrite()}, canRead: ${file.canRead()}")
+            Log.d(TAG, "canWrite: ${file.canWrite()}, canRead: ${file.canRead()}")
             var inputStream: InputStream? = null
             var outputStream: OutputStream? = null
             try {
@@ -146,7 +146,7 @@ object FileUtils {
                 return true
             } catch (e: IOException) {
                 listener?.savingFileError(e)
-                Log.e(TAG,"[writeResponseBodyToDisk] first save error = $e")
+                Log.e(TAG, "[writeResponseBodyToDisk] first save error = $e")
                 return false
             } finally {
                 inputStream?.close()
@@ -155,7 +155,7 @@ object FileUtils {
             }
         } catch (e: IOException) {
             listener?.savingFileError(e)
-            Log.e(TAG,"[writeResponseBodyToDisk] second save error = $e")
+            Log.e(TAG, "[writeResponseBodyToDisk] second save error = $e")
             return false
         }
 

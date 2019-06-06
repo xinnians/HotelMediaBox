@@ -391,7 +391,8 @@ data class Broadcast(
     var port: String,
     var type: String,
     var needUpdate: Int = 0,
-    var force: String = "0"
+    var force: String = "0",
+    var md5:String
 ) : Parcelable
 
 
