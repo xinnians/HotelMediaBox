@@ -342,7 +342,13 @@ data class WeatherContent(
 @Parcelize
 data class WeatherInfo(
     var forecasts: ArrayList<WeatherForecasts>? = ArrayList(),
-    var location: WeatherLocation
+    var location: WeatherLocation,
+    var current_observation: CurrentObservation?
+) : Parcelable
+
+@Parcelize
+data class CurrentObservation(
+    var pubDate: String? = ""
 ) : Parcelable
 
 @Parcelize
