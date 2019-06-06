@@ -1,6 +1,7 @@
 package com.ufistudio.hotelmediabox.pages.facilies
 
 import android.arch.lifecycle.Observer
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
@@ -40,7 +41,7 @@ private const val TAG_TEMPLATE_2 = 1
 private const val TAG_TEMPLATE_3 = 2
 
 class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItemClickListener,
-    OnItemFocusListener, ViewModelsCallback {
+        OnItemFocusListener, ViewModelsCallback {
     private lateinit var mViewModel: HotelFacilitiesViewModel
     private var mAdapter: HotelFacilitiesAdapter = HotelFacilitiesAdapter(this, this)
     private var mCurrentCategoryIndex: Int = 0 //當前頁面category index
@@ -56,10 +57,8 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
     private var mData: HotelFacilities? = null
     private var mHomeIcons: ArrayList<HomeIcons>? = null //SideView List
 
-    private var mCurrentContentSelectIndex: HashMap<Int, Int>? =
-        HashMap() //記錄當前在第幾個Item的Content, key = category index, value = content index
-    private var mTotalSize: HashMap<Int, Int>? =
-        HashMap()//所有category內容的size, key = category index, value = category content size
+    private var mCurrentContentSelectIndex: HashMap<Int, Int>? = HashMap() //記錄當前在第幾個Item的Content, key = category index, value = content index
+    private var mTotalSize: HashMap<Int, Int>? = HashMap()//所有category內容的size, key = category index, value = category content size
     private var mCurrentContent: List<HotelFacilitiesContent>? = null // 被選到的category內的Content
     private var mCurrentContentType: Int? = 0 // 被選到的content type
     private var mVideoFrame: ConstraintLayout? = null
@@ -69,7 +68,11 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
 
     private var mNoteBottom: NoteButton? = null//右下角提示資訊
 
+    private var mCurrentFileName: String = ""
+
     private var mExoPlayerHelper: ExoPlayerHelper = ExoPlayerHelper()
+
+    private var mFullscreen: Boolean = false //給全螢幕的video使用，回這頁播放影片用
 
     companion object {
         fun newInstance(): HotelFacilitiesFragment = HotelFacilitiesFragment()
@@ -110,6 +113,14 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
     override fun onStart() {
         super.onStart()
         renderView()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (mFullscreen) {
+            switchRender()
+            mFullscreen = false
+        }
     }
 
     override fun onDestroy() {
@@ -219,10 +230,19 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
                 return true
             }
             KeyEvent.KEYCODE_DPAD_CENTER -> {
-                //TODO full screen image and video
                 if (mSideViewFocus) {
                     sideView.intoPage()
                     return true
+                } else if (mContentFocus && mCurrentContentType == TAG_TEMPLATE_1) {
+                    val item = mCurrentContent!![mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!]
+                    val intent: Intent = Intent(context, FullScreenPictureActivity::class.java)
+                    intent.putExtra(Page.ARG_BUNDLE, item.file_name)
+                    intent.putExtra(FullScreenPictureActivity.TAG_TYPE, item.file_type)
+                    if (item.file_type.hashCode() == TAG_VIDEO.hashCode()) {
+//                        mExoPlayerHelper.stop()
+                        mFullscreen = true
+                    }
+                    startActivity(intent)
                 }
 
             }
@@ -345,11 +365,11 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
 
         checkArrow()
         showFullScreenBottomNote()
-
+        mExoPlayerHelper.release()
         val item = list!![mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!]
         (view_content_type1.findViewById(R.id.text_total_page) as TextView).text = String.format("/%d", list.size)
         (view_content_type1.findViewById(R.id.text_current_page) as TextView).text =
-            (mCurrentContentSelectIndex!![mCurrentCategoryIndex]!! + 1).toString()
+                (mCurrentContentSelectIndex!![mCurrentCategoryIndex]!! + 1).toString()
         mVideoView1 = view_content_type1?.findViewById(R.id.videoView) as PlayerView
         val imageView = view_content_type1?.findViewById(R.id.image_photo) as ImageView
         mVideoFrame = view_content_type1?.findViewById(R.id.videoView_frame) as ConstraintLayout
@@ -359,9 +379,9 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
             imageView?.visibility = View.VISIBLE
             if (imageView != null) {
                 Glide.with(context!!)
-                    .load(FileUtils.getFileFromStorage(item.file_name))
-                    .skipMemoryCache(true)
-                    .into(imageView)
+                        .load(FileUtils.getFileFromStorage(item.file_name))
+                        .skipMemoryCache(true)
+                        .into(imageView)
             }
         } else if (item.file_type.hashCode() == TAG_VIDEO.hashCode()) {
             mContentPlaying = true
@@ -403,9 +423,9 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
             imageView?.visibility = View.VISIBLE
             if (imageView != null) {
                 Glide.with(context!!)
-                    .load(FileUtils.getFileFromStorage(item.file_name))
-                    .skipMemoryCache(true)
-                    .into(imageView)
+                        .load(FileUtils.getFileFromStorage(item.file_name))
+                        .skipMemoryCache(true)
+                        .into(imageView)
             }
         } else if (item.file_type.hashCode() == TAG_VIDEO.hashCode()) {
             mContentPlaying = true
@@ -439,20 +459,21 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
 
 
 
+        mCurrentFileName = item.file_name
         if (item.file_type.hashCode() == TAG_IMAGE.hashCode()) {
             mVideoView3?.visibility = View.GONE
             imageView?.visibility = View.VISIBLE
             if (imageView != null) {
                 Glide.with(context!!)
-                    .load(FileUtils.getFileFromStorage(item.file_name))
-                    .skipMemoryCache(true)
-                    .into(imageView)
+                        .load(FileUtils.getFileFromStorage(mCurrentFileName))
+                        .skipMemoryCache(true)
+                        .into(imageView)
             }
         } else if (item.file_type.hashCode() == TAG_VIDEO.hashCode()) {
             mContentPlaying = true
             if (mVideoView3 != null) {
                 mExoPlayerHelper.initPlayer(context, mVideoView3!!)
-                mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(item.file_name)?.absolutePath))
+                mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(mCurrentFileName)?.absolutePath))
                 mVideoView3?.visibility = View.VISIBLE
             }
             imageView?.visibility = View.INVISIBLE
