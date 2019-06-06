@@ -427,7 +427,8 @@ data class TouristInfo(
 data class InitialData(
         var time: String,
         var timestamp: Long,
-        var guestName: String = ""
+        var guestName: String = "",
+        var timezone: String = "Asia/Taipei"
 ) : Parcelable
 
 @Parcelize

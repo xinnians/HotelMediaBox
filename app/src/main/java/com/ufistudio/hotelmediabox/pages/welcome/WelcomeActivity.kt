@@ -24,6 +24,9 @@ import com.ufistudio.hotelmediabox.repository.data.WelcomeContent
 import com.ufistudio.hotelmediabox.utils.FileUtils
 import com.ufistudio.hotelmediabox.utils.MiscUtils
 import kotlinx.android.synthetic.main.activity_welcome.*
+import android.content.Context.ALARM_SERVICE
+import android.app.AlarmManager
+import android.content.Context
 
 
 class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickListener {
@@ -98,8 +101,11 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
     override fun onSuccess(it: Any?) {
 
         if (it != null && it is InitialData) {
-            text_name.text = if(it.guestName.isEmpty()) "Guest" else it.guestName
+            Log.e(TAG,"[InitialData] : $it")
+            text_name.text = if(it.guestName.isNullOrEmpty()) "Guest" else it.guestName
             text_name?.requestFocus()
+            val mAlarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            mAlarmManager.setTimeZone(it.timezone)
             SystemClock.setCurrentTimeMillis(it.timestamp)
             return
         }
