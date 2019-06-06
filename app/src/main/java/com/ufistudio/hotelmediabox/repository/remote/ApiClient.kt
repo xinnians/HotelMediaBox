@@ -31,6 +31,12 @@ class ApiClient {
             }
             return sInstance
         }
+
+
+        fun clear(){
+            sInstance = null
+            RemoteAPI.clear()
+        }
     }
 
     init {

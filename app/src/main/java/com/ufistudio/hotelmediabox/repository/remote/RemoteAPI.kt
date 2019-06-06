@@ -51,6 +51,11 @@ abstract class RemoteAPI {
             return mOkHttpClient
         }
 
+        fun clear(){
+            mOkHttpClient=null
+            mOkHttpClient = createClient()
+        }
+
         private fun enableTLS120nPreLollipop(builder: OkHttpClient.Builder): OkHttpClient.Builder {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT_WATCH) {
                 try {

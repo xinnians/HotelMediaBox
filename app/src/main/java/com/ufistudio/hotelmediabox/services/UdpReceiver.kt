@@ -16,16 +16,14 @@ import com.ufistudio.hotelmediabox.repository.Repository
 import com.ufistudio.hotelmediabox.repository.data.Broadcast
 import com.ufistudio.hotelmediabox.repository.data.Config
 import com.ufistudio.hotelmediabox.repository.provider.preferences.SharedPreferencesProvider
+import com.ufistudio.hotelmediabox.repository.remote.ApiClient
 import com.ufistudio.hotelmediabox.utils.*
-import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.view_date.view.*
 import java.io.File
 import java.io.IOException
 import java.net.*
-import java.util.concurrent.TimeUnit
 
 class UdpReceiver : IntentService("UdpReceiver"), Runnable {
     //    val TAG_SERVER_IP = "192.168.2.8"
@@ -220,6 +218,7 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                             Repository(application, SharedPreferencesProvider(application)).downloadFileWithUrl("http://${myBroadcast.ip}:${myBroadcast.port}${myBroadcast.url}")
                                     .flatMap { Single.fromCallable { FileUtils.writeResponseBodyToDisk(it, TAG_HOTEL_VERIFY_TAR_FILE_NAME, TAG_DEFAULT_CORRECTION_PATH) } }
                                     .retry(1)
+                                    .subscribeOn(Schedulers.io())
                                     .subscribe({
                                         if (FileUtils.fileIsExists(TAG_HOTEL_VERIFY_TAR_FILE_NAME, TAG_DEFAULT_CORRECTION_PATH)) {
                                             FileUtils.getFileFromStorage(TAG_HOTEL_VERIFY_TAR_FILE_NAME, "/data$TAG_DEFAULT_CORRECTION_PATH")?.let {
@@ -234,14 +233,30 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                                                     MiscUtils.reboot(baseContext)
                                                 } else {
                                                     Log.d(TAG, "TAG_RESOURCE_UPDATE CheckSum is not correct with server value : ${myBroadcast.md5}")
+                                                    ApiClient.clear()
+                                                    if (!retried)
+                                                        downloadResource()
+                                                    retried = true
+                                                    Log.d(TAG, "TAG_RESOURCE_UPDATE retry download resource")
                                                 }
                                             }
 
                                         } else {
-                                            Log.d(TAG, "TAG_RESOURCE_UPDATE download finish, but can not find file")
+                                            Log.e(TAG, "TAG_RESOURCE_UPDATE download finish, but can not find file")
+                                            ApiClient.clear()
+                                            if (!retried)
+                                                downloadResource()
+                                            retried = true
+                                            Log.d(TAG, "TAG_RESOURCE_UPDATE retry download resource")
                                         }
                                     }, {
-                                        Log.d(TAG, "TAG_RESOURCE_UPDATE download error $it")
+                                        Log.e(TAG, "TAG_RESOURCE_UPDATE download error $it")
+                                        ApiClient.clear()
+                                        if (!retried) {
+                                            downloadResource()
+                                            Log.d(TAG, "TAG_RESOURCE_UPDATE retry download resource")
+                                        }
+                                        retried = true
                                     })
                         }
                         downloadResource()
