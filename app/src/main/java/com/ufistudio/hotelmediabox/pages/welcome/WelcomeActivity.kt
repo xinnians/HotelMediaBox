@@ -14,6 +14,7 @@ import android.view.View
 import com.bumptech.glide.Glide
 import com.ufistudio.hotelmediabox.AppInjector
 import com.ufistudio.hotelmediabox.R
+import com.ufistudio.hotelmediabox.helper.TVController.updateJVersionAndAppVersionToFile
 import com.ufistudio.hotelmediabox.interfaces.ViewModelsCallback
 import com.ufistudio.hotelmediabox.pages.MainActivity
 import com.ufistudio.hotelmediabox.pages.base.PaneViewActivity
@@ -54,6 +55,7 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
         super.onStart()
         renderUI()
         mViewModel.getInitialDataFromServer()
+        updateJVersionAndAppVersionToFile(MiscUtils.getLocalVersionName(this) + "." + MiscUtils.getLocalVersion(this))
     }
 
     override fun onResume() {
@@ -76,25 +78,28 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
     }
 
     private fun renderUI() {
-        button_ok.background = ContextCompat.getDrawable(this, R.drawable.selector_home_icon)
+        button_ok.background = ContextCompat.getDrawable(this, R.drawable.home_icon_frame_frame_focused)
         button_ok.setOnClickListener(this)
-        button_ok.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
-            if (hasFocus) {
-                button_ok.setTextColor(ContextCompat.getColor(this, R.color.colorYellow))
-            } else {
-                button_ok.setTextColor(ContextCompat.getColor(this, android.R.color.white))
-            }
-        }
+//        button_ok.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
+//            if (hasFocus) {
+//                button_ok.setTextColor(ContextCompat.getColor(this, R.color.colorYellow))
+//            } else {
+//                button_ok.setTextColor(ContextCompat.getColor(this, android.R.color.white))
+//            }
+//        }
+        button_ok.setTextColor(ContextCompat.getColor(this, R.color.colorYellow))
 
         button_ok.isFocusable = true
         button_ok.isFocusableInTouchMode = true
         button_ok.requestFocus()
+        text_name.setOnClickListener(this)
     }
 
     override fun onSuccess(it: Any?) {
 
         if (it != null && it is InitialData) {
-            text_name.text = it.guestName
+            text_name.text = if(it.guestName.isEmpty()) "Guest" else it.guestName
+            text_name?.requestFocus()
             SystemClock.setCurrentTimeMillis(it.timestamp)
             return
         }

@@ -7,6 +7,7 @@
     android:layout_height="match_parent">
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/view_dialog"
         android:layout_width="@dimen/_364sdp"
         android:layout_height="@dimen/_203sdp"
         android:layout_marginStart="@dimen/_79sdp"
@@ -30,12 +31,20 @@
 
         <TextView
             android:id="@+id/text_name"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textColor="@color/welcomeName"
             android:textSize="@dimen/_23ssp"
+            android:marqueeRepeatLimit="-1"
+            android:singleLine="true"
+            android:focusableInTouchMode="true"
+            android:focusable="true"
+            android:ellipsize="marquee"
+            android:text="guest"
             app:layout_constraintBaseline_toBaselineOf="@+id/text_title"
-            app:layout_constraintStart_toStartOf="@+id/guideline" />
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintEnd_toEndOf="@+id/view_dialog"/>
+
 
         <TextView
             android:id="@+id/text_title"
@@ -43,6 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/_3sdp"
+            android:layout_marginEnd="@dimen/_5sdp"
             android:textSize="@dimen/_17ssp"
             app:layout_constraintBottom_toTopOf="@+id/text_room"
             app:layout_constraintEnd_toStartOf="@+id/guideline" />

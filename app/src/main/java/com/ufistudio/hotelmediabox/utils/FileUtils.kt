@@ -313,6 +313,7 @@ object FileUtils {
             osw.write(data.toByteArray(Charset.defaultCharset()))
             osw.flush()
         } catch (e: Exception) {
+            Log.e("writeToFile", "Exception = $e")
         } finally {
             try {
                 osw!!.close()

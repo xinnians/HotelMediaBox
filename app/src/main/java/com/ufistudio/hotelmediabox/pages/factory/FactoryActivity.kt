@@ -85,7 +85,7 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
         textView_info1.movementMethod = ScrollingMovementMethod()
         textView_info2.movementMethod = ScrollingMovementMethod()
 
-        var textVersionInfo = MiscUtils.getLocalVersionName(this) + "," + MiscUtils.getLocalVersion(this)
+        var textVersionInfo = MiscUtils.getLocalVersionName(this) + "." + MiscUtils.getLocalVersion(this)
         text_version.text = textVersionInfo
 
     }

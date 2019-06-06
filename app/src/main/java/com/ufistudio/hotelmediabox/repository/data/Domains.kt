@@ -201,7 +201,8 @@ data class ConfigContent(
         var defaultIp: String = "",
         var defaultServerIp: String = "",
         var j_version: String = "",
-        var tar_version: String = ""
+        var tar_version: String = "",
+        var apk_version: String = ""
 ) : Parcelable
 
 /*
@@ -434,3 +435,19 @@ data class StaticIpData(
         var defaultMask: String?,
         var gateway: String? = "0.0.0.0"
 ) : Parcelable
+
+data class JVersion(
+    var process: String = "",
+    var ver: String = "",
+    var build: String = "",
+    var chanlistver: String =""
+)
+
+data class GenreList(
+    var GenreType: ArrayList<GenreType> = ArrayList()
+)
+
+data class GenreType(
+    var key: String = "",
+    var display: String =""
+)

@@ -254,7 +254,6 @@ class NearbyMeFragment : InteractionView<OnPageInteractionListener.Primary>(), O
             }
             textView_back.text = mNoteBottom?.note?.back
             textView_home.text = mNoteBottom?.note?.home
-            textView_ok.text = mNoteBottom?.note?.fullScreen
         }
     }
 
