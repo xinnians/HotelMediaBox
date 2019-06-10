@@ -49,6 +49,7 @@ class SettingFragment : InteractionView<OnPageInteractionListener.Primary>(), Vi
     private var mCategoryFocus: Boolean = false
     private var mContentFocus: Boolean = false
     private var mGuidLi: Boolean = false
+    private var mIsUserGuideFocus: Boolean = false
 
     private var mNoteBottom: NoteButton? = null//右下角提示資訊
 
@@ -144,12 +145,14 @@ class SettingFragment : InteractionView<OnPageInteractionListener.Primary>(), Vi
             mCurrentCategoryIndex = view.getTag(SettingAdapter.TAG_INDEX) as Int
             when (category.type) {
                 TAG_LANGUAGE -> {
+                    mIsUserGuideFocus = false
                     val bundle: Bundle = Bundle()
                     bundle.putParcelable(Page.ARG_BUNDLE, category.contents)
                     getInteractionListener().switchPage(R.id.fragment_sub_content, Page.LANGUAGE_SETTING, bundle, true, false)
                     showSelectBottomNote()
                 }
                 TAG_USER_GUIDE -> {
+                    mIsUserGuideFocus = true
                     val bundle: Bundle = Bundle()
                     bundle.putParcelable(Page.ARG_BUNDLE, category.contents)
                     getInteractionListener().switchPage(R.id.fragment_sub_content, Page.USER_GUIDE, bundle, true, false)
@@ -160,7 +163,7 @@ class SettingFragment : InteractionView<OnPageInteractionListener.Primary>(), Vi
     }
 
     override fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        if (mContentFocus) {
+        if (mContentFocus && !mIsUserGuideFocus) {
             if (getInteractionListener().getOnKeyListener() != null && getInteractionListener().getOnKeyListener()?.onKeyPress(keyCode, event)!!) {
                 when (keyCode) {
                     KeyEvent.KEYCODE_BACK -> {
@@ -229,7 +232,7 @@ class SettingFragment : InteractionView<OnPageInteractionListener.Primary>(), Vi
                     return true
                 }
                 KeyEvent.KEYCODE_DPAD_RIGHT -> {
-                    if (!sideView.isShown && mCategoryFocus) {
+                    if (!sideView.isShown && mCategoryFocus && !mIsUserGuideFocus) {
                         mAdapter.clearFocus(mCurrentCategoryIndex)
                         mCategoryFocus = false
                         mContentFocus = true
