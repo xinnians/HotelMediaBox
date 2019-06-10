@@ -185,8 +185,11 @@ class TouristFragment : InteractionView<OnPageInteractionListener.Primary>(), On
                         mAdapter.clearFocus(mCurrentCategoryIndex)
                         mCategoryFocus = false
                         mContentFocus = true
-                        mCurrentContentIndex = 1
-                        renderViewContent()
+                        mCurrentContentIndex = 0
+                        if (mCurrentContentIndex < mTotalSize?.get(mCurrentCategoryIndex) ?: 0 - 1) {
+                            mCurrentContentIndex += 1
+                            renderViewContent()
+                        }
                         checkArrow()
                     }
                     return true
