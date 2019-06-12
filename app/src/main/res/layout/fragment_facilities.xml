@@ -114,6 +114,7 @@
         android:layout_marginStart="@dimen/_16sdp"
         android:layout_marginTop="@dimen/_146sdp"
         android:src="@drawable/ic_left_arrow"
+        android:visibility="gone"
         app:layout_constraintStart_toEndOf="@+id/view_service"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -156,6 +157,7 @@
         android:layout_height="@dimen/_13sdp"
         android:layout_marginEnd="@dimen/_16sdp"
         android:src="@drawable/ic_right_arrow"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/imageView_arrow_left" />
 

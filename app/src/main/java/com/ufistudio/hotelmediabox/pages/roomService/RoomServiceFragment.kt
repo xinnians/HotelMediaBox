@@ -35,6 +35,7 @@ import kotlinx.android.synthetic.main.fragment_room_service.layout_back
 import kotlinx.android.synthetic.main.fragment_room_service.sideView
 import kotlinx.android.synthetic.main.fragment_room_service.text_back
 import kotlinx.android.synthetic.main.fragment_room_service.view_line
+import kotlinx.android.synthetic.main.item_room_service_type1.*
 import kotlinx.android.synthetic.main.view_bottom_back_home.*
 
 private const val TAG_IMAGE = "image"
@@ -319,7 +320,7 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
     private fun renderTemplate1(item: RoomServiceContent) {
         view_content_type1.visibility = View.VISIBLE
         view_content_type2.visibility = View.GONE
-        checkArrow()
+        checkSideArrow()
         (view_content_type1?.findViewById(R.id.text_title) as TextView).text = item.title
         (view_content_type1?.findViewById(R.id.text_content) as TextView).text = item.content
         (view_content_type1?.findViewById(R.id.text_current_page) as TextView).text = (mCurrentContentSelectIndex?.get(mCurrentCategoryIndex)!! + 1).toString()
@@ -327,10 +328,10 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
         mVideoView = view_content_type1?.findViewById(R.id.videoView) as PlayerView
         val imageView = view_content_type1?.findViewById(R.id.image_content) as ImageView
 
-        if (TextUtils.isEmpty(item.file_type)){
+        if (TextUtils.isEmpty(item.file_type)) {
             mVideoView!!.visibility = View.GONE
             imageView?.visibility = View.INVISIBLE
-        }else {
+        } else {
 
             if (item.file_type.hashCode() == TAG_IMAGE.hashCode()) {
                 mVideoView?.visibility = View.GONE
@@ -379,6 +380,10 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
      * 判斷左右箭頭
      */
     private fun checkArrow() {
+
+        imageView_arrow_left.visibility = View.VISIBLE
+        imageView_arrow_right.visibility = View.VISIBLE
+
         when {
             mCurrentContent?.size == 1 -> {
                 imageView_arrow_left.visibility = View.INVISIBLE
@@ -397,6 +402,34 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
             else -> {
                 imageView_arrow_left.visibility = View.VISIBLE
                 imageView_arrow_right.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    /**
+     * 判斷新版本右半部的左右箭頭
+     */
+    private fun checkSideArrow() {
+        imageView_arrow_left.visibility = View.GONE
+        imageView_arrow_right.visibility = View.GONE
+        when {
+            mCurrentContent?.size == 1 -> {
+                imageView_side_arrow_left.visibility = View.INVISIBLE
+                imageView_side_arrow_right.visibility = View.INVISIBLE
+            }
+            mCurrentContentSelectIndex!![mCurrentCategoryIndex] == 0 -> {
+                imageView_side_arrow_left.visibility = View.INVISIBLE
+                imageView_side_arrow_right.visibility = View.VISIBLE
+            }
+            //因應Template2 是3個資料為一頁做的調整，第二行為一般判斷
+            mData?.categories!![mCurrentCategoryIndex].content_type == TAG_TEMPLATE2 && mCurrentContentSelectIndex!![mCurrentCategoryIndex] == mCurrentContent!!.size / 3 ||
+                    mCurrentContentSelectIndex!![mCurrentCategoryIndex] == mCurrentContent!!.size - 1 -> {
+                imageView_side_arrow_left.visibility = View.VISIBLE
+                imageView_side_arrow_right.visibility = View.INVISIBLE
+            }
+            else -> {
+                imageView_side_arrow_left.visibility = View.VISIBLE
+                imageView_side_arrow_right.visibility = View.VISIBLE
             }
         }
     }
