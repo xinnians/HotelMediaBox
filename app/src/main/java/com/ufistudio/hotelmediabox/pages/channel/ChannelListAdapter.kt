@@ -53,21 +53,16 @@ class ChannelListAdapter : RecyclerView.Adapter<ChannelListAdapter.ViewHolder>()
                 } else {
                     holder.itemView.layout_frame.background =
                         ContextCompat.getDrawable(mContext, R.drawable.home_icon_frame_frame_default)
-                    holder.itemView.text_channelName.setTextColor(
-                        ContextCompat.getColor(
-                            mContext,
-                            android.R.color.white
-                        )
-                    )
+                    holder.itemView.text_channelName.setTextColor(ContextCompat.getColor(mContext, R.color.white30))
                 }
             } else {
-                holder.itemView.layout_frame.setBackgroundResource(0)
-                holder.itemView.text_channelName.setTextColor(
-                    ContextCompat.getColor(
-                        mContext,
-                        android.R.color.white
-                    )
-                )
+                if (mIsFocus) {
+                    holder.itemView.layout_frame.setBackgroundResource(0)
+                    holder.itemView.text_channelName.setTextColor(ContextCompat.getColor(mContext, android.R.color.white))
+                } else {
+                    holder.itemView.layout_frame.setBackgroundResource(0)
+                    holder.itemView.text_channelName.setTextColor(ContextCompat.getColor(mContext, R.color.white30))
+                }
             }
 
 //            holder.itemView.setOnFocusChangeListener { v, hasFocus ->

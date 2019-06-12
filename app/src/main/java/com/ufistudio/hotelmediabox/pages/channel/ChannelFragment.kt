@@ -4,6 +4,7 @@ import android.arch.lifecycle.Observer
 import android.content.Intent
 import android.graphics.PixelFormat
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.*
@@ -108,7 +109,7 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
 
         TVController.getCurrentChannel()?.let { mChannelListAdapter.setCurrentTVChannel(it) }
         view_channel_list?.scrollToPosition(mChannelListAdapter.getSelectPosition())
-        switchFocus(false)
+        switchFocus(false,false)
     }
 
     override fun onPause() {
@@ -187,13 +188,18 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
 
     }
 
-    private fun switchFocus(isGenre: Boolean) {
+    private fun switchFocus(isGenre: Boolean,isSideView: Boolean) {
         Log.e(TAG, "[switchFocus] isGenre:$isGenre")
-        mGenreFocus = isGenre
-        mListFocus = !isGenre
+        mGenreFocus = if(isSideView) false else isGenre
+        mListFocus = if(isSideView) false else !isGenre
 
-        mGenreAdapter.setFocus(isGenre)
-        mChannelListAdapter.setFocus(!isGenre)
+        view_list_uparrow.setImageDrawable(context?.let { ContextCompat.getDrawable(it,if(mListFocus) R.drawable.ic_uparrow else R.drawable.ic_uparrow_gray) })
+        view_list_downarrow.setImageDrawable(context?.let { ContextCompat.getDrawable(it,if(mListFocus) R.drawable.ic_downarrow else R.drawable.ic_downarrow_gray) })
+        view_menu_up_arrow.setImageDrawable(context?.let { ContextCompat.getDrawable(it,if(mGenreFocus) R.drawable.ic_uparrow else R.drawable.ic_uparrow_gray) })
+        view_menu_down_arrow.setImageDrawable(context?.let { ContextCompat.getDrawable(it,if(mGenreFocus) R.drawable.ic_downarrow else R.drawable.ic_downarrow_gray) })
+
+        mGenreAdapter.setFocus(mGenreFocus)
+        mChannelListAdapter.setFocus(mListFocus)
         if (!isGenre) {
             mChannelListAdapter.getCurrentTVChannel()?.let { channel ->
                 Log.e(TAG, "[switchFocus] $channel")
@@ -251,10 +257,10 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
                 }
             }
             KeyEvent.KEYCODE_DPAD_LEFT -> {
-                switchFocus(true)
+                switchFocus(true,false)
             }
             KeyEvent.KEYCODE_DPAD_RIGHT -> {
-                switchFocus(false)
+                switchFocus(false,false)
             }
             KeyEvent.KEYCODE_DPAD_CENTER -> {
                 if (!mGenreFocus) {
@@ -294,7 +300,7 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
             layout_back.visibility = View.GONE
             sideView.visibility = View.VISIBLE
             view_line.visibility = View.VISIBLE
-            switchFocus(false)
+            switchFocus(true,true)
             mListFocus = false
             mSideViewFocus = true
             sideView.scrollToPosition(mCurrentSideIndex)
@@ -304,7 +310,7 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
             sideView.visibility = View.GONE
             layout_back.visibility = View.VISIBLE
             view_line.visibility = View.GONE
-            switchFocus(true)
+            switchFocus(false,false)
             mSideViewFocus = false
         }
     }
