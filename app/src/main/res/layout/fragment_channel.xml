@@ -135,25 +135,29 @@
             android:id="@+id/view_list_up_arrow"
             android:layout_width="@dimen/_13sdp"
             android:layout_height="@dimen/_8sdp"
-            android:layout_marginTop="@dimen/_14sdp"
+            android:layout_marginTop="@dimen/_12sdp"
+            android:layout_marginBottom="@dimen/_6sdp"
             android:src="@drawable/ic_uparrow"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/view_channel_list"/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/view_channel_list"
-            android:layout_width="@dimen/_135sdp"
+            android:layout_width="@dimen/_116sdp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@id/view_list_down_arrow"
-            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/view_list_up_arrow" />
 
         <ImageView
             android:id="@+id/view_list_down_arrow"
             android:layout_width="@dimen/_13sdp"
             android:layout_height="@dimen/_8sdp"
-            android:layout_marginBottom="@dimen/_14sdp"
+            android:layout_marginTop="@dimen/_6sdp"
+            android:layout_marginBottom="@dimen/_12sdp"
             android:src="@drawable/ic_downarrow"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -172,7 +176,7 @@
         android:text="01 xbox"
         android:textSize="@dimen/_9ssp"
         app:layout_constraintStart_toEndOf="@+id/layout_list"
-        app:layout_constraintTop_toBottomOf="@+id/dvbView" />
+        app:layout_constraintTop_toBottomOf="@+id/videoView_frame" />
 
     <TextView
         android:id="@+id/textView_home"
@@ -247,6 +251,7 @@
         android:layout_marginTop="@dimen/_65sdp"
         android:layout_marginEnd="@dimen/_23sdp"
         android:layout_marginBottom="@dimen/_82sdp"
+        android:background="@color/videoBackground"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/layout_list"
@@ -256,10 +261,10 @@
             android:id="@+id/videoView"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginStart="@dimen/_6sdp"
-            android:layout_marginTop="@dimen/_6sdp"
-            android:layout_marginEnd="@dimen/_6sdp"
-            android:layout_marginBottom="@dimen/_6sdp"
+            android:layout_marginStart="@dimen/_1sdp"
+            android:layout_marginTop="@dimen/_1sdp"
+            android:layout_marginEnd="@dimen/_1sdp"
+            android:layout_marginBottom="@dimen/_1sdp"
             app:fastforward_increment="30000"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -271,18 +276,22 @@
             app:rewind_increment="30000"
             app:use_controller="false"
             app:surface_type="texture_view" />
+
+        <SurfaceView
+                android:id="@+id/dvbView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="@dimen/_1sdp"
+                android:layout_marginTop="@dimen/_1sdp"
+                android:layout_marginEnd="@dimen/_1sdp"
+                android:layout_marginBottom="@dimen/_1sdp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
     </android.support.constraint.ConstraintLayout>
 
-    <SurfaceView
-        android:id="@+id/dvbView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="@dimen/_14sdp"
-        android:layout_marginTop="@dimen/_65sdp"
-        android:layout_marginEnd="@dimen/_23sdp"
-        android:layout_marginBottom="@dimen/_82sdp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/layout_list"
-        app:layout_constraintTop_toTopOf="parent" />
+
 </android.support.constraint.ConstraintLayout>
