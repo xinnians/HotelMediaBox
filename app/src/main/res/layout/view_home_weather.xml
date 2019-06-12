@@ -10,8 +10,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_13sdp"
-        android:minWidth="@dimen/_96sdp"
         android:layout_marginTop="@dimen/_43sdp"
+        android:minWidth="@dimen/_96sdp"
         android:textSize="@dimen/_13ssp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -57,18 +57,19 @@
         android:layout_marginStart="@dimen/_14sdp"
         android:layout_marginTop="@dimen/_56sdp"
         android:text="@string/home_wifi_id"
-        android:textSize="@dimen/_12ssp"
+        android:textSize="@dimen/_9ssp"
         app:layout_constraintStart_toEndOf="@+id/line"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView_wifi_id"
         style="@style/MainPrimaryText"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="0sp"
         android:layout_marginTop="@dimen/_2sdp"
-        android:textSize="@dimen/_15ssp"
+        android:textSize="@dimen/_12ssp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/textView_wifiIdTitle"
         app:layout_constraintTop_toBottomOf="@+id/textView_wifiIdTitle" />
 
@@ -78,18 +79,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_21sdp"
-        android:textSize="@dimen/_12ssp"
+        android:textSize="@dimen/_9ssp"
         app:layout_constraintStart_toStartOf="@+id/textView_wifi_id"
         app:layout_constraintTop_toBottomOf="@+id/textView_wifi_id" />
 
     <TextView
         android:id="@+id/textView_wifi_password"
         style="@style/MainPrimaryText"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="0dp"
         android:layout_marginTop="@dimen/_2sdp"
-        android:textSize="@dimen/_15ssp"
+        android:textSize="@dimen/_12ssp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/textView_wifiPasswordTitle"
         app:layout_constraintTop_toBottomOf="@+id/textView_wifiPasswordTitle" />
 
