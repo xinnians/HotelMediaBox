@@ -169,6 +169,7 @@ class TouristFragment : InteractionView<OnPageInteractionListener.Primary>(), On
                     else {
                         mContentFocus = false
                         mCategoryFocus = true
+                        mCurrentContentIndex = 0
                         mAdapter.selectLast(mCurrentCategoryIndex)
                         checkSideArrow()
                     }
