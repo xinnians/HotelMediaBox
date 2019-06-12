@@ -124,7 +124,6 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
 
                 button_ok.text = it.entryButton
                 text_title.text = it.title
-                text_room.text = it.room
                 text_description.text = it.description
 
                 val file = FileUtils.getFileFromStorage(it.music)
