@@ -29,8 +29,15 @@ import com.ufistudio.hotelmediabox.utils.FileUtils
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_BACK_TITLE
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_INDEX
 import kotlinx.android.synthetic.main.fragment_nearby_me.*
+import kotlinx.android.synthetic.main.fragment_nearby_me.imageView_arrow_left
+import kotlinx.android.synthetic.main.fragment_nearby_me.imageView_arrow_right
+import kotlinx.android.synthetic.main.fragment_nearby_me.layout_back
+import kotlinx.android.synthetic.main.fragment_nearby_me.recyclerView_service
+import kotlinx.android.synthetic.main.fragment_nearby_me.sideView
+import kotlinx.android.synthetic.main.fragment_nearby_me.text_back
+import kotlinx.android.synthetic.main.fragment_nearby_me.view_line
+import kotlinx.android.synthetic.main.item_room_service_type1.*
 import kotlinx.android.synthetic.main.view_bottom_back_home.*
-import kotlinx.android.synthetic.main.view_bottom_ok_back_home.*
 
 private const val TAG_IMAGE = "image"
 private const val TAG_VIDEO = "video"
@@ -299,7 +306,7 @@ class NearbyMeFragment : InteractionView<OnPageInteractionListener.Primary>(), O
     }
 
     private fun renderViewContent() {
-        checkArrow()
+        checkSideArrow()
 
         val item = mCurrentContent!![mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!]
         (view_content.findViewById(R.id.text_title) as TextView).text = item.title
@@ -345,6 +352,9 @@ class NearbyMeFragment : InteractionView<OnPageInteractionListener.Primary>(), O
      * 判斷左右箭頭
      */
     private fun checkArrow() {
+        imageView_arrow_left.visibility = View.VISIBLE
+        imageView_arrow_right.visibility = View.VISIBLE
+
         when {
             mCurrentContent?.size == 1 -> {
                 imageView_arrow_left.visibility = View.INVISIBLE
@@ -361,6 +371,34 @@ class NearbyMeFragment : InteractionView<OnPageInteractionListener.Primary>(), O
             else -> {
                 imageView_arrow_left.visibility = View.VISIBLE
                 imageView_arrow_right.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    /**
+     * 判斷新版本右半部的左右箭頭
+     */
+    private fun checkSideArrow() {
+
+        imageView_arrow_left.visibility = View.INVISIBLE
+        imageView_arrow_right.visibility = View.INVISIBLE
+
+        when {
+            mCurrentContent?.size == 1 -> {
+                imageView_side_arrow_left.visibility = View.INVISIBLE
+                imageView_side_arrow_right.visibility = View.INVISIBLE
+            }
+            mCurrentContentSelectIndex!![mCurrentCategoryIndex] == 0 -> {
+                imageView_side_arrow_left.visibility = View.INVISIBLE
+                imageView_side_arrow_right.visibility = View.VISIBLE
+            }
+            mCurrentContentSelectIndex!![mCurrentCategoryIndex] == mCurrentContent!!.size - 1 -> {
+                imageView_side_arrow_left.visibility = View.VISIBLE
+                imageView_side_arrow_right.visibility = View.INVISIBLE
+            }
+            else -> {
+                imageView_side_arrow_left.visibility = View.VISIBLE
+                imageView_side_arrow_right.visibility = View.VISIBLE
             }
         }
     }
