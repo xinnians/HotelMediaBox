@@ -197,9 +197,10 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
         if (!isGenre) {
             mChannelListAdapter.getCurrentTVChannel()?.let { channel ->
                 Log.e(TAG, "[switchFocus] $channel")
-                var name =
-                        channel.chNum + ": " + channel.chName + " (${channel.chIp.frequency}mhz,${channel.chIp.dvbParameter})"
-                text_channel_info.text = name
+//                var name = channel.chNum + ": " + channel.chName + " (${channel.chIp.frequency}mhz,${channel.chIp.dvbParameter})"
+                text_channel_number.text = "CH${channel.chNum}"
+                text_channel_name.text = channel.chName
+
                 onChannelSelectListener(channel)
             }
 
@@ -222,9 +223,8 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
                     mChannelListAdapter.setGenreFilter(mGenreAdapter.selectDown())
                 } else if (mListFocus) {
                     mChannelListAdapter.selectDownItem()?.let { channel ->
-                        var name =
-                            channel.chNum + ": " + channel.chName + " (${channel.chIp.frequency}mhz,${channel.chIp.dvbParameter})"
-                        text_channel_info.text = name
+                        text_channel_number.text = "CH${channel.chNum}"
+                        text_channel_name.text = channel.chName
                         onChannelSelectListener(channel) }
                     view_channel_list.scrollToPosition(mChannelListAdapter.getSelectPosition())
                 } else if(mSideViewFocus){
@@ -239,9 +239,8 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
                     mChannelListAdapter.setGenreFilter(mGenreAdapter.selectUp())
                 } else if (mListFocus) {
                     mChannelListAdapter.selectUPItem()?.let { channel ->
-                        var name =
-                            channel.chNum + ": " + channel.chName + " (${channel.chIp.frequency}mhz,${channel.chIp.dvbParameter})"
-                        text_channel_info.text = name
+                        text_channel_number.text = "CH${channel.chNum}"
+                        text_channel_name.text = channel.chName
                         onChannelSelectListener(channel) }
                     view_channel_list.scrollToPosition(mChannelListAdapter.getSelectPosition())
                 } else if(mSideViewFocus){

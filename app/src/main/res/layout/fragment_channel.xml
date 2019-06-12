@@ -167,16 +167,29 @@
     </android.support.constraint.ConstraintLayout>
 
     <TextView
-        android:id="@+id/text_channel_info"
+        android:id="@+id/text_channel_number"
         style="@style/MainPrimaryText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_14sdp"
         android:layout_marginTop="@dimen/_4sdp"
-        android:text="01 xbox"
+        android:text="CH 01"
         android:textSize="@dimen/_9ssp"
+        android:typeface="monospace"
         app:layout_constraintStart_toEndOf="@+id/layout_list"
         app:layout_constraintTop_toBottomOf="@+id/videoView_frame" />
+
+    <TextView
+            android:id="@+id/text_channel_name"
+            style="@style/MainPrimaryText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_4sdp"
+            android:layout_marginTop="@dimen/_4sdp"
+            android:text="xbox"
+            android:textSize="@dimen/_9ssp"
+            app:layout_constraintStart_toEndOf="@+id/text_channel_number"
+            app:layout_constraintTop_toBottomOf="@+id/videoView_frame" />
 
     <TextView
         android:id="@+id/textView_home"
