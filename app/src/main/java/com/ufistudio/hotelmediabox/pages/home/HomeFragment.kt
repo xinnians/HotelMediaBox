@@ -36,7 +36,7 @@ import kotlinx.android.synthetic.main.view_home_weather.*
 import java.util.concurrent.TimeUnit
 
 class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), FunctionsAdapter.OnItemClickListener,
-    ViewModelsCallback {
+        ViewModelsCallback {
     private val TAG_TYPE_1 = 1//Weather Information
     private val TAG_TYPE_2 = 2//Promo Banner
 
@@ -63,15 +63,17 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
     private var mTVChannel: TVChannel? = null
 
     private var mFeatureList: HashMap<Int, ArrayList<HomeFeatureEnum>> =
-        HashMap() //所有的Feature列表 Int:第幾列, ArrayList<HomeFeatureEnum>:每一頁的Icon
+            HashMap() //所有的Feature列表 Int:第幾列, ArrayList<HomeFeatureEnum>:每一頁的Icon
     private var mFeatureCurrentList: ArrayList<HomeFeatureEnum> = ArrayList()      //當前的Feature列表
     private var mFeatureIconList: HashMap<Int, ArrayList<HomeIcons>> = HashMap() //Home Icon相關資料，基本上跟著mFeatureList走
     private var mFeatureIconCurrentList: ArrayList<HomeIcons> =
-        ArrayList()      //當前的Home Icon相關資料，基本上跟著mFeatureCurrentList走
+            ArrayList()      //當前的Home Icon相關資料，基本上跟著mFeatureCurrentList走
     private var mCurrentPosition: Int = 0                                        //當前的Feature在第幾頁
     private var mBannerList: ArrayList<ImageView>? = ArrayList()
     private var mBannerAdapter: BannerAdapter? = null
     private var mBannerDisposable: Disposable? = null
+    private var mFocusItem = 0
+
 
     private var mTVListener: TVController.OnTVListener = object : TVController.OnTVListener {
         override fun onScanFinish() {
@@ -164,14 +166,9 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
 
             Log.e("Ian", "mTVChannel?.chLogo?.normalIconName : ${mTVChannel?.chLogo?.normalIconName.toString()}")
             Glide.with(this)
-                .load(
-                    FileUtils.getFileFromStorage(
-                        mTVChannel?.chLogo?.normalIconName
-                            ?: ""
-                    )
-                )
-                .skipMemoryCache(true)
-                .into(viewLogo)
+                    .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.normalIconName ?: ""))
+                    .skipMemoryCache(true)
+                    .into(viewLogo)
         }
 
         TVController.registerListener(mTVListener)
@@ -203,19 +200,9 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                 mTVChannel = TVController.chooseUp()
                 text_channel?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
                 image_channel?.let { viewLogo ->
-                    Log.e(
-                        "Ian",
-                        "mTVChannel?.chLogo?.normalIconName : ${mTVChannel?.chLogo?.normalIconName.toString()}"
-                    )
-                    Glide.with(this)
-                        .load(
-                            FileUtils.getFileFromStorage(
-                                mTVChannel?.chLogo?.normalIconName
-                                    ?: ""
-                            )
-                        )
-                        .skipMemoryCache(true)
-                        .into(viewLogo)
+                    Log.e("Ian", "mTVChannel?.chLogo?.normalIconName : ${mTVChannel?.chLogo?.normalIconName.toString()}")
+                    Glide.with(this).load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.normalIconName
+                            ?: "")).skipMemoryCache(true).into(viewLogo)
                 }
                 setPlayTimer()
                 return true
@@ -226,19 +213,12 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                 mTVChannel = TVController.chooseDown()
                 text_channel?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
                 image_channel?.let { viewLogo ->
-                    Log.e(
-                        "Ian",
-                        "mTVChannel?.chLogo?.normalIconName : ${mTVChannel?.chLogo?.normalIconName.toString()}"
-                    )
+                    Log.e("Ian", "mTVChannel?.chLogo?.normalIconName : ${mTVChannel?.chLogo?.normalIconName.toString()}")
                     Glide.with(this)
-                        .load(
-                            FileUtils.getFileFromStorage(
-                                mTVChannel?.chLogo?.normalIconName
-                                    ?: ""
-                            )
-                        )
-                        .skipMemoryCache(true)
-                        .into(viewLogo)
+                            .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.normalIconName
+                                    ?: ""))
+                            .skipMemoryCache(true)
+                            .into(viewLogo)
                 }
                 setPlayTimer()
 
@@ -255,49 +235,49 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                 return true
             }
             KeyEvent.KEYCODE_DPAD_UP -> {
-                if (focusItem != 0) {
-                    focusItem = 0
+                if (mFocusItem != 0) {
+                    mFocusItem = 0
                     focusChange()
                 }
                 return true
             }
             KeyEvent.KEYCODE_DPAD_DOWN -> {
-                if (focusItem == 0) {
-                    focusItem = 1
+                if (mFocusItem == 0) {
+                    mFocusItem = 1
                     focusChange()
                 }
                 return true
             }
             KeyEvent.KEYCODE_DPAD_LEFT -> {
-                if (focusItem == 1 && mCurrentPosition != 0) {
-                    focusItem = 5
+                if (mFocusItem == 1 && mCurrentPosition != 0) {
+                    mFocusItem = 5
                     mCurrentPosition--
                     mFeatureCurrentList = mFeatureList[mCurrentPosition]!!
                     mFeatureIconCurrentList = mFeatureIconList[mCurrentPosition]!!
                     changeFeatureInfo()
 
                 } else {
-                    if (focusItem != 1)
-                        focusItem--
+                    if (mFocusItem != 1)
+                        mFocusItem--
                 }
                 focusChange()
                 return true
             }
             KeyEvent.KEYCODE_DPAD_RIGHT -> {
                 //判斷不是最後一列的最後一筆
-                if (mCurrentPosition == mFeatureList.size - 1 && focusItem == mFeatureCurrentList.size) {
+                if (mCurrentPosition == mFeatureList.size - 1 && mFocusItem == mFeatureCurrentList.size) {
                     return true
                 }
 
                 //判斷item是最後一筆，且還有下一頁，則跳到第一個focus
-                if (focusItem == 5 && mCurrentPosition != mFeatureList.size - 1) {
-                    focusItem = 1
+                if (mFocusItem == 5 && mCurrentPosition != mFeatureList.size - 1) {
+                    mFocusItem = 1
                     mCurrentPosition++
                     mFeatureCurrentList = mFeatureList[mCurrentPosition]!!
                     mFeatureIconCurrentList = mFeatureIconList[mCurrentPosition]!!
                     changeFeatureInfo()
                 } else {
-                    focusItem++
+                    mFocusItem++
                 }
 
                 focusChange()
@@ -380,24 +360,11 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                     mFeatureCurrentList = mFeatureList[mCurrentPosition]!!
                     mFeatureIconCurrentList = mFeatureIconList[mCurrentPosition]!!
                 }
-
-
-                Log.d("neo", "mFeatureList = ${mFeatureList.size}")
                 changeFeatureInfo()
-
-
             }
         }
 
-//        list_functions?.requestFocus(FOCUS_LEFT)
-
         focusChange()
-//        layout_frame2?.requestFocus()
-//        layout_frame3?.requestFocus()
-//        layout_frame4?.requestFocus()
-//        layout_frame5?.requestFocus()
-//        layout_frame1?.requestFocus()
-//        videoView_frame?.requestFocus()
     }
 
     fun changeFeatureInfo() {
@@ -457,9 +424,9 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                         if (icon != -1) {
                             imageView_weather.visibility = View.VISIBLE
                             Glide.with(this)
-                                .load(icon)
-                                .skipMemoryCache(true)
-                                .into(imageView_weather)
+                                    .load(icon)
+                                    .skipMemoryCache(true)
+                                    .into(imageView_weather)
                         } else {
                             imageView_weather.visibility = View.INVISIBLE
                         }
@@ -488,8 +455,8 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                         var view: ImageView = ImageView(it)
                         view.scaleType = ImageView.ScaleType.FIT_XY
                         Glide.with(it)
-                            .load(FileUtils.getFileFromStorage(list.last().image))
-                            .into(view)
+                                .load(FileUtils.getFileFromStorage(list.last().image))
+                                .into(view)
                         mBannerList?.add(view)
                     }
                     for (item in list) {
@@ -497,8 +464,8 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                             var view: ImageView = ImageView(it)
                             view.scaleType = ImageView.ScaleType.FIT_XY
                             Glide.with(it)
-                                .load(FileUtils.getFileFromStorage(item.image))
-                                .into(view)
+                                    .load(FileUtils.getFileFromStorage(item.image))
+                                    .into(view)
                             mBannerList?.add(view)
                         }
                     }
@@ -506,8 +473,8 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                         var view: ImageView = ImageView(it)
                         view.scaleType = ImageView.ScaleType.FIT_XY
                         Glide.with(it)
-                            .load(FileUtils.getFileFromStorage(list.first().image))
-                            .into(view)
+                                .load(FileUtils.getFileFromStorage(list.first().image))
+                                .into(view)
                         mBannerList?.add(view)
                     }
                 }
@@ -542,7 +509,7 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                         currentPosition = position
                     }
                 })
-                image_banner.setOnKeyListener(object:View.OnKeyListener{
+                image_banner.setOnKeyListener(object : View.OnKeyListener {
                     override fun onKey(v: View?, keyCode: Int, event: KeyEvent?): Boolean {
                         return false
                     }
@@ -553,24 +520,23 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                 if (mBannerDisposable != null && !mBannerDisposable!!.isDisposed) {
                     mBannerDisposable?.dispose()
                 }
-                mBannerDisposable = Observable.interval(0,4,TimeUnit.SECONDS)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({
-                        onNext-> image_banner?.arrowScroll(View.FOCUS_RIGHT)
-                    },{
-                        onError ->
-                    },{
-                        image_banner?.arrowScroll(View.FOCUS_RIGHT)
-                    })
+                mBannerDisposable = Observable.interval(0, 4, TimeUnit.SECONDS)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({ onNext ->
+                            image_banner?.arrowScroll(View.FOCUS_RIGHT)
+                        }, { onError ->
+                        }, {
+                            image_banner?.arrowScroll(View.FOCUS_RIGHT)
+                        })
             }
         }
     }
 
-    var focusItem = 0
-    fun focusChange() {
-        Log.d("neo", "foucsTiem = $focusItem")
-        when (focusItem) {
+    private fun focusChange() {
+        Log.d(TAG, "foucsTiem = $mFocusItem")
+        checkArrow()
+        when (mFocusItem) {
             0 -> {
                 videoView_frame.setBackgroundResource(R.color.homeIconFrameFocused)
                 layout_frame1.setBackgroundResource(R.drawable.home_icon_frame_frame_default)
@@ -725,12 +691,12 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
     }
 
     fun clickChange() {
-        when (focusItem) {
+        when (mFocusItem) {
             0 -> {
                 startActivity(Intent(context, FullScreenActivity::class.java))
             }
             else -> {
-                val page: Int = mFeatureCurrentList[focusItem - 1].page // 因為focusItem = 0是播放器，所以要 -1
+                val page: Int = mFeatureCurrentList[mFocusItem - 1].page // 因為focusItem = 0是播放器，所以要 -1
                 if (page == -100) {
                     Toast.makeText(context, "尚未實作", Toast.LENGTH_SHORT).show()
                     return
@@ -748,16 +714,16 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
         }
 
         mDisposable = Observable.timer(400, TimeUnit.MILLISECONDS)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                {}, { onError -> Log.e(TAG, "error:$onError") }, {
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        {}, { onError -> Log.e(TAG, "error:$onError") }, {
                     //                    mViewModel.getTVHelper().playCurrent()?.subscribe()
                     TVController.playCurrent()
                 })
     }
 
-    private fun onInitNoteButtonSuccess(data: NoteButton){
+    private fun onInitNoteButtonSuccess(data: NoteButton) {
         textView_channels.text = data.note?.channels
         textView_navigation.text = data.note?.navigation
         textView_select.text = data.note?.select
@@ -769,5 +735,24 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
 
     private fun onInitNoteButtonError(throwable: Throwable) {
 
+    }
+
+    /**
+     * 判斷左右箭頭何時出現
+     */
+    private fun checkArrow() {
+        //第一筆item不出現左邊箭頭
+        if (mCurrentPosition == 0 && (mFocusItem == 1 || mFocusItem == 0)) {
+            imageView_arrow_left.visibility = View.INVISIBLE
+        } else {
+            imageView_arrow_left.visibility = View.VISIBLE
+        }
+
+        //最後一筆不出現右箭頭
+        if (mCurrentPosition == mFeatureList.size - 1) {
+            imageView_arrow_right.visibility = View.INVISIBLE
+        } else {
+            imageView_arrow_right.visibility = View.VISIBLE
+        }
     }
 }
