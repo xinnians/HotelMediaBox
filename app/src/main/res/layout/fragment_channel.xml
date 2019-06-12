@@ -16,11 +16,11 @@
 
     <RelativeLayout
         android:id="@+id/view_line"
-        android:layout_width="@dimen/_1sdp"
+        android:layout_width="1dp"
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/_14sdp"
         android:layout_marginBottom="@dimen/_14sdp"
-        android:background="@android:color/white"
+        android:background="@color/loseFocusColor"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/view_service"
@@ -74,7 +74,7 @@
             android:id="@+id/view_horizontal_line"
             android:layout_width="@dimen/_89sdp"
             android:layout_height="1dp"
-            android:background="#7f7fb5"
+            android:background="@color/loseFocusColor"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/layout_back" />
 
@@ -117,7 +117,7 @@
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/_14sdp"
         android:layout_marginBottom="@dimen/_14sdp"
-        android:background="#7f7fb5"
+        android:background="@color/loseFocusColor"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@id/layout_menu"
         app:layout_constraintTop_toTopOf="parent" />
@@ -132,28 +132,32 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/view_list_up_arrow"
+            android:id="@+id/view_list_uparrow"
             android:layout_width="@dimen/_13sdp"
             android:layout_height="@dimen/_8sdp"
-            android:layout_marginTop="@dimen/_14sdp"
+            android:layout_marginTop="@dimen/_12sdp"
+            android:layout_marginBottom="@dimen/_6sdp"
             android:src="@drawable/ic_uparrow"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/view_channel_list"/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/view_channel_list"
-            android:layout_width="@dimen/_135sdp"
+            android:layout_width="@dimen/_116sdp"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@id/view_list_down_arrow"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/view_list_up_arrow" />
+            app:layout_constraintBottom_toTopOf="@id/view_list_downarrow"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view_list_uparrow" />
 
         <ImageView
-            android:id="@+id/view_list_down_arrow"
+            android:id="@+id/view_list_downarrow"
             android:layout_width="@dimen/_13sdp"
             android:layout_height="@dimen/_8sdp"
-            android:layout_marginBottom="@dimen/_14sdp"
+            android:layout_marginTop="@dimen/_6sdp"
+            android:layout_marginBottom="@dimen/_12sdp"
             android:src="@drawable/ic_downarrow"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -163,16 +167,29 @@
     </android.support.constraint.ConstraintLayout>
 
     <TextView
-        android:id="@+id/text_channel_info"
+        android:id="@+id/text_channel_number"
         style="@style/MainPrimaryText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_14sdp"
         android:layout_marginTop="@dimen/_4sdp"
-        android:text="01 xbox"
+        android:text="CH 01"
         android:textSize="@dimen/_9ssp"
+        android:typeface="monospace"
         app:layout_constraintStart_toEndOf="@+id/layout_list"
-        app:layout_constraintTop_toBottomOf="@+id/dvbView" />
+        app:layout_constraintTop_toBottomOf="@+id/videoView_frame" />
+
+    <TextView
+            android:id="@+id/text_channel_name"
+            style="@style/MainPrimaryText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_4sdp"
+            android:layout_marginTop="@dimen/_4sdp"
+            android:text="xbox"
+            android:textSize="@dimen/_9ssp"
+            app:layout_constraintStart_toEndOf="@+id/text_channel_number"
+            app:layout_constraintTop_toBottomOf="@+id/videoView_frame" />
 
     <TextView
         android:id="@+id/textView_home"
@@ -247,6 +264,7 @@
         android:layout_marginTop="@dimen/_65sdp"
         android:layout_marginEnd="@dimen/_23sdp"
         android:layout_marginBottom="@dimen/_82sdp"
+        android:background="@color/videoBackground"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/layout_list"
@@ -256,10 +274,10 @@
             android:id="@+id/videoView"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginStart="@dimen/_6sdp"
-            android:layout_marginTop="@dimen/_6sdp"
-            android:layout_marginEnd="@dimen/_6sdp"
-            android:layout_marginBottom="@dimen/_6sdp"
+            android:layout_marginStart="@dimen/_1sdp"
+            android:layout_marginTop="@dimen/_1sdp"
+            android:layout_marginEnd="@dimen/_1sdp"
+            android:layout_marginBottom="@dimen/_1sdp"
             app:fastforward_increment="30000"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -271,18 +289,22 @@
             app:rewind_increment="30000"
             app:use_controller="false"
             app:surface_type="texture_view" />
+
+        <SurfaceView
+                android:id="@+id/dvbView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="@dimen/_1sdp"
+                android:layout_marginTop="@dimen/_1sdp"
+                android:layout_marginEnd="@dimen/_1sdp"
+                android:layout_marginBottom="@dimen/_1sdp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
     </android.support.constraint.ConstraintLayout>
 
-    <SurfaceView
-        android:id="@+id/dvbView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="@dimen/_14sdp"
-        android:layout_marginTop="@dimen/_65sdp"
-        android:layout_marginEnd="@dimen/_23sdp"
-        android:layout_marginBottom="@dimen/_82sdp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/layout_list"
-        app:layout_constraintTop_toTopOf="parent" />
+
 </android.support.constraint.ConstraintLayout>

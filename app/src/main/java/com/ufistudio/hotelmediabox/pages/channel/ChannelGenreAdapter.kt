@@ -34,10 +34,14 @@ class ChannelGenreAdapter : RecyclerView.Adapter<ChannelGenreAdapter.ViewHolder>
         holder.itemView.text_genre_type.text = item?.display ?: ""
         holder.itemView.text_genre_type.tag = item
         holder.itemView.text_genre_type.setTextColor(
-            if (position == mSelectPosition && mIsFocus)
-                ContextCompat.getColor(holder.itemView.context, R.color.colorYellow)
-            else
-                ContextCompat.getColor(holder.itemView.context, R.color.colorWhite)
+            if(mIsFocus){
+                if (position == mSelectPosition)
+                    ContextCompat.getColor(holder.itemView.context, R.color.colorYellow)
+                else
+                    ContextCompat.getColor(holder.itemView.context, R.color.colorWhite)
+            }else{
+                ContextCompat.getColor(holder.itemView.context, R.color.white30)
+            }
         )
         holder.itemView.setOnClickListener { view ->
             mListener?.onClick(view)
