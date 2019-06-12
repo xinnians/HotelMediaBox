@@ -749,7 +749,7 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
         }
 
         //最後一筆不出現右箭頭
-        if (mCurrentPosition == mFeatureList.size - 1) {
+        if (mCurrentPosition == mFeatureList.size - 1 && mFocusItem == mFeatureCurrentList.size) {
             imageView_arrow_right.visibility = View.INVISIBLE
         } else {
             imageView_arrow_right.visibility = View.VISIBLE
