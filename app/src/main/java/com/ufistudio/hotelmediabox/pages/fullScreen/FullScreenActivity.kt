@@ -18,6 +18,7 @@ import android.content.Intent
 import android.view.*
 import kotlinx.android.synthetic.main.activity_fullscreen.*
 import com.bumptech.glide.Glide
+import com.ufistudio.hotelmediabox.constants.Page
 import com.ufistudio.hotelmediabox.helper.TVController
 import com.ufistudio.hotelmediabox.pages.MainActivity
 import com.ufistudio.hotelmediabox.utils.FileUtils
@@ -227,6 +228,17 @@ class FullScreenActivity : AppCompatActivity() {
             }
             KeyEvent.KEYCODE_BACK -> {
                 startActivity(Intent(this, MainActivity::class.java))
+                finish()
+                return true
+            }
+            KeyEvent.KEYCODE_DPAD_CENTER -> {
+                val intent: Intent = Intent(this, MainActivity::class.java)
+                val bundle: Bundle = Bundle()
+//                bundle.putBoolean(Page.ARG_BUNDLE, true)
+                bundle.putInt("page",Page.CHANNEL)
+                intent.putExtras(bundle)
+                startActivity(intent)
+//                startActivity(Intent(this, MainActivity::class.java))
                 finish()
                 return true
             }
