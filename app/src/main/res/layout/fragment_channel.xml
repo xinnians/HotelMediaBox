@@ -16,11 +16,11 @@
 
     <RelativeLayout
         android:id="@+id/view_line"
-        android:layout_width="@dimen/_1sdp"
+        android:layout_width="1dp"
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/_14sdp"
         android:layout_marginBottom="@dimen/_14sdp"
-        android:background="@android:color/white"
+        android:background="#7f7fb5"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/view_service"

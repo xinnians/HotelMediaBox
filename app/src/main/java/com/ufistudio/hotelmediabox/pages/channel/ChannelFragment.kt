@@ -290,6 +290,7 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
      */
     private fun displaySideView(show: Boolean) {
         if (show) {
+            view_horizontal_line.visibility = View.GONE
             layout_back.visibility = View.GONE
             sideView.visibility = View.VISIBLE
             view_line.visibility = View.VISIBLE
@@ -299,6 +300,7 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
             sideView.scrollToPosition(mCurrentSideIndex)
             sideView.setLastPosition(mCurrentSideIndex)
         } else {
+            view_horizontal_line.visibility = View.VISIBLE
             sideView.visibility = View.GONE
             layout_back.visibility = View.VISIBLE
             view_line.visibility = View.GONE
