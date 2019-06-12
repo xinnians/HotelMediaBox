@@ -6,24 +6,30 @@
 
     <ImageView
         android:id="@+id/image_photo"
-        android:layout_width="@dimen/_166sdp"
-        android:layout_height="@dimen/_111sdp"
-        android:layout_marginStart="@dimen/_25sdp"
-        android:layout_marginTop="@dimen/_50sdp"
-        android:background="@android:color/darker_gray"
-        android:scaleType="fitXY"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_48sdp"
+        android:layout_marginEnd="@dimen/_10sdp"
+        android:layout_marginBottom="@dimen/_48sdp"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.exoplayer2.ui.PlayerView
         android:id="@+id/videoView"
-        android:layout_width="@dimen/_166sdp"
-        android:layout_height="@dimen/_111sdp"
-        android:layout_marginStart="@dimen/_25sdp"
-        android:layout_marginTop="@dimen/_50sdp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_48sdp"
+        android:layout_marginEnd="@dimen/_10sdp"
+        android:layout_marginBottom="@dimen/_48sdp"
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:resize_mode="fixed_width"
         app:surface_type="texture_view"
         app:use_controller="false" />
 
@@ -32,14 +38,19 @@
         style="@style/MainPrimaryText"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="@dimen/_7sdp"
-        android:layout_marginEnd="@dimen/_27sdp"
-        android:layout_marginBottom="@dimen/_10sdp"
+        android:layout_marginStart="@dimen/_5sdp"
+        android:layout_marginEnd="@dimen/_5sdp"
+        android:layout_marginBottom="@dimen/_8sdp"
         android:textSize="@dimen/_9ssp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/image_photo"
-        app:layout_constraintTop_toTopOf="@+id/image_photo"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="@+id/image_photo" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.7" />
 </android.support.constraint.ConstraintLayout>
