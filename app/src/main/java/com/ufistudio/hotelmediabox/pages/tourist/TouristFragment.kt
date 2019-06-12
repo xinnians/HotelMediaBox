@@ -26,7 +26,6 @@ import com.ufistudio.hotelmediabox.views.ARG_CURRENT_BACK_TITLE
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_INDEX
 import kotlinx.android.synthetic.main.fragment_tourist.*
 import kotlinx.android.synthetic.main.view_bottom_back_home.*
-import kotlinx.android.synthetic.main.view_bottom_ok_back_home.*
 import kotlinx.android.synthetic.main.view_tourist.*
 import kotlinx.android.synthetic.main.view_tourist_map.*
 
@@ -143,7 +142,7 @@ class TouristFragment : InteractionView<OnPageInteractionListener.Primary>(), On
                         renderViewContent()
                     }
                 }
-                checkArrow()
+                checkSideArrow()
                 return true
             }
             KeyEvent.KEYCODE_DPAD_LEFT -> {
@@ -157,7 +156,7 @@ class TouristFragment : InteractionView<OnPageInteractionListener.Primary>(), On
                         mContentFocus = false
                         mAdapter.selectLast(mCurrentCategoryIndex)
                     }
-                    checkArrow()
+                    checkSideArrow()
                     return true
                 }
             }
@@ -171,7 +170,7 @@ class TouristFragment : InteractionView<OnPageInteractionListener.Primary>(), On
                         mContentFocus = false
                         mCategoryFocus = true
                         mAdapter.selectLast(mCurrentCategoryIndex)
-                        checkArrow()
+                        checkSideArrow()
                     }
                 }
                 return true
@@ -190,7 +189,7 @@ class TouristFragment : InteractionView<OnPageInteractionListener.Primary>(), On
                             mCurrentContentIndex += 1
                             renderViewContent()
                         }
-                        checkArrow()
+                        checkSideArrow()
                     }
                     return true
                 }
@@ -348,6 +347,37 @@ class TouristFragment : InteractionView<OnPageInteractionListener.Primary>(), On
             if (mCurrentContentIndex == mTotalSize?.get(mCurrentCategoryIndex) ?: -1) {
                 imageView_arrow_left.visibility = View.VISIBLE
                 imageView_arrow_right.visibility = View.INVISIBLE
+            }
+        }
+    }
+
+    /**
+     * 判斷新版本右半部的左右箭頭
+     */
+    private fun checkSideArrow() {
+        if (mCategoryFocus) {
+            imageView_arrow_left.visibility = View.GONE
+            imageView_arrow_right.visibility = View.GONE
+
+            imageView_side_arrow_left.visibility = View.GONE
+            imageView_side_arrow_right.visibility = View.GONE
+        }
+
+        if (mContentFocus) {
+
+            if (mCurrentContentIndex == 0 && mCurrentContent?.attractionsList?.size ?: -1 > 0) {
+                imageView_side_arrow_left.visibility = View.INVISIBLE
+                imageView_side_arrow_right.visibility = View.VISIBLE
+            }
+
+            if (mCurrentContentIndex > 0) {
+                imageView_side_arrow_left.visibility = View.VISIBLE
+                imageView_side_arrow_right.visibility = View.VISIBLE
+            }
+
+            if (mCurrentContentIndex == mTotalSize?.get(mCurrentCategoryIndex) ?: -1) {
+                imageView_side_arrow_left.visibility = View.VISIBLE
+                imageView_side_arrow_right.visibility = View.INVISIBLE
             }
         }
     }
