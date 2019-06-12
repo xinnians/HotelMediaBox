@@ -51,6 +51,20 @@ class FullScreenActivity : AppCompatActivity() {
 
         override fun initAVPlayerFinish() {
             TVController.playCurrent()
+            mTVChannel = TVController.getCurrentChannel()
+            textChannelName?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
+            viewLogo?.let { viewLogo ->
+                Glide.with(applicationContext)
+                    .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.normalIconName ?: ""))
+                    .skipMemoryCache(true)
+                    .into(viewLogo)
+            }
+            viewMainLogo?.let { viewLogo ->
+                Glide.with(applicationContext)
+                    .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.bigIconName ?: ""))
+                    .skipMemoryCache(true)
+                    .into(viewLogo)
+            }
             showInfo()
         }
 
@@ -116,20 +130,6 @@ class FullScreenActivity : AppCompatActivity() {
 
         TVController.registerListener(mTVListener)
         TVController.initAVPlayer(TVController.SCREEN_TYPE.FULLSCREEN)
-        mTVChannel = TVController.getCurrentChannel()
-        textChannelName?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
-        viewLogo?.let { viewLogo ->
-            Glide.with(this)
-                .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.normalIconName ?: ""))
-                .skipMemoryCache(true)
-                .into(viewLogo)
-        }
-        viewMainLogo?.let { viewLogo ->
-            Glide.with(this)
-                .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.bigIconName ?: ""))
-                .skipMemoryCache(true)
-                .into(viewLogo)
-        }
     }
 
     override fun onPause() {
@@ -261,6 +261,7 @@ class FullScreenActivity : AppCompatActivity() {
     }
 
     private fun showInfo() {
+        Log.e(TAG,"[showInfo] call.")
         banner.visibility = View.VISIBLE
         dateView.visibility = View.VISIBLE
 
