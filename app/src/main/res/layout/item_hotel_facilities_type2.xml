@@ -6,12 +6,11 @@
 
     <TextView
         android:id="@+id/text_title"
-        style="@style/MainPrimaryText"
+        style="@style/ContentTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="3235i559595"
-        android:textSize="@dimen/_16ssp"
         app:layout_constraintEnd_toEndOf="@+id/text_description"
         app:layout_constraintStart_toStartOf="@+id/text_description"
         app:layout_constraintTop_toBottomOf="@+id/layout_index" />
@@ -50,14 +49,13 @@
 
     <TextView
         android:id="@+id/text_description"
-        style="@style/MainPrimaryText"
+        style="@style/ContentText"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="@dimen/_5sdp"
         android:layout_marginTop="@dimen/_8sdp"
         android:layout_marginEnd="@dimen/_5sdp"
         android:layout_marginBottom="@dimen/_8sdp"
-        android:textSize="@dimen/_9ssp"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -69,7 +67,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.7" />
+        app:layout_constraintGuide_percent="0.65" />
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/layout_index"
@@ -90,23 +88,21 @@
 
         <TextView
             android:id="@+id/text_current_page"
+            style="@style/PageCurrent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/_12sdp"
             android:text="331414"
-            android:textColor="@color/homeIconFrameFocused"
-            android:textSize="@dimen/_15ssp"
             app:layout_constraintBottom_toBottomOf="@+id/imageView_side_arrow_left"
             app:layout_constraintStart_toEndOf="@+id/imageView_side_arrow_left"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/text_total_page"
-            style="@style/MainPrimaryText"
+            style="@style/PageTotal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="/213"
-            android:textSize="@dimen/_12ssp"
             app:layout_constraintBottom_toBottomOf="@+id/text_current_page"
             app:layout_constraintStart_toEndOf="@+id/text_current_page" />
 

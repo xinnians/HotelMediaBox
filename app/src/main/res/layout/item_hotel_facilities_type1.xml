@@ -17,18 +17,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="331414"
-            android:textColor="@color/homeIconFrameFocused"
-            android:textSize="@dimen/_20ssp"
+            style="@style/PageCurrent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/text_total_page"
-            style="@style/MainPrimaryText"
+            style="@style/PageTotal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="/213"
-            android:textSize="@dimen/_12ssp"
             app:layout_constraintBottom_toBottomOf="@+id/text_current_page"
             app:layout_constraintStart_toEndOf="@+id/text_current_page" />
     </android.support.constraint.ConstraintLayout>

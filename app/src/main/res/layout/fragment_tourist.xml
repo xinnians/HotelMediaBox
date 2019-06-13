@@ -124,7 +124,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/view_note"
         app:layout_constraintEnd_toStartOf="@+id/imageView_arrow_right"
         app:layout_constraintStart_toEndOf="@+id/imageView_arrow_left"
         app:layout_constraintTop_toTopOf="parent" />
@@ -134,6 +134,8 @@
         layout="@layout/view_tourist_map"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginStart="@dimen/_12sdp"
+        android:layout_marginEnd="@dimen/_12sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/imageView_arrow_right"
         app:layout_constraintStart_toEndOf="@+id/imageView_arrow_left"
