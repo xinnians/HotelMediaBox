@@ -1,6 +1,7 @@
 package com.ufistudio.hotelmediabox.pages.flights
 
 import android.arch.lifecycle.Observer
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
@@ -18,6 +19,7 @@ import com.ufistudio.hotelmediabox.interfaces.OnItemFocusListener
 import com.ufistudio.hotelmediabox.interfaces.ViewModelsCallback
 import com.ufistudio.hotelmediabox.pages.base.InteractionView
 import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
+import com.ufistudio.hotelmediabox.pages.facilies.FullScreenPictureActivity
 import com.ufistudio.hotelmediabox.pages.home.HomeFeatureEnum
 import com.ufistudio.hotelmediabox.repository.data.*
 import com.ufistudio.hotelmediabox.utils.FileUtils
@@ -51,11 +53,15 @@ class FlightsInfoFragment : InteractionView<OnPageInteractionListener.Primary>()
     private var mHomeIcons: ArrayList<HomeIcons>? = null //SideView List
     private var mExoPlayerHelper: ExoPlayerHelper = ExoPlayerHelper()
 
-    private var mCurrentIpTvSelectIndex: HashMap<Int, Int>? = HashMap() //記錄當前在第幾個Item的Ip Tv, key = category index, value = Ip tv index
-    private var mTotalSize: HashMap<Int, Int>? = HashMap()//所有category內容的size, key = category index, value = category content size
+    private var mCurrentIpTvSelectIndex: HashMap<Int, Int>? =
+            HashMap() //記錄當前在第幾個Item的Ip Tv, key = category index, value = Ip tv index
+    private var mTotalSize: HashMap<Int, Int>? =
+            HashMap()//所有category內容的size, key = category index, value = category content size
     private var mCurrentContent: List<FlightsInfoContent>? = null // 被選到的category內的IP tv address
 
     private var mNoteBottom: NoteButton? = null//右下角提示資訊
+
+    private var mFullscreen: Boolean = false //給全螢幕的video使用，回這頁播放影片用
 
     companion object {
         fun newInstance(): FlightsInfoFragment = FlightsInfoFragment()
@@ -98,13 +104,23 @@ class FlightsInfoFragment : InteractionView<OnPageInteractionListener.Primary>()
         renderView()
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (mFullscreen) {
+            setAndPlayVideo()
+            mFullscreen = false
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
     }
 
-    override fun onStop() {
+    override fun onPause() {
+        mContentPlaying = false
+        mExoPlayerHelper.stop()
         mExoPlayerHelper.release()
-        super.onStop()
+        super.onPause()
     }
 
     override fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
@@ -156,6 +172,12 @@ class FlightsInfoFragment : InteractionView<OnPageInteractionListener.Primary>()
                 if (mSideViewFocus) {
                     sideView.intoPage()
                     return true
+                } else if (mContentFocus) {
+                    val intent: Intent = Intent(context, FullScreenPictureActivity::class.java)
+                    intent.putExtra(Page.ARG_BUNDLE, mCurrentContent!![mCurrentIpTvSelectIndex!![mCurrentCategoryIndex]!!].iptv)
+                    intent.putExtra(FullScreenPictureActivity.TAG_TYPE, "udp")
+                    mFullscreen = true
+                    startActivity(intent)
                 }
             }
             KeyEvent.KEYCODE_DPAD_RIGHT -> {
@@ -322,9 +344,9 @@ class FlightsInfoFragment : InteractionView<OnPageInteractionListener.Primary>()
         }
 
         mExoPlayerHelper.stop()
+        mExoPlayerHelper.initPlayer(context, videoView)
         try {
             mContentPlaying = true
-            //TODO 改成播放IP
 //            mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(mCurrentContent!![mCurrentIpTvSelectIndex!![mCurrentCategoryIndex]!!].iptv)?.absolutePath))
             mExoPlayerHelper.setUdpSource(mCurrentContent!![mCurrentIpTvSelectIndex!![mCurrentCategoryIndex]!!].iptv)
         } catch (e: NullPointerException) {
