@@ -434,7 +434,7 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                     }
                 } else {
                     val weather: HomeWeather? = mData?.home?.weather
-                    weather?.weather_city?.let { mViewModel.getWeather(it.toLowerCase().replace(" ", "")) }
+                    weather?.weather_city?.let { mViewModel.getWeather(it) }
 
                     textView_wifi_id.text = weather?.wifi_id
                     textView_wifiIdTitle.text = weather?.wifi_id_title
