@@ -23,6 +23,7 @@ import com.google.android.exoplayer2.upstream.FileDataSource
 import com.google.android.exoplayer2.upstream.RawResourceDataSource
 import com.google.android.exoplayer2.upstream.UdpDataSource
 import com.ufistudio.hotelmediabox.R
+import java.lang.Exception
 
 open class ExoPlayerHelper {
     private var mPlayer: SimpleExoPlayer? = null
@@ -57,6 +58,8 @@ open class ExoPlayerHelper {
             mPlayer?.prepare(videoSource)
 
         } catch (e: UdpDataSource.UdpDataSourceException) {
+            e.printStackTrace()
+        } catch (e: Exception){
             e.printStackTrace()
         }
 
