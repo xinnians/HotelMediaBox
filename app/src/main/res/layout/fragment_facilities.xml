@@ -135,6 +135,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="gone"
+        android:layout_marginBottom="@dimen/_5sdp"
         app:layout_constraintBottom_toTopOf="@+id/view_note"
         app:layout_constraintEnd_toStartOf="@+id/imageView_arrow_right"
         app:layout_constraintStart_toEndOf="@+id/imageView_arrow_left"
