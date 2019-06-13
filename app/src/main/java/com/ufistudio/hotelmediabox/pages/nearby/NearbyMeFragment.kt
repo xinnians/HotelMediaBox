@@ -380,8 +380,8 @@ class NearbyMeFragment : InteractionView<OnPageInteractionListener.Primary>(), O
      */
     private fun checkSideArrow() {
 
-        imageView_arrow_left.visibility = View.INVISIBLE
-        imageView_arrow_right.visibility = View.INVISIBLE
+        imageView_arrow_left.visibility = View.GONE
+        imageView_arrow_right.visibility = View.GONE
 
         when {
             mCurrentContent?.size == 1 -> {
