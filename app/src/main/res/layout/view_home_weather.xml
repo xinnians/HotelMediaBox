@@ -12,7 +12,7 @@
         android:layout_marginStart="@dimen/_13sdp"
         android:layout_marginTop="@dimen/_43sdp"
         android:minWidth="@dimen/_96sdp"
-        android:textSize="@dimen/_13ssp"
+        android:textSize="@dimen/_11ssp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -32,7 +32,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_4sdp"
-        android:textSize="@dimen/_24ssp"
+        android:textSize="@dimen/_20ssp"
         app:layout_constraintStart_toStartOf="@+id/imageView_weather"
         app:layout_constraintTop_toBottomOf="@+id/imageView_weather" />
 
@@ -68,7 +68,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_2sdp"
         android:textSize="@dimen/_12ssp"
-        android:textStyle="bold"
+        android:typeface="monospace"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/textView_wifiIdTitle"
         app:layout_constraintTop_toBottomOf="@+id/textView_wifiIdTitle" />
@@ -90,7 +90,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_2sdp"
         android:textSize="@dimen/_12ssp"
-        android:textStyle="bold"
+        android:typeface="monospace"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/textView_wifiPasswordTitle"
         app:layout_constraintTop_toBottomOf="@+id/textView_wifiPasswordTitle" />
