@@ -8,70 +8,61 @@
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/view_dialog"
-        android:layout_width="@dimen/_364sdp"
-        android:layout_height="@dimen/_203sdp"
-        android:layout_marginStart="@dimen/_79sdp"
+        android:layout_width="@dimen/_373sdp"
+        android:layout_height="@dimen/_208sdp"
         android:layout_marginTop="@dimen/_54sdp"
         android:background="@color/welcomeBackground"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/imageView_title"
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:layout_marginBottom="@dimen/_8sdp"
+            android:layout_height="@dimen/_30sdp"
+            android:layout_marginTop="@dimen/_20sdp"
             android:adjustViewBounds="true"
             android:scaleType="fitXY"
-            app:layout_constraintBottom_toTopOf="@+id/text_name"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
+                android:id="@+id/text_title"
+                style="@style/MainPrimaryText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginBottom="@dimen/_3sdp"
+                android:textSize="@dimen/_14ssp"
+                android:gravity="center"
+                app:layout_constraintTop_toBottomOf="@+id/imageView_title"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+        <TextView
             android:id="@+id/text_name"
-            android:layout_width="0dp"
+            android:layout_width="@dimen/_258sdp"
             android:layout_height="wrap_content"
             android:textColor="@color/welcomeName"
-            android:textSize="@dimen/_23ssp"
+            android:textSize="@dimen/_20ssp"
             android:marqueeRepeatLimit="-1"
             android:singleLine="true"
             android:focusableInTouchMode="true"
             android:focusable="true"
             android:ellipsize="marquee"
-            android:text="guest"
-            app:layout_constraintBaseline_toBaselineOf="@+id/text_title"
-            app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintEnd_toEndOf="@+id/view_dialog"/>
-
-
-        <TextView
-            android:id="@+id/text_title"
-            style="@style/MainPrimaryText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/_3sdp"
-            android:layout_marginEnd="@dimen/_5sdp"
-            android:textSize="@dimen/_17ssp"
-            app:layout_constraintBottom_toTopOf="@+id/text_room"
-            app:layout_constraintEnd_toStartOf="@+id/guideline" />
-
-        <TextView
-            android:id="@+id/text_room"
-            style="@style/MainPrimaryText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/_19sdp"
-            android:textSize="@dimen/_17ssp"
-            app:layout_constraintBottom_toTopOf="@+id/constraintLayout2"
+            android:gravity="center"
+            android:typeface="monospace"
+            app:layout_constraintTop_toBottomOf="@id/text_title"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintBottom_toTopOf="@+id/constraintLayout2"
+                app:layout_constraintVertical_bias="0.3"/>
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/constraintLayout2"
             android:layout_width="0dp"
-            android:layout_height="@dimen/_1sdp"
+            android:layout_height="1dp"
             android:layout_marginStart="@dimen/_10sdp"
             android:layout_marginEnd="@dimen/_10sdp"
             android:layout_marginBottom="@dimen/_10sdp"
@@ -87,9 +78,11 @@
             android:layout_marginStart="@dimen/_17sdp"
             android:layout_marginBottom="@dimen/_16sdp"
             android:gravity="center"
-            android:textSize="@dimen/_13ssp"
+            android:textSize="@dimen/_11ssp"
+            android:typeface="monospace"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/text_description" />
+            app:layout_constraintStart_toEndOf="@+id/text_description"
+            app:layout_constraintTop_toTopOf="@+id/text_description"/>
 
         <TextView
             android:id="@+id/text_description"
@@ -97,16 +90,9 @@
             android:layout_width="@dimen/_278sdp"
             android:layout_height="@dimen/_57sdp"
             android:layout_marginBottom="@dimen/_15sdp"
-            android:textSize="@dimen/_13ssp"
+            android:textSize="@dimen/_11ssp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@+id/constraintLayout2" />
-
-        <android.support.constraint.Guideline
-            android:id="@+id/guideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.5" />
 
     </android.support.constraint.ConstraintLayout>
 

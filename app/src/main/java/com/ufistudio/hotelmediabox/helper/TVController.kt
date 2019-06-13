@@ -43,9 +43,9 @@ object TVController {
     const val RESULT_FAIL = "1"
 
     private var mPlayDisposable: Disposable? = null
-
+//    960,558
     enum class SCREEN_TYPE(width: Int, height: Int, x: Int, y: Int) {
-        HOMEPAGE(832, 464, 108, 72),
+        HOMEPAGE(873, 506, 87, 52),
         CHANNELPAGE(980, 555, 857, 233),
         FULLSCREEN(0, 0, 0, 0)
     }
@@ -97,10 +97,10 @@ object TVController {
         var y = 0
         when (screenType) {
             SCREEN_TYPE.HOMEPAGE -> {
-                width = 832
-                height = 464
-                x = 108
-                y = 72
+                width = 874
+                height = 506
+                x = 87
+                y = 52
             }
             SCREEN_TYPE.CHANNELPAGE -> {
                 width = 980

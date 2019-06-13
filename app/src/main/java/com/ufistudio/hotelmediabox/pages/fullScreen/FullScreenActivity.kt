@@ -18,6 +18,7 @@ import android.content.Intent
 import android.view.*
 import kotlinx.android.synthetic.main.activity_fullscreen.*
 import com.bumptech.glide.Glide
+import com.ufistudio.hotelmediabox.constants.Page
 import com.ufistudio.hotelmediabox.helper.TVController
 import com.ufistudio.hotelmediabox.pages.MainActivity
 import com.ufistudio.hotelmediabox.utils.FileUtils
@@ -50,6 +51,20 @@ class FullScreenActivity : AppCompatActivity() {
 
         override fun initAVPlayerFinish() {
             TVController.playCurrent()
+            mTVChannel = TVController.getCurrentChannel()
+            textChannelName?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
+            viewLogo?.let { viewLogo ->
+                Glide.with(applicationContext)
+                    .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.normalIconName ?: ""))
+                    .skipMemoryCache(true)
+                    .into(viewLogo)
+            }
+            viewMainLogo?.let { viewLogo ->
+                Glide.with(applicationContext)
+                    .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.bigIconName ?: ""))
+                    .skipMemoryCache(true)
+                    .into(viewLogo)
+            }
             showInfo()
         }
 
@@ -115,20 +130,6 @@ class FullScreenActivity : AppCompatActivity() {
 
         TVController.registerListener(mTVListener)
         TVController.initAVPlayer(TVController.SCREEN_TYPE.FULLSCREEN)
-        mTVChannel = TVController.getCurrentChannel()
-        textChannelName?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
-        viewLogo?.let { viewLogo ->
-            Glide.with(this)
-                .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.normalIconName ?: ""))
-                .skipMemoryCache(true)
-                .into(viewLogo)
-        }
-        viewMainLogo?.let { viewLogo ->
-            Glide.with(this)
-                .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.bigIconName ?: ""))
-                .skipMemoryCache(true)
-                .into(viewLogo)
-        }
     }
 
     override fun onPause() {
@@ -230,6 +231,17 @@ class FullScreenActivity : AppCompatActivity() {
                 finish()
                 return true
             }
+            KeyEvent.KEYCODE_DPAD_CENTER -> {
+                val intent: Intent = Intent(this, MainActivity::class.java)
+                val bundle: Bundle = Bundle()
+//                bundle.putBoolean(Page.ARG_BUNDLE, true)
+                bundle.putInt("page",Page.CHANNEL)
+                intent.putExtras(bundle)
+                startActivity(intent)
+//                startActivity(Intent(this, MainActivity::class.java))
+                finish()
+                return true
+            }
         }
         return super.onKeyDown(keyCode, event)
     }
@@ -249,6 +261,7 @@ class FullScreenActivity : AppCompatActivity() {
     }
 
     private fun showInfo() {
+        Log.e(TAG,"[showInfo] call.")
         banner.visibility = View.VISIBLE
         dateView.visibility = View.VISIBLE
 
