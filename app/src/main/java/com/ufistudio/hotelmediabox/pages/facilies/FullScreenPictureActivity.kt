@@ -36,6 +36,11 @@ class FullScreenPictureActivity : AppCompatActivity() {
                     .skipMemoryCache(true)
                     .into(imageView_full_screen)
             imageView_full_screen.visibility = View.VISIBLE
+        } else if (TextUtils.equals(intent.getStringExtra(TAG_TYPE), "udp")) {
+            mExoPlayerHelper.initPlayer(applicationContext, videoView_full_screen)
+            mExoPlayerHelper.setUdpSource(intent.getStringExtra(Page.ARG_BUNDLE))
+            mExoPlayerHelper.repeatMode()
+            videoView_full_screen?.visibility = View.VISIBLE
         } else {
             mExoPlayerHelper.initPlayer(applicationContext, videoView_full_screen)
             mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(intent.getStringExtra(Page.ARG_BUNDLE))?.absolutePath))

@@ -368,7 +368,7 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
         mCurrentCategoryIndex = view.getTag(WeatherAdapter.TAG_INDEX) as Int
         mCityCode = (view.getTag(WeatherAdapter.TAG_TITLE) as String)
         renderEmptyView()
-        mViewModel.getWeather(mCityCode.toLowerCase().replace(" ", ""))
+        mViewModel.getWeather(mCityCode)
     }
 
     override fun onSuccess(it: Any?) {
