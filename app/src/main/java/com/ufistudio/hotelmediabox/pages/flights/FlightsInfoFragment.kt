@@ -325,7 +325,8 @@ class FlightsInfoFragment : InteractionView<OnPageInteractionListener.Primary>()
         try {
             mContentPlaying = true
             //TODO 改成播放IP
-            mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(mCurrentContent!![mCurrentIpTvSelectIndex!![mCurrentCategoryIndex]!!].iptv)?.absolutePath))
+//            mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(mCurrentContent!![mCurrentIpTvSelectIndex!![mCurrentCategoryIndex]!!].iptv)?.absolutePath))
+            mExoPlayerHelper.setUdpSource(mCurrentContent!![mCurrentIpTvSelectIndex!![mCurrentCategoryIndex]!!].iptv)
         } catch (e: NullPointerException) {
             mExoPlayerHelper.release()
             mExoPlayerHelper.initPlayer(context, videoView)
