@@ -336,7 +336,7 @@ class NearbyMeFragment : InteractionView<OnPageInteractionListener.Primary>(), O
 
             if (mVideoView != null) {
                 mExoPlayerHelper.initPlayer(context, mVideoView!!)
-                mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(item.file_name)?.absolutePath))
+                mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(item.file_name)?.absolutePath ?: ""))
                 mExoPlayerHelper.repeatMode()
                 mVideoView?.visibility = View.VISIBLE
                 mContentPlaying = true

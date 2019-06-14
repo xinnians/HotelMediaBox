@@ -43,7 +43,7 @@ class FullScreenPictureActivity : AppCompatActivity() {
             videoView_full_screen?.visibility = View.VISIBLE
         } else {
             mExoPlayerHelper.initPlayer(applicationContext, videoView_full_screen)
-            mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(intent.getStringExtra(Page.ARG_BUNDLE))?.absolutePath))
+            mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(intent.getStringExtra(Page.ARG_BUNDLE))?.absolutePath ?: ""))
             mExoPlayerHelper.repeatMode()
             videoView_full_screen?.visibility = View.VISIBLE
         }

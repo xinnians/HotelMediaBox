@@ -343,8 +343,7 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
             } else if (item.file_type.hashCode() == TAG_VIDEO.hashCode()) {
                 mContentPlaying = true
                 mExoPlayerHelper.initPlayer(context, mVideoView!!)
-                mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(item.file_name)?.absolutePath
-                        ?: ""))
+                mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(item.file_name)?.absolutePath ?: ""))
                 mExoPlayerHelper.repeatMode()
                 mVideoView!!.visibility = View.VISIBLE
                 imageView?.visibility = View.INVISIBLE

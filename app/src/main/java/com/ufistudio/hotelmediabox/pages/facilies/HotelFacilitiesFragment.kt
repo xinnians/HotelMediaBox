@@ -397,7 +397,7 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
             mContentPlaying = true
             if (mVideoView1 != null) {
                 mExoPlayerHelper.initPlayer(context, mVideoView1!!)
-                mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(item.file_name)?.absolutePath))
+                mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(item.file_name)?.absolutePath ?: ""))
                 mExoPlayerHelper.repeatMode()
                 mVideoView1?.visibility = View.VISIBLE
             }
@@ -441,7 +441,7 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
             mContentPlaying = true
             if (mVideoView2 != null) {
                 mExoPlayerHelper.initPlayer(context, mVideoView2!!)
-                mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(item.file_name)?.absolutePath))
+                mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(item.file_name)?.absolutePath ?: ""))
                 mVideoView2?.visibility = View.VISIBLE
             }
             imageView?.visibility = View.INVISIBLE
@@ -483,7 +483,7 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
             mContentPlaying = true
             if (mVideoView3 != null) {
                 mExoPlayerHelper.initPlayer(context, mVideoView3!!)
-                mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(mCurrentFileName)?.absolutePath))
+                mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(mCurrentFileName)?.absolutePath ?: ""))
                 mVideoView3?.visibility = View.VISIBLE
             }
             imageView?.visibility = View.INVISIBLE
