@@ -65,6 +65,7 @@
                 android:text="Room Service"
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/_11ssp"
+                android:typeface="monospace"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toRightOf="@id/view_back"
                 app:layout_constraintRight_toRightOf="parent"
