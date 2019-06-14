@@ -91,6 +91,8 @@
             android:id="@+id/recyclerView_service"
             android:layout_width="@dimen/_117sdp"
             android:layout_height="0dp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginBottom="@dimen/_5sdp"
             app:layout_constraintBottom_toTopOf="@+id/view_list_down_arrow"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

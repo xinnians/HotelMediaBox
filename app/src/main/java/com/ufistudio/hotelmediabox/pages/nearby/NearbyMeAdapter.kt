@@ -92,6 +92,16 @@ class NearbyMeAdapter(private var mClickListener: OnItemClickListener, private v
                 }
             }
         }
+
+        if(mSelectIndex == position){
+            if(mSideViewIsShow || mClearFocus){
+                holder.itemView.layout_nearby_me.background = ContextCompat.getDrawable(holder.itemView.context, R.drawable.home_icon_frame_frame_default)
+            }else{
+                holder.itemView.layout_nearby_me.background = ContextCompat.getDrawable(holder.itemView.context, R.drawable.home_icon_frame_frame_focused)
+            }
+        }else{
+            holder.itemView.layout_nearby_me.setBackgroundResource(0)
+        }
     }
 
     fun setData(data: ArrayList<NearbyMeCategories>) {

@@ -34,15 +34,26 @@ class ChannelGenreAdapter : RecyclerView.Adapter<ChannelGenreAdapter.ViewHolder>
         holder.itemView.text_genre_type.text = item?.display ?: ""
         holder.itemView.text_genre_type.tag = item
         holder.itemView.text_genre_type.setTextColor(
-            if(mIsFocus){
+            if (mIsFocus) {
                 if (position == mSelectPosition)
                     ContextCompat.getColor(holder.itemView.context, R.color.colorYellow)
                 else
                     ContextCompat.getColor(holder.itemView.context, R.color.colorWhite)
-            }else{
+            } else {
                 ContextCompat.getColor(holder.itemView.context, R.color.white30)
             }
         )
+
+        if (position == mSelectPosition) {
+            if (mIsFocus) {
+                holder.itemView.layout_genre.background = ContextCompat.getDrawable(holder.itemView.context, R.drawable.home_icon_frame_frame_focused)
+            } else {
+                holder.itemView.layout_genre.background = ContextCompat.getDrawable(holder.itemView.context, R.drawable.home_icon_frame_frame_default)
+            }
+        } else {
+            holder.itemView.layout_genre.setBackgroundResource(0)
+        }
+
         holder.itemView.setOnClickListener { view ->
             mListener?.onClick(view)
         }
@@ -52,12 +63,12 @@ class ChannelGenreAdapter : RecyclerView.Adapter<ChannelGenreAdapter.ViewHolder>
         mListener = listener
     }
 
-    fun selectUp():String {
+    fun selectUp(): String {
         mGenreList?.let { list ->
-            if(list.size == 0){
+            if (list.size == 0) {
                 return ""
-            }else{
-                if (mSelectPosition == list.size -1) return list.last().key
+            } else {
+                if (mSelectPosition == list.size - 1) return list.last().key
                 mSelectPosition++
                 notifyDataSetChanged()
                 return list[mSelectPosition].key
@@ -66,11 +77,11 @@ class ChannelGenreAdapter : RecyclerView.Adapter<ChannelGenreAdapter.ViewHolder>
         return ""
     }
 
-    fun selectDown():String {
+    fun selectDown(): String {
         mGenreList?.let { list ->
-            if(list.size == 0){
+            if (list.size == 0) {
                 return ""
-            }else{
+            } else {
                 if (mSelectPosition == 0) return list.first().key
                 mSelectPosition--
                 notifyDataSetChanged()
@@ -80,14 +91,14 @@ class ChannelGenreAdapter : RecyclerView.Adapter<ChannelGenreAdapter.ViewHolder>
         return ""
     }
 
-    fun getSelectType(): String{
+    fun getSelectType(): String {
         mGenreList?.let { list ->
             return list[mSelectPosition].key
         }
         return ""
     }
 
-    fun setFocus(isFocus: Boolean){
+    fun setFocus(isFocus: Boolean) {
         mIsFocus = isFocus
         notifyDataSetChanged()
     }

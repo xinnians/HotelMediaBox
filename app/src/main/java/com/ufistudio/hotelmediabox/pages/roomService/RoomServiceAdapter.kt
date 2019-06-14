@@ -106,6 +106,16 @@ class RoomServiceAdapter(private var mClickListener: OnItemClickListener, privat
                 }
             }
         }
+
+        if(mSelectIndex == position){
+            if(mSideViewIsShow || mClearFocus){
+                holder.itemView.layout_room_service.background = ContextCompat.getDrawable(holder.itemView.context, R.drawable.home_icon_frame_frame_default)
+            }else{
+                holder.itemView.layout_room_service.background = ContextCompat.getDrawable(holder.itemView.context, R.drawable.home_icon_frame_frame_focused)
+            }
+        }else{
+            holder.itemView.layout_room_service.setBackgroundResource(0)
+        }
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
