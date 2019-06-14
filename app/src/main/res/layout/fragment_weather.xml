@@ -67,6 +67,7 @@
                 android:text="Room Service"
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/_11ssp"
+                android:typeface="monospace"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toRightOf="@id/view_back"
                 app:layout_constraintRight_toRightOf="parent"
@@ -118,7 +119,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_23sdp"
         android:layout_marginTop="@dimen/_50sdp"
-        android:textSize="@dimen/_20ssp"
+        android:textSize="@dimen/_17ssp"
+        android:typeface="monospace"
         app:layout_constraintStart_toEndOf="@+id/view_service"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -128,17 +130,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_32sdp"
-        android:textSize="@dimen/_15ssp"
+        android:textSize="@dimen/_13ssp"
         app:layout_constraintStart_toStartOf="@+id/textView_title"
         app:layout_constraintTop_toBottomOf="@+id/textView_title" />
 
     <ImageView
         android:id="@+id/imageView_today"
-        android:layout_width="@dimen/_95sdp"
+        android:layout_width="@dimen/_76sdp"
         android:layout_height="@dimen/_76sdp"
         android:layout_marginStart="@dimen/_128sdp"
         android:layout_marginTop="@dimen/_33sdp"
-        android:scaleType="fitCenter"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/ic_weather_thunderstorm"
         app:layout_constraintStart_toEndOf="@+id/view_service"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -150,30 +153,28 @@
         android:layout_marginStart="@dimen/_19sdp"
         android:layout_marginTop="@dimen/_23sdp"
         android:maxLines="2"
-        android:textSize="@dimen/_16ssp"
+        android:textSize="@dimen/_14ssp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageView_today"
         app:layout_constraintTop_toTopOf="@+id/imageView_today" />
 
     <TextView
         android:id="@+id/textView_day1"
-        style="@style/MainPrimaryText"
+        style="@style/WeatherText_Day"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_10sdp"
         android:gravity="center"
-        android:textSize="@dimen/_15ssp"
         app:layout_constraintEnd_toEndOf="@+id/textView_date1"
         app:layout_constraintStart_toStartOf="@+id/textView_date1"
         app:layout_constraintTop_toBottomOf="@+id/textView_subtitle" />
 
     <TextView
         android:id="@+id/textView_date1"
-        style="@style/MainPrimaryText"
+        style="@style/WeatherText_Date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:minLines="1"
-        android:textSize="@dimen/_12ssp"
         app:layout_constraintEnd_toStartOf="@+id/line1"
         app:layout_constraintStart_toEndOf="@+id/view_service"
         app:layout_constraintTop_toBottomOf="@+id/textView_day1" />
@@ -207,12 +208,11 @@
 
     <TextView
         android:id="@+id/textView_temperature1"
-        style="@style/MainPrimaryText"
+        style="@style/WeatherText_Temperature"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/_8sdp"
         android:gravity="center"
-        android:textSize="@dimen/_12ssp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/line1"
         app:layout_constraintEnd_toEndOf="@+id/imageView_weather1"
@@ -230,24 +230,22 @@
 
     <TextView
         android:id="@+id/textView_day2"
-        style="@style/MainPrimaryText"
+        style="@style/WeatherText_Day"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_10sdp"
         android:gravity="center"
         android:minLines="1"
-        android:textSize="@dimen/_15ssp"
         app:layout_constraintEnd_toEndOf="@+id/textView_date2"
         app:layout_constraintStart_toStartOf="@+id/textView_date2"
         app:layout_constraintTop_toBottomOf="@+id/textView_subtitle" />
 
     <TextView
         android:id="@+id/textView_date2"
-        style="@style/MainPrimaryText"
+        style="@style/WeatherText_Date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:minLines="1"
-        android:textSize="@dimen/_12ssp"
         app:layout_constraintEnd_toStartOf="@+id/line2"
         app:layout_constraintStart_toEndOf="@+id/line1"
         app:layout_constraintTop_toBottomOf="@+id/textView_day2" />
@@ -281,12 +279,11 @@
 
     <TextView
         android:id="@+id/textView_temperature2"
-        style="@style/MainPrimaryText"
+        style="@style/WeatherText_Temperature"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/_8sdp"
         android:gravity="center"
-        android:textSize="@dimen/_12ssp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/line2"
         app:layout_constraintEnd_toEndOf="@+id/imageView_weather2"
@@ -304,24 +301,22 @@
 
     <TextView
         android:id="@+id/textView_day3"
-        style="@style/MainPrimaryText"
+        style="@style/WeatherText_Day"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_10sdp"
         android:gravity="center"
         android:minLines="1"
-        android:textSize="@dimen/_15ssp"
         app:layout_constraintEnd_toEndOf="@+id/textView_date3"
         app:layout_constraintStart_toStartOf="@+id/textView_date3"
         app:layout_constraintTop_toBottomOf="@+id/textView_subtitle" />
 
     <TextView
         android:id="@+id/textView_date3"
-        style="@style/MainPrimaryText"
+        style="@style/WeatherText_Date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:minLines="1"
-        android:textSize="@dimen/_12ssp"
         app:layout_constraintEnd_toStartOf="@+id/line3"
         app:layout_constraintStart_toEndOf="@+id/line2"
         app:layout_constraintTop_toBottomOf="@+id/textView_day3" />
@@ -355,12 +350,11 @@
 
     <TextView
         android:id="@+id/textView_temperature3"
-        style="@style/MainPrimaryText"
+        style="@style/WeatherText_Temperature"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/_8sdp"
         android:gravity="center"
-        android:textSize="@dimen/_12ssp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/line3"
         app:layout_constraintEnd_toEndOf="@+id/imageView_weather3"
@@ -379,24 +373,22 @@
 
     <TextView
         android:id="@+id/textView_day4"
-        style="@style/MainPrimaryText"
+        style="@style/WeatherText_Day"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_10sdp"
         android:gravity="center"
         android:minLines="1"
-        android:textSize="@dimen/_15ssp"
         app:layout_constraintEnd_toEndOf="@+id/textView_date4"
         app:layout_constraintStart_toStartOf="@+id/textView_date4"
         app:layout_constraintTop_toBottomOf="@+id/textView_subtitle" />
 
     <TextView
         android:id="@+id/textView_date4"
-        style="@style/MainPrimaryText"
+        style="@style/WeatherText_Date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:minLines="1"
-        android:textSize="@dimen/_12ssp"
         app:layout_constraintEnd_toStartOf="@+id/line4"
         app:layout_constraintStart_toEndOf="@+id/line3"
         app:layout_constraintTop_toBottomOf="@+id/textView_day4" />
@@ -430,12 +422,11 @@
 
     <TextView
         android:id="@+id/textView_temperature4"
-        style="@style/MainPrimaryText"
+        style="@style/WeatherText_Temperature"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/_8sdp"
         android:gravity="center"
-        android:textSize="@dimen/_12ssp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/line4"
         app:layout_constraintEnd_toEndOf="@+id/imageView_weather4"
@@ -453,24 +444,22 @@
 
     <TextView
         android:id="@+id/textView_day5"
-        style="@style/MainPrimaryText"
+        style="@style/WeatherText_Day"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_10sdp"
         android:gravity="center"
         android:minLines="1"
-        android:textSize="@dimen/_15ssp"
         app:layout_constraintEnd_toEndOf="@+id/textView_date5"
         app:layout_constraintStart_toStartOf="@+id/textView_date5"
         app:layout_constraintTop_toBottomOf="@+id/textView_subtitle" />
 
     <TextView
         android:id="@+id/textView_date5"
-        style="@style/MainPrimaryText"
+        style="@style/WeatherText_Date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:minLines="1"
-        android:textSize="@dimen/_12ssp"
         app:layout_constraintEnd_toStartOf="@+id/line5"
         app:layout_constraintStart_toEndOf="@+id/line4"
         app:layout_constraintTop_toBottomOf="@+id/textView_day5" />
@@ -504,12 +493,11 @@
 
     <TextView
         android:id="@+id/textView_temperature5"
-        style="@style/MainPrimaryText"
+        style="@style/WeatherText_Temperature"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/_8sdp"
         android:gravity="center"
-        android:textSize="@dimen/_12ssp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/line5"
         app:layout_constraintEnd_toEndOf="@+id/imageView_weather5"
@@ -527,24 +515,22 @@
 
     <TextView
         android:id="@+id/textView_day6"
-        style="@style/MainPrimaryText"
+        style="@style/WeatherText_Day"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_10sdp"
         android:gravity="center"
         android:minLines="1"
-        android:textSize="@dimen/_15ssp"
         app:layout_constraintEnd_toEndOf="@+id/textView_date6"
         app:layout_constraintStart_toStartOf="@+id/textView_date6"
         app:layout_constraintTop_toBottomOf="@+id/textView_subtitle" />
 
     <TextView
         android:id="@+id/textView_date6"
-        style="@style/MainPrimaryText"
+        style="@style/WeatherText_Date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:minLines="1"
-        android:textSize="@dimen/_12ssp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/line5"
         app:layout_constraintTop_toBottomOf="@+id/textView_day6" />
@@ -578,12 +564,11 @@
 
     <TextView
         android:id="@+id/textView_temperature6"
-        style="@style/MainPrimaryText"
+        style="@style/WeatherText_Temperature"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/_8sdp"
         android:gravity="center"
-        android:textSize="@dimen/_12ssp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/line5"
         app:layout_constraintEnd_toEndOf="@+id/imageView_weather6"
@@ -595,7 +580,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_11sdp"
-        android:textSize="@dimen/_9ssp"
+        android:textSize="@dimen/_8ssp"
         app:layout_constraintStart_toStartOf="@+id/textView_subtitle"
         app:layout_constraintTop_toBottomOf="@+id/line1" />
 

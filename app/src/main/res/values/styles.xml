@@ -61,4 +61,20 @@
         <item name="android:typeface">monospace</item>
         <item name="android:textColor">@android:color/white</item>
     </style>
+
+    <style name="WeatherText_Day">
+        <item name="android:textSize">@dimen/_13ssp</item>
+        <item name="android:typeface">monospace</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="WeatherText_Date">
+        <item name="android:textSize">@dimen/_10ssp</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="WeatherText_Temperature">
+        <item name="android:textSize">@dimen/_10ssp</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
 </resources>
