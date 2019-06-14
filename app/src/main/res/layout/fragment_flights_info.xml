@@ -121,21 +121,34 @@
         app:layout_constraintStart_toEndOf="@+id/view_service"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.exoplayer2.ui.PlayerView
-        android:id="@+id/videoView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="@dimen/_9sdp"
-        android:layout_marginTop="@dimen/_51sdp"
-        android:layout_marginEnd="@dimen/_9sdp"
-        android:layout_marginBottom="@dimen/_51sdp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/imageView_arrow_right"
-        app:layout_constraintStart_toEndOf="@+id/imageView_arrow_left"
-        app:layout_constraintTop_toTopOf="parent"
-        app:resize_mode="fill"
-        app:surface_type="texture_view"
-        app:use_controller="false" />
+    <android.support.constraint.ConstraintLayout
+            android:id="@+id/layout_video"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/_9sdp"
+            android:layout_marginTop="@dimen/_51sdp"
+            android:layout_marginEnd="@dimen/_9sdp"
+            android:layout_marginBottom="@dimen/_51sdp"
+            android:background="@color/videoBackground"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/imageView_arrow_right"
+            app:layout_constraintStart_toEndOf="@+id/imageView_arrow_left"
+            app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.exoplayer2.ui.PlayerView
+                android:id="@+id/videoView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_margin="@dimen/_1sdp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:resize_mode="fill"
+                app:surface_type="texture_view"
+                app:use_controller="false" />
+
+    </android.support.constraint.ConstraintLayout>
 
     <ImageView
         android:id="@+id/imageView_arrow_right"
