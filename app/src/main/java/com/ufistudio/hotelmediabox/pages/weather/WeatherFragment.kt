@@ -31,7 +31,7 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 private const val TAG_DEFAULT_FORMAT = "dd MMM"
-private const val TAG_UPDATE_FORMAT = "yyyyMMdd kkmm"
+private const val TAG_UPDATE_FORMAT = "K:mma EEE, dd MMM yyyy"
 
 class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItemClickListener,
         OnItemFocusListener, ViewModelsCallback {
@@ -400,6 +400,6 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
      * parse last update time
      */
     private fun parseDate(time: Long): String? {
-        return SimpleDateFormat(TAG_UPDATE_FORMAT, Locale.TAIWAN).format("${time}000".toLong())
+        return SimpleDateFormat(TAG_UPDATE_FORMAT, Locale.getDefault()).format("${time}000".toLong())
     }
 }
