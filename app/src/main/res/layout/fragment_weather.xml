@@ -141,7 +141,6 @@
         android:layout_marginStart="@dimen/_128sdp"
         android:layout_marginTop="@dimen/_33sdp"
         android:scaleType="fitXY"
-        app:srcCompat="@drawable/ic_weather_thunderstorm"
         app:layout_constraintStart_toEndOf="@+id/view_service"
         app:layout_constraintTop_toTopOf="parent" />
 
