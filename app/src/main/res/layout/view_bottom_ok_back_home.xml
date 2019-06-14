@@ -14,21 +14,20 @@
 
     <TextView
         android:id="@+id/textView_ok"
-        style="@style/MainPrimaryText"
+        style="@style/NoteText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/_14sdp"
-        android:layout_marginBottom="@dimen/_13sdp"
-        android:textSize="@dimen/_9ssp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginEnd="@dimen/_15sdp"
+        app:layout_constraintBottom_toBottomOf="@id/imageView_ok"
+        app:layout_constraintTop_toTopOf="@id/imageView_ok"
         app:layout_constraintEnd_toStartOf="@+id/view_bottom_back_home" />
 
     <ImageView
         android:id="@+id/imageView_ok"
         android:layout_width="@dimen/_17sdp"
         android:layout_height="@dimen/_17sdp"
-        android:layout_marginEnd="@dimen/_8sdp"
-        android:layout_marginBottom="@dimen/_8sdp"
+        android:layout_marginEnd="@dimen/_5sdp"
+        android:layout_marginBottom="@dimen/_10sdp"
         android:src="@drawable/ic_ok"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/textView_ok" />

@@ -26,6 +26,7 @@ import com.ufistudio.hotelmediabox.views.ARG_CURRENT_BACK_TITLE
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_INDEX
 import kotlinx.android.synthetic.main.fragment_tourist.*
 import kotlinx.android.synthetic.main.view_bottom_back_home.*
+import kotlinx.android.synthetic.main.view_bottom_ok_back_home.*
 import kotlinx.android.synthetic.main.view_tourist.*
 import kotlinx.android.synthetic.main.view_tourist_map.*
 
@@ -215,6 +216,7 @@ class TouristFragment : InteractionView<OnPageInteractionListener.Primary>(), On
 
         textView_back.text = data?.second?.note?.back
         textView_home.text = data?.second?.note?.home
+        textView_ok.text = data?.second?.note?.select
     }
 
     private fun onInitError(t: Throwable?) {
