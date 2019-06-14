@@ -71,7 +71,6 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
     private var mTotalSize: HashMap<Int, Int>? = HashMap()//所有category內容的size, key = category index, value = category content size
     private var mCurrentContent: List<HotelFacilitiesContent>? = null // 被選到的category內的Content
     private var mCurrentContentType: Int? = 0 // 被選到的content type
-    private var mVideoFrame: ConstraintLayout? = null
     private var mVideoView1: PlayerView? = null
     private var mVideoView2: PlayerView? = null
     private var mVideoView3: PlayerView? = null
@@ -201,9 +200,6 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
                     mAdapter.clearFocus(mCurrentCategoryIndex)
                     mCategoryFocus = false
                     mContentFocus = true
-                    if (view_content_type1.isShown && mContentFocus) {
-                        mVideoFrame?.setBackgroundResource(R.color.homeIconFrameFocused)
-                    }
                 } else if (mContentFocus) {
                     val curryIndex = mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!
                     if (curryIndex < mTotalSize!![mCurrentCategoryIndex]!! - 1) {
@@ -233,8 +229,6 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
                         mContentFocus = false
                         mCategoryFocus = true
                         mAdapter.selectLast(mCurrentCategoryIndex)
-                        if (view_content_type1.isShown)
-                            mVideoFrame?.setBackgroundResource(R.color.videoBackground)
                     }
                 }
                 return true
@@ -382,7 +376,6 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
                 (mCurrentContentSelectIndex!![mCurrentCategoryIndex]!! + 1).toString()
         mVideoView1 = view_content_type1?.findViewById(R.id.videoView) as PlayerView
         val imageView = view_content_type1?.findViewById(R.id.image_photo) as ImageView
-        mVideoFrame = view_content_type1?.findViewById(R.id.videoView_frame) as ConstraintLayout
 
         if (item.file_type.hashCode() == TAG_IMAGE.hashCode()) {
             mVideoView1?.visibility = View.GONE

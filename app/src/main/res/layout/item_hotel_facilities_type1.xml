@@ -37,10 +37,22 @@
         android:layout_width="@dimen/_274sdp"
         android:layout_height="@dimen/_159sdp"
         android:layout_marginTop="@dimen/_81sdp"
-        android:background="@drawable/selector_ip_tv"
+        android:background="@color/videoBackground"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+                android:id="@+id/image_bg"
+                android:layout_width="0dp"
+                android:layout_height="0sp"
+                android:layout_margin="@dimen/_1sdp"
+                android:background="@android:color/black"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/image_photo"
