@@ -1,6 +1,7 @@
 package com.ufistudio.hotelmediabox.pages.channel
 
 import android.content.Context
+import android.graphics.Typeface
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.util.Log
@@ -44,12 +45,14 @@ class ChannelListAdapter : RecyclerView.Adapter<ChannelListAdapter.ViewHolder>()
             holder.itemView.setOnClickListener { view ->
                 mListener?.onClick(view)
             }
+            holder.itemView.text_channelName.setTypeface(Typeface.SERIF,Typeface.NORMAL)
 
             if (position == mSelectPosition) {
                 if (mIsFocus) {
                     holder.itemView.layout_frame.background =
                         ContextCompat.getDrawable(mContext, R.drawable.home_icon_frame_frame_focused)
                     holder.itemView.text_channelName.setTextColor(ContextCompat.getColor(mContext, R.color.colorYellow))
+                    holder.itemView.text_channelName.setTypeface(Typeface.MONOSPACE,Typeface.NORMAL)
                 } else {
                     holder.itemView.layout_frame.background =
                         ContextCompat.getDrawable(mContext, R.drawable.home_icon_frame_frame_default)
