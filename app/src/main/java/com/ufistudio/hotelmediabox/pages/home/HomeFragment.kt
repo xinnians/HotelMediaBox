@@ -304,13 +304,13 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                 mFeatureIcons = mData?.home?.icons
 
                 //for setting page reset language use
-                if (activity?.intent?.extras?.getBoolean(Page.ARG_BUNDLE) != null && activity?.intent?.extras?.getBoolean(
-                                Page.ARG_BUNDLE
-                        )!!
-                ) {
+                if (activity?.intent?.extras?.getBoolean(Page.ARG_BUNDLE) != null && activity?.intent?.extras?.getBoolean(Page.ARG_BUNDLE)!!) {
+
+                    var page:Int = activity?.intent?.extras?.let { bundle -> if(bundle.containsKey(Page.ARG_PAGE)) bundle.getInt(Page.ARG_PAGE) else Page.SETTING }
+                        ?: Page.SETTING
                     val b: Bundle = Bundle()
                     b.putParcelableArrayList(Page.ARG_BUNDLE, mFeatureIcons)
-                    getInteractionListener().switchPage(R.id.fragment_container, Page.SETTING, b, true, false, true)
+                    getInteractionListener().switchPage(R.id.fragment_container, page, b, true, false, true)
                     return
                 }
                 renderView()

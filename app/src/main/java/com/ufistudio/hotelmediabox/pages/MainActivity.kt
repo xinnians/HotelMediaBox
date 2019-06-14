@@ -36,6 +36,8 @@ class MainActivity : PaneViewActivity(), OnPageInteractionListener.Primary {
             //for setting page reset language use
             if (args?.getBoolean(Page.ARG_BUNDLE) != null)
                 bundle.putBoolean(Page.ARG_BUNDLE, args.getBoolean(Page.ARG_BUNDLE))
+            if (args?.containsKey(Page.ARG_PAGE) == true)
+                bundle.putInt(Page.ARG_PAGE, args.getInt(Page.ARG_PAGE))
             switchPage(R.id.fragment_container, Page.HOME, bundle, true, false)
         } else {
             Log.e(TAG, "[get page] = $page")

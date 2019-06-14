@@ -234,8 +234,8 @@ class FullScreenActivity : AppCompatActivity() {
             KeyEvent.KEYCODE_DPAD_CENTER -> {
                 val intent: Intent = Intent(this, MainActivity::class.java)
                 val bundle: Bundle = Bundle()
-//                bundle.putBoolean(Page.ARG_BUNDLE, true)
-                bundle.putInt("page",Page.CHANNEL)
+                bundle.putBoolean(Page.ARG_BUNDLE, true)
+                bundle.putInt(Page.ARG_PAGE,Page.CHANNEL)
                 intent.putExtras(bundle)
                 startActivity(intent)
 //                startActivity(Intent(this, MainActivity::class.java))
