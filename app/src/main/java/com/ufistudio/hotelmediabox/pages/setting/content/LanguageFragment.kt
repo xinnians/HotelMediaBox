@@ -102,19 +102,19 @@ class LanguageFragment : InteractionView<OnPageInteractionListener.Primary>(), O
                 return true
             }
             KeyEvent.KEYCODE_DPAD_UP -> {
-                if (mCurrentIndex + 1 >= mData?.content?.size!!) {
-                    mCurrentIndex = 0
+                if (mCurrentIndex - 1 < 0) {
+                    mCurrentIndex = mData?.content?.size!! - 1
                 } else {
-                    mCurrentIndex += 1
+                    mCurrentIndex -= 1
                 }
                 scrollLanguage()
                 return true
             }
             KeyEvent.KEYCODE_DPAD_DOWN -> {
-                if (mCurrentIndex - 1 < 0) {
-                    mCurrentIndex = mData?.content?.size!! - 1
+                if (mCurrentIndex + 1 >= mData?.content?.size!!) {
+                    mCurrentIndex = 0
                 } else {
-                    mCurrentIndex -= 1
+                    mCurrentIndex += 1
                 }
                 scrollLanguage()
                 return true
