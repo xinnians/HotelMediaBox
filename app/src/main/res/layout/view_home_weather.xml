@@ -13,13 +13,15 @@
         android:layout_marginTop="@dimen/_43sdp"
         android:minWidth="@dimen/_96sdp"
         android:textSize="@dimen/_11ssp"
+        android:typeface="monospace"
+        android:gravity="center"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/imageView_weather"
         android:layout_width="@dimen/_61sdp"
-        android:layout_height="@dimen/_48sdp"
+        android:layout_height="@dimen/_49sdp"
         android:layout_marginStart="@dimen/_34sdp"
         android:layout_marginTop="@dimen/_15sdp"
         app:layout_constraintStart_toStartOf="parent"
@@ -33,6 +35,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_4sdp"
         android:textSize="@dimen/_20ssp"
+        android:typeface="monospace"
         app:layout_constraintStart_toStartOf="@+id/imageView_weather"
         app:layout_constraintTop_toBottomOf="@+id/imageView_weather" />
 
