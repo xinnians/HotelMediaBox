@@ -15,37 +15,59 @@
         app:layout_constraintStart_toStartOf="@+id/text_content"
         app:layout_constraintTop_toBottomOf="@+id/layout_index" />
 
-    <com.google.android.exoplayer2.ui.PlayerView
-        android:id="@+id/videoView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="@dimen/_10sdp"
-        android:layout_marginTop="@dimen/_48sdp"
-        android:layout_marginEnd="@dimen/_10sdp"
-        android:layout_marginBottom="@dimen/_48sdp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline4"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:resize_mode="fixed_width"
-        app:surface_type="texture_view"
-        app:use_controller="false" />
+    <android.support.constraint.ConstraintLayout
+            android:id="@+id/layout_photo"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_48sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:layout_marginBottom="@dimen/_48sdp"
+            android:background="@drawable/selector_ip_tv"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline4"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-    <ImageView
-        android:id="@+id/image_content"
-        android:layout_width="0dp"
-        android:layout_height="0sp"
-        android:layout_marginStart="@dimen/_10sdp"
-        android:layout_marginTop="@dimen/_48sdp"
-        android:layout_marginEnd="@dimen/_10sdp"
-        android:layout_marginBottom="@dimen/_48sdp"
-        android:scaleType="fitCenter"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline4"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <ImageView
+                android:id="@+id/image_bg"
+                android:layout_width="0dp"
+                android:layout_height="0sp"
+                android:layout_margin="@dimen/_1sdp"
+                android:background="@android:color/black"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.exoplayer2.ui.PlayerView
+                android:id="@+id/videoView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_margin="@dimen/_1sdp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:resize_mode="fixed_width"
+                app:surface_type="texture_view"
+                app:use_controller="false" />
+
+        <ImageView
+                android:id="@+id/image_content"
+                android:layout_width="0dp"
+                android:layout_height="0sp"
+                android:layout_margin="@dimen/_1sdp"
+                android:scaleType="fitCenter"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
 
     <TextView
         android:id="@+id/text_content"
@@ -76,7 +98,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="@+id/text_content"
         app:layout_constraintStart_toStartOf="@+id/text_content"
-        app:layout_constraintTop_toTopOf="@+id/image_content">
+        app:layout_constraintTop_toTopOf="@+id/layout_photo">
 
         <ImageView
             android:id="@+id/imageView_side_arrow_left"
