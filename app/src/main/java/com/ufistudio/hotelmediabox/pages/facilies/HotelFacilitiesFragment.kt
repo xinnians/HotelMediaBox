@@ -435,6 +435,7 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
             if (mVideoView2 != null) {
                 mExoPlayerHelper.initPlayer(context, mVideoView2!!)
                 mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(item.file_name)?.absolutePath ?: ""))
+                mExoPlayerHelper.repeatMode()
                 mVideoView2?.visibility = View.VISIBLE
             }
             imageView?.visibility = View.INVISIBLE
@@ -477,6 +478,7 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
             if (mVideoView3 != null) {
                 mExoPlayerHelper.initPlayer(context, mVideoView3!!)
                 mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(mCurrentFileName)?.absolutePath ?: ""))
+                mExoPlayerHelper.repeatMode()
                 mVideoView3?.visibility = View.VISIBLE
             }
             imageView?.visibility = View.INVISIBLE
