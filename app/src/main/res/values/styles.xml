@@ -76,5 +76,15 @@
     <style name="WeatherText_Temperature">
         <item name="android:textSize">@dimen/_10ssp</item>
         <item name="android:textColor">@android:color/white</item>
+        <item name="android:layout_marginTop">@dimen/_5sdp</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="WeatherText_Description">
+        <item name="android:textSize">@dimen/_7ssp</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:layout_marginTop">@dimen/_3sdp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:maxLines">2</item>
     </style>
 </resources>

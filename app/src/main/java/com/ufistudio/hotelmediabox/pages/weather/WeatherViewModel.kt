@@ -14,9 +14,10 @@ import io.reactivex.rxkotlin.zipWith
 import io.reactivex.schedulers.Schedulers
 
 class WeatherViewModel(
-        application: Application,
-        private val compositeDisposable: CompositeDisposable,
-        private val repository: Repository) : BaseViewModel(application, compositeDisposable) {
+    application: Application,
+    private val compositeDisposable: CompositeDisposable,
+    private val repository: Repository
+) : BaseViewModel(application, compositeDisposable) {
 
     val initWeatherSuccess = MutableLiveData<Pair<Weather?, NoteButton?>>()
     val initWeatherProgress = MutableLiveData<Boolean>()
@@ -26,19 +27,21 @@ class WeatherViewModel(
     val getWeatherInfoProgress = MutableLiveData<Boolean>()
     val getWeatherInfoError = MutableLiveData<Throwable>()
 
+    var mTimeFormat: String? = "K:mma EEE, dd MMM yyyy"
+
     val mGson = Gson()
 
     init {
         val json = getJsonObject()
         if (json != null) {
             compositeDisposable.add(Single.fromCallable { json }
-                    .zipWith(Single.fromCallable { getNoteButton() })
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnSubscribe { initWeatherProgress.value = true }
-                    .doFinally { initWeatherProgress.value = false }
-                    .subscribe({ initWeatherSuccess.value = it }
-                            , { initWeatherError.value = it })
+                .zipWith(Single.fromCallable { getNoteButton() })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { initWeatherProgress.value = true }
+                .doFinally { initWeatherProgress.value = false }
+                .subscribe({ initWeatherSuccess.value = it }
+                    , { initWeatherError.value = it })
             )
         } else {
             initWeatherError.value = Throwable("jsonObject is null")
@@ -51,24 +54,34 @@ class WeatherViewModel(
 
     private fun getNoteButton(): NoteButton? {
         return mGson.fromJson(MiscUtils.getJsonLanguageAutoSwitch("bottom_note"), NoteButton::class.java)
-                ?: NoteButton()
+            ?: NoteButton()
     }
 
     private fun getConfig(): Config? {
         return mGson.fromJson(MiscUtils.getJsonFromStorage("box_config.json"), Config::class.java)
     }
 
+    fun getTimeFormat(): String? = mTimeFormat
+
     fun getWeather(cityCode: String) {
-        val json = getConfig()
-        compositeDisposable.add(Single.fromCallable { json }
-                .map {
-                    repository.getWeatherInfo("http:${it.config.defaultServerIp}/api/weather", cityCode)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .doFinally { getWeatherInfoProgress.value = false }
-                            .subscribe({ getWeatherInfoSuccess.value = it }
-                                    , { getWeatherInfoError.value = it })
-                }.subscribe()
+        compositeDisposable.add(
+            Single.fromCallable { getConfig() }
+                .flatMap {
+                    if(it.config.timeFormat.isNotEmpty()) mTimeFormat = it.config.timeFormat
+                    repository.getWeatherInfo("http:${it.config.defaultServerIp}/api/weather", cityCode) }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doFinally { getWeatherInfoProgress.value = false }
+                .subscribe({ getWeatherInfoSuccess.value = it }
+                    , { getWeatherInfoError.value = it })
         )
+//                .map {
+//                    repository.getWeatherInfo("http:${it.config.defaultServerIp}/api/weather", cityCode)
+//                            .subscribeOn(Schedulers.io())
+//                            .observeOn(AndroidSchedulers.mainThread())
+//                            .doFinally { getWeatherInfoProgress.value = false }
+//                            .subscribe({ getWeatherInfoSuccess.value = it }
+//                                    , { getWeatherInfoError.value = it })
+//                }.subscribe()
     }
 }

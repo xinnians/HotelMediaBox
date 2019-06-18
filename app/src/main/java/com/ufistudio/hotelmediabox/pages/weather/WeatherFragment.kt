@@ -227,8 +227,15 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
         textView_temperature4.visibility = View.GONE
         textView_temperature5.visibility = View.GONE
         textView_temperature6.visibility = View.GONE
+        textView_description1.visibility = View.GONE
+        textView_description2.visibility = View.GONE
+        textView_description3.visibility = View.GONE
+        textView_description4.visibility = View.GONE
+        textView_description5.visibility = View.GONE
+        textView_description6.visibility = View.GONE
 
         textView_location.text = String.format("%s\n%s %s", mCityCode, "--", getString(R.string.symbol_temp))
+        textView_description_today.text = ""
 
         textView_title.text = mData?.title
         textView_subtitle.text = mData?.subtitle
@@ -261,6 +268,7 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
 
 
             if (mWeatherData?.forecasts != null) {
+                Log.e(TAG,"mWeatherData?.forecasts ${mWeatherData?.forecasts}")
                 with(mWeatherData?.forecasts!!) {
                     for (i in 0 until this.size) {
                         if (this[i] != null) {
@@ -268,6 +276,7 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
                                 0 -> {
                                     toDayTemp = this[i].high
                                     textView_location.text = String.format("%s\n%s %s", mCityCode, toDayTemp, getString(R.string.symbol_temp))
+                                    textView_description_today.text = this[i].text
                                     val icon = WeatherIconEnum.getItemByName(this[i].text).mIcon
                                     if (icon != -1) {
                                         imageView_today.visibility = View.VISIBLE
@@ -280,6 +289,8 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
                                     textView_none1.visibility = View.INVISIBLE
                                     textView_temperature1.visibility = View.VISIBLE
                                     textView_temperature1.text = String.format("%s %s", this[i].high, getString(R.string.symbol_temp))
+                                    textView_description1.visibility = View.VISIBLE
+                                    textView_description1.text = this[i].text
                                     imageView_weather1.visibility = View.VISIBLE
                                     val icon = WeatherIconEnum.getItemByName(this[i].text).mIcon
                                     if (icon != -1)
@@ -291,6 +302,8 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
                                     textView_none2.visibility = View.INVISIBLE
                                     textView_temperature2.visibility = View.VISIBLE
                                     textView_temperature2.text = String.format("%s %s", this[i].high, getString(R.string.symbol_temp))
+                                    textView_description2.visibility = View.VISIBLE
+                                    textView_description2.text = this[i].text
                                     imageView_weather2.visibility = View.VISIBLE
                                     val icon = WeatherIconEnum.getItemByName(this[i].text).mIcon
                                     if (icon != -1)
@@ -302,6 +315,8 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
                                     textView_none3.visibility = View.INVISIBLE
                                     textView_temperature3.visibility = View.VISIBLE
                                     textView_temperature3.text = String.format("%s %s", this[i].high, getString(R.string.symbol_temp))
+                                    textView_description3.visibility = View.VISIBLE
+                                    textView_description3.text = this[i].text
                                     imageView_weather3.visibility = View.VISIBLE
                                     val icon = WeatherIconEnum.getItemByName(this[i].text).mIcon
                                     if (icon != -1)
@@ -313,6 +328,8 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
                                     textView_none4.visibility = View.INVISIBLE
                                     textView_temperature4.visibility = View.VISIBLE
                                     textView_temperature4.text = String.format("%s %s", this[i].high, getString(R.string.symbol_temp))
+                                    textView_description4.visibility = View.VISIBLE
+                                    textView_description4.text = this[i].text
                                     imageView_weather4.visibility = View.VISIBLE
                                     val icon = WeatherIconEnum.getItemByName(this[i].text).mIcon
                                     if (icon != -1)
@@ -324,6 +341,8 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
                                     textView_none5.visibility = View.INVISIBLE
                                     textView_temperature5.visibility = View.VISIBLE
                                     textView_temperature5.text = String.format("%s %s", this[i].high, getString(R.string.symbol_temp))
+                                    textView_description5.visibility = View.VISIBLE
+                                    textView_description5.text = this[i].text
                                     imageView_weather5.visibility = View.VISIBLE
                                     val icon = WeatherIconEnum.getItemByName(this[i].text).mIcon
                                     if (icon != -1)
@@ -335,6 +354,8 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
                                     textView_none6.visibility = View.INVISIBLE
                                     textView_temperature6.visibility = View.VISIBLE
                                     textView_temperature6.text = String.format("%s %s", this[i].high, getString(R.string.symbol_temp))
+                                    textView_description6.visibility = View.VISIBLE
+                                    textView_description6.text = this[i].text
                                     imageView_weather6.visibility = View.VISIBLE
                                     val icon = WeatherIconEnum.getItemByName(this[i].text).mIcon
                                     if (icon != -1)
@@ -400,6 +421,6 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
      * parse last update time
      */
     private fun parseDate(time: Long): String? {
-        return SimpleDateFormat(TAG_UPDATE_FORMAT, Locale.getDefault()).format("${time}000".toLong())
+        return SimpleDateFormat(mViewModel.getTimeFormat()?:TAG_UPDATE_FORMAT, Locale.getDefault()).format("${time}000".toLong())
     }
 }
