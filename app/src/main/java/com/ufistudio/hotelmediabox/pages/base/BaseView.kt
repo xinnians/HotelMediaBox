@@ -1,5 +1,6 @@
 package com.ufistudio.hotelmediabox.pages.base
 
+import android.app.Application
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -11,6 +12,8 @@ abstract class BaseView : Fragment(), AppBaseView, View.OnTouchListener{
     private val TAG = BaseView::class.simpleName
 
     override fun getActivityContext(): Context? = context
+
+    override fun getApplication(): Application? = activity?.application
 
     override fun onBackPressed(): Boolean = false
 

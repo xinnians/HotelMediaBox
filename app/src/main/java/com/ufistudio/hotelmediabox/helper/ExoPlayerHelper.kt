@@ -12,17 +12,29 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
+import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.offline.FilteringManifestParser
 import com.google.android.exoplayer2.source.ExtractorMediaSource
+import com.google.android.exoplayer2.source.MediaSource
+import com.google.android.exoplayer2.source.dash.DashMediaSource
+import com.google.android.exoplayer2.source.dash.manifest.DashManifestParser
+import com.google.android.exoplayer2.source.hls.HlsMediaSource
+import com.google.android.exoplayer2.source.rtsp.RtspDefaultClient
+import com.google.android.exoplayer2.source.rtsp.RtspMediaSource
+import com.google.android.exoplayer2.source.rtsp.core.Client
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
-import com.google.android.exoplayer2.upstream.DataSpec
-import com.google.android.exoplayer2.upstream.FileDataSource
-import com.google.android.exoplayer2.upstream.RawResourceDataSource
-import com.google.android.exoplayer2.upstream.UdpDataSource
+import com.google.android.exoplayer2.upstream.*
+import com.google.android.exoplayer2.upstream.cache.Cache
+import com.google.android.exoplayer2.upstream.cache.CacheDataSource
+import com.google.android.exoplayer2.upstream.cache.CacheDataSourceFactory
+import com.google.android.exoplayer2.util.Util
+import com.ufistudio.hotelmediabox.MyApplication
 import com.ufistudio.hotelmediabox.R
+import java.io.File
 import java.lang.Exception
 
 open class ExoPlayerHelper {
@@ -57,9 +69,7 @@ open class ExoPlayerHelper {
             val videoSource = ExtractorMediaSource.Factory(factory).createMediaSource(udpDataSource.uri)
             mPlayer?.prepare(videoSource)
 
-        } catch (e: UdpDataSource.UdpDataSourceException) {
-            e.printStackTrace()
-        } catch (e: Exception){
+        }catch (e: Exception){
             e.printStackTrace()
         }
 
@@ -86,6 +96,63 @@ open class ExoPlayerHelper {
         }
 
         mPlayer?.playWhenReady = playWhenReady
+    }
+
+    fun setSource(source: Any, playWhenReady: Boolean = true){
+        var datauri: Uri? = when (source) {
+            is String -> Uri.parse(source)
+            is Uri -> source
+            is Int -> RawResourceDataSource.buildRawResourceUri(source)
+            else -> null
+        }
+
+        var type = Util.inferContentType(datauri)
+
+        Log.e("EXOPLAYER","source : $source, type : $type")
+
+        var mediaSource: MediaSource? = null
+
+        when(type){
+//            等後續有需要再加，需要+cache
+//            C.TYPE_DASH ->{
+//                mediaSource = DashMediaSource.Factory((mContext as MyApplication).buildDataSourceFactory())
+//                    .setManifestParser(FilteringManifestParser<>(DashManifestParser(),))
+//            }
+//            C.TYPE_SS ->{
+//
+//            }
+//            C.TYPE_HLS ->{
+//
+//            }
+            C.TYPE_OTHER ->{
+                if (Util.isRtspUri(datauri)) {
+                    mediaSource = RtspMediaSource.Factory(RtspDefaultClient.factory()
+                        .setFlags(Client.FLAG_ENABLE_RTCP_SUPPORT)
+                        .setNatMethod(Client.RTSP_NAT_DUMMY))
+                        .createMediaSource(datauri)
+                }else{
+                    mediaSource = ExtractorMediaSource.Factory((mContext as MyApplication).buildDataSourceFactory()).createMediaSource(datauri)
+                }
+            }
+            else ->{
+
+            }
+        }
+
+//        var t: DefaultHttpDataSourceFactory = DefaultHttpDataSourceFactory(Util.getUserAgent(mContext,"ExoPlayerDemo"))
+//        var mediaDataSourceFactory = DefaultDataSourceFactory(mContext, Util.getUserAgent(mContext,"ExoPlayerDemo"))
+//        var mediaSource = ExtractorMediaSource.Factory(t).createMediaSource(Uri.parse(source))
+
+//        var mediaSource = RtspMediaSource.Factory(RtspDefaultClient.factory()
+//            .setFlags(Client.FLAG_ENABLE_RTCP_SUPPORT)
+//            .setNatMethod(Client.RTSP_NAT_DUMMY))
+//            .createMediaSource(Uri.parse(source))
+//        var mediaSource = HlsMediaSource(Uri.parse(source))
+
+        mediaSource?.let {
+            mPlayer?.prepare(it)
+            mPlayer?.playWhenReady = playWhenReady
+        }
     }
 
     /**

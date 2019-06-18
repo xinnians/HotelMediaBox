@@ -81,6 +81,17 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
         }
 
         override fun onChannelChange(tvChannel: TVChannel?) {
+            Log.e(TAG,"[onChannelChange] tvChannel : $tvChannel")
+            tvChannel?.let { currentChannel ->
+                if(currentChannel.chType == TVType.IPTV.name){
+                    videoView.visibility = View.VISIBLE
+                    mExoPlayerHelper.setSource(tvChannel.chIp.uri, true)
+                    mExoPlayerHelper.play()
+                }else{
+                    mExoPlayerHelper.stop()
+                    videoView.visibility = View.INVISIBLE
+                }
+            }
         }
 
         override fun initDeviceFinish() {
@@ -144,7 +155,7 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
 //        list_functions.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
 //        list_functions.adapter = mAdapter
 
-        mExoPlayerHelper.initPlayer(context, videoView)
+        mExoPlayerHelper.initPlayer(getApplication(), videoView)
 //        mExoPlayerHelper.setUdpSource(mTestUdpList.get(mChannelIndex))
 //        mExoPlayerHelper.setMp4Source(R.raw.videoplayback)
 

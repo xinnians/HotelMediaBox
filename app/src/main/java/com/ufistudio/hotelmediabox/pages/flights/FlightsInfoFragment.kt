@@ -23,6 +23,7 @@ import com.ufistudio.hotelmediabox.pages.facilies.FullScreenPictureActivity
 import com.ufistudio.hotelmediabox.pages.home.HomeFeatureEnum
 import com.ufistudio.hotelmediabox.repository.data.*
 import com.ufistudio.hotelmediabox.utils.FileUtils
+import com.ufistudio.hotelmediabox.utils.FileUtils.getFileFromStorage
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_BACK_TITLE
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_INDEX
 import kotlinx.android.synthetic.main.fragment_flights_info.*
@@ -262,7 +263,7 @@ class FlightsInfoFragment : InteractionView<OnPageInteractionListener.Primary>()
                     mTotalSize!![i] = mData?.categories!![i].contents.size
                 }
                 mAdapter.setData(mData?.categories!!)
-                mExoPlayerHelper.initPlayer(context, videoView)
+                mExoPlayerHelper.initPlayer(getApplication(), videoView)
             }
 
             textView_back.text = mNoteBottom?.note?.back
@@ -344,14 +345,19 @@ class FlightsInfoFragment : InteractionView<OnPageInteractionListener.Primary>()
         }
 
         mExoPlayerHelper.stop()
-        mExoPlayerHelper.initPlayer(context, videoView)
+        mExoPlayerHelper.initPlayer(getApplication(), videoView)
         try {
             mContentPlaying = true
 //            mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(mCurrentContent!![mCurrentIpTvSelectIndex!![mCurrentCategoryIndex]!!].iptv)?.absolutePath))
             mExoPlayerHelper.setUdpSource(mCurrentContent!![mCurrentIpTvSelectIndex!![mCurrentCategoryIndex]!!].iptv)
+//            mExoPlayerHelper.setSource("rtsp://184.72.239.149/vod/mp4:BigBuckBunny_115k.mov")
+//            mExoPlayerHelper.setSource("http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8")
+//            mExoPlayerHelper.setSource("udp://239.1.1.1:3990")
+//            mExoPlayerHelper.setSource(R.raw.videoplayback)
+//            mExoPlayerHelper.setSource(Uri.parse(FileUtils.getFileFromStorage("error_test.mp4")?.absolutePath ?: ""))
         } catch (e: NullPointerException) {
             mExoPlayerHelper.release()
-            mExoPlayerHelper.initPlayer(context, videoView)
+            mExoPlayerHelper.initPlayer(getApplication(), videoView)
             Log.e(TAG, "e = $e")
         }
     }

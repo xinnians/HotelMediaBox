@@ -21,6 +21,7 @@ import com.bumptech.glide.Glide
 import com.ufistudio.hotelmediabox.constants.Page
 import com.ufistudio.hotelmediabox.helper.TVController
 import com.ufistudio.hotelmediabox.pages.MainActivity
+import com.ufistudio.hotelmediabox.repository.data.TVType
 import com.ufistudio.hotelmediabox.utils.FileUtils
 import kotlinx.android.synthetic.main.view_bottom_fullscreen.*
 
@@ -44,6 +45,16 @@ class FullScreenActivity : AppCompatActivity() {
         }
 
         override fun onChannelChange(tvChannel: TVChannel?) {
+            tvChannel?.let { currentChannel ->
+                if(currentChannel.chType == TVType.IPTV.name){
+                    videoView.visibility = View.VISIBLE
+                    mExoPlayerHelper.setSource(tvChannel.chIp.uri, true)
+                    mExoPlayerHelper.play()
+                }else{
+                    mExoPlayerHelper.stop()
+                    videoView.visibility = View.INVISIBLE
+                }
+            }
         }
 
         override fun initDeviceFinish() {
@@ -100,7 +111,7 @@ class FullScreenActivity : AppCompatActivity() {
             }
         })
 
-        mExoPlayerHelper.initPlayer(this, videoView)
+        mExoPlayerHelper.initPlayer(application, videoView)
     }
 
     override fun onResume() {

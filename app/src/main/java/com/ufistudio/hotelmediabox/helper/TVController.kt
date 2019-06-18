@@ -2,10 +2,7 @@ package com.ufistudio.hotelmediabox.helper
 
 import android.util.Log
 import com.google.gson.Gson
-import com.ufistudio.hotelmediabox.repository.data.Channels
-import com.ufistudio.hotelmediabox.repository.data.Config
-import com.ufistudio.hotelmediabox.repository.data.JVersion
-import com.ufistudio.hotelmediabox.repository.data.TVChannel
+import com.ufistudio.hotelmediabox.repository.data.*
 import com.ufistudio.hotelmediabox.utils.FileUtils
 import com.ufistudio.hotelmediabox.utils.MiscUtils
 import com.ufistudio.hotelmediabox.utils.TAG_DEFAULT_LOCAL_PATH
@@ -163,28 +160,39 @@ object TVController {
 
         mCurrentChannel = channel
 
+        onBroadcastAll(channel, TVController.ACTION_TYPE.OnChannelChange)
+
         mPlayDisposable = sendTCPRequestSingle("j_stopplay 1")
                 .flatMap {
 //                    var channelParameter = channel.chIp.frequency + " " + channel.chIp.bandwidth
-                    var channelParameter = if(channel.chIp.frequencyParameter.isNullOrEmpty()) channel.chIp.frequency + " " + channel.chIp.bandwidth else channel.chIp.frequencyParameter
+                    if(channel.chType == TVType.DVBT.name){
+                        var channelParameter = if(channel.chIp.frequencyParameter.isNullOrEmpty()) channel.chIp.frequency + " " + channel.chIp.bandwidth else channel.chIp.frequencyParameter
 
-                    if (mCurrentLockFrequency == channelParameter) {
-                        return@flatMap Single.fromCallable { RESULT_SUCCESS }
-                    }
-                    return@flatMap sendTCPRequestSingle("j_setchan $channelParameter")
+                        if (mCurrentLockFrequency == channelParameter) {
+                            return@flatMap Single.fromCallable { RESULT_SUCCESS }
+                        }
+                        return@flatMap sendTCPRequestSingle("j_setchan $channelParameter")
                             .map { result ->
                                 mCurrentLockFrequency = if (result == RESULT_SUCCESS) channelParameter
                                 else ""
                                 return@map result
                             }
+                    }else{
+                        return@flatMap Single.just("open IPTV")
+                    }
                 }
-                .flatMap { sendTCPRequestSingle("j_play ${channel.chIp.dvbParameter}") }
+                .flatMap {
+                    if(channel.chType == TVType.DVBT.name){
+                        sendTCPRequestSingle("j_play ${channel.chIp.dvbParameter}")
+                    }else{
+                        Single.just(it)
+                    }}
                 .retry(1)
                 .subscribeOn(singelThreadScheduler)
-                .observeOn(singelThreadScheduler)
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ successResult ->
                     Log.e(TAG, "[play] Result : $successResult")
-                    onBroadcastAll(channel, TVController.ACTION_TYPE.OnChannelChange)
+//                    onBroadcastAll(channel, TVController.ACTION_TYPE.OnChannelChange)
                 }, { failResult ->
                     Log.e(TAG, "[play] throwable : $failResult")
                 })

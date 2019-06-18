@@ -111,7 +111,7 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:27.1.1'
 
     //ExoPlayer
-    implementation 'com.google.android.exoplayer:exoplayer:2.9.6'
+    implementation 'com.github.tresvecesseis.ExoPlayer:exoplayer:dev-v2-rtsp-SNAPSHOT'
 
     implementation 'com.airbnb.android:lottie:2.7.0'
     implementation files('libs/classes.jar')

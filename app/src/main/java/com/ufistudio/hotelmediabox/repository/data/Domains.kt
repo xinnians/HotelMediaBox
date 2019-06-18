@@ -13,6 +13,7 @@ data class Logo(
 data class ConnectDetail(
     var ip: String = "",
     var port: String = "",
+    var uri: String = "",
     var frequency: String = "",
     var bandwidth: String = "",
     var dvbParameter: String = "",
@@ -29,7 +30,7 @@ abstract class BaseChannel {
 }
 
 enum class TVType {
-    IP, DVB
+    IPTV, DVBT
 }
 
 @Parcelize
