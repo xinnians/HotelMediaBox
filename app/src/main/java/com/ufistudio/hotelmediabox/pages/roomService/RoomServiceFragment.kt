@@ -36,6 +36,7 @@ import kotlinx.android.synthetic.main.fragment_room_service.sideView
 import kotlinx.android.synthetic.main.fragment_room_service.text_back
 import kotlinx.android.synthetic.main.fragment_room_service.view_line
 import kotlinx.android.synthetic.main.item_room_service_type1.*
+import kotlinx.android.synthetic.main.item_room_service_type2.*
 import kotlinx.android.synthetic.main.view_bottom_back_home.*
 
 private const val TAG_IMAGE = "image"
@@ -365,7 +366,10 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
         view_content_type1.visibility = View.GONE
         view_content_type2.visibility = View.VISIBLE
 
-        checkArrow()
+        type2_text_total_page.text = mCurrentContent?.size?.let { listSize -> "/${listSize.div(3).plus( if(listSize.rem(3) >0) 1 else 0)}" }
+        type2_text_current_page.text = (mCurrentContentSelectIndex?.get(mCurrentCategoryIndex)?.plus(1)).toString()
+
+        checkTemplate2Arrow()
         val listData = ArrayList<RoomServiceContent>()
         for (i in 0..2) {
             if (totalList?.size!! - 1 >= i + mCurrentContentSelectIndex!![mCurrentCategoryIndex]!! * 3)
@@ -382,29 +386,30 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
     /**
      * 判斷左右箭頭
      */
-    private fun checkArrow() {
+    private fun checkTemplate2Arrow() {
 
-        imageView_arrow_left.visibility = View.VISIBLE
-        imageView_arrow_right.visibility = View.VISIBLE
+        imageView_arrow_left.visibility = View.GONE
+        imageView_arrow_right.visibility = View.GONE
 
         when {
             mCurrentContent?.size == 1 -> {
-                imageView_arrow_left.visibility = View.INVISIBLE
-                imageView_arrow_right.visibility = View.INVISIBLE
+                type2_view_side_arrow_left.visibility = View.INVISIBLE
+                type2_view_side_arrow_right.visibility = View.INVISIBLE
             }
             mCurrentContentSelectIndex!![mCurrentCategoryIndex] == 0 -> {
-                imageView_arrow_left.visibility = View.INVISIBLE
-                imageView_arrow_right.visibility = View.VISIBLE
+                type2_view_side_arrow_left.visibility = View.INVISIBLE
+                type2_view_side_arrow_right.visibility = View.VISIBLE
             }
             //因應Template2 是3個資料為一頁做的調整，第二行為一般判斷
-            mData?.categories!![mCurrentCategoryIndex].content_type == TAG_TEMPLATE2 && mCurrentContentSelectIndex!![mCurrentCategoryIndex] == mCurrentContent!!.size / 3 ||
+            mData?.categories!![mCurrentCategoryIndex].content_type == TAG_TEMPLATE2 &&
+                    mCurrentContentSelectIndex!![mCurrentCategoryIndex] == mCurrentContent!!.size / 3 ||
                     mCurrentContentSelectIndex!![mCurrentCategoryIndex] == mCurrentContent!!.size - 1 -> {
-                imageView_arrow_left.visibility = View.VISIBLE
-                imageView_arrow_right.visibility = View.INVISIBLE
+                type2_view_side_arrow_left.visibility = View.VISIBLE
+                type2_view_side_arrow_right.visibility = View.INVISIBLE
             }
             else -> {
-                imageView_arrow_left.visibility = View.VISIBLE
-                imageView_arrow_right.visibility = View.VISIBLE
+                type2_view_side_arrow_left.visibility = View.VISIBLE
+                type2_view_side_arrow_right.visibility = View.VISIBLE
             }
         }
     }
