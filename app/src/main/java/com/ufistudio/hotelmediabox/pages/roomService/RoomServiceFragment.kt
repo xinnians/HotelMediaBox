@@ -146,19 +146,23 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
                 return true
             }
             KeyEvent.KEYCODE_DPAD_DOWN -> {
-                if (mSideViewFocus) {
-                    if (sideView.getSelectPosition() + 1 < sideView.getItemSize()) {
-                        sideView.setLastPosition(sideView.getSelectPosition() + 1)
-                        sideView.scrollToPosition(sideView.getSelectPosition())
-                    }
+                if (mContentFocus) {
+                    return true
                 } else {
-                    //若不是在ContentFocus，則將當前在播放的label設為false好讓focus可以更新
-                    mContentPlaying = false
-                    mData?.categories?.let {
-                        if (mAdapter.getLastPosition() + 1 < it.size) {
-                            mAdapter.setSelectPosition(mAdapter.getLastPosition() + 1)
-                            recyclerView_service.scrollToPosition(mAdapter.getLastPosition())
-                            mAdapter.notifyDataSetChanged()
+                    if (mSideViewFocus) {
+                        if (sideView.getSelectPosition() + 1 < sideView.getItemSize()) {
+                            sideView.setLastPosition(sideView.getSelectPosition() + 1)
+                            sideView.scrollToPosition(sideView.getSelectPosition())
+                        }
+                    } else {
+                        //若不是在ContentFocus，則將當前在播放的label設為false好讓focus可以更新
+                        mContentPlaying = false
+                        mData?.categories?.let {
+                            if (mAdapter.getLastPosition() + 1 < it.size) {
+                                mAdapter.setSelectPosition(mAdapter.getLastPosition() + 1)
+                                recyclerView_service.scrollToPosition(mAdapter.getLastPosition())
+                                mAdapter.notifyDataSetChanged()
+                            }
                         }
                     }
                 }
