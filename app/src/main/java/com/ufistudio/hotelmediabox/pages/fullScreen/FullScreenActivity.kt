@@ -21,12 +21,13 @@ import com.bumptech.glide.Glide
 import com.ufistudio.hotelmediabox.constants.Page
 import com.ufistudio.hotelmediabox.helper.TVController
 import com.ufistudio.hotelmediabox.pages.MainActivity
+import com.ufistudio.hotelmediabox.pages.base.PaneViewActivity
 import com.ufistudio.hotelmediabox.repository.data.TVType
 import com.ufistudio.hotelmediabox.utils.FileUtils
 import kotlinx.android.synthetic.main.view_bottom_fullscreen.*
 
 
-class FullScreenActivity : AppCompatActivity() {
+class FullScreenActivity : PaneViewActivity() {
 
     private lateinit var mViewModel: FullScreenViewModel
 
