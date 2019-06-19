@@ -219,6 +219,7 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
                 text_channel_name.text = channel.chName
 
                 onChannelSelectListener(channel)
+                view_channel_list.scrollToPosition(mChannelListAdapter.getSelectPosition())
             }
 
 //            TVController.getCurrentChannel()?.let { channel ->
