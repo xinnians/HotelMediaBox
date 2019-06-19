@@ -10,10 +10,11 @@ import com.bumptech.glide.Glide
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.constants.Page
 import com.ufistudio.hotelmediabox.helper.ExoPlayerHelper
+import com.ufistudio.hotelmediabox.pages.base.PaneViewActivity
 import com.ufistudio.hotelmediabox.utils.FileUtils
 import kotlinx.android.synthetic.main.activity_full_screen_picture.*
 
-class FullScreenPictureActivity : AppCompatActivity() {
+class FullScreenPictureActivity : PaneViewActivity() {
 
     private var mExoPlayerHelper: ExoPlayerHelper = ExoPlayerHelper()
 
@@ -47,6 +48,12 @@ class FullScreenPictureActivity : AppCompatActivity() {
             mExoPlayerHelper.repeatMode()
             videoView_full_screen?.visibility = View.VISIBLE
         }
+    }
+
+    override fun onPause() {
+        mExoPlayerHelper.stop()
+        mExoPlayerHelper.release()
+        super.onPause()
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {

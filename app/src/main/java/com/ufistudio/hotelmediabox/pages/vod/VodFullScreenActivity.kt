@@ -4,9 +4,10 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import com.ufistudio.hotelmediabox.R
+import com.ufistudio.hotelmediabox.pages.base.PaneViewActivity
 import com.ufistudio.hotelmediabox.repository.data.NoteButton
 
-class VodFullScreenActivity : AppCompatActivity() {
+class VodFullScreenActivity : PaneViewActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
