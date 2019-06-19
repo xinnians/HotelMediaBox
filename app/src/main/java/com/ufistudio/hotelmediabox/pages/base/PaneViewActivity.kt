@@ -1,5 +1,6 @@
 package com.ufistudio.hotelmediabox.pages.base
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.IdRes
@@ -14,6 +15,8 @@ import com.ufistudio.hotelmediabox.pages.MainActivity
 import com.ufistudio.hotelmediabox.receivers.MyReceiver
 import com.ufistudio.hotelmediabox.utils.ActivityUtils
 import android.content.IntentFilter
+import android.media.AudioManager
+import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 import android.text.Editable
 import android.text.TextWatcher
@@ -22,6 +25,7 @@ import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.pages.factory.FactoryActivity
 import com.ufistudio.hotelmediabox.pages.fullScreen.FullScreenActivity
 import com.ufistudio.hotelmediabox.receivers.ACTION_UPDATE_APK
+import com.ufistudio.hotelmediabox.views.MuteView
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -42,6 +46,8 @@ open class PaneViewActivity : BaseActivity(), OnPageInteractionListener.Pane {
     private val mFactoryKeyInput: ArrayList<Int> = ArrayList()
     private var mDisposable: Disposable? = null
     private var mFactoryDialog: AlertDialog? = null
+    private var mAudioManager: AudioManager? = null
+    private var mMuteDialog: MuteView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -163,6 +169,35 @@ open class PaneViewActivity : BaseActivity(), OnPageInteractionListener.Pane {
             }
             TAG_kEY_TV -> {
                 startActivity(Intent(this, FullScreenActivity::class.java))
+                return true
+            }
+            KeyEvent.KEYCODE_VOLUME_MUTE -> {
+                if(mAudioManager == null){
+                    mAudioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+                }
+
+                if(mMuteDialog == null){
+                    mMuteDialog = MuteView()
+                }
+
+                mAudioManager?.let { manager ->
+                    if(manager.getStreamVolume(AudioManager.STREAM_SYSTEM) == manager.getStreamMaxVolume(AudioManager.STREAM_SYSTEM)){
+                        manager.setStreamVolume(
+                            AudioManager.STREAM_SYSTEM,
+                            0,
+                            AudioManager.FLAG_ALLOW_RINGER_MODES)
+                        mMuteDialog?.show(fragmentManager,"dialog")
+                    }else{
+                        manager.setStreamVolume(
+                            AudioManager.STREAM_SYSTEM,
+                            manager.getStreamMaxVolume(AudioManager.STREAM_SYSTEM),
+                            AudioManager.FLAG_ALLOW_RINGER_MODES)
+                    }
+                }
+
+                Log.e("Ian voulme","mAudioManager?.getStreamMaxVolume(AudioManager.STREAM_SYSTEM) ${mAudioManager?.getStreamVolume(AudioManager.STREAM_SYSTEM)} " +
+                        "manager.getStreamMaxVolume(AudioManager.STREAM_SYSTEM) ${mAudioManager?.getStreamMaxVolume(AudioManager.STREAM_SYSTEM)}")
+//                MuteView().showDialogAllowingStateLoss(fragmentManager,"dialog")
                 return true
             }
         }
