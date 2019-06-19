@@ -63,7 +63,7 @@ class FullScreenActivity : AppCompatActivity() {
         override fun initAVPlayerFinish() {
             TVController.playCurrent()
             mTVChannel = TVController.getCurrentChannel()
-            textChannelName?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
+            textChannelName?.text = "CH${mTVChannel?.chNum} ${mTVChannel?.chName}"
             viewLogo?.let { viewLogo ->
                 Glide.with(applicationContext)
                     .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.normalIconName ?: ""))
@@ -82,7 +82,7 @@ class FullScreenActivity : AppCompatActivity() {
     }
 
     companion object {
-        private val TAG = FactoryActivity::class.simpleName
+        private val TAG = FullScreenActivity::class.simpleName
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -167,7 +167,7 @@ class FullScreenActivity : AppCompatActivity() {
 
 //                mTVChannel = mViewModel.getTVHelper().chooseUp()
                 mTVChannel = TVController.chooseUp()
-                textChannelName?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
+                textChannelName?.text = "CH${mTVChannel?.chNum} ${mTVChannel?.chName}"
                 viewLogo?.let { viewLogo ->
                     Glide.with(this)
                         .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.normalIconName ?: ""))
@@ -203,7 +203,7 @@ class FullScreenActivity : AppCompatActivity() {
 
 //                mTVChannel = mViewModel.getTVHelper().chooseDown()
                 mTVChannel = TVController.chooseDown()
-                textChannelName?.text = mTVChannel?.chNum + " " + mTVChannel?.chName
+                textChannelName?.text = "CH${mTVChannel?.chNum} ${mTVChannel?.chName}"
                 viewLogo?.let { viewLogo ->
                     Glide.with(this)
                         .load(FileUtils.getFileFromStorage(mTVChannel?.chLogo?.normalIconName ?: ""))
@@ -284,8 +284,10 @@ class FullScreenActivity : AppCompatActivity() {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { _ ->
-                }, { onError -> Log.e(TAG, "error:$onError") }, {
+                { Log.e(TAG, " showInfo continus : $it") },
+                { onError -> Log.e(TAG, "error:$onError") },
+                {
+                    Log.e(TAG, " showInfo finish")
                     banner.visibility = View.INVISIBLE
                     dateView.visibility = View.INVISIBLE
                 })
