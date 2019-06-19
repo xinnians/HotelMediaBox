@@ -372,7 +372,7 @@ data class WeatherForecasts(
  */
 @Parcelize
 data class NoteButton(
-    var note: Note? = null
+    var note: Note? = Note()
 ) : Parcelable
 
 @Parcelize
@@ -388,7 +388,8 @@ data class Note(
     var fast_forward: String = "Fast Forward",
     var stop: String = "Stop",
     var navigation: String = "Navigation",
-    var channels: String = "Channels"
+    var channels: String = "Channels",
+    var next: String = "Next"
 ) : Parcelable
 
 /*

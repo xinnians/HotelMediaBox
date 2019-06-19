@@ -7,6 +7,7 @@ import com.google.gson.Gson
 import com.ufistudio.hotelmediabox.repository.Repository
 import com.ufistudio.hotelmediabox.repository.data.Config
 import com.ufistudio.hotelmediabox.repository.data.InitialData
+import com.ufistudio.hotelmediabox.repository.data.NoteButton
 import com.ufistudio.hotelmediabox.repository.data.Welcome
 import com.ufistudio.hotelmediabox.repository.remote.ApiClient
 import com.ufistudio.hotelmediabox.repository.viewModel.BaseViewModel
@@ -29,6 +30,10 @@ class WelcomeViewModel(
     val getInitialDataSuccess = MutableLiveData<InitialData>()
     val getInitialDataProgress = MutableLiveData<Boolean>()
     val getInitialDataError = MutableLiveData<Throwable>()
+
+    val initNoteButtonSuccess = MutableLiveData<NoteButton>()
+    val initNoteButtonProgress = MutableLiveData<Boolean>()
+    val initNoteButtonError = MutableLiveData<Throwable>()
 
 
     val mGson: Gson = Gson()
@@ -54,7 +59,8 @@ class WelcomeViewModel(
      * 從Server 讀取Initial data, etc. time 、 guest name ...
      */
     fun getInitialDataFromServer() {
-        compositeDisposable.add(Single.fromCallable { mGson.fromJson(MiscUtils.getJsonFromStorage("box_config.json"), Config::class.java) }
+        compositeDisposable.add(
+            Single.fromCallable { mGson.fromJson(MiscUtils.getJsonFromStorage("box_config.json"), Config::class.java) }
                 .flatMap {
                     repository.getInitialData("http:${it.config.defaultServerIp}/api/device/initial")
                 }
@@ -69,6 +75,20 @@ class WelcomeViewModel(
                     Log.d("neo", "initial error = $it")
                     getInitialDataError.value = it
                 })
+        )
+    }
+
+    fun initNoteButton(){
+        compositeDisposable.add(Single.fromCallable { mGson.fromJson(MiscUtils.getJsonLanguageAutoSwitch("bottom_note"), NoteButton::class.java) ?: NoteButton() }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { initNoteButtonProgress.value = true }
+            .doFinally { initNoteButtonProgress.value = false }
+            .subscribe({
+                initNoteButtonSuccess.value = it
+            }, {
+                initNoteButtonError.value = it
+            })
         )
     }
 }

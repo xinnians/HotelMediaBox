@@ -24,9 +24,10 @@ import com.ufistudio.hotelmediabox.repository.data.WelcomeContent
 import com.ufistudio.hotelmediabox.utils.FileUtils
 import com.ufistudio.hotelmediabox.utils.MiscUtils
 import kotlinx.android.synthetic.main.activity_welcome.*
-import android.content.Context.ALARM_SERVICE
 import android.app.AlarmManager
 import android.content.Context
+import com.ufistudio.hotelmediabox.repository.data.NoteButton
+import kotlinx.android.synthetic.main.view_bottom_ok.*
 
 
 class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickListener {
@@ -51,7 +52,11 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
 
         mViewModel.getInitialDataProgress.observe(this, Observer { onProgress() })
         mViewModel.getInitialDataSuccess.observe(this, Observer { onSuccess(it) })
-        mViewModel.getInitialDataError.observe(this, Observer { Log.e(TAG,"Get Initial data Error : $it") })
+        mViewModel.getInitialDataError.observe(this, Observer { Log.e(TAG, "Get Initial data Error : $it") })
+
+        mViewModel.initNoteButtonProgress.observe(this, Observer { onProgress() })
+        mViewModel.initNoteButtonSuccess.observe(this, Observer { onSuccess(it) })
+        mViewModel.initNoteButtonError.observe(this, Observer { onError(it) })
     }
 
     override fun onStart() {
@@ -74,22 +79,17 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
 
     private fun showGoToSetting() {
         AlertDialog.Builder(this)
-                .setTitle("Error")
-                .setMessage("open permission")
-                .setPositiveButton(android.R.string.ok) { dialog, which -> MiscUtils.openSetting(baseContext) }
-                .show()
+            .setTitle("Error")
+            .setMessage("open permission")
+            .setPositiveButton(android.R.string.ok) { dialog, which -> MiscUtils.openSetting(baseContext) }
+            .show()
     }
 
     private fun renderUI() {
+        mViewModel.initNoteButton()
+
         button_ok.background = ContextCompat.getDrawable(this, R.drawable.home_icon_frame_frame_focused)
         button_ok.setOnClickListener(this)
-//        button_ok.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
-//            if (hasFocus) {
-//                button_ok.setTextColor(ContextCompat.getColor(this, R.color.colorYellow))
-//            } else {
-//                button_ok.setTextColor(ContextCompat.getColor(this, android.R.color.white))
-//            }
-//        }
         button_ok.setTextColor(ContextCompat.getColor(this, R.color.colorYellow))
 
         button_ok.isFocusable = true
@@ -98,54 +98,60 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
         text_name.setOnClickListener(this)
     }
 
-    override fun onSuccess(it: Any?) {
+    override fun onSuccess(result: Any?) {
 
-        if (it != null && it is InitialData) {
-            Log.e(TAG,"[InitialData] : $it")
-            text_name.text = if(it.guestName.isNullOrEmpty()) "Guest" else it.guestName
-            text_name?.requestFocus()
-            val mAlarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            mAlarmManager.setTimeZone(it.timezone)
-            SystemClock.setCurrentTimeMillis(it.timestamp)
-            return
-        }
+        result?.let {
+            when (it) {
+                is InitialData -> {
+                    Log.e(TAG, "[InitialData] : $it")
+                    text_name.text = if (it.guestName.isNullOrEmpty()) "Guest" else it.guestName
+                    text_name?.requestFocus()
+                    val mAlarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                    mAlarmManager.setTimeZone(it.timezone)
+                    SystemClock.setCurrentTimeMillis(it.timestamp)
+                }
+                is Welcome -> {
+                    mWelcomeContent = it.welcome
 
-        if (it != null && it is Welcome) {
-            mWelcomeContent = it.welcome
+                    mWelcomeContent.let {
+                        Glide.with(this)
+                            .load(FileUtils.getFileFromStorage(it?.titleImage!!))
+                            .skipMemoryCache(true)
+                            .into(imageView_title)
 
-            mWelcomeContent.let {
-                Glide.with(this)
-                        .load(FileUtils.getFileFromStorage(it?.titleImage!!))
-                        .skipMemoryCache(true)
-                        .into(imageView_title)
+                        view_frame.background =
+                            Drawable.createFromPath(FileUtils.getFileFromStorage(it.background)?.absolutePath)
 
-                view_frame.background =
-                        Drawable.createFromPath(FileUtils.getFileFromStorage(it.background)?.absolutePath)
+                        button_ok.text = it.entryButton
+                        text_title.text = it.title
+                        text_description.text = it.description
 
-                button_ok.text = it.entryButton
-                text_title.text = it.title
-                text_description.text = it.description
-
-                val file = FileUtils.getFileFromStorage(it.music)
-                if (file != null) {
-                    mPlayer = MediaPlayer.create(this, Uri.fromFile(file))
-                    mPlayer?.start()
-                    mPlayer?.isLooping = true
+                        val file = FileUtils.getFileFromStorage(it.music)
+                        if (file != null) {
+                            mPlayer = MediaPlayer.create(this, Uri.fromFile(file))
+                            mPlayer?.start()
+                            mPlayer?.isLooping = true
+                        }
+                    }
+                }
+                is NoteButton -> {
+                    textView_ok.text = it.note?.next
+                }
+                else -> {
+                    onError(Throwable("OnSuccess response is null"))
                 }
             }
-        } else {
-            onError(Throwable("OnSuccess response is null"))
         }
     }
 
     override fun onError(t: Throwable?) {
         Log.d(TAG, "onError = ${t?.message}")
         AlertDialog.Builder(this)
-                .setTitle(R.string.dialog_error_title)
-                .setMessage(R.string.dialog_cannot_find_file)
-                .setPositiveButton(android.R.string.ok) { dialog, which -> dialog.dismiss() }
-                .create()
-                .show()
+            .setTitle(R.string.dialog_error_title)
+            .setMessage(R.string.dialog_cannot_find_file)
+            .setPositiveButton(android.R.string.ok) { dialog, which -> dialog.dismiss() }
+            .create()
+            .show()
 //        startActivity(Intent(this, FactoryActivity::class.java))
 //        finish()
     }
