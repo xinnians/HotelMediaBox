@@ -153,9 +153,18 @@
         android:layout_marginTop="@dimen/_23sdp"
         android:maxLines="2"
         android:textSize="@dimen/_14ssp"
+        android:typeface="monospace"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageView_today"
         app:layout_constraintTop_toTopOf="@+id/imageView_today" />
+    <TextView
+            android:id="@+id/textView_temperature_today"
+            style="@style/MainPrimaryText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/_14ssp"
+            app:layout_constraintStart_toStartOf="@id/textView_location"
+            app:layout_constraintTop_toBottomOf="@id/textView_location" />
 
     <TextView
             android:id="@+id/textView_description_today"
@@ -163,8 +172,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/_10sdp"
-            app:layout_constraintStart_toStartOf="@id/textView_location"
-            app:layout_constraintTop_toBottomOf="@id/textView_location"/>
+            app:layout_constraintStart_toStartOf="@id/textView_temperature_today"
+            app:layout_constraintTop_toBottomOf="@id/textView_temperature_today"/>
 
     <TextView
         android:id="@+id/textView_day1"

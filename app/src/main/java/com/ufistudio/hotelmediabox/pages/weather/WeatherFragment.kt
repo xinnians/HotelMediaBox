@@ -234,7 +234,8 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
         textView_description5.visibility = View.GONE
         textView_description6.visibility = View.GONE
 
-        textView_location.text = String.format("%s\n%s %s", mCityCode, "--", getString(R.string.symbol_temp))
+        textView_location.text = mCityCode
+        textView_temperature_today.text = "-- "+getString(R.string.symbol_temp)
         textView_description_today.text = ""
 
         textView_title.text = mData?.title
@@ -275,7 +276,8 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
                             when (i) {
                                 0 -> {
                                     toDayTemp = this[i].high
-                                    textView_location.text = String.format("%s\n%s %s", mCityCode, toDayTemp, getString(R.string.symbol_temp))
+                                    textView_location.text = mCityCode
+                                    textView_temperature_today.text = "$toDayTemp "+getString(R.string.symbol_temp)
                                     textView_description_today.text = this[i].text
                                     val icon = WeatherIconEnum.getItemByName(this[i].text).mIcon
                                     if (icon != -1) {
