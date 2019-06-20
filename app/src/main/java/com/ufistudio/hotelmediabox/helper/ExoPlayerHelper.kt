@@ -130,6 +130,12 @@ open class ExoPlayerHelper {
                         .setFlags(Client.FLAG_ENABLE_RTCP_SUPPORT)
                         .setNatMethod(Client.RTSP_NAT_DUMMY))
                         .createMediaSource(datauri)
+                }else if(source is String && source.contains("udp")){
+                    val udpDataSource = UdpDataSource()
+                    val dataSpec = DataSpec(datauri)
+                    udpDataSource.open(dataSpec)
+                    val factory = com.google.android.exoplayer2.upstream.DataSource.Factory { udpDataSource }
+                    mediaSource = ExtractorMediaSource.Factory(factory).createMediaSource(udpDataSource.uri)
                 }else{
                     mediaSource = ExtractorMediaSource.Factory((mContext as MyApplication).buildDataSourceFactory()).createMediaSource(datauri)
                 }
