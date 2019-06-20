@@ -10,6 +10,7 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.bumptech.glide.Glide
 import com.ufistudio.hotelmediabox.AppInjector
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.constants.Page
@@ -282,7 +283,10 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
                                     val icon = WeatherIconEnum.getItemByName(this[i].text).mIcon
                                     if (icon != -1) {
                                         imageView_today.visibility = View.VISIBLE
-                                        imageView_today.background = ContextCompat.getDrawable(imageView_today.context, icon)
+//                                        imageView_today.background = ContextCompat.getDrawable(imageView_today.context, icon)
+                                        Glide.with(imageView_today.context)
+                                            .load(icon)
+                                            .into(imageView_today)
                                     }
                                 }
                                 1 -> {
@@ -296,7 +300,10 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
                                     imageView_weather1.visibility = View.VISIBLE
                                     val icon = WeatherIconEnum.getItemByName(this[i].text).mIcon
                                     if (icon != -1)
-                                        imageView_weather1.background = ContextCompat.getDrawable(imageView_weather1.context, icon)
+                                        Glide.with(imageView_weather1.context)
+                                            .load(icon)
+                                            .into(imageView_weather1)
+//                                        imageView_weather1.background = ContextCompat.getDrawable(imageView_weather1.context, icon)
                                 }
                                 2 -> {
                                     textView_day2.text = this[i].day
@@ -309,7 +316,10 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
                                     imageView_weather2.visibility = View.VISIBLE
                                     val icon = WeatherIconEnum.getItemByName(this[i].text).mIcon
                                     if (icon != -1)
-                                        imageView_weather2.background = ContextCompat.getDrawable(imageView_weather2.context, icon)
+                                        Glide.with(imageView_weather2.context)
+                                            .load(icon)
+                                            .into(imageView_weather2)
+//                                        imageView_weather2.background = ContextCompat.getDrawable(imageView_weather2.context, icon)
                                 }
                                 3 -> {
                                     textView_day3.text = this[i].day
@@ -322,7 +332,10 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
                                     imageView_weather3.visibility = View.VISIBLE
                                     val icon = WeatherIconEnum.getItemByName(this[i].text).mIcon
                                     if (icon != -1)
-                                        imageView_weather3.background = ContextCompat.getDrawable(imageView_weather3.context, icon)
+                                        Glide.with(imageView_weather3.context)
+                                            .load(icon)
+                                            .into(imageView_weather3)
+//                                        imageView_weather3.background = ContextCompat.getDrawable(imageView_weather3.context, icon)
                                 }
                                 4 -> {
                                     textView_day4.text = this[i].day
@@ -335,7 +348,10 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
                                     imageView_weather4.visibility = View.VISIBLE
                                     val icon = WeatherIconEnum.getItemByName(this[i].text).mIcon
                                     if (icon != -1)
-                                        imageView_weather4.background = ContextCompat.getDrawable(imageView_weather4.context, icon)
+                                        Glide.with(imageView_weather4.context)
+                                            .load(icon)
+                                            .into(imageView_weather4)
+//                                        imageView_weather4.background = ContextCompat.getDrawable(imageView_weather4.context, icon)
                                 }
                                 5 -> {
                                     textView_day5.text = this[i].day
@@ -348,7 +364,10 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
                                     imageView_weather5.visibility = View.VISIBLE
                                     val icon = WeatherIconEnum.getItemByName(this[i].text).mIcon
                                     if (icon != -1)
-                                        imageView_weather5.background = ContextCompat.getDrawable(imageView_weather5.context, icon)
+                                        Glide.with(imageView_weather5.context)
+                                            .load(icon)
+                                            .into(imageView_weather5)
+//                                        imageView_weather5.background = ContextCompat.getDrawable(imageView_weather5.context, icon)
                                 }
                                 6 -> {
                                     textView_day6.text = this[i].day
@@ -361,7 +380,10 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
                                     imageView_weather6.visibility = View.VISIBLE
                                     val icon = WeatherIconEnum.getItemByName(this[i].text).mIcon
                                     if (icon != -1)
-                                        imageView_weather6.background = ContextCompat.getDrawable(imageView_weather6.context, icon)
+                                        Glide.with(imageView_weather6.context)
+                                            .load(icon)
+                                            .into(imageView_weather6)
+//                                        imageView_weather6.background = ContextCompat.getDrawable(imageView_weather6.context, icon)
                                 }
                             }
                         }
