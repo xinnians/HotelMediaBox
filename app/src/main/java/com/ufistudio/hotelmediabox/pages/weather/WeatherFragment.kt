@@ -287,6 +287,8 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
                                         Glide.with(imageView_today.context)
                                             .load(icon)
                                             .into(imageView_today)
+                                    }else {
+                                        imageView_today.visibility = View.INVISIBLE
                                     }
                                 }
                                 1 -> {
@@ -299,11 +301,14 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
                                     textView_description1.text = this[i].text
                                     imageView_weather1.visibility = View.VISIBLE
                                     val icon = WeatherIconEnum.getItemByName(this[i].text).mIcon
-                                    if (icon != -1)
+                                    if (icon != -1){
                                         Glide.with(imageView_weather1.context)
                                             .load(icon)
                                             .into(imageView_weather1)
 //                                        imageView_weather1.background = ContextCompat.getDrawable(imageView_weather1.context, icon)
+                                    }else{
+                                        imageView_weather1.visibility = View.INVISIBLE
+                                    }
                                 }
                                 2 -> {
                                     textView_day2.text = this[i].day
@@ -315,11 +320,14 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
                                     textView_description2.text = this[i].text
                                     imageView_weather2.visibility = View.VISIBLE
                                     val icon = WeatherIconEnum.getItemByName(this[i].text).mIcon
-                                    if (icon != -1)
+                                    if (icon != -1){
                                         Glide.with(imageView_weather2.context)
                                             .load(icon)
                                             .into(imageView_weather2)
 //                                        imageView_weather2.background = ContextCompat.getDrawable(imageView_weather2.context, icon)
+                                    }else{
+                                        imageView_weather2.visibility = View.INVISIBLE
+                                    }
                                 }
                                 3 -> {
                                     textView_day3.text = this[i].day
@@ -331,11 +339,14 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
                                     textView_description3.text = this[i].text
                                     imageView_weather3.visibility = View.VISIBLE
                                     val icon = WeatherIconEnum.getItemByName(this[i].text).mIcon
-                                    if (icon != -1)
+                                    if (icon != -1){
                                         Glide.with(imageView_weather3.context)
                                             .load(icon)
                                             .into(imageView_weather3)
 //                                        imageView_weather3.background = ContextCompat.getDrawable(imageView_weather3.context, icon)
+                                    }else{
+                                        imageView_weather3.visibility = View.INVISIBLE
+                                    }
                                 }
                                 4 -> {
                                     textView_day4.text = this[i].day
@@ -347,11 +358,14 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
                                     textView_description4.text = this[i].text
                                     imageView_weather4.visibility = View.VISIBLE
                                     val icon = WeatherIconEnum.getItemByName(this[i].text).mIcon
-                                    if (icon != -1)
+                                    if (icon != -1){
                                         Glide.with(imageView_weather4.context)
                                             .load(icon)
                                             .into(imageView_weather4)
 //                                        imageView_weather4.background = ContextCompat.getDrawable(imageView_weather4.context, icon)
+                                    }else{
+                                        imageView_weather4.visibility = View.INVISIBLE
+                                    }
                                 }
                                 5 -> {
                                     textView_day5.text = this[i].day
@@ -363,11 +377,14 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
                                     textView_description5.text = this[i].text
                                     imageView_weather5.visibility = View.VISIBLE
                                     val icon = WeatherIconEnum.getItemByName(this[i].text).mIcon
-                                    if (icon != -1)
+                                    if (icon != -1){
                                         Glide.with(imageView_weather5.context)
                                             .load(icon)
                                             .into(imageView_weather5)
 //                                        imageView_weather5.background = ContextCompat.getDrawable(imageView_weather5.context, icon)
+                                    }else{
+                                        imageView_weather5.visibility = View.INVISIBLE
+                                    }
                                 }
                                 6 -> {
                                     textView_day6.text = this[i].day
@@ -379,11 +396,14 @@ class WeatherFragment : InteractionView<OnPageInteractionListener.Primary>(), On
                                     textView_description6.text = this[i].text
                                     imageView_weather6.visibility = View.VISIBLE
                                     val icon = WeatherIconEnum.getItemByName(this[i].text).mIcon
-                                    if (icon != -1)
+                                    if (icon != -1){
                                         Glide.with(imageView_weather6.context)
                                             .load(icon)
                                             .into(imageView_weather6)
 //                                        imageView_weather6.background = ContextCompat.getDrawable(imageView_weather6.context, icon)
+                                    }else{
+                                        imageView_weather6.visibility = View.INVISIBLE
+                                    }
                                 }
                             }
                         }
