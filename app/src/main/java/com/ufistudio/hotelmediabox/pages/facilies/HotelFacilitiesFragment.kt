@@ -389,8 +389,8 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
         } else if (item.file_type.hashCode() == TAG_VIDEO.hashCode()) {
             mContentPlaying = true
             if (mVideoView1 != null) {
-                mExoPlayerHelper.initPlayer(context, mVideoView1!!)
-                mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(item.file_name)?.absolutePath ?: ""))
+                mExoPlayerHelper.initPlayer(getApplication(), mVideoView1!!)
+                mExoPlayerHelper.setSource(Uri.parse(FileUtils.getFileFromStorage(item.file_name)?.absolutePath ?: ""))
                 mExoPlayerHelper.repeatMode()
                 mVideoView1?.visibility = View.VISIBLE
             }
@@ -433,8 +433,8 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
         } else if (item.file_type.hashCode() == TAG_VIDEO.hashCode()) {
             mContentPlaying = true
             if (mVideoView2 != null) {
-                mExoPlayerHelper.initPlayer(context, mVideoView2!!)
-                mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(item.file_name)?.absolutePath ?: ""))
+                mExoPlayerHelper.initPlayer(getApplication(), mVideoView2!!)
+                mExoPlayerHelper.setSource(Uri.parse(FileUtils.getFileFromStorage(item.file_name)?.absolutePath ?: ""))
                 mExoPlayerHelper.repeatMode()
                 mVideoView2?.visibility = View.VISIBLE
             }
@@ -476,8 +476,8 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
         } else if (item.file_type.hashCode() == TAG_VIDEO.hashCode()) {
             mContentPlaying = true
             if (mVideoView3 != null) {
-                mExoPlayerHelper.initPlayer(context, mVideoView3!!)
-                mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(mCurrentFileName)?.absolutePath ?: ""))
+                mExoPlayerHelper.initPlayer(getApplication(), mVideoView3!!)
+                mExoPlayerHelper.setSource(Uri.parse(FileUtils.getFileFromStorage(mCurrentFileName)?.absolutePath ?: ""))
                 mExoPlayerHelper.repeatMode()
                 mVideoView3?.visibility = View.VISIBLE
             }

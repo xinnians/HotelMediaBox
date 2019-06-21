@@ -335,7 +335,7 @@ class NearbyMeFragment : InteractionView<OnPageInteractionListener.Primary>(), O
         } else if (item.file_type.hashCode() == TAG_VIDEO.hashCode()) {
 
             if (mVideoView != null) {
-                mExoPlayerHelper.initPlayer(context, mVideoView!!)
+                mExoPlayerHelper.initPlayer(getApplication(), mVideoView!!)
                 mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(item.file_name)?.absolutePath ?: ""))
                 mExoPlayerHelper.repeatMode()
                 mVideoView?.visibility = View.VISIBLE

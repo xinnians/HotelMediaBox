@@ -16,6 +16,8 @@ import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
+import com.google.android.exoplayer2.extractor.ts.DefaultTsPayloadReaderFactory.FLAG_DETECT_ACCESS_UNITS
 import com.google.android.exoplayer2.offline.FilteringManifestParser
 import com.google.android.exoplayer2.source.ExtractorMediaSource
 import com.google.android.exoplayer2.source.MediaSource
@@ -34,6 +36,7 @@ import com.google.android.exoplayer2.upstream.cache.CacheDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import com.ufistudio.hotelmediabox.MyApplication
 import com.ufistudio.hotelmediabox.R
+import com.ufistudio.hotelmediabox.utils.FileUtils
 import java.io.File
 import java.lang.Exception
 
@@ -137,7 +140,9 @@ open class ExoPlayerHelper {
                     val factory = com.google.android.exoplayer2.upstream.DataSource.Factory { udpDataSource }
                     mediaSource = ExtractorMediaSource.Factory(factory).createMediaSource(udpDataSource.uri)
                 }else{
-                    mediaSource = ExtractorMediaSource.Factory((mContext as MyApplication).buildDataSourceFactory()).createMediaSource(datauri)
+                    mediaSource = ExtractorMediaSource.Factory((mContext as MyApplication).buildDataSourceFactory())
+//                        .setExtractorsFactory(DefaultExtractorsFactory().setTsExtractorFlags(FLAG_DETECT_ACCESS_UNITS))
+                        .createMediaSource(datauri)
                 }
             }
             else ->{
