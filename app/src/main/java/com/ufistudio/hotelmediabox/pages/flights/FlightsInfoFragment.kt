@@ -349,7 +349,7 @@ class FlightsInfoFragment : InteractionView<OnPageInteractionListener.Primary>()
         try {
             mContentPlaying = true
 //            mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(mCurrentContent!![mCurrentIpTvSelectIndex!![mCurrentCategoryIndex]!!].iptv)?.absolutePath))
-            mExoPlayerHelper.setUdpSource(mCurrentContent!![mCurrentIpTvSelectIndex!![mCurrentCategoryIndex]!!].iptv)
+            mExoPlayerHelper.setSource(mCurrentContent!![mCurrentIpTvSelectIndex!![mCurrentCategoryIndex]!!].iptv)
 //            mExoPlayerHelper.setSource("rtsp://184.72.239.149/vod/mp4:BigBuckBunny_115k.mov")
 //            mExoPlayerHelper.setSource("http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8")
 //            mExoPlayerHelper.setSource("udp://239.1.1.1:3990")

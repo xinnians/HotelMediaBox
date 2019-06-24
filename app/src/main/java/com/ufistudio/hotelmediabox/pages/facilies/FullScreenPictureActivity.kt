@@ -39,7 +39,7 @@ class FullScreenPictureActivity : PaneViewActivity() {
             imageView_full_screen.visibility = View.VISIBLE
         } else if (TextUtils.equals(intent.getStringExtra(TAG_TYPE), "udp")) {
             mExoPlayerHelper.initPlayer(applicationContext, videoView_full_screen)
-            mExoPlayerHelper.setUdpSource(intent.getStringExtra(Page.ARG_BUNDLE))
+            mExoPlayerHelper.setSource(intent.getStringExtra(Page.ARG_BUNDLE))
             mExoPlayerHelper.repeatMode()
             videoView_full_screen?.visibility = View.VISIBLE
         } else {

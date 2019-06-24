@@ -12,15 +12,13 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.ExoPlayerFactory
-import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.extractor.ts.DefaultTsPayloadReaderFactory.FLAG_DETECT_ACCESS_UNITS
 import com.google.android.exoplayer2.offline.FilteringManifestParser
 import com.google.android.exoplayer2.source.ExtractorMediaSource
 import com.google.android.exoplayer2.source.MediaSource
+import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.source.dash.DashMediaSource
 import com.google.android.exoplayer2.source.dash.manifest.DashManifestParser
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
@@ -28,6 +26,7 @@ import com.google.android.exoplayer2.source.rtsp.RtspDefaultClient
 import com.google.android.exoplayer2.source.rtsp.RtspMediaSource
 import com.google.android.exoplayer2.source.rtsp.core.Client
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.*
 import com.google.android.exoplayer2.upstream.cache.Cache
@@ -47,6 +46,9 @@ open class ExoPlayerHelper {
     private var mVideoFrameParams: ConstraintLayout.LayoutParams? = null
     private var mVideoParams: ConstraintLayout.LayoutParams? = null
     private var mIsFullscreen: Boolean = false
+    private val TAG: String = ExoPlayerHelper::class.java.simpleName
+    private var mMediaSource: MediaSource? = null
+    private var mIsUDP: Boolean = false
 
     fun initPlayer(context: Context?, videoView: PlayerView) {
         mContext = context
@@ -54,6 +56,65 @@ open class ExoPlayerHelper {
         mPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector)
         mVideoView = videoView
         mVideoView.player = mPlayer
+
+        mPlayer?.addListener(object:Player.EventListener{
+            override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters?) {
+                super.onPlaybackParametersChanged(playbackParameters)
+
+//                Log.e(TAG,"[onPlaybackParametersChanged] ${playbackParameters.toString()}")
+            }
+
+            override fun onSeekProcessed() {
+                super.onSeekProcessed()
+//                Log.e(TAG,"[onSeekProcessed] call.")
+            }
+
+            override fun onTracksChanged(trackGroups: TrackGroupArray?, trackSelections: TrackSelectionArray?) {
+                super.onTracksChanged(trackGroups, trackSelections)
+//                Log.e(TAG,"[onTracksChanged] call. ")
+            }
+
+            override fun onPlayerError(error: ExoPlaybackException?) {
+                super.onPlayerError(error)
+//                Log.e(TAG,"[onPlayerError] call. ")
+            }
+
+            override fun onLoadingChanged(isLoading: Boolean) {
+                super.onLoadingChanged(isLoading)
+//                Log.e(TAG,"[onLoadingChanged] call. isLoading : $isLoading")
+            }
+
+            override fun onPositionDiscontinuity(reason: Int) {
+                super.onPositionDiscontinuity(reason)
+//                Log.e(TAG,"[onPositionDiscontinuity] call. reason : $reason")
+            }
+
+            override fun onRepeatModeChanged(repeatMode: Int) {
+                super.onRepeatModeChanged(repeatMode)
+//                Log.e(TAG,"[onRepeatModeChanged] call. repeatMode : $repeatMode")
+            }
+
+            override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
+                super.onShuffleModeEnabledChanged(shuffleModeEnabled)
+//                Log.e(TAG,"[onShuffleModeEnabledChanged] call. shuffleModeEnabled : $shuffleModeEnabled")
+            }
+
+            override fun onTimelineChanged(timeline: Timeline?, manifest: Any?, reason: Int) {
+                super.onTimelineChanged(timeline, manifest, reason)
+//                Log.e(TAG,"[onTimelineChanged] call.")
+            }
+
+            override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+                super.onPlayerStateChanged(playWhenReady, playbackState)
+                Log.e(TAG,"[onPlayerStateChanged] call. playWhenReady : $playWhenReady playbackState : $playbackState")
+                if(playbackState == 2 && mIsUDP){
+                    mMediaSource?.let {
+                        mPlayer?.prepare(it)
+                        mPlayer?.playWhenReady = playWhenReady
+                    }
+                }
+            }
+        })
     }
 
     /**
@@ -113,7 +174,8 @@ open class ExoPlayerHelper {
 
         Log.e("EXOPLAYER","source : $source, type : $type")
 
-        var mediaSource: MediaSource? = null
+        mMediaSource = null
+        mIsUDP = false
 
         when(type){
 //            等後續有需要再加，需要+cache
@@ -129,18 +191,20 @@ open class ExoPlayerHelper {
 //            }
             C.TYPE_OTHER ->{
                 if (Util.isRtspUri(datauri)) {
-                    mediaSource = RtspMediaSource.Factory(RtspDefaultClient.factory()
+                    mMediaSource = RtspMediaSource.Factory(RtspDefaultClient.factory()
                         .setFlags(Client.FLAG_ENABLE_RTCP_SUPPORT)
                         .setNatMethod(Client.RTSP_NAT_DUMMY))
                         .createMediaSource(datauri)
                 }else if(source is String && source.contains("udp")){
-                    val udpDataSource = UdpDataSource()
+                    mIsUDP = true
+                    val udpDataSource = UdpDataSource(2000,20000)
                     val dataSpec = DataSpec(datauri)
                     udpDataSource.open(dataSpec)
-                    val factory = com.google.android.exoplayer2.upstream.DataSource.Factory { udpDataSource }
-                    mediaSource = ExtractorMediaSource.Factory(factory).createMediaSource(udpDataSource.uri)
+                    val myDataSourceFactory = DefaultDataSourceFactory(mContext, null) { -> UdpDataSource( 2000, 20000) }
+                    mMediaSource = ExtractorMediaSource.Factory(myDataSourceFactory).createMediaSource(udpDataSource.uri)
+
                 }else{
-                    mediaSource = ExtractorMediaSource.Factory((mContext as MyApplication).buildDataSourceFactory())
+                    mMediaSource = ExtractorMediaSource.Factory((mContext as MyApplication).buildDataSourceFactory())
 //                        .setExtractorsFactory(DefaultExtractorsFactory().setTsExtractorFlags(FLAG_DETECT_ACCESS_UNITS))
                         .createMediaSource(datauri)
                 }
@@ -150,17 +214,7 @@ open class ExoPlayerHelper {
             }
         }
 
-//        var t: DefaultHttpDataSourceFactory = DefaultHttpDataSourceFactory(Util.getUserAgent(mContext,"ExoPlayerDemo"))
-//        var mediaDataSourceFactory = DefaultDataSourceFactory(mContext, Util.getUserAgent(mContext,"ExoPlayerDemo"))
-//        var mediaSource = ExtractorMediaSource.Factory(t).createMediaSource(Uri.parse(source))
-
-//        var mediaSource = RtspMediaSource.Factory(RtspDefaultClient.factory()
-//            .setFlags(Client.FLAG_ENABLE_RTCP_SUPPORT)
-//            .setNatMethod(Client.RTSP_NAT_DUMMY))
-//            .createMediaSource(Uri.parse(source))
-//        var mediaSource = HlsMediaSource(Uri.parse(source))
-
-        mediaSource?.let {
+        mMediaSource?.let {
             mPlayer?.prepare(it)
             mPlayer?.playWhenReady = playWhenReady
         }
@@ -172,6 +226,7 @@ open class ExoPlayerHelper {
      * @playWhenReady: If you want play when ready , default:true
      */
     fun setFileSource(fileUri: Uri, playWhenReady: Boolean = true) {
+        mIsUDP = false
         val dtaSource = FileDataSource()
         val dataSpec = DataSpec(fileUri)
         try {
