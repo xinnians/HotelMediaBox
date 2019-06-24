@@ -1,6 +1,5 @@
 package com.ufistudio.hotelmediabox.pages.weather
 
-import android.text.TextUtils
 import android.util.Log
 import com.ufistudio.hotelmediabox.R
 
@@ -70,9 +69,14 @@ enum class WeatherIconEnum(name: String, icon: Int) {
     companion object {
         fun getItemByName(name: String?): WeatherIconEnum {
             for (item in values()) {
-                if (item.mName.hashCode() == name.hashCode()) {
-                    Log.e("weather","name : $name, weatherItem:${item.mName}")
-                    return item
+                when {
+                    item.mName.hashCode() == name.hashCode() -> {
+                        Log.e("weather","name : $name, weatherItem:${item.mName}")
+                        return item
+                    }
+                    name?.contains("Cloudy") == true -> return CLOUDY
+                    name?.contains("Sunny") == true -> return SUNNY
+                    name?.contains("Scattered Showers") == true -> return SCATTERED_SHOWERS_NIGHT
                 }
             }
             return NONE
