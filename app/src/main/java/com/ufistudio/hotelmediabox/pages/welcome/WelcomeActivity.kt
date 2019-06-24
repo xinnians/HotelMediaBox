@@ -146,6 +146,8 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
 
     override fun onError(t: Throwable?) {
         Log.d(TAG, "onError = ${t?.message}")
+        FileUtils.getFileFromStorage("chkflag")?.delete()
+        MiscUtils.reboot(baseContext)
         AlertDialog.Builder(this)
             .setTitle(R.string.dialog_error_title)
             .setMessage(R.string.dialog_cannot_find_file)
