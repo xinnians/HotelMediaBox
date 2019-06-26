@@ -140,7 +140,7 @@ class ChannelListAdapter : RecyclerView.Adapter<ChannelListAdapter.ViewHolder>()
         }
     }
 
-    fun setCurrentTVChannel(channel: TVChannel) {
+    fun setCurrentTVChannel(channel: TVChannel,needUpdateView: Boolean = true) {
         Log.e("channelListAdapter","[setCurrentTVChannel] $channel")
         if (mFilterItems?.contains(channel) == true) {
             Log.e("channelListAdapter","[setCurrentTVChannel] mFilterItems?.contains(channel) == true")
@@ -151,7 +151,9 @@ class ChannelListAdapter : RecyclerView.Adapter<ChannelListAdapter.ViewHolder>()
             mCurrentTVChannel = null
             mSelectPosition = 0
         }
-        notifyDataSetChanged()
+        if(needUpdateView){
+            notifyDataSetChanged()
+        }
     }
 
     fun getSelectPosition(): Int {

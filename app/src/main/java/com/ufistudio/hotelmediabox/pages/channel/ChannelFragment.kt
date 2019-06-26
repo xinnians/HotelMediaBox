@@ -46,6 +46,9 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
     private var mSideViewFocus: Boolean = false
     private var mScreenCurrentType: TVController.SCREEN_TYPE? = null
 
+    private var mChannelChangeDisposable: Disposable? = null
+    private var mInputChannelNumber: String? = null
+
 
     private var mTVListener: TVController.OnTVListener = object : TVController.OnTVListener{
         override fun onScanFinish() {
@@ -155,6 +158,11 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
         if (mDisposable != null && !mDisposable!!.isDisposed) {
             mDisposable?.dispose()
         }
+
+        if(mChannelChangeDisposable != null && mChannelChangeDisposable?.isDisposed == false){
+            mChannelChangeDisposable?.dispose()
+        }
+
         mExoPlayerHelper.release()
         super.onStop()
     }
@@ -318,6 +326,36 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
                 }
                 return true
             }
+            KeyEvent.KEYCODE_0 -> {
+                onChannelChangeByNumber("0")
+            }
+            KeyEvent.KEYCODE_1 -> {
+                onChannelChangeByNumber("1")
+            }
+            KeyEvent.KEYCODE_2 -> {
+                onChannelChangeByNumber("2")
+            }
+            KeyEvent.KEYCODE_3 -> {
+                onChannelChangeByNumber("3")
+            }
+            KeyEvent.KEYCODE_4 -> {
+                onChannelChangeByNumber("4")
+            }
+            KeyEvent.KEYCODE_5 -> {
+                onChannelChangeByNumber("5")
+            }
+            KeyEvent.KEYCODE_6 -> {
+                onChannelChangeByNumber("6")
+            }
+            KeyEvent.KEYCODE_7 -> {
+                onChannelChangeByNumber("7")
+            }
+            KeyEvent.KEYCODE_8 -> {
+                onChannelChangeByNumber("8")
+            }
+            KeyEvent.KEYCODE_9 -> {
+                onChannelChangeByNumber("9")
+            }
         }
 
         return super.onFragmentKeyDown(keyCode, event)
@@ -374,5 +412,49 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
 
     private fun onInitGenreError(throwable: Throwable) {
 
+    }
+
+    private fun onChannelChangeByNumber(channelNunber: String){
+        if(mChannelChangeDisposable != null && mChannelChangeDisposable?.isDisposed == false){
+            mChannelChangeDisposable?.dispose()
+        }
+
+        if(mInputChannelNumber.isNullOrEmpty()){
+            mInputChannelNumber = channelNunber
+        }else{
+            mInputChannelNumber = mInputChannelNumber.plus(channelNunber)
+        }
+
+        Log.e(TAG,"[onChannelChangeByNumber] call. mInputChannelNumber : $mInputChannelNumber")
+
+        //TODO 等兩秒，時間到後 抓取輸入的號碼判斷有沒有符合這個號碼的頻道，有的話就切台
+        //TODO UI部分 底下的頻道資訊顯示跟左邊的列表顯示
+
+        mChannelChangeDisposable = Observable.timer(2000, TimeUnit.MILLISECONDS)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {},
+                { onError -> Log.e(TAG, "error:$onError") },
+                {
+
+                    mInputChannelNumber?.let {searchNumber ->
+                        if(searchNumber.isNotEmpty()){
+                            TVController.searchChannel(searchNumber)?.let { searchChannel ->
+                                TVController.play(searchChannel)
+                                text_channel_number.text = "CH${searchChannel.chNum}"
+                                text_channel_name.text = searchChannel.chName
+                                mChannelListAdapter.setCurrentTVChannel(searchChannel,mListFocus)
+                                if (mListFocus) {
+                                    view_channel_list.scrollToPosition(mChannelListAdapter.getSelectPosition())
+                                }
+                            }
+                        }
+
+                    }
+
+                    mInputChannelNumber = ""
+
+                })
     }
 }

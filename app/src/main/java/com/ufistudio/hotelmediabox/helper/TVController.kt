@@ -60,6 +60,17 @@ object TVController {
         return mChannelList
     }
 
+    fun searchChannel(channelNumber: String): TVChannel?{
+        getChannelList()?.let {channelList ->
+            for(item in channelList){
+                if(item.chNum == channelNumber){
+                    return item
+                }
+            }
+        }
+        return null
+    }
+
     /**
      * 在app開啟的時候call一次就好，暫定splashPage
      */
