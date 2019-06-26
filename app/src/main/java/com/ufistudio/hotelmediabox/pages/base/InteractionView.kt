@@ -39,12 +39,12 @@ abstract class InteractionView<I : OnPageInteractionListener.Base> : BaseView() 
     protected fun getInteractionListener(): I = mInteractionListener
 
     override fun onFragmentKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        when (keyCode) {
-            302 -> {
-                activity?.startActivity(Intent(activity, MainActivity::class.java))
-                activity?.finish()
-            }
-        }
+//        when (keyCode) {
+//            302 -> {
+//                activity?.startActivity(Intent(activity, MainActivity::class.java))
+//                activity?.finish()
+//            }
+//        }
         return false
     }
 
