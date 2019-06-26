@@ -44,7 +44,8 @@ object TVController {
     enum class SCREEN_TYPE(width: Int, height: Int, x: Int, y: Int) {
         HOMEPAGE(873, 506, 87, 52),
         CHANNELPAGE(980, 555, 857, 233),
-        FULLSCREEN(0, 0, 0, 0)
+        FULLSCREEN(0, 0, 0, 0),
+        HIDE(1,1,1,1)
     }
 
     fun getChannelList(): ArrayList<TVChannel>? {
@@ -111,6 +112,12 @@ object TVController {
                 x = 0
                 y = 0
             }
+            TVController.SCREEN_TYPE.HIDE -> {
+                width = 20
+                height = 20
+                x = 0
+                y = 0
+            }
         }
 
         sendTCPRequestSingle("j_set_win $x $y $width $height")
@@ -119,7 +126,9 @@ object TVController {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ successResult ->
                     Log.e(TAG, "[initAVPlayer] Result : $successResult")
-                    onBroadcastAll(null, TVController.ACTION_TYPE.InitAVPlayerFinish)
+                    if(mCurrentScreenType != TVController.SCREEN_TYPE.HIDE){
+                        onBroadcastAll(null, TVController.ACTION_TYPE.InitAVPlayerFinish)
+                    }
                 }, { failResult ->
                     Log.e(TAG, "[initAVPlayer] throwable : $failResult")
                 })

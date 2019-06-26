@@ -3,6 +3,7 @@ package com.ufistudio.hotelmediabox.pages.channel
 import android.arch.lifecycle.Observer
 import android.content.Intent
 import android.graphics.PixelFormat
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
@@ -22,6 +23,7 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import com.ufistudio.hotelmediabox.pages.home.HomeFeatureEnum
 import com.ufistudio.hotelmediabox.repository.data.*
+import com.ufistudio.hotelmediabox.utils.FileUtils
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_BACK_TITLE
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_INDEX
 import kotlinx.android.synthetic.main.fragment_channel.*
@@ -42,6 +44,7 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
     private var mCurrentSideIndex: Int = -1 //當前頁面side view index
     private var mSideViewState: HashMap<Int, String> = HashMap<Int, String>()//拿來儲存當前的sideView index與 Back上方的Title
     private var mSideViewFocus: Boolean = false
+    private var mScreenCurrentType: TVController.SCREEN_TYPE? = null
 
 
     private var mTVListener: TVController.OnTVListener = object : TVController.OnTVListener{
@@ -52,10 +55,26 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
         override fun onChannelChange(tvChannel: TVChannel?) {
             tvChannel?.let { currentChannel ->
                 if(currentChannel.chType == TVType.IPTV.name){
+
+                    if(mScreenCurrentType != TVController.SCREEN_TYPE.HIDE){
+                        TVController.initAVPlayer(TVController.SCREEN_TYPE.HIDE)
+                        mScreenCurrentType = TVController.SCREEN_TYPE.HIDE
+                    }
+
                     videoView.visibility = View.VISIBLE
-                    mExoPlayerHelper.setSource(tvChannel.chIp.uri, true)
+                    if(tvChannel.chIp.uri.contains("box_")){
+                        mExoPlayerHelper.setSource(Uri.parse(FileUtils.getFileFromStorage(tvChannel.chIp.uri)?.absolutePath ?: ""), true)
+                    }else{
+                        mExoPlayerHelper.setSource(tvChannel.chIp.uri, true)
+                    }
                     mExoPlayerHelper.play()
                 }else{
+
+                    if(mScreenCurrentType != TVController.SCREEN_TYPE.CHANNELPAGE){
+                        TVController.initAVPlayer(TVController.SCREEN_TYPE.CHANNELPAGE)
+                        mScreenCurrentType = TVController.SCREEN_TYPE.CHANNELPAGE
+                    }
+
                     mExoPlayerHelper.stop()
                     videoView.visibility = View.INVISIBLE
                 }
@@ -116,6 +135,8 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
         super.onResume()
         mExoPlayerHelper.initPlayer(getApplication(), videoView)
         TVController.registerListener(mTVListener)
+
+        mScreenCurrentType = TVController.SCREEN_TYPE.CHANNELPAGE
         TVController.initAVPlayer(TVController.SCREEN_TYPE.CHANNELPAGE)
 
         TVController.getCurrentChannel()?.let { mChannelListAdapter.setCurrentTVChannel(it) }
@@ -127,6 +148,7 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
         super.onPause()
         TVController.releaseListener(mTVListener)
         TVController.deInitAVPlayer()
+        mExoPlayerHelper.stop()
     }
 
     override fun onStop() {

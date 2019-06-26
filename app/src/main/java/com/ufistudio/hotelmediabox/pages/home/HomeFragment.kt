@@ -3,6 +3,7 @@ package com.ufistudio.hotelmediabox.pages.home
 import android.arch.lifecycle.Observer
 import android.content.Intent
 import android.graphics.PixelFormat
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewPager
@@ -73,6 +74,7 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
     private var mBannerAdapter: BannerAdapter? = null
     private var mBannerDisposable: Disposable? = null
     private var mFocusItem = 0
+    private var mScreenCurrentType: TVController.SCREEN_TYPE? = null
 
 
     private var mTVListener: TVController.OnTVListener = object : TVController.OnTVListener {
@@ -84,10 +86,25 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
             Log.e(TAG,"[onChannelChange] tvChannel : $tvChannel")
             tvChannel?.let { currentChannel ->
                 if(currentChannel.chType == TVType.IPTV.name){
+
+                    if(mScreenCurrentType != TVController.SCREEN_TYPE.HIDE){
+                        TVController.initAVPlayer(TVController.SCREEN_TYPE.HIDE)
+                        mScreenCurrentType = TVController.SCREEN_TYPE.HIDE
+                    }
+
                     videoView.visibility = View.VISIBLE
-                    mExoPlayerHelper.setSource(tvChannel.chIp.uri, true)
+                    if(tvChannel.chIp.uri.contains("box_")){
+                        mExoPlayerHelper.setSource(Uri.parse(FileUtils.getFileFromStorage(tvChannel.chIp.uri)?.absolutePath ?: ""), true)
+                    }else{
+                        mExoPlayerHelper.setSource(tvChannel.chIp.uri, true)
+                    }
                     mExoPlayerHelper.play()
                 }else{
+                    if(mScreenCurrentType != TVController.SCREEN_TYPE.HOMEPAGE){
+                        TVController.initAVPlayer(TVController.SCREEN_TYPE.HOMEPAGE)
+                        mScreenCurrentType = TVController.SCREEN_TYPE.HOMEPAGE
+                    }
+
                     mExoPlayerHelper.stop()
                     videoView.visibility = View.INVISIBLE
                 }
@@ -183,6 +200,8 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
         }
 
         TVController.registerListener(mTVListener)
+
+        mScreenCurrentType = TVController.SCREEN_TYPE.HOMEPAGE
         TVController.initAVPlayer(TVController.SCREEN_TYPE.HOMEPAGE)
     }
 
@@ -190,6 +209,7 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
         super.onPause()
         TVController.releaseListener(mTVListener)
         TVController.deInitAVPlayer()
+        mExoPlayerHelper.stop()
     }
 
     override fun onStop() {

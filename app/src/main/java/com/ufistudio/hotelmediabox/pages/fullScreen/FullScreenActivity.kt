@@ -15,6 +15,7 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 import android.content.Intent
+import android.net.Uri
 import android.view.*
 import kotlinx.android.synthetic.main.activity_fullscreen.*
 import com.bumptech.glide.Glide
@@ -39,6 +40,7 @@ class FullScreenActivity : PaneViewActivity() {
     private lateinit var mExoPlayerHelper: ExoPlayerHelper
 
     private var mTVChannel: TVChannel? = null
+    private var mScreenCurrentType: TVController.SCREEN_TYPE? = null
 
     private var mTVListener:TVController.OnTVListener = object :TVController.OnTVListener{
         override fun onScanFinish() {
@@ -48,10 +50,25 @@ class FullScreenActivity : PaneViewActivity() {
         override fun onChannelChange(tvChannel: TVChannel?) {
             tvChannel?.let { currentChannel ->
                 if(currentChannel.chType == TVType.IPTV.name){
+                    if(mScreenCurrentType != TVController.SCREEN_TYPE.HIDE){
+                        TVController.initAVPlayer(TVController.SCREEN_TYPE.HIDE)
+                        mScreenCurrentType = TVController.SCREEN_TYPE.HIDE
+                    }
+
                     videoView.visibility = View.VISIBLE
-                    mExoPlayerHelper.setSource(tvChannel.chIp.uri, true)
+                    if(tvChannel.chIp.uri.contains("box_")){
+                        mExoPlayerHelper.setSource(Uri.parse(FileUtils.getFileFromStorage(tvChannel.chIp.uri)?.absolutePath ?: ""), true)
+                    }else{
+                        mExoPlayerHelper.setSource(tvChannel.chIp.uri, true)
+                    }
                     mExoPlayerHelper.play()
                 }else{
+
+                    if(mScreenCurrentType != TVController.SCREEN_TYPE.FULLSCREEN){
+                        TVController.initAVPlayer(TVController.SCREEN_TYPE.FULLSCREEN)
+                        mScreenCurrentType = TVController.SCREEN_TYPE.FULLSCREEN
+                    }
+
                     mExoPlayerHelper.stop()
                     videoView.visibility = View.INVISIBLE
                 }
@@ -142,6 +159,7 @@ class FullScreenActivity : PaneViewActivity() {
 
         TVController.registerListener(mTVListener)
         TVController.initAVPlayer(TVController.SCREEN_TYPE.FULLSCREEN)
+        mScreenCurrentType = TVController.SCREEN_TYPE.FULLSCREEN
     }
 
     override fun onPause() {
@@ -149,6 +167,7 @@ class FullScreenActivity : PaneViewActivity() {
 //        mViewModel.getTVHelper().closeAVPlayer()
         TVController.releaseListener(mTVListener)
         TVController.deInitAVPlayer()
+        mExoPlayerHelper.stop()
 
     }
 
