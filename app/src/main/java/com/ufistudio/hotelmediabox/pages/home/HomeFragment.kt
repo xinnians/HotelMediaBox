@@ -90,10 +90,10 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
             tvChannel?.let { currentChannel ->
                 if(currentChannel.chType == TVType.IPTV.name){
 
-                    if(mScreenCurrentType != TVController.SCREEN_TYPE.HIDE){
-                        TVController.initAVPlayer(TVController.SCREEN_TYPE.HIDE)
-                        mScreenCurrentType = TVController.SCREEN_TYPE.HIDE
-                    }
+//                    if(mScreenCurrentType != TVController.SCREEN_TYPE.HIDE){
+//                        TVController.initAVPlayer(TVController.SCREEN_TYPE.HIDE)
+//                        mScreenCurrentType = TVController.SCREEN_TYPE.HIDE
+//                    }
 
                     videoView.visibility = View.VISIBLE
                     if(tvChannel.chIp.uri.contains("box_")){
@@ -103,10 +103,10 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                     }
                     mExoPlayerHelper.play()
                 }else{
-                    if(mScreenCurrentType != TVController.SCREEN_TYPE.HOMEPAGE){
-                        TVController.initAVPlayer(TVController.SCREEN_TYPE.HOMEPAGE)
-                        mScreenCurrentType = TVController.SCREEN_TYPE.HOMEPAGE
-                    }
+//                    if(mScreenCurrentType != TVController.SCREEN_TYPE.HOMEPAGE){
+//                        TVController.initAVPlayer(TVController.SCREEN_TYPE.HOMEPAGE)
+//                        mScreenCurrentType = TVController.SCREEN_TYPE.HOMEPAGE
+//                    }
 
                     mExoPlayerHelper.stop()
                     videoView.visibility = View.INVISIBLE

@@ -74,6 +74,8 @@ enum class WeatherIconEnum(name: String, icon: Int) {
                         Log.e("weather","name : $name, weatherItem:${item.mName}")
                         return item
                     }
+                    name?.contains("Mostly Cloudy") == true -> return MOSTLY_CLOUDY_DAY
+                    name?.contains("Partly Cloudy") == true -> return PARTLY_CLOUDY_DAY
                     name?.contains("Cloudy") == true -> return CLOUDY
                     name?.contains("Sunny") == true -> return SUNNY
                     name?.contains("Scattered Showers") == true -> return SCATTERED_SHOWERS_NIGHT

@@ -165,6 +165,7 @@ open class PaneViewActivity : BaseActivity(), OnPageInteractionListener.Pane {
             }
             TAG_KEY_HOME -> {
                 startActivity(Intent(this, MainActivity::class.java))
+                finish()
                 return true
             }
             TAG_kEY_TV -> {

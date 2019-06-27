@@ -177,7 +177,8 @@ open class ExoPlayerHelper {
         mMediaSource = null
         mIsUDP = false
 
-        when(type){
+        try{
+            when(type){
 //            等後續有需要再加，需要+cache
 //            C.TYPE_DASH ->{
 //                mediaSource = DashMediaSource.Factory((mContext as MyApplication).buildDataSourceFactory())
@@ -189,35 +190,39 @@ open class ExoPlayerHelper {
 //            C.TYPE_HLS ->{
 //
 //            }
-            C.TYPE_OTHER ->{
-                if (Util.isRtspUri(datauri)) {
-                    mMediaSource = RtspMediaSource.Factory(RtspDefaultClient.factory()
-                        .setFlags(Client.FLAG_ENABLE_RTCP_SUPPORT)
-                        .setNatMethod(Client.RTSP_NAT_DUMMY))
-                        .createMediaSource(datauri)
-                }else if(source is String && source.contains("udp")){
-                    mIsUDP = true
-                    val udpDataSource = UdpDataSource(2000,20000)
-                    val dataSpec = DataSpec(datauri)
-                    udpDataSource.open(dataSpec)
-                    val myDataSourceFactory = DefaultDataSourceFactory(mContext, null) { -> UdpDataSource( 2000, 20000) }
-                    mMediaSource = ExtractorMediaSource.Factory(myDataSourceFactory).createMediaSource(udpDataSource.uri)
+                C.TYPE_OTHER ->{
+                    if (Util.isRtspUri(datauri)) {
+                        mMediaSource = RtspMediaSource.Factory(RtspDefaultClient.factory()
+                            .setFlags(Client.FLAG_ENABLE_RTCP_SUPPORT)
+                            .setNatMethod(Client.RTSP_NAT_DUMMY))
+                            .createMediaSource(datauri)
+                    }else if(source is String && source.contains("udp")){
+                        mIsUDP = true
+                        val udpDataSource = UdpDataSource(2000,20000)
+                        val dataSpec = DataSpec(datauri)
+                        udpDataSource.open(dataSpec)
+                        val myDataSourceFactory = DefaultDataSourceFactory(mContext, null) { -> UdpDataSource( 2000, 20000) }
+                        mMediaSource = ExtractorMediaSource.Factory(myDataSourceFactory).createMediaSource(udpDataSource.uri)
 
-                }else{
-                    mMediaSource = ExtractorMediaSource.Factory((mContext as MyApplication).buildDataSourceFactory())
+                    }else{
+                        mMediaSource = ExtractorMediaSource.Factory((mContext as MyApplication).buildDataSourceFactory())
 //                        .setExtractorsFactory(DefaultExtractorsFactory().setTsExtractorFlags(FLAG_DETECT_ACCESS_UNITS))
-                        .createMediaSource(datauri)
+                            .createMediaSource(datauri)
+                    }
+                }
+                else ->{
+
                 }
             }
-            else ->{
-
+            mMediaSource?.let {
+                mPlayer?.prepare(it)
+                mPlayer?.playWhenReady = playWhenReady
             }
+        }catch (e: Exception){
+            e.printStackTrace()
+            stop()
         }
 
-        mMediaSource?.let {
-            mPlayer?.prepare(it)
-            mPlayer?.playWhenReady = playWhenReady
-        }
     }
 
     /**

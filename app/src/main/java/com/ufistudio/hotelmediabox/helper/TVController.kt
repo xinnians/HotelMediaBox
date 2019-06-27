@@ -184,6 +184,77 @@ object TVController {
 
         mPlayDisposable = sendTCPRequestSingle("j_stopplay 1")
                 .flatMap {
+                    if(channel.chType == TVType.DVBT.name){
+                    var width = 0
+                    var height = 0
+                    var x = 0
+                    var y = 0
+                    when (mCurrentScreenType) {
+                        SCREEN_TYPE.HOMEPAGE -> {
+                            width = 874
+                            height = 506
+                            x = 87
+                            y = 52
+                        }
+                        SCREEN_TYPE.CHANNELPAGE -> {
+                            width = 980
+                            height = 555
+                            x = 857
+                            y = 233
+                        }
+                        SCREEN_TYPE.FULLSCREEN -> {
+                            width = 0
+                            height = 0
+                            x = 0
+                            y = 0
+                        }
+                        TVController.SCREEN_TYPE.HIDE -> {
+                            width = 20
+                            height = 20
+                            x = 0
+                            y = 0
+                        }
+                    }
+                    sendTCPRequestSingle("j_set_win $x $y $width $height")
+                }else{
+                        var width = 0
+                        var height = 0
+                        var x = 0
+                        var y = 0
+
+                        if(mCurrentScreenType == SCREEN_TYPE.FULLSCREEN){
+                            return@flatMap Single.just(it)
+                        }
+
+                        when (mCurrentScreenType) {
+                            SCREEN_TYPE.HOMEPAGE -> {
+                                width = 100
+                                height = 100
+                                x = 1200
+                                y = 200
+                            }
+                            SCREEN_TYPE.CHANNELPAGE -> {
+                                width = 100
+                                height = 100
+                                x = 0
+                                y = 0
+                            }
+                            SCREEN_TYPE.FULLSCREEN -> {
+                                width = 0
+                                height = 0
+                                x = 0
+                                y = 0
+                            }
+                            TVController.SCREEN_TYPE.HIDE -> {
+                                width = 20
+                                height = 20
+                                x = 0
+                                y = 0
+                            }
+                        }
+                        sendTCPRequestSingle("j_set_win $x $y $width $height")
+                }}
+                .flatMap {
 //                    var channelParameter = channel.chIp.frequency + " " + channel.chIp.bandwidth
                     if(channel.chType == TVType.DVBT.name){
                         var channelParameter = if(channel.chIp.frequencyParameter.isNullOrEmpty()) channel.chIp.frequency + " " + channel.chIp.bandwidth else channel.chIp.frequencyParameter

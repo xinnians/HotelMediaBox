@@ -53,10 +53,10 @@ class FullScreenActivity : PaneViewActivity() {
         override fun onChannelChange(tvChannel: TVChannel?) {
             tvChannel?.let { currentChannel ->
                 if(currentChannel.chType == TVType.IPTV.name){
-                    if(mScreenCurrentType != TVController.SCREEN_TYPE.HIDE){
-                        TVController.initAVPlayer(TVController.SCREEN_TYPE.HIDE)
-                        mScreenCurrentType = TVController.SCREEN_TYPE.HIDE
-                    }
+//                    if(mScreenCurrentType != TVController.SCREEN_TYPE.HIDE){
+//                        TVController.initAVPlayer(TVController.SCREEN_TYPE.HIDE)
+//                        mScreenCurrentType = TVController.SCREEN_TYPE.HIDE
+//                    }
 
                     videoView.visibility = View.VISIBLE
                     if(tvChannel.chIp.uri.contains("box_")){
@@ -67,10 +67,10 @@ class FullScreenActivity : PaneViewActivity() {
                     mExoPlayerHelper.play()
                 }else{
 
-                    if(mScreenCurrentType != TVController.SCREEN_TYPE.FULLSCREEN){
-                        TVController.initAVPlayer(TVController.SCREEN_TYPE.FULLSCREEN)
-                        mScreenCurrentType = TVController.SCREEN_TYPE.FULLSCREEN
-                    }
+//                    if(mScreenCurrentType != TVController.SCREEN_TYPE.FULLSCREEN){
+//                        TVController.initAVPlayer(TVController.SCREEN_TYPE.FULLSCREEN)
+//                        mScreenCurrentType = TVController.SCREEN_TYPE.FULLSCREEN
+//                    }
 
                     mExoPlayerHelper.stop()
                     videoView.visibility = View.INVISIBLE
