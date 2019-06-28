@@ -46,6 +46,15 @@ class FullScreenActivity : PaneViewActivity() {
     private var mInputChannelNumber: String? = null
 
     private var mTVListener:TVController.OnTVListener = object :TVController.OnTVListener{
+        override fun onIPTVLoading() {
+            videoViewMask.visibility = View.VISIBLE
+
+        }
+
+        override fun onIPTVPlaying() {
+            videoViewMask.visibility = View.INVISIBLE
+        }
+
         override fun onScanFinish() {
 
         }
@@ -74,6 +83,7 @@ class FullScreenActivity : PaneViewActivity() {
 
                     mExoPlayerHelper.stop()
                     videoView.visibility = View.INVISIBLE
+                    videoViewMask.visibility = View.INVISIBLE
                 }
             }
         }

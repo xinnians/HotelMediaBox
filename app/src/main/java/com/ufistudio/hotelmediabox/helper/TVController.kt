@@ -515,7 +515,7 @@ object TVController {
     }
 
     fun onBroadcastAll(tvChannel: TVChannel?, action: ACTION_TYPE) {
-        Log.e(TAG, "[onBroadcastAll] call.")
+        Log.e(TAG, "[onBroadcastAll] call. action : $action")
         mListeners?.let { listeners ->
             for (listener in listeners) {
                 when (action) {
@@ -528,8 +528,14 @@ object TVController {
                     ACTION_TYPE.InitAVPlayerFinish -> {
                         listener.initAVPlayerFinish()
                     }
-                    TVController.ACTION_TYPE.OnScanFinish -> {
+                    ACTION_TYPE.OnScanFinish -> {
                         listener.onScanFinish()
+                    }
+                    TVController.ACTION_TYPE.OnIPTVLoading -> {
+                        listener.onIPTVLoading()
+                    }
+                    TVController.ACTION_TYPE.OnIPTVPlaying -> {
+                        listener.onIPTVPlaying()
                     }
                 }
             }
@@ -540,7 +546,9 @@ object TVController {
         OnChannelChange,
         InitDeviceFinish,
         InitAVPlayerFinish,
-        OnScanFinish
+        OnScanFinish,
+        OnIPTVLoading,
+        OnIPTVPlaying
     }
 
     interface OnTVListener {
@@ -548,5 +556,7 @@ object TVController {
         fun initDeviceFinish()
         fun initAVPlayerFinish()
         fun onScanFinish()
+        fun onIPTVLoading()
+        fun onIPTVPlaying()
     }
 }

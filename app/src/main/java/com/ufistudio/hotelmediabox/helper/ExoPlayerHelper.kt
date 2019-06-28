@@ -35,6 +35,7 @@ import com.google.android.exoplayer2.upstream.cache.CacheDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import com.ufistudio.hotelmediabox.MyApplication
 import com.ufistudio.hotelmediabox.R
+import com.ufistudio.hotelmediabox.helper.TVController.onBroadcastAll
 import com.ufistudio.hotelmediabox.utils.FileUtils
 import java.io.File
 import java.lang.Exception
@@ -49,6 +50,7 @@ open class ExoPlayerHelper {
     private val TAG: String = ExoPlayerHelper::class.java.simpleName
     private var mMediaSource: MediaSource? = null
     private var mIsUDP: Boolean = false
+    private var mIsPlaying: Boolean = false
 
     fun initPlayer(context: Context?, videoView: PlayerView) {
         mContext = context
@@ -111,6 +113,17 @@ open class ExoPlayerHelper {
                     mMediaSource?.let {
                         mPlayer?.prepare(it)
                         mPlayer?.playWhenReady = playWhenReady
+                    }
+                }
+
+                if(!mIsPlaying && playbackState == 2){
+                    onBroadcastAll(null,TVController.ACTION_TYPE.OnIPTVLoading)
+                }
+
+                if(playbackState == 3){
+                    if(!mIsPlaying){
+                        onBroadcastAll(null,TVController.ACTION_TYPE.OnIPTVPlaying)
+                        mIsPlaying = true
                     }
                 }
             }
@@ -176,6 +189,7 @@ open class ExoPlayerHelper {
 
         mMediaSource = null
         mIsUDP = false
+        mIsPlaying = false
 
         try{
             when(type){
@@ -273,6 +287,7 @@ open class ExoPlayerHelper {
      */
     fun stop() {
         mPlayer?.playWhenReady = false
+        mPlayer?.stop()
     }
 
     /**

@@ -51,6 +51,14 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
 
 
     private var mTVListener: TVController.OnTVListener = object : TVController.OnTVListener{
+        override fun onIPTVLoading() {
+            videoViewMask.visibility = View.VISIBLE
+
+        }
+
+        override fun onIPTVPlaying() {
+            videoViewMask.visibility = View.INVISIBLE
+        }
         override fun onScanFinish() {
 
         }
@@ -63,7 +71,6 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
 //                        TVController.initAVPlayer(TVController.SCREEN_TYPE.HIDE)
 //                        mScreenCurrentType = TVController.SCREEN_TYPE.HIDE
 //                    }
-
                     videoView.visibility = View.VISIBLE
                     if(tvChannel.chIp.uri.contains("box_")){
                         mExoPlayerHelper.setSource(Uri.parse(FileUtils.getFileFromStorage(tvChannel.chIp.uri)?.absolutePath ?: ""), true)
@@ -80,6 +87,7 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
 
                     mExoPlayerHelper.stop()
                     videoView.visibility = View.INVISIBLE
+                    videoViewMask.visibility = View.INVISIBLE
                 }
             }
 

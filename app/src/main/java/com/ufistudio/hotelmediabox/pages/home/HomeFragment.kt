@@ -81,6 +81,15 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
 
 
     private var mTVListener: TVController.OnTVListener = object : TVController.OnTVListener {
+        override fun onIPTVLoading() {
+            videoViewMask.visibility = View.VISIBLE
+
+        }
+
+        override fun onIPTVPlaying() {
+            videoViewMask.visibility = View.INVISIBLE
+        }
+
         override fun onScanFinish() {
 
         }
@@ -110,6 +119,7 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
 
                     mExoPlayerHelper.stop()
                     videoView.visibility = View.INVISIBLE
+                    videoViewMask.visibility = View.INVISIBLE
                 }
             }
         }
