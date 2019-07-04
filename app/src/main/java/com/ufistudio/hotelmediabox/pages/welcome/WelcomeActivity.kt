@@ -26,7 +26,10 @@ import com.ufistudio.hotelmediabox.utils.MiscUtils
 import kotlinx.android.synthetic.main.activity_welcome.*
 import android.app.AlarmManager
 import android.content.Context
+import android.widget.Toast
+import com.ufistudio.hotelmediabox.constants.Key.IS_TIME_SET_SUCCESS
 import com.ufistudio.hotelmediabox.repository.data.NoteButton
+import com.ufistudio.hotelmediabox.utils.XTNetWorkManager
 import kotlinx.android.synthetic.main.view_bottom_ok.*
 
 
@@ -52,7 +55,8 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
 
         mViewModel.getInitialDataProgress.observe(this, Observer { onProgress() })
         mViewModel.getInitialDataSuccess.observe(this, Observer { onSuccess(it) })
-        mViewModel.getInitialDataError.observe(this, Observer { Log.e(TAG, "Get Initial data Error : $it") })
+        mViewModel.getInitialDataError.observe(this, Observer { Log.e(TAG, "Get Initial data Error : $it")
+            this.getSharedPreferences("HotelBoxData", Context.MODE_PRIVATE).edit().putBoolean(IS_TIME_SET_SUCCESS,false).apply()})
 
         mViewModel.initNoteButtonProgress.observe(this, Observer { onProgress() })
         mViewModel.initNoteButtonSuccess.observe(this, Observer { onSuccess(it) })
@@ -109,6 +113,7 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
                     val mAlarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
                     mAlarmManager.setTimeZone(it.timezone)
                     SystemClock.setCurrentTimeMillis(it.timestamp)
+                    this.getSharedPreferences("HotelBoxData", Context.MODE_PRIVATE).edit().putBoolean(IS_TIME_SET_SUCCESS,true).apply()
                 }
                 is Welcome -> {
                     mWelcomeContent = it.welcome

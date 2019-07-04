@@ -10,8 +10,11 @@ import android.text.TextUtils
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
+import android.widget.TextView
 import com.google.gson.Gson
 import com.ufistudio.hotelmediabox.R
+import com.ufistudio.hotelmediabox.constants.Key.IS_TIME_SET_SUCCESS
 import com.ufistudio.hotelmediabox.repository.data.Config
 import com.ufistudio.hotelmediabox.utils.MiscUtils
 import io.reactivex.Observable
@@ -32,6 +35,8 @@ private val TAG = DateView::class.java.simpleName
 class DateView : ConstraintLayout {
     private var mDf: DateFormat = SimpleDateFormat(TAG_DEFAULT_FORMAT, Locale.getDefault())
     private var mDateDisposable: Disposable? = null
+    private var mIsTimeSet: Boolean = false
+    private var mTextView: TextView? = null
 
     val mGson = Gson()
 
@@ -51,6 +56,7 @@ class DateView : ConstraintLayout {
                 .subscribe {
                     Log.d(TAG,"Update Time = ${System.currentTimeMillis()}")
                     textView_date.text = mDf.format(System.currentTimeMillis())
+                    checkTimeSet()
                 }
     }
 
@@ -95,6 +101,9 @@ class DateView : ConstraintLayout {
                             Log.e(TAG, "讀不到format")
                             setDefaultFormat()
                         }
+                        mTextView = this.findViewById(R.id.textView_date) as TextView
+                        checkTimeSet()
+
                     }, {
                         Log.e(TAG, "load file error $it")
                         setDefaultFormat()
@@ -102,5 +111,15 @@ class DateView : ConstraintLayout {
         } else {
             setDefaultFormat()
         }
+    }
+
+    fun checkTimeSet(){
+        if(!mIsTimeSet){
+            val isTimeSet = context.getSharedPreferences("HotelBoxData", Context.MODE_PRIVATE).getBoolean(IS_TIME_SET_SUCCESS,false)
+            Log.e(TAG,"[getTimeFormat] is time set:$isTimeSet")
+            mIsTimeSet = isTimeSet
+        }
+
+        mTextView?.visibility = if(mIsTimeSet) View.VISIBLE else View.INVISIBLE
     }
 }
