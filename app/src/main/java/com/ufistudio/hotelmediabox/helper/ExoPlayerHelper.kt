@@ -14,6 +14,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
+import com.google.android.exoplayer2.extractor.ts.DefaultTsPayloadReaderFactory.FLAG_ALLOW_NON_IDR_KEYFRAMES
 import com.google.android.exoplayer2.extractor.ts.DefaultTsPayloadReaderFactory.FLAG_DETECT_ACCESS_UNITS
 import com.google.android.exoplayer2.offline.FilteringManifestParser
 import com.google.android.exoplayer2.source.ExtractorMediaSource
@@ -56,6 +57,7 @@ open class ExoPlayerHelper {
         mContext = context
         val trackSelector = DefaultTrackSelector()
         mPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector)
+        mPlayer?.volume = 1f
         mVideoView = videoView
         mVideoView.player = mPlayer
 
@@ -63,22 +65,22 @@ open class ExoPlayerHelper {
             override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters?) {
                 super.onPlaybackParametersChanged(playbackParameters)
 
-//                Log.e(TAG,"[onPlaybackParametersChanged] ${playbackParameters.toString()}")
+                Log.e(TAG,"[onPlaybackParametersChanged] ${playbackParameters.toString()}")
             }
 
             override fun onSeekProcessed() {
                 super.onSeekProcessed()
-//                Log.e(TAG,"[onSeekProcessed] call.")
+                Log.e(TAG,"[onSeekProcessed] call.")
             }
 
             override fun onTracksChanged(trackGroups: TrackGroupArray?, trackSelections: TrackSelectionArray?) {
                 super.onTracksChanged(trackGroups, trackSelections)
-//                Log.e(TAG,"[onTracksChanged] call. ")
+                Log.e(TAG,"[onTracksChanged] call. ")
             }
 
             override fun onPlayerError(error: ExoPlaybackException?) {
                 super.onPlayerError(error)
-//                Log.e(TAG,"[onPlayerError] call. ")
+                Log.e(TAG,"[onPlayerError] call. ")
             }
 
             override fun onLoadingChanged(isLoading: Boolean) {
@@ -88,22 +90,22 @@ open class ExoPlayerHelper {
 
             override fun onPositionDiscontinuity(reason: Int) {
                 super.onPositionDiscontinuity(reason)
-//                Log.e(TAG,"[onPositionDiscontinuity] call. reason : $reason")
+                Log.e(TAG,"[onPositionDiscontinuity] call. reason : $reason")
             }
 
             override fun onRepeatModeChanged(repeatMode: Int) {
                 super.onRepeatModeChanged(repeatMode)
-//                Log.e(TAG,"[onRepeatModeChanged] call. repeatMode : $repeatMode")
+                Log.e(TAG,"[onRepeatModeChanged] call. repeatMode : $repeatMode")
             }
 
             override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
                 super.onShuffleModeEnabledChanged(shuffleModeEnabled)
-//                Log.e(TAG,"[onShuffleModeEnabledChanged] call. shuffleModeEnabled : $shuffleModeEnabled")
+                Log.e(TAG,"[onShuffleModeEnabledChanged] call. shuffleModeEnabled : $shuffleModeEnabled")
             }
 
             override fun onTimelineChanged(timeline: Timeline?, manifest: Any?, reason: Int) {
                 super.onTimelineChanged(timeline, manifest, reason)
-//                Log.e(TAG,"[onTimelineChanged] call.")
+                Log.e(TAG,"[onTimelineChanged] call.")
             }
 
             override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
@@ -216,8 +218,9 @@ open class ExoPlayerHelper {
                         val dataSpec = DataSpec(datauri)
                         udpDataSource.open(dataSpec)
                         val myDataSourceFactory = DefaultDataSourceFactory(mContext, null) { -> UdpDataSource( 2000, 20000) }
-                        mMediaSource = ExtractorMediaSource.Factory(myDataSourceFactory).createMediaSource(udpDataSource.uri)
-
+                        mMediaSource = ExtractorMediaSource.Factory(myDataSourceFactory)
+                            .setExtractorsFactory(DefaultExtractorsFactory().setTsExtractorFlags(FLAG_ALLOW_NON_IDR_KEYFRAMES))
+                            .createMediaSource(udpDataSource.uri)
                     }else{
                         mMediaSource = ExtractorMediaSource.Factory((mContext as MyApplication).buildDataSourceFactory())
 //                        .setExtractorsFactory(DefaultExtractorsFactory().setTsExtractorFlags(FLAG_DETECT_ACCESS_UNITS))
