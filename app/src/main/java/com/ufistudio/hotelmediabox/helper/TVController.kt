@@ -185,6 +185,11 @@ object TVController {
         mPlayDisposable = sendTCPRequestSingle("j_stopplay 1")
                 .flatMap {
                     if(channel.chType == TVType.DVBT.name){
+
+                        if(mCurrentScreenType == SCREEN_TYPE.FULLSCREEN){
+                            return@flatMap Single.just(it)
+                        }
+
                     var width = 0
                     var height = 0
                     var x = 0

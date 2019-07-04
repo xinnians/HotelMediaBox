@@ -27,7 +27,7 @@
                 app:layout_constraintVertical_bias="0.0"
                 app:resize_mode="fill"
                 app:rewind_increment="30000"
-                app:use_controller="false" />
+                app:use_controller="false"/>
 
         <SurfaceView
                 android:id="@+id/dvbView"
@@ -38,21 +38,15 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-                android:id="@+id/videoViewMask"
+        <SurfaceView
+                android:id="@+id/mask"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginStart="@dimen/_1sdp"
-                android:layout_marginTop="@dimen/_1sdp"
-                android:layout_marginEnd="@dimen/_1sdp"
-                android:layout_marginBottom="@dimen/_1sdp"
-                android:background="@android:color/black"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0"/>
+                android:background="@android:color/black"/>
 
     </android.support.constraint.ConstraintLayout>
 

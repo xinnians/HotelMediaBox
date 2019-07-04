@@ -25,6 +25,7 @@ import com.ufistudio.hotelmediabox.pages.MainActivity
 import com.ufistudio.hotelmediabox.pages.base.PaneViewActivity
 import com.ufistudio.hotelmediabox.repository.data.TVType
 import com.ufistudio.hotelmediabox.utils.FileUtils
+import kotlinx.android.synthetic.main.activity_dvb_test.view.*
 import kotlinx.android.synthetic.main.view_bottom_fullscreen.*
 
 
@@ -47,12 +48,12 @@ class FullScreenActivity : PaneViewActivity() {
 
     private var mTVListener:TVController.OnTVListener = object :TVController.OnTVListener{
         override fun onIPTVLoading() {
-            videoViewMask.visibility = View.VISIBLE
+            mask.visibility = View.VISIBLE
 
         }
 
         override fun onIPTVPlaying() {
-            videoViewMask.visibility = View.INVISIBLE
+            mask.visibility = View.INVISIBLE
         }
 
         override fun onScanFinish() {
@@ -66,7 +67,7 @@ class FullScreenActivity : PaneViewActivity() {
 //                        TVController.initAVPlayer(TVController.SCREEN_TYPE.HIDE)
 //                        mScreenCurrentType = TVController.SCREEN_TYPE.HIDE
 //                    }
-
+                    mExoPlayerHelper.stop()
                     videoView.visibility = View.VISIBLE
                     if(tvChannel.chIp.uri.contains("box_")){
                         mExoPlayerHelper.setSource(Uri.parse(FileUtils.getFileFromStorage(tvChannel.chIp.uri)?.absolutePath ?: ""), true)
@@ -83,7 +84,6 @@ class FullScreenActivity : PaneViewActivity() {
 
                     mExoPlayerHelper.stop()
                     videoView.visibility = View.INVISIBLE
-                    videoViewMask.visibility = View.INVISIBLE
                 }
             }
         }
@@ -142,6 +142,19 @@ class FullScreenActivity : PaneViewActivity() {
             }
         })
 
+        mask.holder.addCallback(object : SurfaceHolder.Callback {
+            override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
+            }
+
+            override fun surfaceDestroyed(holder: SurfaceHolder?) {
+            }
+
+            override fun surfaceCreated(holder: SurfaceHolder?) {
+                mask.setZOrderOnTop(true)
+                mask.setZOrderMediaOverlay(true)
+            }
+        })
+
         mExoPlayerHelper.initPlayer(application, videoView)
     }
 
@@ -156,6 +169,7 @@ class FullScreenActivity : PaneViewActivity() {
     override fun onPause() {
         super.onPause()
 //        mViewModel.getTVHelper().closeAVPlayer()
+        mask.visibility = View.VISIBLE
         TVController.releaseListener(mTVListener)
         TVController.deInitAVPlayer()
         mExoPlayerHelper.stop()
@@ -227,6 +241,7 @@ class FullScreenActivity : PaneViewActivity() {
                 return true
             }
             KeyEvent.KEYCODE_DPAD_CENTER -> {
+                mask.visibility = View.VISIBLE
                 val intent: Intent = Intent(this, MainActivity::class.java)
                 val bundle: Bundle = Bundle()
                 bundle.putBoolean(Page.ARG_BUNDLE, true)
