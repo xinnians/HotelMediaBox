@@ -84,6 +84,7 @@ class FullScreenActivity : PaneViewActivity() {
 
                     mExoPlayerHelper.stop()
                     videoView.visibility = View.INVISIBLE
+                    mask.visibility = View.INVISIBLE
                 }
             }
         }
