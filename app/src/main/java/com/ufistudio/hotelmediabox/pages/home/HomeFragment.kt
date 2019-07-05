@@ -396,7 +396,7 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                 renderView()
             } else if (it is WeatherInfo) {
                 mWeatherData = it
-                switchWedge(TAG_TYPE_1)
+                switchWedge(mData?.home?.stage_type?.type ?: TAG_TYPE_3)
             }
         }
     }
@@ -499,19 +499,19 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                 include_home_banner.visibility = View.INVISIBLE
                 include_weather.visibility = View.VISIBLE
                 if (mWeatherData != null) {
-                    mWeatherData?.forecasts?.get(0)?.let {
-                        val icon = WeatherIconEnum.getItemByName(it.text).mIcon
-                        if (icon != -1) {
-                            imageView_weather.visibility = View.VISIBLE
-                            Glide.with(this)
-                                .load(icon)
-                                .skipMemoryCache(true)
-                                .into(imageView_weather)
-                        } else {
-                            imageView_weather.visibility = View.INVISIBLE
-                        }
-                        textView_value.text = String.format("%s %s", it.high, getString(R.string.symbol_temp))
-                    }
+//                    mWeatherData?.forecasts?.get(0)?.let {
+//                        val icon = WeatherIconEnum.getItemByName(it.text).mIcon
+//                        if (icon != -1) {
+//                            imageView_weather.visibility = View.VISIBLE
+//                            Glide.with(this)
+//                                .load(icon)
+//                                .skipMemoryCache(true)
+//                                .into(imageView_weather)
+//                        } else {
+//                            imageView_weather.visibility = View.INVISIBLE
+//                        }
+//                        textView_value.text = String.format("%s %s", it.high, getString(R.string.symbol_temp))
+//                    }
                 } else {
                     val weather: HomeWeather? = mData?.home?.weather
                     weather?.weather_city?.let { mViewModel.getWeather(it) }
