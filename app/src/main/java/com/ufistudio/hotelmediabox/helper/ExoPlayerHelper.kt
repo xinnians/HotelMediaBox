@@ -13,7 +13,10 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.ext.ffmpeg.FfmpegAudioRenderer
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
+import com.google.android.exoplayer2.extractor.ExtractorsFactory
+import com.google.android.exoplayer2.extractor.mp4.Mp4Extractor.FLAG_WORKAROUND_IGNORE_EDIT_LISTS
 import com.google.android.exoplayer2.extractor.ts.DefaultTsPayloadReaderFactory.FLAG_ALLOW_NON_IDR_KEYFRAMES
 import com.google.android.exoplayer2.extractor.ts.DefaultTsPayloadReaderFactory.FLAG_DETECT_ACCESS_UNITS
 import com.google.android.exoplayer2.offline.FilteringManifestParser
@@ -56,7 +59,8 @@ open class ExoPlayerHelper {
     fun initPlayer(context: Context?, videoView: PlayerView) {
         mContext = context
         val trackSelector = DefaultTrackSelector()
-        mPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector)
+        val renderer: RenderersFactory = DefaultRenderersFactory(mContext,DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
+        mPlayer = ExoPlayerFactory.newSimpleInstance(context,renderer, trackSelector)
         mPlayer?.volume = 1f
         mVideoView = videoView
         mVideoView.player = mPlayer
@@ -80,7 +84,11 @@ open class ExoPlayerHelper {
 
             override fun onPlayerError(error: ExoPlaybackException?) {
                 super.onPlayerError(error)
-                Log.e(TAG,"[onPlayerError] call. ")
+                Log.e(TAG,"[onPlayerError] call. error : ${error?.message}")
+                mMediaSource?.let {
+                    mPlayer?.prepare(it)
+                    mPlayer?.playWhenReady = true
+                }
             }
 
             override fun onLoadingChanged(isLoading: Boolean) {
@@ -105,7 +113,7 @@ open class ExoPlayerHelper {
 
             override fun onTimelineChanged(timeline: Timeline?, manifest: Any?, reason: Int) {
                 super.onTimelineChanged(timeline, manifest, reason)
-                Log.e(TAG,"[onTimelineChanged] call.")
+                Log.e(TAG,"[onTimelineChanged] call. timeline:$timeline, manifest:$manifest, reason:$reason")
             }
 
             override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
@@ -144,7 +152,7 @@ open class ExoPlayerHelper {
         try {
             udpDataSource.open(dataSpec)
 
-            val factory = com.google.android.exoplayer2.upstream.DataSource.Factory { udpDataSource }
+            val factory = DataSource.Factory { udpDataSource }
             val videoSource = ExtractorMediaSource.Factory(factory).createMediaSource(udpDataSource.uri)
             mPlayer?.prepare(videoSource)
 
@@ -166,7 +174,7 @@ open class ExoPlayerHelper {
         try {
             dtaSource.open(dataSpec)
 
-            val factory = com.google.android.exoplayer2.upstream.DataSource.Factory { dtaSource }
+            val factory = DataSource.Factory { dtaSource }
             val videoSource = ExtractorMediaSource.Factory(factory).createMediaSource(dtaSource.uri)
             mPlayer?.prepare(videoSource)
 
@@ -217,10 +225,18 @@ open class ExoPlayerHelper {
                         val udpDataSource = UdpDataSource(2000,20000)
                         val dataSpec = DataSpec(datauri)
                         udpDataSource.open(dataSpec)
-                        val myDataSourceFactory = DefaultDataSourceFactory(mContext, null) { -> UdpDataSource( 2000, 20000) }
-                        mMediaSource = ExtractorMediaSource.Factory(myDataSourceFactory)
-                            .setExtractorsFactory(DefaultExtractorsFactory().setTsExtractorFlags(FLAG_ALLOW_NON_IDR_KEYFRAMES))
+//                        val myDataSourceFactory = DefaultDataSourceFactory(mContext, null) { UdpDataSource( 2000, 20000) }
+//                        mMediaSource = ExtractorMediaSource.Factory(myDataSourceFactory)
+//                            .setExtractorsFactory(DefaultExtractorsFactory().setTsExtractorFlags(FLAG_ALLOW_NON_IDR_KEYFRAMES))
+//                            .createMediaSource(udpDataSource.uri)
+
+                        val dataSourceFactory: DataSource.Factory = DataSource.Factory { udpDataSource }
+                        val extractorsFactory: ExtractorsFactory = DefaultExtractorsFactory().setTsExtractorFlags(FLAG_ALLOW_NON_IDR_KEYFRAMES ).setMp4ExtractorFlags(FLAG_WORKAROUND_IGNORE_EDIT_LISTS)
+                        mMediaSource = ExtractorMediaSource.Factory(dataSourceFactory)
+                            .setExtractorsFactory(extractorsFactory)
                             .createMediaSource(udpDataSource.uri)
+                        udpDataSource.close()
+
                     }else{
                         mMediaSource = ExtractorMediaSource.Factory((mContext as MyApplication).buildDataSourceFactory())
 //                        .setExtractorsFactory(DefaultExtractorsFactory().setTsExtractorFlags(FLAG_DETECT_ACCESS_UNITS))
@@ -254,7 +270,7 @@ open class ExoPlayerHelper {
         try {
             dtaSource.open(dataSpec)
 
-            val factory = com.google.android.exoplayer2.upstream.DataSource.Factory { dtaSource }
+            val factory = DataSource.Factory { dtaSource }
             val videoSource = ExtractorMediaSource.Factory(factory).createMediaSource(dtaSource.uri)
             mPlayer?.prepare(videoSource)
 
