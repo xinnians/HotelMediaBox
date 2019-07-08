@@ -463,3 +463,36 @@ data class GenreType(
     var key: String = "",
     var display: String =""
 )
+
+data class KDownloadVersion(
+    var process: String = "",
+    var ver: String = "",
+    var build: String = ""
+)
+
+data class KDownloadProgress(
+    var dlinfo: DLInfo = DLInfo(),
+    var status: DLStatus = DLStatus(),
+    var md5result: DLmd5result = DLmd5result()
+)
+
+data class DLInfo(
+    var flag: String = "",
+    var fullURL: String = "",
+    var outFile: String = "",
+    var buexpMD5ild: String = "",
+    var expFileSZ: String = ""
+)
+
+data class DLStatus(
+    var download_exec_valid: String = "",
+    var download_exec_rtn: String = "",
+    var msg_valid: String = "",
+    var msg: String = ""
+)
+
+data class DLmd5result(
+    var valid: String = "",
+    var calMD5: String = "",
+    var cmp: String = ""
+)

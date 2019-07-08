@@ -10,20 +10,31 @@ import android.text.TextUtils
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
+import com.ufistudio.hotelmediabox.helper.DownloadHelper
+import com.ufistudio.hotelmediabox.helper.DownloadHelper.TAR_PATH
+import com.ufistudio.hotelmediabox.helper.DownloadHelper.VERIFY_FILE_NAME
 import com.ufistudio.hotelmediabox.receivers.ACTION_UPDATE_APK
 import com.ufistudio.hotelmediabox.receivers.TAG_FORCE
 import com.ufistudio.hotelmediabox.repository.Repository
 import com.ufistudio.hotelmediabox.repository.data.Broadcast
 import com.ufistudio.hotelmediabox.repository.data.Config
+import com.ufistudio.hotelmediabox.repository.data.KDownloadProgress
+import com.ufistudio.hotelmediabox.repository.data.KDownloadVersion
 import com.ufistudio.hotelmediabox.repository.provider.preferences.SharedPreferencesProvider
 import com.ufistudio.hotelmediabox.repository.remote.ApiClient
 import com.ufistudio.hotelmediabox.utils.*
+import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.functions.Function
+import io.reactivex.rxkotlin.toSingle
 import io.reactivex.schedulers.Schedulers
 import java.io.File
 import java.io.IOException
+import java.lang.Exception
 import java.net.*
+import java.util.concurrent.TimeUnit
 
 class UdpReceiver : IntentService("UdpReceiver"), Runnable {
     //    val TAG_SERVER_IP = "192.168.2.8"
@@ -33,6 +44,7 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
     var mPacket: DatagramPacket? = null
     var mServerAddress: InetAddress? = null
     var mThread: Thread? = null
+    var mDownloadDisposable: Disposable? = null
 
     companion object {
         val TAG = UdpReceiver::class.simpleName
@@ -43,15 +55,30 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
         private val TAG_RESOURCE_UPDATE = "resourceUpdate".hashCode()
         private val TAG_SET_STATIC_IP = "setStaticIp".hashCode()
         private val TAG_REBOOT_DEVICE = "rebootDevice".hashCode()
+
+        private val DWNLDR_NO_ERR = "0"
+        private val DWNLDR_ERR_IN_PROGRESS = "1"
+        private val DWNLDR_ERR_PARAM_NULL = "2"
+        private val DWNLDR_ERR_FILEOUT_NULL = "3"
+        private val DWNLDR_ERR_MD5_PARAM = "4"
+        private val DWNLDR_ERR_CONNECT = "5"
+        private val DWNLDR_ERR_404_FILENOTFOUND = "6"
+        private val DWNLDR_ERR_SIZE_CAL = "7"
+        private val DWNLDR_ERR_NO_CAPACITY = "8"
+        private val DWNLDR_ERR_CURL_ERRORS = "254"
+        private val DWNLDR_ERR_SYSTEM = "255"
+
+        private val DWNLDR_DLINFO_FLAG_IDLE = "0"
+        private val DWNLDR_DLINFO_INIT = "1"
+        private val DWNLDR_DLINFO_STARTED = "2"
+        private val DWNLDR_DLINFO_DOWNLOADING = "3"
+        private val DWNLDR_DLINFO_COMPLETED = "4"
+        private val DWNLDR_DLINFO_MD5_COMPUTED = "5"
+        private val DWNLDR_DLINFO_ERROR = "255"
     }
 
     override fun onBind(intent: Intent?): IBinder {
         return Binder()
-    }
-
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-
-        return super.onStartCommand(intent, flags, startId)
     }
 
     override fun onHandleIntent(intent: Intent?) {
@@ -211,55 +238,131 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                                 .subscribe()
                     }
                     TAG_RESOURCE_UPDATE -> {
-                        var retried: Boolean = false
 
-                        fun downloadResource() {
-                            //將 hotel.tar下載到/data/correction資料夾內
-                            Repository(application, SharedPreferencesProvider(application)).downloadFileWithUrl("http://${myBroadcast.ip}:${myBroadcast.port}${myBroadcast.url}")
-                                    .flatMap { Single.fromCallable { FileUtils.writeResponseBodyToDisk(it, TAG_HOTEL_VERIFY_TAR_FILE_NAME, TAG_DEFAULT_CORRECTION_PATH) } }
-                                    .retry(1)
-                                    .subscribeOn(Schedulers.io())
-                                    .subscribe({
-                                        if (FileUtils.fileIsExists(TAG_HOTEL_VERIFY_TAR_FILE_NAME, TAG_DEFAULT_CORRECTION_PATH)) {
-                                            FileUtils.getFileFromStorage(TAG_HOTEL_VERIFY_TAR_FILE_NAME, "/data$TAG_DEFAULT_CORRECTION_PATH")?.let {
-                                                val checkSum = MD5Utils.getMD5CheckSum(it)
-                                                Log.d(TAG, "TAG_RESOURCE_UPDATE resource check sum = $checkSum")
-                                                if (TextUtils.equals(checkSum, myBroadcast.md5)) {
-                                                    Log.d(TAG, "TAG_RESOURCE_UPDATE download success")
-                                                    val fileHotelTar = File("/data$TAG_DEFAULT_CORRECTION_PATH", TAG_DEFAULT_HOTEL_TAR_FILE_NAME)
-                                                    it.renameTo(fileHotelTar)
+                        if (mDownloadDisposable != null && !mDownloadDisposable!!.isDisposed) {
+                            mDownloadDisposable?.dispose()
+                        }
 
-                                                    FileUtils.getFileFromStorage("chkflag")?.delete()
-                                                    MiscUtils.reboot(baseContext)
-                                                } else {
-                                                    Log.d(TAG, "TAG_RESOURCE_UPDATE CheckSum is not correct with server value : ${myBroadcast.md5}")
-                                                    ApiClient.clear()
-                                                    if (!retried)
-                                                        downloadResource()
-                                                    retried = true
-                                                    Log.d(TAG, "TAG_RESOURCE_UPDATE retry download resource")
+                        mDownloadDisposable = DownloadHelper.checkVersion()
+                            .flatMap { checkVersionResult ->
+                                FileUtils.fileIsExist(TAG_DEFAULT_CORRECTION_PATH)
+                                var versionInfo = Gson().fromJson(checkVersionResult, KDownloadVersion::class.java) ?: KDownloadVersion()
+                                Log.e(TAG,"[TAG_RESOURCE_UPDATE] versionInfo : $versionInfo")
+                                return@flatMap DownloadHelper.downloadHotelTar("http://${myBroadcast.ip}:${myBroadcast.port}${myBroadcast.url}",fileMD5 = myBroadcast.md5) }
+                            .flatMap { downloadResult ->
+                                Log.e(TAG,"[TAG_RESOURCE_UPDATE] call download result : $downloadResult")
+                                when(downloadResult){
+                                    "0", "1"->{
+                                        return@flatMap DownloadHelper.checkDownloadProgress()
+                                            .delay(10,TimeUnit.SECONDS)
+                                            .flatMap { checkProgressResult ->
+                                                var progressInfo = Gson().fromJson(checkProgressResult, KDownloadProgress::class.java) ?: KDownloadProgress()
+                                                Log.e(TAG,"[TAG_RESOURCE_UPDATE] progressInfo : $progressInfo")
+                                                if(progressInfo.dlinfo.flag != DWNLDR_DLINFO_MD5_COMPUTED){
+                                                    Log.e(TAG,"[TAG_RESOURCE_UPDATE] progressInfo.dlinfo.flag != DWNLDR_DLINFO_MD5_COMPUTED($DWNLDR_DLINFO_MD5_COMPUTED)")
+                                                    Single.error<Exception>(Exception("download not finish."))
+                                                }else{
+                                                    Single.just(progressInfo)
                                                 }
                                             }
+                                            .retry { count, erroMsg ->
+                                                Log.e(TAG,"[TAG_RESOURCE_UPDATE] retry  count : $count, erroMsg : $erroMsg")
+                                                true }
+//                                            .retry { t ->
+//                                                Log.e(TAG,"[TAG_RESOURCE_UPDATE] retry msg : $t")
+//                                                t.message == "download not finish." }
+                                    }
+                                    else ->{
+                                        return@flatMap DownloadHelper.checkDownloadProgress()
+                                            .map { checkProgressResult ->
+                                                var progressInfo = Gson().fromJson(checkProgressResult, KDownloadProgress::class.java) ?: KDownloadProgress()
+                                                Log.e(TAG,"[TAG_RESOURCE_UPDATE] progressInfo : $progressInfo")
+                                                if(progressInfo.dlinfo.flag != DWNLDR_DLINFO_MD5_COMPUTED){
+                                                    return@map Single.just(Exception("download not finish."))
+                                                }else{
+                                                    return@map Single.just(Exception("download fail = $downloadResult"))
+                                                }
+                                            }
+                                    }
+                                }
+                            }
+                            .subscribeOn(Schedulers.io())
+                            .subscribe({onSuccess ->
+                                Log.e(TAG,"[TAG_RESOURCE_UPDATE] onSuccess")
 
-                                        } else {
-                                            Log.e(TAG, "TAG_RESOURCE_UPDATE download finish, but can not find file")
-                                            ApiClient.clear()
-                                            if (!retried)
-                                                downloadResource()
-                                            retried = true
-                                            Log.d(TAG, "TAG_RESOURCE_UPDATE retry download resource")
+                                if(onSuccess is KDownloadProgress){
+                                    Log.e(TAG,"[TAG_RESOURCE_UPDATE] onSuccess is KDownloadProgress : $onSuccess")
+                                    if(onSuccess.md5result.cmp == "0"){
+                                        //TODO 下載成功且md5確認無誤，覆蓋到現有的hotel.tar上，然後刪除chkflag並重開機。
+
+                                        FileUtils.getFileFromStorage(VERIFY_FILE_NAME,TAR_PATH)?.let { verifyFile ->
+                                            val fileHotelTar = File("/data$TAG_DEFAULT_CORRECTION_PATH", TAG_DEFAULT_HOTEL_TAR_FILE_NAME)
+                                            verifyFile.renameTo(fileHotelTar)
+                                            FileUtils.getFileFromStorage("chkflag")?.delete()
+                                            MiscUtils.reboot(baseContext)
                                         }
-                                    }, {
-                                        Log.e(TAG, "TAG_RESOURCE_UPDATE download error $it")
-                                        ApiClient.clear()
-                                        if (!retried) {
-                                            downloadResource()
-                                            Log.d(TAG, "TAG_RESOURCE_UPDATE retry download resource")
-                                        }
-                                        retried = true
-                                    })
-                        }
-                        downloadResource()
+
+                                    }else{
+                                        //TODO 下載完成但md5確認有異，所以刪除該檔案
+                                        FileUtils.getFileFromStorage(VERIFY_FILE_NAME,TAR_PATH)?.delete()
+                                    }
+                                }else{
+                                    Log.e(TAG,"[TAG_RESOURCE_UPDATE] onSuccess not a KDownloadProgress : $onSuccess")
+                                }
+                            },{onError ->
+                                Log.e(TAG,"[TAG_RESOURCE_UPDATE] onError : $onError")
+                            })
+
+
+//                        var retried: Boolean = false
+//
+//                        fun downloadResource() {
+//                            //將 hotel.tar下載到/data/correction資料夾內
+//                            Repository(application, SharedPreferencesProvider(application)).downloadFileWithUrl("http://${myBroadcast.ip}:${myBroadcast.port}${myBroadcast.url}")
+//                                    .flatMap { Single.fromCallable { FileUtils.writeResponseBodyToDisk(it, TAG_HOTEL_VERIFY_TAR_FILE_NAME, TAG_DEFAULT_CORRECTION_PATH) } }
+//                                    .retry(1)
+//                                    .subscribeOn(Schedulers.io())
+//                                    .subscribe({
+//                                        if (FileUtils.fileIsExists(TAG_HOTEL_VERIFY_TAR_FILE_NAME, TAG_DEFAULT_CORRECTION_PATH)) {
+//                                            FileUtils.getFileFromStorage(TAG_HOTEL_VERIFY_TAR_FILE_NAME, "/data$TAG_DEFAULT_CORRECTION_PATH")?.let {
+//                                                val checkSum = MD5Utils.getMD5CheckSum(it)
+//                                                Log.d(TAG, "TAG_RESOURCE_UPDATE resource check sum = $checkSum")
+//                                                if (TextUtils.equals(checkSum, myBroadcast.md5)) {
+//                                                    Log.d(TAG, "TAG_RESOURCE_UPDATE download success")
+//                                                    val fileHotelTar = File("/data$TAG_DEFAULT_CORRECTION_PATH", TAG_DEFAULT_HOTEL_TAR_FILE_NAME)
+//                                                    it.renameTo(fileHotelTar)
+//
+//                                                    FileUtils.getFileFromStorage("chkflag")?.delete()
+//                                                    MiscUtils.reboot(baseContext)
+//                                                } else {
+//                                                    Log.d(TAG, "TAG_RESOURCE_UPDATE CheckSum is not correct with server value : ${myBroadcast.md5}")
+//                                                    ApiClient.clear()
+//                                                    if (!retried)
+//                                                        downloadResource()
+//                                                    retried = true
+//                                                    Log.d(TAG, "TAG_RESOURCE_UPDATE retry download resource")
+//                                                }
+//                                            }
+//
+//                                        } else {
+//                                            Log.e(TAG, "TAG_RESOURCE_UPDATE download finish, but can not find file")
+//                                            ApiClient.clear()
+//                                            if (!retried)
+//                                                downloadResource()
+//                                            retried = true
+//                                            Log.d(TAG, "TAG_RESOURCE_UPDATE retry download resource")
+//                                        }
+//                                    }, {
+//                                        Log.e(TAG, "TAG_RESOURCE_UPDATE download error $it")
+//                                        ApiClient.clear()
+//                                        if (!retried) {
+//                                            downloadResource()
+//                                            Log.d(TAG, "TAG_RESOURCE_UPDATE retry download resource")
+//                                        }
+//                                        retried = true
+//                                    })
+//                        }
+//                        downloadResource()
                     }
                     TAG_SET_STATIC_IP -> {
                         Repository(application, SharedPreferencesProvider(application)).getStaticIp("http://${myBroadcast.ip}:${myBroadcast.port}${myBroadcast.url}")
