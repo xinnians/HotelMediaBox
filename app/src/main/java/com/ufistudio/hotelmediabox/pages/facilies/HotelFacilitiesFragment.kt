@@ -19,6 +19,7 @@ import com.ufistudio.hotelmediabox.AppInjector
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.constants.Page
 import com.ufistudio.hotelmediabox.helper.ExoPlayerHelper
+import com.ufistudio.hotelmediabox.helper.TVController
 import com.ufistudio.hotelmediabox.interfaces.OnItemClickListener
 import com.ufistudio.hotelmediabox.interfaces.OnItemFocusListener
 import com.ufistudio.hotelmediabox.interfaces.ViewModelsCallback
@@ -126,6 +127,7 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
 
     override fun onResume() {
         super.onResume()
+        TVController.initAVPlayer(TVController.SCREEN_TYPE.HIDE)
         if (mFullscreen) {
             switchRender()
             mFullscreen = false
@@ -411,6 +413,7 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
 
         checkSideArrow()
         hideFullScreenBottomNote()
+        mExoPlayerHelper.release()
 
         val item = list!![mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!]
         (view_content_type2.findViewById(R.id.text_total_page) as TextView).text = String.format("/%d", list.size)
@@ -432,11 +435,11 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
             }
         } else if (item.file_type.hashCode() == TAG_VIDEO.hashCode()) {
             mContentPlaying = true
+            mVideoView2?.visibility = View.VISIBLE
             if (mVideoView2 != null) {
                 mExoPlayerHelper.initPlayer(getApplication(), mVideoView2!!)
                 mExoPlayerHelper.setSource(Uri.parse(FileUtils.getFileFromStorage(item.file_name)?.absolutePath ?: ""))
                 mExoPlayerHelper.repeatMode()
-                mVideoView2?.visibility = View.VISIBLE
             }
             imageView?.visibility = View.INVISIBLE
         } else {
@@ -455,6 +458,7 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
 
         checkArrow()
         hideFullScreenBottomNote()
+        mExoPlayerHelper.release()
 
         val item = list!![mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!]
         (view_content_type3.findViewById(R.id.text_description) as TextView).text = item.content

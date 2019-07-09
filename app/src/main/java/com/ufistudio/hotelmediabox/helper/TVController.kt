@@ -124,8 +124,8 @@ object TVController {
                 y = 0
             }
             TVController.SCREEN_TYPE.HIDE -> {
-                width = 20
-                height = 20
+                width = 100
+                height = 100
                 x = 0
                 y = 0
             }

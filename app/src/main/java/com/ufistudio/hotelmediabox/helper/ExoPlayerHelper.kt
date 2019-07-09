@@ -231,7 +231,7 @@ open class ExoPlayerHelper {
 //                            .createMediaSource(udpDataSource.uri)
 
                         val dataSourceFactory: DataSource.Factory = DataSource.Factory { udpDataSource }
-                        val extractorsFactory: ExtractorsFactory = DefaultExtractorsFactory().setTsExtractorFlags(FLAG_ALLOW_NON_IDR_KEYFRAMES ).setMp4ExtractorFlags(FLAG_WORKAROUND_IGNORE_EDIT_LISTS)
+                        val extractorsFactory: ExtractorsFactory = DefaultExtractorsFactory().setTsExtractorFlags(FLAG_ALLOW_NON_IDR_KEYFRAMES )
                         mMediaSource = ExtractorMediaSource.Factory(dataSourceFactory)
                             .setExtractorsFactory(extractorsFactory)
                             .createMediaSource(udpDataSource.uri)
