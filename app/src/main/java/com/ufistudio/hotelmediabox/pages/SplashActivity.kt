@@ -13,10 +13,19 @@ import com.ufistudio.hotelmediabox.utils.FileUtils
 import com.ufistudio.hotelmediabox.utils.FileUtils.fileIsExists
 import com.ufistudio.hotelmediabox.utils.MiscUtils
 import com.ufistudio.hotelmediabox.utils.TAG_DEFAULT_APK_NAME
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.view_date.view.*
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.concurrent.schedule
 
 class SplashActivity : AppCompatActivity() {
+
+    private var mCheckChkFlagDisposable: Disposable? = null
+    private var mCheckCounts: Int = 0
 
     private val TAG = SplashActivity::class.java.simpleName
 
@@ -63,32 +72,51 @@ class SplashActivity : AppCompatActivity() {
         TVController.registerListener(mTVListener)
         // initDVB，init完成後再進下一頁
         TVController.initDevice()
-        goNextPage()
+        checkChkFlag()
     }
 
     override fun onPause() {
         super.onPause()
         TVController.releaseListener(mTVListener)
+
+        if (mCheckChkFlagDisposable != null && mCheckChkFlagDisposable?.isDisposed == false) {
+            mCheckChkFlagDisposable?.dispose()
+        }
     }
 
-    fun goNextPage() {
+    private fun goNextPage() {
         val intent = Intent(this, WelcomeActivity::class.java)
 //        val intent = Intent(this, MainActivity::class.java)
 //        val intent = Intent(this, DVBTestActivity::class.java)
 
-        var waitTime = 2500L
-
-        if(!fileIsExists("chkflag")){
-            Log.e(TAG,"chkflag isn't Exist.")
-            waitTime = 10000L
-        }else{
-            Log.e(TAG,"chkflag is Exist.")
-        }
-
-        val timer: Timer = Timer()
-        timer.schedule(waitTime) {
+//        var waitTime = 2500L
+//
+//        if(!fileIsExists("chkflag")){
+//            Log.e(TAG,"chkflag isn't Exist.")
+//            waitTime = 10000L
+//        }else{
+//            Log.e(TAG,"chkflag is Exist.")
+//        }
+//
+//        val timer: Timer = Timer()
+//        timer.schedule(waitTime) {
             startActivity(intent)
             finish()
-        }
+//        }
+    }
+
+    private fun checkChkFlag(){
+        mCheckChkFlagDisposable = Observable.interval(1, 2500, TimeUnit.MILLISECONDS)
+            .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.io())
+            .subscribe {
+                mCheckCounts = mCheckCounts.plus(1)
+                if(fileIsExists("chkflag")){
+                    Log.e(TAG,"[checkChkFlag] file is Exists, ready go to nextPage. checkCount : $mCheckCounts")
+                    goNextPage()
+                }else{
+                    Log.e(TAG,"[checkChkFlag] file not Exists, ready go to nextPage. checkCount : $mCheckCounts")
+                }
+            }
     }
 }
