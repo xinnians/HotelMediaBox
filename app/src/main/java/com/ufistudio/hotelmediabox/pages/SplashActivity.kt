@@ -106,11 +106,16 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun checkChkFlag(){
+        mCheckCounts = 0
         mCheckChkFlagDisposable = Observable.interval(1, 2500, TimeUnit.MILLISECONDS)
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.io())
             .subscribe {
                 mCheckCounts = mCheckCounts.plus(1)
+                if(mCheckCounts == 120){
+                    Log.e(TAG,"[checkChkFlag] checkCount : $mCheckCounts, force go to nextPage.")
+                    goNextPage()
+                }
                 if(fileIsExists("chkflag")){
                     Log.e(TAG,"[checkChkFlag] file is Exists, ready go to nextPage. checkCount : $mCheckCounts")
                     goNextPage()
