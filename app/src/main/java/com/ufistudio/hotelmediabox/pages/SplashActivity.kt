@@ -107,12 +107,12 @@ class SplashActivity : AppCompatActivity() {
 
     private fun checkChkFlag(){
         mCheckCounts = 0
-        mCheckChkFlagDisposable = Observable.interval(1, 2500, TimeUnit.MILLISECONDS)
+        mCheckChkFlagDisposable = Observable.interval(2500, 5000, TimeUnit.MILLISECONDS)
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.io())
             .subscribe {
                 mCheckCounts = mCheckCounts.plus(1)
-                if(mCheckCounts == 120){
+                if(mCheckCounts == 20){
                     Log.e(TAG,"[checkChkFlag] checkCount : $mCheckCounts, force go to nextPage.")
                     goNextPage()
                 }

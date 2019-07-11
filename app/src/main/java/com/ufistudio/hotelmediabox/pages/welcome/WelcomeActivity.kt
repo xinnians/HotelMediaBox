@@ -21,16 +21,17 @@ import com.ufistudio.hotelmediabox.pages.base.PaneViewActivity
 import com.ufistudio.hotelmediabox.repository.data.InitialData
 import com.ufistudio.hotelmediabox.repository.data.Welcome
 import com.ufistudio.hotelmediabox.repository.data.WelcomeContent
-import com.ufistudio.hotelmediabox.utils.FileUtils
-import com.ufistudio.hotelmediabox.utils.MiscUtils
 import kotlinx.android.synthetic.main.activity_welcome.*
 import android.app.AlarmManager
 import android.content.Context
 import android.widget.Toast
+import com.ufistudio.hotelmediabox.constants.Key.IS_CONFIG_ALREADY_RESET
 import com.ufistudio.hotelmediabox.constants.Key.IS_TIME_SET_SUCCESS
+import com.ufistudio.hotelmediabox.helper.DownloadHelper.TAR_PATH
 import com.ufistudio.hotelmediabox.repository.data.NoteButton
-import com.ufistudio.hotelmediabox.utils.XTNetWorkManager
+import com.ufistudio.hotelmediabox.utils.*
 import kotlinx.android.synthetic.main.view_bottom_ok.*
+import java.net.NoRouteToHostException
 
 
 class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickListener {
@@ -55,8 +56,10 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
 
         mViewModel.getInitialDataProgress.observe(this, Observer { onProgress() })
         mViewModel.getInitialDataSuccess.observe(this, Observer { onSuccess(it) })
-        mViewModel.getInitialDataError.observe(this, Observer { Log.e(TAG, "Get Initial data Error : $it")
-            this.getSharedPreferences("HotelBoxData", Context.MODE_PRIVATE).edit().putBoolean(IS_TIME_SET_SUCCESS,false).apply()})
+        mViewModel.getInitialDataError.observe(this, Observer {
+            Log.e(TAG, "Get Initial data Error : $it")
+            this.getSharedPreferences("HotelBoxData", Context.MODE_PRIVATE).edit().putBoolean(IS_TIME_SET_SUCCESS,false).apply()
+        })
 
         mViewModel.initNoteButtonProgress.observe(this, Observer { onProgress() })
         mViewModel.initNoteButtonSuccess.observe(this, Observer { onSuccess(it) })
@@ -138,6 +141,7 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
                             mPlayer?.isLooping = true
                         }
                     }
+                    this.getSharedPreferences("HotelBoxData", Context.MODE_PRIVATE).edit().putBoolean(IS_CONFIG_ALREADY_RESET,false).apply()
                 }
                 is NoteButton -> {
                     textView_ok.text = it.note?.next
@@ -151,8 +155,17 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
 
     override fun onError(t: Throwable?) {
         Log.d(TAG, "onError = ${t?.message}")
-        FileUtils.getFileFromStorage("chkflag")?.delete()
-        MiscUtils.reboot(baseContext)
+        if(!this.getSharedPreferences("HotelBoxData", Context.MODE_PRIVATE).getBoolean(IS_CONFIG_ALREADY_RESET,false)){
+            Log.e(TAG,"IS_CONFIG_ALREADY_RESET = false, go delete chkflag and reboot")
+            this.getSharedPreferences("HotelBoxData", Context.MODE_PRIVATE).edit().putBoolean(IS_CONFIG_ALREADY_RESET,true).apply()
+            FileUtils.getFileFromStorage("chkflag")?.delete()
+            MiscUtils.reboot(baseContext)
+        }else{
+            Log.e(TAG,"IS_CONFIG_ALREADY_RESET = true, go delete (chkflag,hotel.tar) and reboot")
+            FileUtils.getFileFromStorage(TAG_DEFAULT_HOTEL_TAR_FILE_NAME,TAR_PATH)?.delete()
+            FileUtils.getFileFromStorage("chkflag")?.delete()
+            MiscUtils.reboot(baseContext)
+        }
         AlertDialog.Builder(this)
             .setTitle(R.string.dialog_error_title)
             .setMessage(R.string.dialog_cannot_find_file)
