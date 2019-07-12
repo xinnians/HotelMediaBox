@@ -267,6 +267,7 @@ object TVController {
                         if (mCurrentLockFrequency == channelParameter) {
                             return@flatMap Single.fromCallable { RESULT_SUCCESS }
                         }
+                        mCurrentLockFrequency = ""
                         return@flatMap sendTCPRequestSingle("j_setchan $channelParameter")
                             .map { result ->
                                 mCurrentLockFrequency = if (result == RESULT_SUCCESS) channelParameter
