@@ -20,7 +20,7 @@
 
     <!--Factory-->
     <string name="factory_import_json_files">Import json files</string>
-    <string name="factory_export_json_files">Export json files</string>
+    <string name="factory_export_json_files">Export hotel.tar</string>
     <string name="factory_check_upgrade_from_url">check upgrade from url</string>
     <string name="factory_check_upgrade_from_usb">check upgrade from usb</string>
     <string name="factory_open_setting">Open Setting</string>

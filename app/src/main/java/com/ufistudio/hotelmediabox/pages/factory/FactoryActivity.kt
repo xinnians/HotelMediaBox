@@ -110,32 +110,32 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
 
     override fun onClick(view: View?) {
         when (view?.tag as FactoryFeature) {
-            FactoryFeature.CHECK_UPGRADE_FROM_URL -> {
-
-//                var link = "https://drive.google.com/uc?export=download&id=1xnX0GLqhvwViob-WzbzOxPRgqkvkd39J"
-                mInfo1.setLength(0)
-                if (TextUtils.isEmpty(mData?.config?.upgradeUrl!!)) {
-                    mInfo1.append("找不到url")
-                    textView_info1.text = mInfo1
-                    return
-                }
-                mInfo1.append("檢查更新網址：${mData?.config?.upgradeUrl}\n")
-                textView_info1.text = mInfo1
-                mViewModel.downloadFileWithUrl(mData?.config?.upgradeUrl!!)
-
-//                textView_info1.text = link
-//                mViewModel.downloadFileWithUrl(link)
-            }
-            FactoryFeature.CHECK_UPGRADE_FROM_USB -> {
-                if (!MiscUtils.installApk(this, TAG_DEFAULT_APK_NAME, "${FileUtils.getUSBFiles()?.path}")) {
-                    mInfo1.setLength(0)
-                    mInfo1.append("找不到 $TAG_DEFAULT_APK_NAME 安裝檔")
-
-                    Log.d(TAG, "找不到裝置")
-                }
-                textView_info1.text = mInfo1
-                Log.d(TAG, "找得到裝置")
-            }
+//            FactoryFeature.CHECK_UPGRADE_FROM_URL -> {
+//
+////                var link = "https://drive.google.com/uc?export=download&id=1xnX0GLqhvwViob-WzbzOxPRgqkvkd39J"
+//                mInfo1.setLength(0)
+//                if (TextUtils.isEmpty(mData?.config?.upgradeUrl!!)) {
+//                    mInfo1.append("找不到url")
+//                    textView_info1.text = mInfo1
+//                    return
+//                }
+//                mInfo1.append("檢查更新網址：${mData?.config?.upgradeUrl}\n")
+//                textView_info1.text = mInfo1
+//                mViewModel.downloadFileWithUrl(mData?.config?.upgradeUrl!!)
+//
+////                textView_info1.text = link
+////                mViewModel.downloadFileWithUrl(link)
+//            }
+//            FactoryFeature.CHECK_UPGRADE_FROM_USB -> {
+//                if (!MiscUtils.installApk(this, TAG_DEFAULT_APK_NAME, "${FileUtils.getUSBFiles()?.path}")) {
+//                    mInfo1.setLength(0)
+//                    mInfo1.append("找不到 $TAG_DEFAULT_APK_NAME 安裝檔")
+//
+//                    Log.d(TAG, "找不到裝置")
+//                }
+//                textView_info1.text = mInfo1
+//                Log.d(TAG, "找得到裝置")
+//            }
             FactoryFeature.EXPORT_JSON_FILE -> {
                 mInfo1.setLength(0)
                 mInfo1.append("暫時不給使用")
@@ -147,17 +147,17 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
 //                    }
 //                })
             }
-            FactoryFeature.IMPORT_JSON_FILE -> {
-                mInfo1.setLength(0)
-                mInfo1.append("暫時不給使用")
-                //TODO 需要修正
-//                FileUtils.importFile(object : OnSimpleListener {
-//                    override fun callback(msg: String?) {
-//                        mInfo1.append("$msg\n")
-//                        textView_info1.text = mInfo1
-//                    }
-//                })
-            }
+//            FactoryFeature.IMPORT_JSON_FILE -> {
+//                mInfo1.setLength(0)
+//                mInfo1.append("暫時不給使用")
+//                //TODO 需要修正
+////                FileUtils.importFile(object : OnSimpleListener {
+////                    override fun callback(msg: String?) {
+////                        mInfo1.append("$msg\n")
+////                        textView_info1.text = mInfo1
+////                    }
+////                })
+//            }
             FactoryFeature.OPEN_SETTING -> {
                 MiscUtils.openSetting(this)
             }
