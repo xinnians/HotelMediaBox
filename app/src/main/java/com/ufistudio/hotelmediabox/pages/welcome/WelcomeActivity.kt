@@ -113,7 +113,7 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
             when (it) {
                 is InitialData -> {
                     Log.e(TAG, "[InitialData] : $it")
-                    text_name.text = if (it.guestName.isNullOrEmpty()) "Guest" else it.guestName
+                    text_name.text = if (it.guestName.isNullOrEmpty()) "" else it.guestName
                     text_name?.requestFocus()
                     val mAlarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
                     mAlarmManager.setTimeZone(it.timezone)
