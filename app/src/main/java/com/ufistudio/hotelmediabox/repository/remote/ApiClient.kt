@@ -1,5 +1,6 @@
 package com.ufistudio.hotelmediabox.repository.remote
 
+import android.util.Log
 import com.ufistudio.hotelmediabox.repository.data.Broadcast
 import com.ufistudio.hotelmediabox.repository.data.InitialData
 import com.ufistudio.hotelmediabox.repository.data.StaticIpData
@@ -59,8 +60,19 @@ class ApiClient {
 
     fun downloadFileWithUrl(url: String): Single<ResponseBody> = mService.download(url)
 
-    fun postCheckStatus(url: String, mac: String, ip: String, room: String, status: String, tarVersion: String = "", jVersion: String = "", apkVersion: String = ""): Single<ResponseBody> {
-        return mService.checkStatus(url, mac, ip, room, status, tarVersion, jVersion, apkVersion)
+    fun postCheckStatus(url: String,
+                        mac: String,
+                        ip: String,
+                        room: String,
+                        status: String,
+                        tarVersion: String = "",
+                        jVersion: String = "",
+                        apkVersion: String = "",
+                        static: String = "1",
+                        mask: String = "255.255.255.0"): Single<ResponseBody> {
+        Log.e(TAG,"[postCheckStatus] url : $url, mac : $mac, ip : $ip, room : $room, status : $status" +
+                ", tarVersion : $tarVersion, jVersion : $jVersion, apkVersion : $apkVersion, static : $static, mask : $mask")
+        return mService.checkStatus(url, mac, ip, room, status, tarVersion, jVersion, apkVersion,static, mask)
     }
 
     fun postChannel(url: String, file: MultipartBody.Part): Single<ResponseBody> {

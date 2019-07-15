@@ -1,7 +1,9 @@
 package com.ufistudio.hotelmediabox.repository
 
 import android.app.Application
+import com.google.android.exoplayer2.util.Log
 import com.google.gson.Gson
+import com.ufistudio.hotelmediabox.constants.Cache
 import com.ufistudio.hotelmediabox.repository.data.*
 import com.ufistudio.hotelmediabox.repository.provider.preferences.PreferencesKey.CHANNEL_LIST
 import com.ufistudio.hotelmediabox.repository.provider.preferences.SharedPreferencesProvider
@@ -9,6 +11,7 @@ import com.ufistudio.hotelmediabox.repository.remote.ApiClient
 import com.ufistudio.hotelmediabox.repository.remote.RemoteAPI
 import com.ufistudio.hotelmediabox.utils.FileUtils
 import com.ufistudio.hotelmediabox.utils.MiscUtils
+import com.ufistudio.hotelmediabox.utils.XTNetWorkManager
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import okhttp3.MediaType
@@ -36,8 +39,11 @@ class Repository(
     fun postCheckStatus(url: String): Single<ResponseBody> {
         val gson = Gson()
         return Single.fromCallable { gson.fromJson(MiscUtils.getJsonFromStorage("box_config.json"), Config::class.java) }
-                .subscribeOn(Schedulers.io())
                 .flatMap {
+
+                    var info: XTNetWorkManager.XTHost? = XTNetWorkManager.getInstance().getEthernetInfo(application)
+                    Log.e(TAG,"[postCheckStatus] ip : ${info?.ip}, gateway : ${info?.gateway}, mask : ${info?.netmask}, inDHCP : ${Cache.IsDHCP}")
+
                     ApiClient.getInstance()!!.postCheckStatus(url,
 //                            MiscUtils.getWifiMACAddress(application.applicationContext),
                             MiscUtils.getEthernetMacAddress(),
@@ -45,10 +51,13 @@ class Repository(
                             MiscUtils.getRoomNumber(),
                             "1",
                             it.config.tar_version,
-                            it.config.j_version,
-                            it.config.apk_version
+                            Cache.JVersion ?: "",
+                            Cache.AppVersion ?: "",
+                            if(Cache.IsDHCP) "0" else "1",
+                        info?.netmask ?: "255.255.255.0"
                     )
                 }
+                .subscribeOn(Schedulers.io())
     }
 
     fun postChannel(url: String): Single<ResponseBody> {

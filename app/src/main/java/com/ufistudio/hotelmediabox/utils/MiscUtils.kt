@@ -15,6 +15,7 @@ import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.ufistudio.hotelmediabox.BuildConfig
+import com.ufistudio.hotelmediabox.constants.Cache
 import com.ufistudio.hotelmediabox.repository.data.Config
 import java.io.*
 import java.math.BigInteger
@@ -326,6 +327,7 @@ object MiscUtils {
                 while (enumIpAddr.hasMoreElements()) {
                     val inetAddress = enumIpAddr.nextElement()
                     if (inetAddress is Inet4Address && !inetAddress.isLoopbackAddress()) {
+                        Log.e(TAG,"[getIpAddress] = ${inetAddress.getHostAddress()}")
                         return inetAddress.getHostAddress()
                     }
                 }
@@ -375,14 +377,15 @@ object MiscUtils {
      * Get Room Number
      */
     fun getRoomNumber(): String {
-        val gson = Gson()
-        val json = getJsonFromStorage("box_config.json")
-        return if (!TextUtils.isEmpty(json)) {
-            val config = gson.fromJson(json, Config::class.java)
-            config.config.room
-        } else {
-            ""
-        }
+//        val gson = Gson()
+//        val json = getJsonFromStorage("box_config.json")
+//        return if (!TextUtils.isEmpty(json)) {
+//            val config = gson.fromJson(json, Config::class.java)
+//            config.config.room
+//        } else {
+//            ""
+//        }
+        return Cache.RoomNumber ?: ""
     }
 
     /**

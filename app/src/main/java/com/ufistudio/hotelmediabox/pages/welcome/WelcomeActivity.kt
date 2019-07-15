@@ -25,6 +25,7 @@ import kotlinx.android.synthetic.main.activity_welcome.*
 import android.app.AlarmManager
 import android.content.Context
 import android.widget.Toast
+import com.ufistudio.hotelmediabox.constants.Cache
 import com.ufistudio.hotelmediabox.constants.Key.IS_CONFIG_ALREADY_RESET
 import com.ufistudio.hotelmediabox.constants.Key.IS_TIME_SET_SUCCESS
 import com.ufistudio.hotelmediabox.helper.DownloadHelper.TAR_PATH
@@ -71,6 +72,7 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
         renderUI()
         mViewModel.getInitialDataFromServer()
         updateJVersionAndAppVersionToFile(MiscUtils.getLocalVersionName(this) + "." + MiscUtils.getLocalVersion(this))
+        Cache.IsDHCP = XTNetWorkManager.getInstance().isEthernetUseDHCP(this)
     }
 
     override fun onResume() {
@@ -117,6 +119,7 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
                     mAlarmManager.setTimeZone(it.timezone)
                     SystemClock.setCurrentTimeMillis(it.timestamp)
                     this.getSharedPreferences("HotelBoxData", Context.MODE_PRIVATE).edit().putBoolean(IS_TIME_SET_SUCCESS,true).apply()
+                    Cache.RoomNumber = it.roomNum
                 }
                 is Welcome -> {
                     mWelcomeContent = it.welcome

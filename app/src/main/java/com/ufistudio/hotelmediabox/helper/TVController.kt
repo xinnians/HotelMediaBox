@@ -2,6 +2,7 @@ package com.ufistudio.hotelmediabox.helper
 
 import android.util.Log
 import com.google.gson.Gson
+import com.ufistudio.hotelmediabox.constants.Cache
 import com.ufistudio.hotelmediabox.repository.data.*
 import com.ufistudio.hotelmediabox.utils.FileUtils
 import com.ufistudio.hotelmediabox.utils.MiscUtils
@@ -420,13 +421,17 @@ object TVController {
                 Log.e(TAG, "[updateJVersionToFile] Result : $successResult")
                 var JVersion = gson.fromJson(successResult,JVersion::class.java)
                 Log.e(TAG, "[updateJVersionToFile] JVersion Result : $JVersion")
-                val config = gson.fromJson(MiscUtils.getJsonFromStorage("box_config.json"), Config::class.java)
-                if(config!= null || config?.config != null){
-                    config.config.j_version = "${JVersion.process}-${JVersion.ver}-${JVersion.build}-${JVersion.chanlistver}"
-                    config.config.apk_version = appVersion
+//                val config = gson.fromJson(MiscUtils.getJsonFromStorage("box_config.json"), Config::class.java)
+//                if(config!= null || config?.config != null){
+//                    config.config.j_version = "${JVersion.process}-${JVersion.ver}-${JVersion.build}-${JVersion.chanlistver}"
+//                    config.config.apk_version = appVersion
+//
+//                    FileUtils.writeToFile(File("/data/$TAG_DEFAULT_LOCAL_PATH", "box_config.json"), gson.toJson(config))
+//                }
 
-                    FileUtils.writeToFile(File("/data/$TAG_DEFAULT_LOCAL_PATH", "box_config.json"), gson.toJson(config))
-                }
+                Cache.JVersion = "${JVersion.process}-${JVersion.ver}-${JVersion.build}-${JVersion.chanlistver}"
+                Cache.AppVersion = appVersion
+
             }, { failResult ->
                 Log.e(TAG, "[updateJVersionToFile] throwable : $failResult")
             })

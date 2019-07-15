@@ -23,7 +23,9 @@ interface ApiClientService {
             @Query("status", encoded = true) status: String,
             @Query("tar_version", encoded = true) tarVersion: String,
             @Query("j_version", encoded = true) jVersion: String,
-            @Query("apk_version",encoded = true) apkVersion: String
+            @Query("apk_version",encoded = true) apkVersion: String,
+            @Query("static",encoded = true) static: String,
+            @Query("mask",encoded = true) mask: String
     ): Single<ResponseBody>
 
     @Multipart

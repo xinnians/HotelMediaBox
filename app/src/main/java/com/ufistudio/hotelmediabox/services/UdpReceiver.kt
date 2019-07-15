@@ -10,6 +10,7 @@ import android.text.TextUtils
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
+import com.ufistudio.hotelmediabox.constants.Cache
 import com.ufistudio.hotelmediabox.helper.DownloadHelper
 import com.ufistudio.hotelmediabox.helper.DownloadHelper.TAR_PATH
 import com.ufistudio.hotelmediabox.helper.DownloadHelper.VERIFY_FILE_NAME
@@ -160,7 +161,6 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                         config.config.defaultServerIp = myBroadcast.ip
 
                         FileUtils.writeToFile(File("/data/$TAG_DEFAULT_LOCAL_PATH", "box_config.json"), gson.toJson(config))
-
                         Repository(application, SharedPreferencesProvider(application)).postCheckStatus("http://${myBroadcast.ip}:${myBroadcast.port}${myBroadcast.url}")
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
@@ -377,6 +377,7 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                                     } else {
                                         XTNetWorkManager.getInstance().enableEthernetDHCP(applicationContext)
                                     }
+                                    Cache.IsDHCP = XTNetWorkManager.getInstance().isEthernetUseDHCP(application)
                                 }, {
                                     Log.e(TAG, "TAG_SET_STATIC_IP error $it")
                                 })

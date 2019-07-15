@@ -438,6 +438,7 @@ data class InitialData(
         var time: String,
         var timestamp: Long,
         var guestName: String = "",
+        var roomNum: String = "",
         var timezone: String = "Asia/Taipei"
 ) : Parcelable
 
