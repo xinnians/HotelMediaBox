@@ -276,16 +276,20 @@ object FileUtils {
             return
         }
         listener?.callback("usb = ${usbDir.name}")
-
+        Log.e(TAG,"[exportFile] usbDir : ${usbDir.absolutePath}")
         try {
 
-            for (item in File("/data/hotel").list()) {
+            if(File("/data/correction").list().isEmpty()){
+                listener?.callback("correction is empty.")
+            }
+
+            for (item in File("/data/correction").list()) {
                 Log.d("exportFile", "item = $item")
                 listener?.callback("coping file -> $item")
 
                 FileUtils.copyFile(
-                        File("/data/hotel/$item"),
-                        File("/mnt/media_rw/$usbDir/$item")
+                        File("/data/correction/$item"),
+                        File("${usbDir.absolutePath}/$item")
                 )
             }
         } catch (e: IOException) {

@@ -13,6 +13,7 @@ import com.ufistudio.hotelmediabox.AppInjector
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.helper.TVController
 import com.ufistudio.hotelmediabox.interfaces.OnItemClickListener
+import com.ufistudio.hotelmediabox.interfaces.OnSimpleListener
 import com.ufistudio.hotelmediabox.interfaces.ViewModelsCallback
 import com.ufistudio.hotelmediabox.pages.welcome.WelcomeActivity
 import com.ufistudio.hotelmediabox.repository.data.*
@@ -138,14 +139,14 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
 //            }
             FactoryFeature.EXPORT_JSON_FILE -> {
                 mInfo1.setLength(0)
-                mInfo1.append("暫時不給使用")
+//                mInfo1.append("暫時不給使用")
                 //TODO 需要修正
-//                FileUtils.exportFile(object : OnSimpleListener {
-//                    override fun callback(msg: String?) {
-//                        mInfo1.append("$msg\n")
-//                        textView_info1.text = mInfo1
-//                    }
-//                })
+                FileUtils.exportFile(object : OnSimpleListener {
+                    override fun callback(msg: String?) {
+                        mInfo1.append("$msg\n")
+                        textView_info1.text = mInfo1
+                    }
+                })
             }
 //            FactoryFeature.IMPORT_JSON_FILE -> {
 //                mInfo1.setLength(0)
