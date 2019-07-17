@@ -31,6 +31,7 @@ object TVController {
     private var mCurrentChannel: TVChannel? = null
     //當前畫面顯示類型
     private var mCurrentScreenType: SCREEN_TYPE = SCREEN_TYPE.HOMEPAGE
+    private var mLastChannel: TVChannel? = null
     //頻道列表
     private var mChannelList: ArrayList<TVChannel>? = null
 
@@ -187,7 +188,7 @@ object TVController {
                 .flatMap {
                     if(channel.chType == TVType.DVBT.name){
 
-                        if(mCurrentScreenType == SCREEN_TYPE.FULLSCREEN){
+                        if(mCurrentScreenType == SCREEN_TYPE.FULLSCREEN || mLastChannel?.chType == TVType.DVBT.name){
                             return@flatMap Single.just(it)
                         }
 
@@ -261,6 +262,7 @@ object TVController {
                         sendTCPRequestSingle("j_set_win $x $y $width $height")
                 }}
                 .flatMap {
+                    mLastChannel = mCurrentChannel
 //                    var channelParameter = channel.chIp.frequency + " " + channel.chIp.bandwidth
                     if(channel.chType == TVType.DVBT.name){
                         var channelParameter = if(channel.chIp.frequencyParameter.isNullOrEmpty()) channel.chIp.frequency + " " + channel.chIp.bandwidth else channel.chIp.frequencyParameter
