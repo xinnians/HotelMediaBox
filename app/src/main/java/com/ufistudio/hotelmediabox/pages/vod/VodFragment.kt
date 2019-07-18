@@ -214,7 +214,7 @@ class VodFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItem
                     val i = Intent(context!!, VodFullScreenActivity::class.java)
                     val b = Bundle()
                     b.putParcelable("bottom_note", mNoteBottom)
-                    b.putString("a", "aaa")
+                    b.putString("media_url", mCurrentContent!![mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!].uri)
                     i.putExtras(b)
                     startActivity(i)
                 }

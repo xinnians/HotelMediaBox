@@ -250,6 +250,7 @@ data class VodCategories(
 @Parcelize
 data class VodContent(
     var title: String,
+    var uri: String,
     var ip: String,
     var port: String,
     var description: String,
