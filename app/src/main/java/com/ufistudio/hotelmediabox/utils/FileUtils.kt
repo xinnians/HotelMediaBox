@@ -279,7 +279,7 @@ object FileUtils {
         Log.e(TAG,"[exportFile] usbDir : ${usbDir.absolutePath}")
         try {
 
-            if(File("/data/correction").list().isEmpty()){
+            if(File("/data/correction").list().isNullOrEmpty()){
                 listener?.callback("correction is empty.")
             }
 
