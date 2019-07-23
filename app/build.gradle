@@ -10,7 +10,7 @@ android {
         applicationId "com.ufistudio.hotelmediabox"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 21
+        versionCode 22
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
