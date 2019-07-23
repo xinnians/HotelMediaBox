@@ -1,6 +1,8 @@
 package com.ufistudio.hotelmediabox.pages
 
+import android.content.Context
 import android.content.Intent
+import android.media.AudioManager
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -14,18 +16,15 @@ import com.ufistudio.hotelmediabox.utils.FileUtils.fileIsExists
 import com.ufistudio.hotelmediabox.utils.MiscUtils
 import com.ufistudio.hotelmediabox.utils.TAG_DEFAULT_APK_NAME
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.view_date.view.*
-import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.concurrent.schedule
 
 class SplashActivity : AppCompatActivity() {
 
     private var mCheckChkFlagDisposable: Disposable? = null
     private var mCheckCounts: Int = 0
+    private var mAudioManager: AudioManager? = null
 
     private val TAG = SplashActivity::class.java.simpleName
 
@@ -55,11 +54,16 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
+
+        resetVolumeToMax()
     }
 
     override fun onStart() {
         super.onStart()
-        if (FileUtils.getFileFromStorage(TAG_DEFAULT_APK_NAME) != null && FileUtils.getFileFromStorage(TAG_DEFAULT_APK_NAME)?.exists() == true) {
+        if (FileUtils.getFileFromStorage(TAG_DEFAULT_APK_NAME) != null && FileUtils.getFileFromStorage(
+                TAG_DEFAULT_APK_NAME
+            )?.exists() == true
+        ) {
             FileUtils.getFileFromStorage(TAG_DEFAULT_APK_NAME)?.delete()
             MiscUtils.reboot(this)
         }
@@ -86,42 +90,44 @@ class SplashActivity : AppCompatActivity() {
 
     private fun goNextPage() {
         val intent = Intent(this, WelcomeActivity::class.java)
-//        val intent = Intent(this, MainActivity::class.java)
-//        val intent = Intent(this, DVBTestActivity::class.java)
-
-//        var waitTime = 2500L
-//
-//        if(!fileIsExists("chkflag")){
-//            Log.e(TAG,"chkflag isn't Exist.")
-//            waitTime = 10000L
-//        }else{
-//            Log.e(TAG,"chkflag is Exist.")
-//        }
-//
-//        val timer: Timer = Timer()
-//        timer.schedule(waitTime) {
-            startActivity(intent)
-            finish()
-//        }
+        startActivity(intent)
+        finish()
     }
 
-    private fun checkChkFlag(){
+    /*偵測chkflag檔案是否存在，不存在時則延長讀取時間*/
+    private fun checkChkFlag() {
         mCheckCounts = 0
         mCheckChkFlagDisposable = Observable.interval(2500, 5000, TimeUnit.MILLISECONDS)
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.io())
             .subscribe {
                 mCheckCounts = mCheckCounts.plus(1)
-                if(mCheckCounts == 20){
-                    Log.e(TAG,"[checkChkFlag] checkCount : $mCheckCounts, force go to nextPage.")
+                if (mCheckCounts == 20) {
+                    Log.e(TAG, "[checkChkFlag] checkCount : $mCheckCounts, force go to nextPage.")
                     goNextPage()
                 }
-                if(fileIsExists("chkflag")){
-                    Log.e(TAG,"[checkChkFlag] file is Exists, ready go to nextPage. checkCount : $mCheckCounts")
+                if (fileIsExists("chkflag")) {
+                    Log.e(TAG, "[checkChkFlag] file is Exists, ready go to nextPage. checkCount : $mCheckCounts")
                     goNextPage()
-                }else{
-                    Log.e(TAG,"[checkChkFlag] file not Exists, ready go to nextPage. checkCount : $mCheckCounts")
+                } else {
+                    Log.e(TAG, "[checkChkFlag] file not Exists, ready go to nextPage. checkCount : $mCheckCounts")
                 }
             }
+    }
+
+    /*每次開機時，則音量設置為最大*/
+    private fun resetVolumeToMax() {
+        if (mAudioManager == null) {
+            mAudioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        }
+
+        mAudioManager?.let { manager ->
+            manager.setStreamVolume(
+                AudioManager.STREAM_SYSTEM,
+                manager.getStreamMaxVolume(AudioManager.STREAM_SYSTEM),
+                AudioManager.FLAG_ALLOW_RINGER_MODES
+            )
+
+        }
     }
 }
