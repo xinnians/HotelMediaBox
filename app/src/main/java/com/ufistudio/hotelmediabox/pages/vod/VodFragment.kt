@@ -21,6 +21,8 @@ import com.ufistudio.hotelmediabox.interfaces.ViewModelsCallback
 import com.ufistudio.hotelmediabox.pages.base.InteractionView
 import com.ufistudio.hotelmediabox.pages.base.OnPageInteractionListener
 import com.ufistudio.hotelmediabox.pages.home.HomeFeatureEnum
+import com.ufistudio.hotelmediabox.pages.vod.VodFullScreenActivity.Companion.KEY_VOD_TITLE
+import com.ufistudio.hotelmediabox.pages.vod.VodFullScreenActivity.Companion.KEY_VOD_URL
 import com.ufistudio.hotelmediabox.repository.data.*
 import com.ufistudio.hotelmediabox.utils.FileUtils
 import com.ufistudio.hotelmediabox.views.ARG_CURRENT_BACK_TITLE
@@ -214,7 +216,22 @@ class VodFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItem
                     val i = Intent(context!!, VodFullScreenActivity::class.java)
                     val b = Bundle()
                     b.putParcelable("bottom_note", mNoteBottom)
-                    b.putString("media_url", mCurrentContent!![mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!].uri)
+                    b.putString(KEY_VOD_URL, mCurrentContent!![mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!].trailer.uri ?: "")
+                    b.putString(KEY_VOD_TITLE, mCurrentContent!![mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!].title)
+                    i.putExtras(b)
+                    startActivity(i)
+                }
+            }
+            KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> {
+                if (mSideViewFocus) {
+                    sideView.intoPage()
+                    return true
+                }else {
+                    val i = Intent(context!!, VodFullScreenActivity::class.java)
+                    val b = Bundle()
+                    b.putParcelable("bottom_note", mNoteBottom)
+                    b.putString(KEY_VOD_URL, mCurrentContent!![mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!].uri ?: "")
+                    b.putString(KEY_VOD_TITLE, mCurrentContent!![mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!].title)
                     i.putExtras(b)
                     startActivity(i)
                 }

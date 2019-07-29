@@ -263,7 +263,8 @@ data class VodContent(
 @Parcelize
 data class VodTrailer(
     var ip: String,
-    var port: String
+    var port: String,
+    var uri: String
 ) : Parcelable
 
 /*

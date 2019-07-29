@@ -13,7 +13,9 @@
         app:layout_constraintBottom_toBottomOf="@+id/constraintLayout4"
         app:layout_constraintEnd_toEndOf="@+id/constraintLayout4"
         app:layout_constraintStart_toStartOf="@+id/constraintLayout4"
-        app:layout_constraintTop_toTopOf="@+id/constraintLayout4"/>
+        app:layout_constraintTop_toTopOf="@+id/constraintLayout4"
+        app:controller_layout_id="@layout/exo_playback_control_view"
+            app:show_timeout="0"/>
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/constraintLayout4"
@@ -35,7 +37,8 @@
             android:text="123"
             android:textSize="@dimen/_13ssp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+                android:visibility="invisible"/>
 
         <com.google.android.exoplayer2.ui.DefaultTimeBar
             android:id="@+id/time_bar"
@@ -56,4 +59,11 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
     </android.support.constraint.ConstraintLayout>
+
+    <com.ufistudio.hotelmediabox.views.DateView
+            android:id="@+id/dateView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>
