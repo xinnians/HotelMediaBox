@@ -46,10 +46,11 @@
             android:layout_height="@dimen/_7sdp"
             android:layout_marginStart="@dimen/_112sdp"
             android:layout_marginEnd="@dimen/_23sdp"
-            android:layout_marginBottom="@dimen/_1sdp"
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="@+id/textView_subtitle"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"/>
 
         <include
             android:id="@+id/view_note"

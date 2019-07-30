@@ -14,13 +14,13 @@
 
     <TextView
         android:id="@+id/textView_stop"
-        style="@style/MainPrimaryText"
+        style="@style/NoteText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_8sdp"
-        android:layout_marginBottom="@dimen/_13sdp"
         android:textSize="@dimen/_9ssp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageView_stop"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView_stop"
         app:layout_constraintStart_toEndOf="@+id/imageView_stop" />
 
     <ImageView
@@ -28,20 +28,20 @@
         android:layout_width="@dimen/_17sdp"
         android:layout_height="@dimen/_17sdp"
         android:layout_marginStart="@dimen/_8sdp"
-        android:layout_marginBottom="@dimen/_8sdp"
+        android:layout_marginBottom="@dimen/_10sdp"
         android:src="@drawable/ic_stop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView_fast_forward" />
 
     <TextView
         android:id="@+id/textView_fast_forward"
-        style="@style/MainPrimaryText"
+        style="@style/NoteText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_8sdp"
-        android:layout_marginBottom="@dimen/_13sdp"
         android:textSize="@dimen/_9ssp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageView_fast_forward"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView_fast_forward"
         app:layout_constraintStart_toEndOf="@+id/imageView_fast_forward" />
 
     <ImageView
@@ -49,20 +49,20 @@
         android:layout_width="@dimen/_17sdp"
         android:layout_height="@dimen/_17sdp"
         android:layout_marginStart="@dimen/_8sdp"
-        android:layout_marginBottom="@dimen/_8sdp"
+        android:layout_marginBottom="@dimen/_10sdp"
         android:src="@drawable/ic_fast_forward"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView_watch_movie" />
 
     <TextView
         android:id="@+id/textView_watch_movie"
-        style="@style/MainPrimaryText"
+        style="@style/NoteText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_8sdp"
-        android:layout_marginBottom="@dimen/_13sdp"
         android:textSize="@dimen/_9ssp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageView_watch_movie"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView_watch_movie"
         app:layout_constraintStart_toEndOf="@+id/imageView_watch_movie" />
 
     <ImageView
@@ -70,28 +70,28 @@
         android:layout_width="@dimen/_17sdp"
         android:layout_height="@dimen/_17sdp"
         android:layout_marginStart="@dimen/_8sdp"
-        android:layout_marginBottom="@dimen/_8sdp"
+        android:layout_marginBottom="@dimen/_10sdp"
         android:src="@drawable/ic_play"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView_rewind" />
 
     <TextView
         android:id="@+id/textView_rewind"
-        style="@style/MainPrimaryText"
+        style="@style/NoteText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_8sdp"
-        android:layout_marginBottom="@dimen/_13sdp"
         android:textSize="@dimen/_9ssp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageView_rewind"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView_rewind"
         app:layout_constraintStart_toEndOf="@+id/imageView_rewind" />
 
     <ImageView
         android:id="@+id/imageView_rewind"
         android:layout_width="@dimen/_17sdp"
         android:layout_height="@dimen/_17sdp"
-        android:layout_marginStart="8dp"
-        android:layout_marginBottom="@dimen/_8sdp"
+        android:layout_marginStart="@dimen/_26sdp"
+        android:layout_marginBottom="@dimen/_10sdp"
         android:src="@drawable/ic_rewind"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
