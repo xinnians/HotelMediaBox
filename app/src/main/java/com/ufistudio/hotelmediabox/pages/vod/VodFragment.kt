@@ -166,11 +166,13 @@ class VodFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItem
                 return true
             }
             KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                Log.e(TAG,"sideView.isShown : ${sideView.isShown}, mCategoryFocus : $mCategoryFocus, mContentFocus : $mContentFocus")
                 if (!sideView.isShown && mCategoryFocus) {
                     mAdapter.clearFocus(mCurrentCategoryIndex)
                     mCategoryFocus = false
                     mContentFocus = true
                 } else if (mContentFocus) {
+                    mIsBack = false
                     val curryIndex = mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!
                     if (curryIndex < mTotalSize!![mCurrentCategoryIndex]!! - 1) {
                         mCurrentContentSelectIndex!![mCurrentCategoryIndex] = curryIndex + 1
@@ -331,6 +333,8 @@ class VodFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItem
     }
 
     private fun renderViewContent() {
+
+        Log.e(TAG,"[renderViewContent] mIsBack : $mIsBack")
         if (!mIsBack) {
 //        checkArrow()
 
