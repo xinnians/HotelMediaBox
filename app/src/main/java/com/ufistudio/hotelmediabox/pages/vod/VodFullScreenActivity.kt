@@ -10,13 +10,20 @@ import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.helper.ExoPlayerHelper
 import com.ufistudio.hotelmediabox.pages.base.PaneViewActivity
 import com.ufistudio.hotelmediabox.repository.data.NoteButton
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_vod_full_screen.*
 import kotlinx.android.synthetic.main.view_bottom_back_home.*
 import kotlinx.android.synthetic.main.view_vod_full_screen_bottom_note.*
+import java.util.concurrent.TimeUnit
 
 class VodFullScreenActivity : PaneViewActivity() {
 
     private var mExoPlayerHelper: ExoPlayerHelper? = null
+
+    private var mDisposableInfoView: Disposable? = null
 
     private var mMediaURL: String? = ""
     private var mMediaTitle: String? = ""
@@ -48,6 +55,7 @@ class VodFullScreenActivity : PaneViewActivity() {
     override fun onResume() {
         super.onResume()
         mMediaURL?.let { mExoPlayerHelper?.setSource(it, true) }
+        showInfo()
     }
 
     override fun onPause() {
@@ -63,7 +71,7 @@ class VodFullScreenActivity : PaneViewActivity() {
 
     override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
         Log.e(TAG,"[dispatchKeyEvent] KeyEvent: $event")
-
+        showInfo()
         event?.keyCode?.let {keycode ->
             when(keycode){
 //                KeyEvent.KEYCODE_MEDIA_STOP ->{
@@ -135,5 +143,28 @@ class VodFullScreenActivity : PaneViewActivity() {
             mExoPlayerHelper = ExoPlayerHelper()
         }
         mExoPlayerHelper?.initPlayer(application, player_view)
+    }
+
+    private fun showInfo() {
+        dateView.visibility = View.VISIBLE
+        constraintLayout4.visibility = View.VISIBLE
+        player_view.showController()
+
+        if (mDisposableInfoView != null && !mDisposableInfoView!!.isDisposed) {
+            mDisposableInfoView?.dispose()
+        }
+
+        mDisposableInfoView = Observable.timer(5, TimeUnit.SECONDS)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { Log.e(TAG, " showInfo continus : $it") },
+                { onError -> Log.e(TAG, "error:$onError") },
+                {
+                    Log.e(TAG, " showInfo finish")
+                    constraintLayout4.visibility = View.INVISIBLE
+                    dateView.visibility = View.INVISIBLE
+                    player_view.hideController()
+                })
     }
 }
