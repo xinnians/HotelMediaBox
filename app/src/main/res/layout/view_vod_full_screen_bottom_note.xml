@@ -92,7 +92,7 @@
         android:layout_height="@dimen/_17sdp"
         android:layout_marginStart="8dp"
         android:layout_marginBottom="@dimen/_8sdp"
-        android:src="@drawable/exo_icon_rewind"
+        android:src="@drawable/ic_rewind"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 </android.support.constraint.ConstraintLayout>

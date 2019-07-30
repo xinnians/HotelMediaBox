@@ -4,6 +4,8 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
+import android.view.MotionEvent
+import android.view.View
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.helper.ExoPlayerHelper
 import com.ufistudio.hotelmediabox.pages.base.PaneViewActivity
@@ -18,6 +20,7 @@ class VodFullScreenActivity : PaneViewActivity() {
 
     private var mMediaURL: String? = ""
     private var mMediaTitle: String? = ""
+    private var mIsPause: Boolean = false
 
     companion object {
         private val TAG = this.javaClass.simpleName
@@ -33,7 +36,6 @@ class VodFullScreenActivity : PaneViewActivity() {
         mMediaURL = intent.extras.get(KEY_VOD_URL) as String
         mMediaTitle = intent.extras.get(KEY_VOD_TITLE) as String
         Log.d("neo", "${b.note?.home}")
-
     }
 
     override fun onStart() {
@@ -59,17 +61,59 @@ class VodFullScreenActivity : PaneViewActivity() {
         dateView?.stopRefreshTimer()
     }
 
-//    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-//        when (keyCode) {
-//            KeyEvent.KEYCODE_MEDIA_STOP ->{
-//                mExoPlayerHelper?.stop()
-//            }
-//            KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE ->{
-//                mExoPlayerHelper?.play()
-//            }
-//        }
-//        return super.onKeyDown(keyCode, event)
-//    }
+    override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
+        Log.e(TAG,"[dispatchKeyEvent] KeyEvent: $event")
+
+        event?.keyCode?.let {keycode ->
+            when(keycode){
+//                KeyEvent.KEYCODE_MEDIA_STOP ->{
+//                    mExoPlayerHelper?.stop()
+//                }
+                KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE ->{
+
+                    if(event.action == KeyEvent.ACTION_UP){
+                        return true
+                    }
+
+                    if(mIsPause){
+                        iv_pause.visibility = View.VISIBLE
+                        mExoPlayerHelper?.pause()
+                    }else{
+                        iv_pause.visibility = View.INVISIBLE
+                        mExoPlayerHelper?.play()
+                    }
+                    mIsPause = !mIsPause
+                    return true
+                }
+                else ->{
+
+                }
+            }
+        }
+
+        return super.dispatchKeyEvent(event)
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        Log.e(TAG,"[onKeyDown] keycode: $keyCode, KeyEvent: $event")
+        when (keyCode) {
+            KeyEvent.KEYCODE_MEDIA_STOP ->{
+                mExoPlayerHelper?.stop()
+            }
+            KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE ->{
+                if(mIsPause){
+                    iv_pause.visibility = View.VISIBLE
+                    mExoPlayerHelper?.pause()
+                }else{
+                    iv_pause.visibility = View.INVISIBLE
+                    mExoPlayerHelper?.play()
+                }
+                mIsPause = !mIsPause
+                return true
+            }
+        }
+        return super.onKeyDown(keyCode, event)
+    }
 
     private fun initTitle(){
         Log.e(TAG,"[initTitle] mMediaTitle : $mMediaTitle")

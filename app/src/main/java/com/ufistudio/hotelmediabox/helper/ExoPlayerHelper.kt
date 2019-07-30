@@ -301,6 +301,11 @@ open class ExoPlayerHelper {
                 .into((mVideoView.findViewById(R.id.image_bottom_channel) as ImageView))
     }
 
+    fun pause(){
+        mPlayer?.playWhenReady = false
+        mPlayer?.playbackState
+    }
+
     /**
      * stop video
      */
@@ -314,6 +319,7 @@ open class ExoPlayerHelper {
      */
     fun play() {
         mPlayer?.playWhenReady = true
+        mPlayer?.playbackState
     }
 
     /**
