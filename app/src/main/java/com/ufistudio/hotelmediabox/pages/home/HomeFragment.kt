@@ -828,7 +828,7 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
             mDisposable?.dispose()
         }
 
-        mDisposable = Observable.timer(400, TimeUnit.MILLISECONDS)
+        mDisposable = Observable.timer(350, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

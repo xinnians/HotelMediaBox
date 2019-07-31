@@ -217,7 +217,7 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
             mDisposable?.dispose()
         }
 
-        mDisposable = Observable.timer(500, TimeUnit.MILLISECONDS)
+        mDisposable = Observable.timer(350, TimeUnit.MILLISECONDS)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
