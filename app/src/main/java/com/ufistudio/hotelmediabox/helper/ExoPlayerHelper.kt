@@ -56,6 +56,9 @@ open class ExoPlayerHelper {
     private var mIsUDP: Boolean = false
     private var mIsPlaying: Boolean = false
 
+    private var mIsNeedSeek: Boolean = false
+    private var mSeekPosition: Long = 0L
+
     fun initPlayer(context: Context?, videoView: PlayerView) {
         mContext = context
         val trackSelector = DefaultTrackSelector()
@@ -131,6 +134,12 @@ open class ExoPlayerHelper {
                 }
 
                 if(playbackState == 3){
+
+                    if(mIsNeedSeek){
+                        mPlayer?.seekTo(mSeekPosition)
+                        mIsNeedSeek = false
+                    }
+
                     if(!mIsPlaying){
                         onBroadcastAll(null,TVController.ACTION_TYPE.OnIPTVPlaying)
                         mIsPlaying = true
@@ -185,7 +194,11 @@ open class ExoPlayerHelper {
         mPlayer?.playWhenReady = playWhenReady
     }
 
-    fun setSource(source: Any, playWhenReady: Boolean = true){
+    fun setSource(source: Any, playWhenReady: Boolean = true, isNeedSeek: Boolean = false,seekPosition: Long = 0L){
+
+        mSeekPosition = seekPosition
+        mIsNeedSeek = isNeedSeek
+
         var datauri: Uri? = when (source) {
             is String -> Uri.parse(source)
             is Uri -> source
@@ -248,7 +261,7 @@ open class ExoPlayerHelper {
                 }
             }
             mMediaSource?.let {
-                mPlayer?.prepare(it)
+                mPlayer?.prepare(it,false,true)
                 mPlayer?.playWhenReady = playWhenReady
             }
         }catch (e: Exception){
@@ -320,6 +333,13 @@ open class ExoPlayerHelper {
     fun play() {
         mPlayer?.playWhenReady = true
         mPlayer?.playbackState
+        Log.e(TAG,"[play] contentPosition : ${mPlayer?.contentPosition}," +
+                " bufferedPosition : ${mPlayer?.bufferedPosition}," +
+                " currentPosition : ${mPlayer?.currentPosition}," +
+                " contentBufferedPosition : ${mPlayer?.contentBufferedPosition}," +
+                " duration : ${mPlayer?.duration}," +
+                " contentDuration : ${mPlayer?.contentDuration}," +
+                " totalBufferedDuration : ${mPlayer?.totalBufferedDuration}")
     }
 
     /**
@@ -336,6 +356,29 @@ open class ExoPlayerHelper {
      */
     fun repeatMode() {
         mPlayer?.repeatMode = Player.REPEAT_MODE_ALL
+    }
+
+    fun currentPosition(): Long{
+        return mPlayer?.currentPosition ?: 0L
+    }
+
+    fun totalContentDuration(): Long{
+        return mPlayer?.contentDuration ?: 0L
+    }
+
+    fun seekTo(index: Long){
+        mPlayer?.seekTo(index)
+    }
+
+    fun getPositionInfo(){
+        Log.e(TAG,"[getPositionInfo] call")
+        Log.e(TAG,"[getPositionInfo] contentPosition : ${mPlayer?.contentPosition}," +
+                " bufferedPosition : ${mPlayer?.bufferedPosition}," +
+                " currentPosition : ${mPlayer?.currentPosition}," +
+                " contentBufferedPosition : ${mPlayer?.contentBufferedPosition}," +
+                " duration : ${mPlayer?.duration}," +
+                " contentDuration : ${mPlayer?.contentDuration}," +
+                " totalBufferedDuration : ${mPlayer?.totalBufferedDuration}")
     }
 
     /**

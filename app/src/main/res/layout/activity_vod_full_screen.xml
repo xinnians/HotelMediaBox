@@ -72,6 +72,95 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
+    <android.support.constraint.ConstraintLayout
+            android:id="@+id/layout_resume"
+            android:layout_width="@dimen/_206sdp"
+            android:layout_height="wrap_content"
+            android:background="@color/block30"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:visibility="invisible">
+
+        <TextView
+                android:id="@+id/tv_resumePlay"
+                android:layout_width="@dimen/_86sdp"
+                android:layout_height="@dimen/_22sdp"
+                android:layout_marginTop="@dimen/_9sdp"
+                android:layout_marginStart="@dimen/_11sdp"
+                android:gravity="center"
+                android:text="Resume Play"
+                android:textSize="@dimen/_10ssp"
+                android:typeface="monospace"
+                android:textColor="@android:color/black"
+                android:background="@drawable/bg_vod_btn_focus"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+        <TextView
+                android:id="@+id/tv_replayMovie"
+                android:layout_width="@dimen/_86sdp"
+                android:layout_height="@dimen/_22sdp"
+                android:layout_marginTop="@dimen/_9sdp"
+                android:layout_marginEnd="@dimen/_11sdp"
+                android:gravity="center"
+                android:text="Replay Movie"
+                android:background="@drawable/bg_vod_btn"
+                android:textSize="@dimen/_10ssp"
+                android:typeface="monospace"
+                android:textColor="@android:color/white"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+        <ImageView
+            android:id="@+id/iv_nav"
+            android:layout_width="@dimen/_16sdp"
+            android:layout_height="@dimen/_16sdp"
+            android:src="@drawable/ic_leftright_nav"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_resumePlay"
+                android:layout_marginStart="@dimen/_36sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginBottom="@dimen/_6sdp"/>
+
+        <TextView
+                android:id="@+id/tv_nav"
+                style="@style/NoteText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Navigation"
+                android:layout_marginStart="@dimen/_8sdp"
+                app:layout_constraintTop_toTopOf="@+id/iv_nav"
+                app:layout_constraintBottom_toBottomOf="@+id/iv_nav"
+                app:layout_constraintStart_toEndOf="@+id/iv_nav"
+                />
+
+        <ImageView
+                android:id="@+id/iv_ok"
+                android:layout_width="@dimen/_16sdp"
+                android:layout_height="@dimen/_16sdp"
+                android:src="@drawable/ic_ok"
+                android:layout_marginStart="@dimen/_8sdp"
+                app:layout_constraintTop_toTopOf="@+id/iv_nav"
+                app:layout_constraintBottom_toBottomOf="@+id/iv_nav"
+                app:layout_constraintStart_toEndOf="@+id/tv_nav"/>
+
+        <TextView
+                android:id="@+id/tv_ok"
+                style="@style/NoteText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select"
+                android:layout_marginStart="@dimen/_8sdp"
+                app:layout_constraintTop_toTopOf="@+id/iv_ok"
+                app:layout_constraintBottom_toBottomOf="@+id/iv_ok"
+                app:layout_constraintStart_toEndOf="@+id/iv_ok"
+                />
+
+    </android.support.constraint.ConstraintLayout>
+
     <com.ufistudio.hotelmediabox.views.DateView
             android:id="@+id/dateView"
             android:layout_width="wrap_content"

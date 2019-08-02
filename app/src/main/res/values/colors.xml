@@ -7,6 +7,7 @@
     <color name="colorWhite">#ffffff</color>
     <color name="colorYellow">#f9ff00</color>
     <color name="colorYellow2">#ffb600</color>
+    <color name="colorBlack">#000000</color>
 
     <color name="mainBackground">#0D005B</color>
     <color name="videoBackground">@color/white30</color>

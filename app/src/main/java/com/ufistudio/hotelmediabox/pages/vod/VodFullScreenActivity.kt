@@ -1,12 +1,12 @@
 package com.ufistudio.hotelmediabox.pages.vod
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.KeyEvent
-import android.view.MotionEvent
 import android.view.View
 import com.ufistudio.hotelmediabox.R
+import com.ufistudio.hotelmediabox.constants.Cache
 import com.ufistudio.hotelmediabox.helper.ExoPlayerHelper
 import com.ufistudio.hotelmediabox.pages.base.PaneViewActivity
 import com.ufistudio.hotelmediabox.repository.data.NoteButton
@@ -28,6 +28,9 @@ class VodFullScreenActivity : PaneViewActivity() {
     private var mMediaURL: String? = ""
     private var mMediaTitle: String? = ""
     private var mIsPause: Boolean = false
+
+    private var mIsResumeViewShow: Boolean = false
+    private var mIsResumeButtonFocus: Boolean = true
 
     companion object {
         private val TAG = this.javaClass.simpleName
@@ -54,12 +57,30 @@ class VodFullScreenActivity : PaneViewActivity() {
 
     override fun onResume() {
         super.onResume()
-        mMediaURL?.let { mExoPlayerHelper?.setSource(it, true) }
+//        checkWatchHistory()
+
+        if(Cache.VodWatchHistory[mMediaURL?:""] != null){
+            layout_resume.visibility = View.VISIBLE
+            mIsResumeViewShow = true
+
+            mMediaURL?.let {mExoPlayerHelper?.setSource(it, false,true,Cache.VodWatchHistory[mMediaURL?:""]?:0L)}
+
+        }else{
+            mIsResumeViewShow = false
+
+            mMediaURL?.let {
+                mExoPlayerHelper?.setSource(it, true) }
+        }
+
+
         showInfo()
+//        mExoPlayerHelper?.seekTo(20000L)
     }
 
     override fun onPause() {
         super.onPause()
+//        Log.e(TAG,"[onPause] ${mExoPlayerHelper?.currentPosition()}/${mExoPlayerHelper?.totalContentDuration()}")
+        saveWatchPosition()
         mExoPlayerHelper?.stop()
     }
 
@@ -71,30 +92,90 @@ class VodFullScreenActivity : PaneViewActivity() {
 
     override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
         Log.e(TAG,"[dispatchKeyEvent] KeyEvent: $event")
-        showInfo()
-        event?.keyCode?.let {keycode ->
-            when(keycode){
+
+        if(mIsResumeViewShow){
+            event?.keyCode?.let {keycode ->
+                when(keycode){
+                    KeyEvent.KEYCODE_MEDIA_STOP ->{
+                        onBackPressed()
+                    }
+                    KeyEvent.KEYCODE_DPAD_LEFT ->{
+
+                        if(event.action == KeyEvent.ACTION_UP){
+                            return true
+                        }
+
+                        mIsResumeButtonFocus = true
+                        tv_resumePlay.setTextColor(ContextCompat.getColor(tv_resumePlay.context, R.color.colorBlack))
+                        tv_resumePlay.setBackgroundResource(R.drawable.bg_vod_btn_focus)
+                        tv_replayMovie.setTextColor(ContextCompat.getColor(tv_replayMovie.context, R.color.colorWhite))
+                        tv_replayMovie.setBackgroundResource(R.drawable.bg_vod_btn)
+
+                        return true
+                    }
+                    KeyEvent.KEYCODE_DPAD_RIGHT ->{
+                        if(event.action == KeyEvent.ACTION_UP){
+                            return true
+                        }
+
+                        mIsResumeButtonFocus = false
+                        tv_resumePlay.setTextColor(ContextCompat.getColor(tv_resumePlay.context, R.color.colorWhite))
+                        tv_resumePlay.setBackgroundResource(R.drawable.bg_vod_btn)
+                        tv_replayMovie.setTextColor(ContextCompat.getColor(tv_replayMovie.context, R.color.colorBlack))
+                        tv_replayMovie.setBackgroundResource(R.drawable.bg_vod_btn_focus)
+
+                        return true
+                    }
+                    KeyEvent.KEYCODE_DPAD_CENTER ->{
+                        if(event.action == KeyEvent.ACTION_UP){
+                            return true
+                        }
+
+                        layout_resume.visibility = View.INVISIBLE
+                        mIsResumeViewShow = false
+
+                        if(mIsResumeButtonFocus){
+                            mExoPlayerHelper?.play()
+//                            mMediaURL?.let {mExoPlayerHelper?.setSource(it, true,true,Cache.VodWatchHistory[mMediaURL?:""]?:0L) }
+                        }else{
+                            mMediaURL?.let {mExoPlayerHelper?.setSource(it, true) }
+                        }
+
+                        showInfo()
+
+                        return true
+                    }
+                    else ->{
+
+                    }
+                }
+            }
+        }else{
+            showInfo()
+            event?.keyCode?.let {keycode ->
+                when(keycode){
 //                KeyEvent.KEYCODE_MEDIA_STOP ->{
 //                    mExoPlayerHelper?.stop()
 //                }
-                KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE ->{
+                    KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE ->{
 
-                    if(event.action == KeyEvent.ACTION_UP){
+                        if(event.action == KeyEvent.ACTION_UP){
+                            return true
+                        }
+
+                        if(mIsPause){
+                            iv_pause.visibility = View.VISIBLE
+                            mExoPlayerHelper?.pause()
+                        }else{
+                            iv_pause.visibility = View.INVISIBLE
+                            mExoPlayerHelper?.play()
+                        }
+                        mIsPause = !mIsPause
                         return true
                     }
+                    else ->{
 
-                    if(mIsPause){
-                        iv_pause.visibility = View.VISIBLE
-                        mExoPlayerHelper?.pause()
-                    }else{
-                        iv_pause.visibility = View.INVISIBLE
-                        mExoPlayerHelper?.play()
                     }
-                    mIsPause = !mIsPause
-                    return true
-                }
-                else ->{
-
                 }
             }
         }
@@ -109,6 +190,7 @@ class VodFullScreenActivity : PaneViewActivity() {
                 mExoPlayerHelper?.stop()
             }
             KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE ->{
+                mExoPlayerHelper?.getPositionInfo()
                 if(mIsPause){
                     iv_pause.visibility = View.VISIBLE
                     mExoPlayerHelper?.pause()
@@ -166,5 +248,15 @@ class VodFullScreenActivity : PaneViewActivity() {
                     dateView.visibility = View.INVISIBLE
                     player_view.hideController()
                 })
+    }
+
+    private fun saveWatchPosition(){
+        Log.e(TAG,"[saveWatchPosition] ${mExoPlayerHelper?.currentPosition()}/${mExoPlayerHelper?.totalContentDuration()}")
+        Cache.VodWatchHistory[mMediaURL?:""] = mExoPlayerHelper?.currentPosition()?:0L
+    }
+
+    private fun checkWatchHistory(){
+        Log.e(TAG,"[checkWatchHistory] Cache.VodWatchHistory[mMediaURL] ${Cache.VodWatchHistory[mMediaURL?:""]}")
+        layout_resume.visibility = View.VISIBLE
     }
 }

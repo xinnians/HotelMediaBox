@@ -6,4 +6,6 @@ object Cache {
     var AppVersion: String? = ""
     var JVersion: String? = ""
     var IsDHCP: Boolean = true
+
+    var VodWatchHistory: MutableMap<String,Long> = mutableMapOf()
 }
