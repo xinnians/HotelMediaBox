@@ -96,9 +96,6 @@ class VodFullScreenActivity : PaneViewActivity() {
         if(mIsResumeViewShow){
             event?.keyCode?.let {keycode ->
                 when(keycode){
-                    KeyEvent.KEYCODE_MEDIA_STOP ->{
-                        onBackPressed()
-                    }
                     KeyEvent.KEYCODE_DPAD_LEFT ->{
 
                         if(event.action == KeyEvent.ACTION_UP){
@@ -154,9 +151,12 @@ class VodFullScreenActivity : PaneViewActivity() {
             showInfo()
             event?.keyCode?.let {keycode ->
                 when(keycode){
-//                KeyEvent.KEYCODE_MEDIA_STOP ->{
-//                    mExoPlayerHelper?.stop()
-//                }
+                    KeyEvent.KEYCODE_MEDIA_STOP ->{
+                        if(event.action == KeyEvent.ACTION_UP){
+                            return true
+                        }
+                        onBackPressed()
+                    }
                     KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE ->{
 
                         if(event.action == KeyEvent.ACTION_UP){
