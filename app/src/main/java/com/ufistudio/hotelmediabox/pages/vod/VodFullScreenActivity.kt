@@ -65,15 +65,19 @@ class VodFullScreenActivity : PaneViewActivity() {
 
             mMediaURL?.let {mExoPlayerHelper?.setSource(it, false,true,Cache.VodWatchHistory[mMediaURL?:""]?:0L)}
 
+            //hide controller
+            constraintLayout4.visibility = View.INVISIBLE
+            dateView.visibility = View.INVISIBLE
+            player_view.controllerAutoShow = false
+            player_view.hideController()
         }else{
             mIsResumeViewShow = false
 
             mMediaURL?.let {
                 mExoPlayerHelper?.setSource(it, true) }
+            showInfo()
         }
 
-
-        showInfo()
 //        mExoPlayerHelper?.seekTo(20000L)
     }
 
