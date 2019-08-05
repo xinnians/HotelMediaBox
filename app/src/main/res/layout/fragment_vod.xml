@@ -179,8 +179,8 @@
 
     <ImageView
         android:id="@+id/imageView_3"
-        android:layout_width="@dimen/_86sdp"
-        android:layout_height="@dimen/_127sdp"
+        android:layout_width="@dimen/_91sdp"
+        android:layout_height="@dimen/_132sdp"
         android:scaleType="fitXY"
         app:layout_constraintBottom_toBottomOf="@+id/imageView_focus"
         app:layout_constraintEnd_toEndOf="@+id/imageView_focus"
