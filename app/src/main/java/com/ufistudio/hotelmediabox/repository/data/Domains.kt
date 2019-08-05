@@ -384,7 +384,7 @@ data class Note(
     var fullScreen: String = "Full Screen",
     var toScroll: String = "To Scroll",
     var select: String = "Select",
-    var watch_movie: String = "Watch Movie",
+    var watch_movie: String = "Watch Trailer",
     var rewind: String = "Rewind",
     var play_pause: String = "Play/Pause",
     var fast_forward: String = "Fast Forward",
