@@ -4,6 +4,7 @@ import android.app.Application
 import android.arch.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.ufistudio.hotelmediabox.MyApplication
+import com.ufistudio.hotelmediabox.constants.Cache
 import com.ufistudio.hotelmediabox.helper.TVHelper
 import com.ufistudio.hotelmediabox.repository.Repository
 import com.ufistudio.hotelmediabox.repository.data.Config
@@ -36,6 +37,10 @@ class HomeViewModel(
 
     init {
         compositeDisposable.add(Single.fromCallable { getJsonObject() }
+            .map { result ->
+                Cache.IsVODEnable = result.home.icons[1].enable == 1
+                return@map result
+            }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe {

@@ -22,6 +22,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
 import com.ufistudio.hotelmediabox.R
+import com.ufistudio.hotelmediabox.constants.Cache
 import com.ufistudio.hotelmediabox.pages.factory.FactoryActivity
 import com.ufistudio.hotelmediabox.pages.fullScreen.FullScreenActivity
 import com.ufistudio.hotelmediabox.receivers.ACTION_UPDATE_APK
@@ -170,6 +171,19 @@ open class PaneViewActivity : BaseActivity(), OnPageInteractionListener.Pane {
             }
             TAG_kEY_TV -> {
                 startActivity(Intent(this, FullScreenActivity::class.java))
+                return true
+            }
+            KeyEvent.KEYCODE_UNKNOWN ->{
+                Log.e(TAG,"[onKeyDown] TAG_KEY_VOD call. Cache.IsVODEnable : ${Cache.IsVODEnable}")
+                if(Cache.IsVODEnable){
+                    val intent: Intent = Intent(this, MainActivity::class.java)
+                    val bundle: Bundle = Bundle()
+                    bundle.putBoolean(Page.ARG_BUNDLE, true)
+                    bundle.putInt(Page.ARG_PAGE,Page.VOD)
+                    intent.putExtras(bundle)
+                    startActivity(intent)
+                    finish()
+                }
                 return true
             }
             KeyEvent.KEYCODE_VOLUME_MUTE -> {
