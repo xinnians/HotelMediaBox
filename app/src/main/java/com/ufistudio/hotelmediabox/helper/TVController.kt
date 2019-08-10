@@ -550,6 +550,9 @@ object TVController {
                     TVController.ACTION_TYPE.OnIPTVPlaying -> {
                         listener.onIPTVPlaying()
                     }
+                    TVController.ACTION_TYPE.OnIPTVFinish ->{
+                        listener.onIPTVFinish()
+                    }
                 }
             }
         }
@@ -561,7 +564,8 @@ object TVController {
         InitAVPlayerFinish,
         OnScanFinish,
         OnIPTVLoading,
-        OnIPTVPlaying
+        OnIPTVPlaying,
+        OnIPTVFinish
     }
 
     interface OnTVListener {
@@ -571,5 +575,6 @@ object TVController {
         fun onScanFinish()
         fun onIPTVLoading()
         fun onIPTVPlaying()
+        fun onIPTVFinish()
     }
 }

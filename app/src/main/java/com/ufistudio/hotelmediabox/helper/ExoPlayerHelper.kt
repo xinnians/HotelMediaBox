@@ -55,6 +55,7 @@ open class ExoPlayerHelper {
     private var mMediaSource: MediaSource? = null
     private var mIsUDP: Boolean = false
     private var mIsPlaying: Boolean = false
+    private var mCurrentSpeed: Float = 1.0f
 
     private var mIsNeedSeek: Boolean = false
     private var mSeekPosition: Long = 0L
@@ -65,6 +66,7 @@ open class ExoPlayerHelper {
         val renderer: RenderersFactory = DefaultRenderersFactory(mContext,DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
         mPlayer = ExoPlayerFactory.newSimpleInstance(context,renderer, trackSelector)
         mPlayer?.volume = 1f
+        mCurrentSpeed = 1.0f
         mVideoView = videoView
         mVideoView.player = mPlayer
 
@@ -144,6 +146,10 @@ open class ExoPlayerHelper {
                         onBroadcastAll(null,TVController.ACTION_TYPE.OnIPTVPlaying)
                         mIsPlaying = true
                     }
+                }
+
+                if(playbackState == 4){
+                    onBroadcastAll(null,TVController.ACTION_TYPE.OnIPTVFinish)
                 }
             }
         })
@@ -379,6 +385,19 @@ open class ExoPlayerHelper {
                 " duration : ${mPlayer?.duration}," +
                 " contentDuration : ${mPlayer?.contentDuration}," +
                 " totalBufferedDuration : ${mPlayer?.totalBufferedDuration}")
+    }
+
+    fun speedUp(): Int{
+        mPlayer?.let {
+            if(mCurrentSpeed == 8.0f){
+                mCurrentSpeed = 1.0f
+            }else{
+                mCurrentSpeed *= 2
+            }
+            it.playbackParameters = PlaybackParameters(mCurrentSpeed)
+        }
+
+        return mCurrentSpeed.toInt()
     }
 
     /**

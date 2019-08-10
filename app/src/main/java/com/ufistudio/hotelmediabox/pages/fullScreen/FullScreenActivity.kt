@@ -47,6 +47,8 @@ class FullScreenActivity : PaneViewActivity() {
     private var mInputChannelNumber: String? = null
 
     private var mTVListener:TVController.OnTVListener = object :TVController.OnTVListener{
+        override fun onIPTVFinish() {}
+
         override fun onIPTVLoading() {
             mask.visibility = View.VISIBLE
 

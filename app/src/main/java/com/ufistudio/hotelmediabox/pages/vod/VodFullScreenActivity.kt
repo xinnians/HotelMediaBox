@@ -5,11 +5,14 @@ import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
+import android.widget.Toast
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.constants.Cache
 import com.ufistudio.hotelmediabox.helper.ExoPlayerHelper
+import com.ufistudio.hotelmediabox.helper.TVController
 import com.ufistudio.hotelmediabox.pages.base.PaneViewActivity
 import com.ufistudio.hotelmediabox.repository.data.NoteButton
+import com.ufistudio.hotelmediabox.repository.data.TVChannel
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -31,6 +34,20 @@ class VodFullScreenActivity : PaneViewActivity() {
 
     private var mIsResumeViewShow: Boolean = false
     private var mIsResumeButtonFocus: Boolean = true
+
+    private var mTVListener: TVController.OnTVListener = object : TVController.OnTVListener{
+        override fun onIPTVFinish() {
+            finish()
+        }
+
+        override fun onChannelChange(tvChannel: TVChannel?) {}
+        override fun initDeviceFinish() {}
+        override fun initAVPlayerFinish() {}
+        override fun onScanFinish() {}
+        override fun onIPTVLoading() {}
+        override fun onIPTVPlaying() {}
+
+    }
 
     companion object {
         private val TAG = this.javaClass.simpleName
@@ -58,7 +75,7 @@ class VodFullScreenActivity : PaneViewActivity() {
     override fun onResume() {
         super.onResume()
 //        checkWatchHistory()
-
+        TVController.registerListener(mTVListener)
         if(Cache.VodWatchHistory[mMediaURL?:""] != null){
             layout_resume.visibility = View.VISIBLE
             mIsResumeViewShow = true
@@ -86,6 +103,7 @@ class VodFullScreenActivity : PaneViewActivity() {
 //        Log.e(TAG,"[onPause] ${mExoPlayerHelper?.currentPosition()}/${mExoPlayerHelper?.totalContentDuration()}")
         saveWatchPosition()
         mExoPlayerHelper?.stop()
+        TVController.releaseListener(mTVListener)
     }
 
     override fun onStop() {
@@ -175,6 +193,13 @@ class VodFullScreenActivity : PaneViewActivity() {
                             mExoPlayerHelper?.play()
                         }
                         mIsPause = !mIsPause
+                        return true
+                    }
+                    KeyEvent.KEYCODE_MEDIA_FAST_FORWARD ->{
+                        if(event.action == KeyEvent.ACTION_UP){
+                            return true
+                        }
+                        Toast.makeText(applicationContext,"Speed ${mExoPlayerHelper?.speedUp()}x",Toast.LENGTH_SHORT).show()
                         return true
                     }
                     else ->{
