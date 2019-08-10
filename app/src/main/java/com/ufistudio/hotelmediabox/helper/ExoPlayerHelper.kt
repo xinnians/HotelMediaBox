@@ -13,6 +13,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.DefaultLoadControl.*
 import com.google.android.exoplayer2.ext.ffmpeg.FfmpegAudioRenderer
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.extractor.ExtractorsFactory
@@ -64,6 +65,14 @@ open class ExoPlayerHelper {
         mContext = context
         val trackSelector = DefaultTrackSelector()
         val renderer: RenderersFactory = DefaultRenderersFactory(mContext,DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
+        var loadControl: LoadControl = DefaultLoadControl(
+            DefaultAllocator(true, C.DEFAULT_BUFFER_SEGMENT_SIZE),
+            30000,
+            600000,
+            10000,
+            15000,
+            DEFAULT_TARGET_BUFFER_BYTES,
+            DEFAULT_PRIORITIZE_TIME_OVER_SIZE_THRESHOLDS)
         mPlayer = ExoPlayerFactory.newSimpleInstance(context,renderer, trackSelector)
         mPlayer?.volume = 1f
         mCurrentSpeed = 1.0f
@@ -235,9 +244,7 @@ open class ExoPlayerHelper {
 //            }
                 C.TYPE_OTHER ->{
                     if (Util.isRtspUri(datauri)) {
-                        mMediaSource = RtspMediaSource.Factory(RtspDefaultClient.factory()
-                            .setFlags(Client.FLAG_ENABLE_RTCP_SUPPORT)
-                            .setNatMethod(Client.RTSP_NAT_DUMMY))
+                        mMediaSource = RtspMediaSource.Factory(RtspDefaultClient.factory())
                             .createMediaSource(datauri)
                     }else if(source is String && source.contains("udp")){
                         mIsUDP = true
