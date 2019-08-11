@@ -65,4 +65,25 @@
         android:src="@drawable/ic_ok"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/textView_select" />
+
+    <TextView
+            android:id="@+id/textView_redKey"
+            style="@style/NoteText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_20sdp"
+            android:text="@string/home_red"
+            app:layout_constraintTop_toTopOf="@id/view_ok"
+            app:layout_constraintBottom_toBottomOf="@id/view_ok"
+            app:layout_constraintEnd_toStartOf="@+id/view_ok" />
+
+    <ImageView
+            android:id="@+id/view_red"
+            android:layout_width="@dimen/_40sdp"
+            android:layout_height="@dimen/_17sdp"
+            android:layout_marginEnd="@dimen/_8sdp"
+            android:layout_marginBottom="@dimen/_15sdp"
+            android:src="@drawable/bg_red_btn"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/textView_redKey" />
 </android.support.constraint.ConstraintLayout>

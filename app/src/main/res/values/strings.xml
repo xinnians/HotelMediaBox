@@ -8,6 +8,7 @@
     <string name="home_channels">Channels</string>
     <string name="home_navigation">Navigation</string>
     <string name="home_select">Select</string>
+    <string name="home_red">Select Language</string>
 
     <!--TV channel fullscreen-->
     <string name="tv_channel_fullscreen_home">Home</string>
