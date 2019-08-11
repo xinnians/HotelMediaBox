@@ -31,6 +31,9 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
     private val mInfo2: StringBuilder = StringBuilder()
 
     private var mTVListener: TVController.OnTVListener = object : TVController.OnTVListener {
+        override fun onIPTVFinish() {
+        }
+
         override fun onIPTVLoading() {
 
         }

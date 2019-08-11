@@ -82,6 +82,9 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
 
 
     private var mTVListener: TVController.OnTVListener = object : TVController.OnTVListener {
+        override fun onIPTVFinish() {
+        }
+
         override fun onIPTVLoading() {
             videoViewMask.visibility = View.VISIBLE
 
@@ -362,6 +365,11 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
             }
             KeyEvent.KEYCODE_9 -> {
                 onChannelChangeByNumber("9")
+            }
+            KeyEvent.KEYCODE_PROG_RED -> {
+                val b = Bundle()
+                b.putParcelableArrayList(Page.ARG_BUNDLE, mFeatureIcons)
+                getInteractionListener().switchPage(R.id.fragment_container, Page.SETTING, b, true, false, true)
             }
         }
         return false

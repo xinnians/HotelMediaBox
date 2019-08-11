@@ -51,6 +51,9 @@ class ChannelFragment : InteractionView<OnPageInteractionListener.Primary>() {
 
 
     private var mTVListener: TVController.OnTVListener = object : TVController.OnTVListener{
+        override fun onIPTVFinish() {
+        }
+
         override fun onIPTVLoading() {
             videoViewMask.visibility = View.VISIBLE
 
