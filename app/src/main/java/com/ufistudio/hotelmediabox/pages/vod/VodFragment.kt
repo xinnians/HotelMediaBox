@@ -313,6 +313,8 @@ class VodFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItem
         bundle.putParcelableArrayList(Page.ARG_BUNDLE, item.contents)
         mCurrentContent = item.contents
 
+        Log.e("Ian","[onFoucsed] mCurrentCategoryIndex: $mCurrentCategoryIndex, mCurrentContent: $mCurrentContent")
+
         renderViewContent()
     }
 
@@ -335,7 +337,7 @@ class VodFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItem
     private fun renderViewContent() {
 
         Log.e(TAG,"[renderViewContent] mIsBack : $mIsBack")
-        if (!mIsBack) {
+//        if (!mIsBack) {
 //        checkArrow()
 
             if (mCurrentContent == null || mCurrentContentSelectIndex == null || mCurrentContentSelectIndex!![mCurrentCategoryIndex] == null) {
@@ -350,7 +352,7 @@ class VodFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItem
             textView_Info.text = item.info
             textView_description.text = item.description
             mLabelAdapter.setData(item.label)
-        }
+//        }
 //        mVideoView = videoView
 
 //        if (item.file_type.hashCode() == TAG_IMAGE.hashCode()) {
