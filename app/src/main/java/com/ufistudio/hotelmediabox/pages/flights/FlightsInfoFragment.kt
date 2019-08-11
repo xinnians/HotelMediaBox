@@ -179,6 +179,10 @@ class FlightsInfoFragment : InteractionView<OnPageInteractionListener.Primary>()
                     intent.putExtra(FullScreenPictureActivity.TAG_TYPE, "udp")
                     mFullscreen = true
                     startActivity(intent)
+                } else {
+                    mAdapter.clearFocus(mCurrentCategoryIndex)
+                    mCategoryFocus = false
+                    mContentFocus = true
                 }
             }
             KeyEvent.KEYCODE_DPAD_RIGHT -> {
@@ -201,6 +205,10 @@ class FlightsInfoFragment : InteractionView<OnPageInteractionListener.Primary>()
                     if (curryIndex != 0) {
                         mCurrentIpTvSelectIndex!![mCurrentCategoryIndex] = curryIndex - 1
                         setAndPlayVideo()
+                    }else{
+                        mContentFocus = false
+                        mCategoryFocus = true
+                        mAdapter.selectLast(mCurrentCategoryIndex)
                     }
 
                     return true

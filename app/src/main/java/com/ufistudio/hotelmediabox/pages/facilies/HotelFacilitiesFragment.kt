@@ -217,6 +217,10 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
                     if (curryIndex != 0) {
                         mCurrentContentSelectIndex!![mCurrentCategoryIndex] = curryIndex - 1
                         switchRender()
+                    }else{
+                        mContentFocus = false
+                        mCategoryFocus = true
+                        mAdapter.selectLast(mCurrentCategoryIndex)
                     }
                     return true
                 }
@@ -249,6 +253,10 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
                         mFullscreen = true
                     }
                     startActivity(intent)
+                } else if (!sideView.isShown && mCategoryFocus) {
+                    mAdapter.clearFocus(mCurrentCategoryIndex)
+                    mCategoryFocus = false
+                    mContentFocus = true
                 }
 
             }

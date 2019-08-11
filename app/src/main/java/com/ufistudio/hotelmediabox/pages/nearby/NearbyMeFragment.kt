@@ -190,6 +190,10 @@ class NearbyMeFragment : InteractionView<OnPageInteractionListener.Primary>(), O
                     if (curryIndex != 0) {
                         mCurrentContentSelectIndex!![mCurrentCategoryIndex] = curryIndex - 1
                         renderViewContent()
+                    }else{
+                        mContentFocus = false
+                        mCategoryFocus = true
+                        mAdapter.selectLast(mCurrentCategoryIndex)
                     }
                     return true
                 }
@@ -212,6 +216,10 @@ class NearbyMeFragment : InteractionView<OnPageInteractionListener.Primary>(), O
                 if (mSideViewFocus) {
                     sideView.intoPage()
                     return true
+                }else if (!sideView.isShown && mCategoryFocus) {
+                    mAdapter.clearFocus(mCurrentCategoryIndex)
+                    mCategoryFocus = false
+                    mContentFocus = true
                 }
             }
         }

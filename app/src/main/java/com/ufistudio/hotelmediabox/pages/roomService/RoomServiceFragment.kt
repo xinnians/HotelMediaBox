@@ -187,6 +187,10 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
                 if (mSideViewFocus) {
                     sideView.intoPage()
                     return true
+                } else if (!sideView.isShown && mCategoryFocus) {
+                    mAdapter.clearFocus(mCurrentCategoryIndex)
+                    mCategoryFocus = false
+                    mContentFocus = true
                 }
             }
             KeyEvent.KEYCODE_DPAD_LEFT -> {
@@ -195,6 +199,10 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
                     if (curryIndex != 0) {
                         mCurrentContentSelectIndex!![mCurrentCategoryIndex] = curryIndex - 1
                         switchRender()
+                    }else {
+                        mContentFocus = false
+                        mCategoryFocus = true
+                        mAdapter.selectLast(mCurrentCategoryIndex)
                     }
                     return true
                 }

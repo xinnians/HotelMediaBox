@@ -166,7 +166,8 @@ class SettingFragment : InteractionView<OnPageInteractionListener.Primary>(), Vi
         if (mContentFocus && !mIsUserGuideFocus) {
             if (getInteractionListener().getOnKeyListener() != null && getInteractionListener().getOnKeyListener()?.onKeyPress(keyCode, event)!!) {
                 when (keyCode) {
-                    KeyEvent.KEYCODE_BACK -> {
+                    KeyEvent.KEYCODE_BACK,
+                    KeyEvent.KEYCODE_DPAD_LEFT-> {
                         mAdapter.selectLast(mCurrentCategoryIndex)
                         mCategoryFocus = true
                         mContentFocus = false
@@ -221,6 +222,14 @@ class SettingFragment : InteractionView<OnPageInteractionListener.Primary>(), Vi
                     if (mSideViewFocus) {
                         sideView.intoPage()
                         return true
+                    }else if(!sideView.isShown && mCategoryFocus && !mIsUserGuideFocus){
+                        mAdapter.clearFocus(mCurrentCategoryIndex)
+                        mCategoryFocus = false
+                        mContentFocus = true
+                        if (getInteractionListener().getOnKeyListener() != null) {
+                            getInteractionListener().setFragmentCacheData(true)
+                            getInteractionListener().getOnKeyListener()?.onKeyPress(KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent(KeyEvent.ACTION_DOWN,KeyEvent.KEYCODE_DPAD_RIGHT))!!
+                        }
                     }
                 }
                 KeyEvent.KEYCODE_BACK -> {
@@ -238,6 +247,7 @@ class SettingFragment : InteractionView<OnPageInteractionListener.Primary>(), Vi
                         mContentFocus = true
                         if (getInteractionListener().getOnKeyListener() != null) {
                             getInteractionListener().setFragmentCacheData(true)
+                            Log.e("Ian","keyCode: $keyCode, event: $event")
                             getInteractionListener().getOnKeyListener()?.onKeyPress(keyCode, event)!!
                         }
                     } else {
