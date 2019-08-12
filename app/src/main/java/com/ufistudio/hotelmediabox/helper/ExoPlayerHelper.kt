@@ -144,6 +144,13 @@ open class ExoPlayerHelper {
                     onBroadcastAll(null,TVController.ACTION_TYPE.OnIPTVLoading)
                 }
 
+                if(playbackState == 2 &&
+                    totalContentDuration().toInt() != 1 &&
+                    ((currentPosition().toInt() == totalContentDuration().toInt()) || (totalContentDuration().toInt() - currentPosition().toInt() < 1000 ))){
+                    Log.e(TAG,"currentPosition().toInt(): ${currentPosition().toInt()} totalContentDuration().toInt(): ${totalContentDuration().toInt()}")
+                    onBroadcastAll(null,TVController.ACTION_TYPE.OnIPTVFinish)
+                }
+
                 if(playbackState == 3){
 
                     if(mIsNeedSeek){
