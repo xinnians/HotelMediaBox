@@ -850,6 +850,7 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
         textView_channels.text = data.note?.channels
         textView_navigation.text = data.note?.navigation
         textView_select.text = data.note?.select
+        textView_redKey.text = data.note?.select_language
     }
 
     private fun onInitNoteButtonProgress(isProgress: Boolean) {

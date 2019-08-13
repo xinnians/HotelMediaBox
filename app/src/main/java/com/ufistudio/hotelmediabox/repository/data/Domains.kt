@@ -391,7 +391,8 @@ data class Note(
     var stop: String = "Stop",
     var navigation: String = "Navigation",
     var channels: String = "Channels",
-    var next: String = "Next"
+    var next: String = "Next",
+    var select_language: String = "Select Language"
 ) : Parcelable
 
 /*
