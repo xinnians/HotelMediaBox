@@ -13,13 +13,15 @@
         <TextView
                 android:id="@+id/textView_subtitle"
                 style="@style/ContentTitle"
-                android:layout_width="wrap_content"
+                android:layout_width="@dimen/_190sdp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_24sdp"
+                android:layout_marginStart="@dimen/_15sdp"
                 android:layout_marginTop="@dimen/_7sdp"
                 android:gravity="center"
                 android:text="123"
                 android:textSize="@dimen/_13ssp"
+                android:ellipsize="end"
+                android:singleLine="true"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/exo_position"
@@ -28,7 +30,7 @@
 
         <TextView
                 android:id="@id/exo_position"
-                android:layout_width="wrap_content"
+                android:layout_width="@dimen/_40sdp"
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:layout_marginStart="@dimen/_5sdp"
