@@ -83,7 +83,7 @@
             android:layout_height="@dimen/_17sdp"
             android:layout_marginEnd="@dimen/_8sdp"
             android:layout_marginBottom="@dimen/_15sdp"
-            android:src="@drawable/bg_red_btn"
+            android:src="@drawable/ic_changelanguage"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/textView_redKey" />
 </android.support.constraint.ConstraintLayout>
