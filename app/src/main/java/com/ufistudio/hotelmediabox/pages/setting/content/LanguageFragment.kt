@@ -35,6 +35,7 @@ class LanguageFragment : InteractionView<OnPageInteractionListener.Primary>(), O
     private var mCurrentLanguageCode: String = "en"
     private var mCurrentIndex: Int = -1
     private val mGson: Gson = GsonBuilder().disableHtmlEscaping().create()
+    private var mSwitchRange: Int = 5
 
 
     companion object {
@@ -192,11 +193,38 @@ class LanguageFragment : InteractionView<OnPageInteractionListener.Primary>(), O
                 if (TextUtils.equals(languageCode, mData?.content!![i].code)) {
                     mCurrentLanguageCode = mData?.content!![i].code
                     mCurrentIndex = i
-                    textView1.text = mData?.content!![if (mCurrentIndex - 2 >= 0) mCurrentIndex - 2 else mData?.content!!.size + mCurrentIndex - 2].title
-                    textView2.text = mData?.content!![if (mCurrentIndex - 1 >= 0) mCurrentIndex - 1 else mData?.content!!.size + mCurrentIndex - 1].title
-                    textView3.text = mData?.content!![mCurrentIndex].title
-                    textView4.text = mData?.content!![if (mCurrentIndex + 1 < mData?.content!!.size) mCurrentIndex + 1 else (mCurrentIndex + 1 - mData?.content!!.size)].title
-                    textView5.text = mData?.content!![if (mCurrentIndex + 2 < mData?.content!!.size) mCurrentIndex + 2 else (mCurrentIndex + 2 - mData?.content!!.size)].title
+
+                    if(mData?.content?.size ?: 0 in 3..4){
+                        mSwitchRange = 3
+                    }else if(mData?.content?.size ?: 0 < 3){
+                        mSwitchRange = 1
+                    }
+
+                    when(mSwitchRange){
+                        5 -> {
+                            textView1.text = mData?.content!![if (mCurrentIndex - 2 >= 0) mCurrentIndex - 2 else mData?.content!!.size + mCurrentIndex - 2].title
+                            textView2.text = mData?.content!![if (mCurrentIndex - 1 >= 0) mCurrentIndex - 1 else mData?.content!!.size + mCurrentIndex - 1].title
+                            textView3.text = mData?.content!![mCurrentIndex].title
+                            textView4.text = mData?.content!![if (mCurrentIndex + 1 < mData?.content!!.size) mCurrentIndex + 1 else (mCurrentIndex + 1 - mData?.content!!.size)].title
+                            textView5.text = mData?.content!![if (mCurrentIndex + 2 < mData?.content!!.size) mCurrentIndex + 2 else (mCurrentIndex + 2 - mData?.content!!.size)].title
+                        }
+                        3 -> {
+                            textView1.visibility = View.GONE
+                            textView5.visibility = View.GONE
+
+                            textView2.text = mData?.content!![if (mCurrentIndex - 1 >= 0) mCurrentIndex - 1 else mData?.content!!.size + mCurrentIndex - 1].title
+                            textView3.text = mData?.content!![mCurrentIndex].title
+                            textView4.text = mData?.content!![if (mCurrentIndex + 1 < mData?.content!!.size) mCurrentIndex + 1 else (mCurrentIndex + 1 - mData?.content!!.size)].title
+                        }
+                        1 -> {
+                            textView1.visibility = View.GONE
+                            textView2.visibility = View.GONE
+                            textView5.visibility = View.GONE
+                            textView4.visibility = View.GONE
+
+                            textView3.text = mData?.content!![mCurrentIndex].title
+                        }
+                    }
 
                     break
                 }
@@ -210,12 +238,26 @@ class LanguageFragment : InteractionView<OnPageInteractionListener.Primary>(), O
      */
     private fun scrollLanguage() {
         if (mData?.content != null) {
-            textView1.text = mData?.content!![if (mCurrentIndex - 2 >= 0) mCurrentIndex - 2 else mData?.content!!.size + mCurrentIndex - 2].title
-            textView2.text = mData?.content!![if (mCurrentIndex - 1 >= 0) mCurrentIndex - 1 else mData?.content!!.size + mCurrentIndex - 1].title
-            textView3.text = mData?.content!![mCurrentIndex].title
-            mCurrentLanguageCode = mData?.content!![mCurrentIndex].code
-            textView4.text = mData?.content!![if (mCurrentIndex + 1 < mData?.content!!.size) mCurrentIndex + 1 else (mCurrentIndex + 1 - mData?.content!!.size)].title
-            textView5.text = mData?.content!![if (mCurrentIndex + 2 < mData?.content!!.size) mCurrentIndex + 2 else (mCurrentIndex + 2 - mData?.content!!.size)].title
+            when(mSwitchRange){
+                5 -> {
+                    textView1.text = mData?.content!![if (mCurrentIndex - 2 >= 0) mCurrentIndex - 2 else mData?.content!!.size + mCurrentIndex - 2].title
+                    textView2.text = mData?.content!![if (mCurrentIndex - 1 >= 0) mCurrentIndex - 1 else mData?.content!!.size + mCurrentIndex - 1].title
+                    textView3.text = mData?.content!![mCurrentIndex].title
+                    mCurrentLanguageCode = mData?.content!![mCurrentIndex].code
+                    textView4.text = mData?.content!![if (mCurrentIndex + 1 < mData?.content!!.size) mCurrentIndex + 1 else (mCurrentIndex + 1 - mData?.content!!.size)].title
+                    textView5.text = mData?.content!![if (mCurrentIndex + 2 < mData?.content!!.size) mCurrentIndex + 2 else (mCurrentIndex + 2 - mData?.content!!.size)].title
+                }
+                3 -> {
+                    textView2.text = mData?.content!![if (mCurrentIndex - 1 >= 0) mCurrentIndex - 1 else mData?.content!!.size + mCurrentIndex - 1].title
+                    textView3.text = mData?.content!![mCurrentIndex].title
+                    mCurrentLanguageCode = mData?.content!![mCurrentIndex].code
+                    textView4.text = mData?.content!![if (mCurrentIndex + 1 < mData?.content!!.size) mCurrentIndex + 1 else (mCurrentIndex + 1 - mData?.content!!.size)].title
+                }
+                1 -> {
+                    textView3.text = mData?.content!![mCurrentIndex].title
+                    mCurrentLanguageCode = mData?.content!![mCurrentIndex].code
+                }
+            }
         }
     }
 }
