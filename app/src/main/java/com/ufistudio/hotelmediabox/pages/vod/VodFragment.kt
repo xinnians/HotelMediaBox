@@ -171,6 +171,9 @@ class VodFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItem
                     mAdapter.clearFocus(mCurrentCategoryIndex)
                     mCategoryFocus = false
                     mContentFocus = true
+
+                    imageView_focus.setBackgroundResource(R.drawable.rectangle_vod_movie_focus)
+
                 } else if (mContentFocus) {
                     mIsBack = false
                     val curryIndex = mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!
@@ -206,6 +209,7 @@ class VodFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItem
                         mContentFocus = false
                         mCategoryFocus = true
                         mAdapter.selectLast(mCurrentCategoryIndex)
+                        imageView_focus.setBackgroundResource(R.drawable.rectangle_vod_movie_default)
                     }
                 }
                 return true

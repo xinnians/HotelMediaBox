@@ -92,6 +92,8 @@
             android:id="@+id/recyclerView_service"
             android:layout_width="@dimen/_81sdp"
             android:layout_height="0dp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginBottom="@dimen/_5sdp"
             app:layout_constraintBottom_toTopOf="@+id/view_list_down_arrow"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -172,7 +174,7 @@
         android:layout_width="@dimen/_93sdp"
         android:layout_height="@dimen/_134sdp"
         android:layout_marginTop="@dimen/_29sdp"
-        android:background="@drawable/rectangle_vod_movie_focus"
+        android:background="@drawable/rectangle_vod_movie_default"
         app:layout_constraintEnd_toStartOf="@+id/imageView_arrow_right"
         app:layout_constraintStart_toEndOf="@+id/imageView_arrow_left"
         app:layout_constraintTop_toTopOf="parent" />

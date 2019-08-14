@@ -9,7 +9,9 @@ import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.interfaces.OnItemClickListener
 import com.ufistudio.hotelmediabox.interfaces.OnItemFocusListener
 import com.ufistudio.hotelmediabox.repository.data.VodCategories
+import kotlinx.android.synthetic.main.item_room_service.view.*
 import kotlinx.android.synthetic.main.item_vod.view.*
+import kotlinx.android.synthetic.main.item_vod.view.text_title
 
 class VodAdapter(private var mClickListener: OnItemClickListener, private var mFocusListener: OnItemFocusListener) : RecyclerView.Adapter<VodAdapter.ViewHolder>() {
 
@@ -98,6 +100,16 @@ class VodAdapter(private var mClickListener: OnItemClickListener, private var mF
                     holder.itemView.text_title.setTextColor(ContextCompat.getColor(holder.itemView.context, android.R.color.white))
                 }
             }
+        }
+
+        if(mSelectIndex == position){
+            if(mSideViewIsShow || mClearFocus){
+                holder.itemView.layout_vod.background = ContextCompat.getDrawable(holder.itemView.context, R.drawable.home_icon_frame_frame_default)
+            }else{
+                holder.itemView.layout_vod.background = ContextCompat.getDrawable(holder.itemView.context, R.drawable.home_icon_frame_frame_focused)
+            }
+        }else{
+            holder.itemView.layout_vod.setBackgroundResource(0)
         }
     }
 
