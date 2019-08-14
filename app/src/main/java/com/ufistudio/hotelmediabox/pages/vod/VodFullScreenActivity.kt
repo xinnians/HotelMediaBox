@@ -195,13 +195,13 @@ class VodFullScreenActivity : PaneViewActivity() {
                         mIsPause = !mIsPause
                         return true
                     }
-                    KeyEvent.KEYCODE_MEDIA_FAST_FORWARD ->{
-                        if(event.action == KeyEvent.ACTION_UP){
-                            return true
-                        }
-                        Toast.makeText(applicationContext,"Speed ${mExoPlayerHelper?.speedUp()}x",Toast.LENGTH_SHORT).show()
-                        return true
-                    }
+//                    KeyEvent.KEYCODE_MEDIA_FAST_FORWARD ->{
+//                        if(event.action == KeyEvent.ACTION_UP){
+//                            return true
+//                        }
+//                        Toast.makeText(applicationContext,"Speed ${mExoPlayerHelper?.speedUp()}x",Toast.LENGTH_SHORT).show()
+//                        return true
+//                    }
                     else ->{
 
                     }
