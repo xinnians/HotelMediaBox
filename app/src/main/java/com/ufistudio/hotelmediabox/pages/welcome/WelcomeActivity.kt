@@ -26,9 +26,11 @@ import android.app.AlarmManager
 import android.content.Context
 import android.widget.Toast
 import com.ufistudio.hotelmediabox.constants.Cache
+import com.ufistudio.hotelmediabox.constants.Cache.Memos
 import com.ufistudio.hotelmediabox.constants.Key.IS_CONFIG_ALREADY_RESET
 import com.ufistudio.hotelmediabox.constants.Key.IS_TIME_SET_SUCCESS
 import com.ufistudio.hotelmediabox.helper.DownloadHelper.TAR_PATH
+import com.ufistudio.hotelmediabox.pages.memo.MemoActivity
 import com.ufistudio.hotelmediabox.repository.data.NoteButton
 import com.ufistudio.hotelmediabox.utils.*
 import kotlinx.android.synthetic.main.view_bottom_ok.*
@@ -120,6 +122,7 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
                     SystemClock.setCurrentTimeMillis(it.timestamp)
                     this.getSharedPreferences("HotelBoxData", Context.MODE_PRIVATE).edit().putBoolean(IS_TIME_SET_SUCCESS,true).apply()
                     Cache.RoomNumber = it.roomNum
+                    Memos = it.memos ?: arrayListOf()
                 }
                 is Welcome -> {
                     mWelcomeContent = it.welcome
@@ -183,7 +186,15 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
     }
 
     override fun onClick(v: View?) {
-        val intent = Intent(this, MainActivity::class.java)
+
+        val intent: Intent
+
+        if(Memos.size > 0) {
+            intent = Intent(this, MemoActivity::class.java)
+        }else{
+            intent = Intent(this, MainActivity::class.java)
+        }
+
         startActivity(intent)
         finish()
     }

@@ -442,7 +442,17 @@ data class InitialData(
         var timestamp: Long,
         var guestName: String = "",
         var roomNum: String = "",
-        var timezone: String = "Asia/Taipei"
+        var timezone: String = "Asia/Taipei",
+        var wifiId: String = "",
+        var wifiPassword: String = "",
+        var memos: ArrayList<Memo>? = ArrayList()
+
+) : Parcelable
+
+@Parcelize
+data class Memo(
+    var title: String = "",
+    var content: String = ""
 ) : Parcelable
 
 @Parcelize

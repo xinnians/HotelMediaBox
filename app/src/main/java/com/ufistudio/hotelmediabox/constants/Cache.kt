@@ -1,5 +1,7 @@
 package com.ufistudio.hotelmediabox.constants
 
+import com.ufistudio.hotelmediabox.repository.data.Memo
+
 object Cache {
 
     var RoomNumber: String? = ""
@@ -9,4 +11,7 @@ object Cache {
     var IsVODEnable: Boolean = false
 
     var VodWatchHistory: MutableMap<String,Long> = mutableMapOf()
+
+    var Memos: ArrayList<Memo> = arrayListOf()
+
 }

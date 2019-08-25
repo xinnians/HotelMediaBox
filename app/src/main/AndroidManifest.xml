@@ -40,6 +40,9 @@
             android:name=".pages.welcome.WelcomeActivity"
             android:screenOrientation="landscape" />
         <activity
+                android:name=".pages.memo.MemoActivity"
+                android:screenOrientation="landscape" />
+        <activity
             android:name=".pages.factory.FactoryActivity"
             android:screenOrientation="landscape" />
         <activity

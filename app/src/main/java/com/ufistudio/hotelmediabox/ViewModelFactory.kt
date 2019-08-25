@@ -10,6 +10,7 @@ import com.ufistudio.hotelmediabox.pages.factory.FactoryViewModel
 import com.ufistudio.hotelmediabox.pages.flights.FlightsInfoViewModel
 import com.ufistudio.hotelmediabox.pages.fullScreen.FullScreenViewModel
 import com.ufistudio.hotelmediabox.pages.home.HomeViewModel
+import com.ufistudio.hotelmediabox.pages.memo.MemoViewModel
 import com.ufistudio.hotelmediabox.pages.nearby.NearbyMeViewModel
 import com.ufistudio.hotelmediabox.pages.roomService.RoomServiceViewModel
 import com.ufistudio.hotelmediabox.pages.welcome.WelcomeViewModel
@@ -51,6 +52,7 @@ class ViewModelFactory(private val application: Application,
                 isAssignableFrom(WeatherViewModel::class.java) -> WeatherViewModel(application,CompositeDisposable(),repository)
                 isAssignableFrom(VodViewModel::class.java) -> VodViewModel(application,CompositeDisposable(),repository)
                 isAssignableFrom(TouristViewModel::class.java) -> TouristViewModel(application,CompositeDisposable(),repository)
+                isAssignableFrom(MemoViewModel::class.java) -> MemoViewModel(application,CompositeDisposable(),repository)
                 else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
             } as T
         }
