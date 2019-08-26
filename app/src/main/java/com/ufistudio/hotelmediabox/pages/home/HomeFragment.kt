@@ -20,6 +20,8 @@ import android.widget.TextView
 import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.ufistudio.hotelmediabox.AppInjector
+import com.ufistudio.hotelmediabox.constants.Cache.WifiId
+import com.ufistudio.hotelmediabox.constants.Cache.WifiPassword
 import com.ufistudio.hotelmediabox.constants.Page
 import com.ufistudio.hotelmediabox.helper.TVController
 import com.ufistudio.hotelmediabox.interfaces.ViewModelsCallback
@@ -507,26 +509,13 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                 include_home_banner.visibility = View.INVISIBLE
                 include_weather.visibility = View.VISIBLE
                 if (mWeatherData != null) {
-//                    mWeatherData?.forecasts?.get(0)?.let {
-//                        val icon = WeatherIconEnum.getItemByName(it.text).mIcon
-//                        if (icon != -1) {
-//                            imageView_weather.visibility = View.VISIBLE
-//                            Glide.with(this)
-//                                .load(icon)
-//                                .skipMemoryCache(true)
-//                                .into(imageView_weather)
-//                        } else {
-//                            imageView_weather.visibility = View.INVISIBLE
-//                        }
-//                        textView_value.text = String.format("%s %s", it.high, getString(R.string.symbol_temp))
-//                    }
                 } else {
                     val weather: HomeWeather? = mData?.home?.weather
                     weather?.weather_city?.let { mViewModel.getWeather(it) }
 
-                    textView_wifi_id.text = weather?.wifi_id
+                    textView_wifi_id.text = if(WifiId != "") WifiId else weather?.wifi_id
                     textView_wifiIdTitle.text = weather?.wifi_id_title
-                    textView_wifi_password.text = weather?.wifi_password
+                    textView_wifi_password.text = if(WifiPassword != "") WifiPassword else weather?.wifi_password
                     textView_wifiPasswordTitle.text = weather?.wifi_password_title
                     textView_value.text = weather?.temp_none
                     weather_title.text = weather?.weather_title
@@ -559,9 +548,9 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                     val weather: HomeWeather? = mData?.home?.weather
                     weather?.weather_city?.let { mViewModel.getWeather(it) }
 
-                    textView_wifi_id.text = weather?.wifi_id
+                    textView_wifi_id.text = if(WifiId != "") WifiId else weather?.wifi_id
                     textView_wifiIdTitle.text = weather?.wifi_id_title
-                    textView_wifi_password.text = weather?.wifi_password
+                    textView_wifi_password.text = if(WifiPassword != "") WifiPassword else weather?.wifi_password
                     textView_wifiPasswordTitle.text = weather?.wifi_password_title
                     textView_value.text = weather?.temp_none
                     weather_title.text = weather?.weather_title

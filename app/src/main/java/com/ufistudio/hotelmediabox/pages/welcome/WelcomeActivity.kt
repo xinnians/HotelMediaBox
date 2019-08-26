@@ -27,6 +27,8 @@ import android.content.Context
 import android.widget.Toast
 import com.ufistudio.hotelmediabox.constants.Cache
 import com.ufistudio.hotelmediabox.constants.Cache.Memos
+import com.ufistudio.hotelmediabox.constants.Cache.WifiId
+import com.ufistudio.hotelmediabox.constants.Cache.WifiPassword
 import com.ufistudio.hotelmediabox.constants.Key.IS_CONFIG_ALREADY_RESET
 import com.ufistudio.hotelmediabox.constants.Key.IS_TIME_SET_SUCCESS
 import com.ufistudio.hotelmediabox.helper.DownloadHelper.TAR_PATH
@@ -123,6 +125,8 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
                     this.getSharedPreferences("HotelBoxData", Context.MODE_PRIVATE).edit().putBoolean(IS_TIME_SET_SUCCESS,true).apply()
                     Cache.RoomNumber = it.roomNum
                     Memos = it.memos ?: arrayListOf()
+                    WifiId = it.wifiId
+                    WifiPassword = it.wifiPassword
                 }
                 is Welcome -> {
                     mWelcomeContent = it.welcome

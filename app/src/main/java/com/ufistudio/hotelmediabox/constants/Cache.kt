@@ -13,5 +13,7 @@ object Cache {
     var VodWatchHistory: MutableMap<String,Long> = mutableMapOf()
 
     var Memos: ArrayList<Memo> = arrayListOf()
+    var WifiId: String = ""
+    var WifiPassword: String = ""
 
 }
