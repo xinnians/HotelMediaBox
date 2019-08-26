@@ -73,7 +73,7 @@ open class ExoPlayerHelper {
             15000,
             DEFAULT_TARGET_BUFFER_BYTES,
             DEFAULT_PRIORITIZE_TIME_OVER_SIZE_THRESHOLDS)
-        mPlayer = ExoPlayerFactory.newSimpleInstance(context,renderer, trackSelector)
+        mPlayer = ExoPlayerFactory.newSimpleInstance(context,renderer, trackSelector,loadControl)
         mPlayer?.volume = 1f
         mCurrentSpeed = 1.0f
         mVideoView = videoView
