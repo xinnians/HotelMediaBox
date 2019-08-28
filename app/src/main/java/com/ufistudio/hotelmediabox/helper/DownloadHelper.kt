@@ -12,12 +12,19 @@ object DownloadHelper {
 
     private val TAG = DownloadHelper::class.java.simpleName
 
+    const val VERIFY_FILE_NAME_APK = "hotel_verify.apk"
     const val VERIFY_FILE_NAME = "hotel_verify.tar"
     const val TAR_PATH = "/data/correction/"
+    const val DATA_PATH = "/data/hotel/"
 
     fun checkVersion():Single<String>{
         //TODO 確認下載版本，有可能之後會要寫進config內
         return sendTCPRequestSingle("k_ver")
+    }
+
+    fun downloadHotelAPK(downloadUrl: String = "", savePath: String = "$DATA_PATH$VERIFY_FILE_NAME_APK", fileMD5: String = ""):Single<String>{
+        //TODO call 下載command，需要加上md5讓process做檔案損毀確認
+        return sendTCPRequestSingle("k_download $downloadUrl $savePath $fileMD5")
     }
 
     fun downloadHotelTar(downloadUrl: String = "", savePath: String = "$TAR_PATH$VERIFY_FILE_NAME", fileMD5: String = ""):Single<String>{

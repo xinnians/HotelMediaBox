@@ -63,10 +63,7 @@ class SplashActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        if (FileUtils.getFileFromStorage(TAG_DEFAULT_APK_NAME) != null && FileUtils.getFileFromStorage(
-                TAG_DEFAULT_APK_NAME
-            )?.exists() == true
-        ) {
+        if (FileUtils.getFileFromStorage(TAG_DEFAULT_APK_NAME) != null && FileUtils.getFileFromStorage(TAG_DEFAULT_APK_NAME)?.exists() == true) {
             FileUtils.getFileFromStorage(TAG_DEFAULT_APK_NAME)?.delete()
             MiscUtils.reboot(this)
         }
