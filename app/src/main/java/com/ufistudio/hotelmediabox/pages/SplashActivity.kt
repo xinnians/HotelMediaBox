@@ -14,6 +14,7 @@ import com.ufistudio.hotelmediabox.services.UdpReceiver
 import com.ufistudio.hotelmediabox.utils.FileUtils
 import com.ufistudio.hotelmediabox.utils.FileUtils.fileIsExists
 import com.ufistudio.hotelmediabox.utils.MiscUtils
+import com.ufistudio.hotelmediabox.utils.MiscUtils.execCommand
 import com.ufistudio.hotelmediabox.utils.TAG_DEFAULT_APK_NAME
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
@@ -129,5 +130,7 @@ class SplashActivity : AppCompatActivity() {
             )
 
         }
+
+        execCommand("hidisp setrange 0 0 0 0")
     }
 }
