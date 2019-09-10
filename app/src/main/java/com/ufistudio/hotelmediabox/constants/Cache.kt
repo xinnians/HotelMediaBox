@@ -1,5 +1,6 @@
 package com.ufistudio.hotelmediabox.constants
 
+import com.ufistudio.hotelmediabox.repository.data.HotelFacilitiesContent
 import com.ufistudio.hotelmediabox.repository.data.Memo
 
 object Cache {
@@ -15,5 +16,7 @@ object Cache {
     var Memos: ArrayList<Memo> = arrayListOf()
     var WifiId: String = ""
     var WifiPassword: String = ""
+
+    var HotelFacilitiesContents: List<HotelFacilitiesContent>? = arrayListOf()
 
 }

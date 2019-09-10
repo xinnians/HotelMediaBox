@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide
 import com.google.android.exoplayer2.ui.PlayerView
 import com.ufistudio.hotelmediabox.AppInjector
 import com.ufistudio.hotelmediabox.R
+import com.ufistudio.hotelmediabox.constants.Cache
 import com.ufistudio.hotelmediabox.constants.Page
 import com.ufistudio.hotelmediabox.helper.ExoPlayerHelper
 import com.ufistudio.hotelmediabox.helper.TVController
@@ -246,8 +247,9 @@ class HotelFacilitiesFragment : InteractionView<OnPageInteractionListener.Primar
                 } else if (mContentFocus && mCurrentContentType == TAG_TEMPLATE_1) {
                     val item = mCurrentContent!![mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!]
                     val intent: Intent = Intent(context, FullScreenPictureActivity::class.java)
-                    intent.putExtra(Page.ARG_BUNDLE, item.file_name)
-                    intent.putExtra(FullScreenPictureActivity.TAG_TYPE, item.file_type)
+                    Cache.HotelFacilitiesContents = mCurrentContent
+                    intent.putExtra(Page.ARG_BUNDLE, mCurrentContentSelectIndex!![mCurrentCategoryIndex]!!)
+                    intent.putExtra(FullScreenPictureActivity.TAG_TYPE, "HotelFacilities")
                     if (item.file_type.hashCode() == TAG_VIDEO.hashCode()) {
 //                        mExoPlayerHelper.stop()
                         mFullscreen = true
