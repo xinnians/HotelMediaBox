@@ -51,7 +51,7 @@
                 android:layout_height="@dimen/_17sdp"
                 android:layout_marginStart="@dimen/_15sdp"
                 android:layout_marginTop="@dimen/_14sdp"
-                android:src="@drawable/ic_return"
+                android:src="@drawable/ic_weather"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
