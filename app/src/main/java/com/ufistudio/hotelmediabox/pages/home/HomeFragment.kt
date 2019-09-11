@@ -310,9 +310,8 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
                     mFeatureCurrentList = mFeatureList[mCurrentPosition]!!
                     mFeatureIconCurrentList = mFeatureIconList[mCurrentPosition]!!
                     changeFeatureInfo()
-
                 } else {
-                    if (mFocusItem != 1)
+                    if (mFocusItem != 1 && mFocusItem != 0)
                         mFocusItem--
                 }
                 focusChange()
