@@ -61,15 +61,25 @@ Home
  */
 @Parcelize
 data class Home(
-    val home: HomeContent
+    val home: HomeContent = HomeContent()
 ) : Parcelable
 
 @Parcelize
 data class HomeContent(
-    val stage_type: HomeStageType,
-    val icons: ArrayList<HomeIcons>,
-    val promo_banner: ArrayList<HomePromoBanner>,
-    val weather: HomeWeather
+    val stage_type: HomeStageType = HomeStageType(1,"test"),
+    val icons: ArrayList<HomeIcons> = arrayListOf(HomeIcons(0,"LIVE TV\\nChannels","LIVE TV",1),
+        HomeIcons(1,"VOD\nMovies","VOD",1),
+        HomeIcons(2,"Smart\nApps","APP",1),
+        HomeIcons(3,"Room\nService","Room Services",1),
+        HomeIcons(4,"Hotel\nFacilities","Facilities",1),
+        HomeIcons(5,"Nearby\nMe","Nearby Me",1),
+        HomeIcons(6,"Tourist\nInfo","Tourist Info",1),
+        HomeIcons(7,"Flight\nInfo","Flights",1),
+        HomeIcons(8,"Weather\nForecast","Weather",1),
+        HomeIcons(9,"Guest\nServices","Guest",1)
+    ),
+    val promo_banner: ArrayList<HomePromoBanner> = arrayListOf(),
+    val weather: HomeWeather = HomeWeather("WIFI ID","aaaaaaaa","WIFI PASSWORD","bbbbbb","TODAY WEATHER","kuala lumpur","-- c")
 ) : Parcelable
 
 @Parcelize
@@ -190,21 +200,21 @@ data class WelcomeContent(
  */
 @Parcelize
 data class Config(
-    var config: ConfigContent
+    var config: ConfigContent = ConfigContent()
 ) : Parcelable
 
 @Parcelize
 data class ConfigContent(
-        var language: String = "",
-        var upgradeUrl: String = "",
-        var room: String = "",
-        var timeFormat: String = "",
-        var file_version: String = "",
-        var defaultIp: String = "",
-        var defaultServerIp: String = "",
-        var j_version: String = "",
-        var tar_version: String = "",
-        var apk_version: String = ""
+    var language: String = "en",
+    var upgradeUrl: String = "",
+    var room: String = "",
+    var timeFormat: String = "",
+    var file_version: String = "",
+    var defaultIp: String = "",
+    var defaultServerIp: String = "13.113.3.99",
+    var j_version: String = "",
+    var tar_version: String = "",
+    var apk_version: String = ""
 ) : Parcelable
 
 /*
@@ -392,7 +402,8 @@ data class Note(
     var navigation: String = "Navigation",
     var channels: String = "Channels",
     var next: String = "Next",
-    var select_language: String = "Select Language"
+    var select_language: String = "Select Language",
+    var get_message:String = "You got a message. Please press"
 ) : Parcelable
 
 /*
@@ -407,7 +418,7 @@ data class Broadcast(
     var type: String,
     var needUpdate: Int = 0,
     var force: String = "0",
-    var md5:String
+    var md5: String
 ) : Parcelable
 
 
@@ -438,14 +449,14 @@ data class TouristInfo(
 
 @Parcelize
 data class InitialData(
-        var time: String,
-        var timestamp: Long,
-        var guestName: String = "",
-        var roomNum: String = "",
-        var timezone: String = "Asia/Taipei",
-        var wifiId: String = "",
-        var wifiPassword: String = "",
-        var memos: ArrayList<Memo>? = ArrayList()
+    var time: String,
+    var timestamp: Long,
+    var guestName: String = "",
+    var roomNum: String = "",
+    var timezone: String = "Asia/Taipei",
+    var wifiId: String = "",
+    var wifiPassword: String = "",
+    var memos: ArrayList<Memo>? = ArrayList()
 
 ) : Parcelable
 
@@ -457,16 +468,16 @@ data class Memo(
 
 @Parcelize
 data class StaticIpData(
-        var defaultIp: String?,
-        var defaultMask: String?,
-        var gateway: String? = "0.0.0.0"
+    var defaultIp: String?,
+    var defaultMask: String?,
+    var gateway: String? = "0.0.0.0"
 ) : Parcelable
 
 data class JVersion(
     var process: String = "",
     var ver: String = "",
     var build: String = "",
-    var chanlistver: String =""
+    var chanlistver: String = ""
 )
 
 data class GenreList(
@@ -475,7 +486,7 @@ data class GenreList(
 
 data class GenreType(
     var key: String = "",
-    var display: String =""
+    var display: String = ""
 )
 
 data class KDownloadVersion(
@@ -510,3 +521,30 @@ data class DLmd5result(
     var calMD5: String = "",
     var cmp: String = ""
 )
+
+@Parcelize
+data class GuestMessage(
+    var title: String,
+    var content: String,
+    var guest: String
+) : Parcelable
+
+@Parcelize
+data class GuestCatagories(
+    var title: String = "testTitle",
+    var content_type: String = "testContentType",
+    var total: Int = 0,
+    var contents: ArrayList<GuestMessage> = arrayListOf(GuestMessage("title1","content1","guest1"),
+        GuestMessage("title2","content2","guest2"),
+        GuestMessage("title3","content3","guest3"),
+        GuestMessage("title4","content4","guest4"),
+        GuestMessage("title5","content5","guest5"),
+        GuestMessage("title6","content6","guest6"),
+        GuestMessage("title7","content7","guest7"))
+) : Parcelable
+
+@Parcelize
+data class PMS(
+    var status: String = "",
+    var catagories: ArrayList<GuestCatagories> = arrayListOf(GuestCatagories(),GuestCatagories(title = "testTitle2"),GuestCatagories(title = "testTitle3"),GuestCatagories(title = "testTitle4"))
+) : Parcelable

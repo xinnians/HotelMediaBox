@@ -19,4 +19,10 @@ object Cache {
 
     var HotelFacilitiesContents: List<HotelFacilitiesContent>? = arrayListOf()
 
+    //PMS Function
+    var ServerIP: String? = ""
+    var IsMessageHintShow: Boolean = false
+    var IsMessageUpdate: Boolean = false
+    val TempAPIHeader: String = "http://"
+    val TempAPIGetGuestMessage: String = "/api/message/list"
 }

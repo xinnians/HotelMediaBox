@@ -279,7 +279,8 @@ class HomeFragment : InteractionView<OnPageInteractionListener.Primary>(), Funct
 
                 return true
             }
-            KeyEvent.KEYCODE_DPAD_CENTER -> {
+            KeyEvent.KEYCODE_DPAD_CENTER,
+            KeyEvent.KEYCODE_Q -> {
 //                mExoPlayerHelper.fullScreen()
                 clickChange()
                 return true

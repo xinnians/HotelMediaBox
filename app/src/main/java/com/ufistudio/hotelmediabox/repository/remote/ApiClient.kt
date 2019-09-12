@@ -1,10 +1,7 @@
 package com.ufistudio.hotelmediabox.repository.remote
 
 import android.util.Log
-import com.ufistudio.hotelmediabox.repository.data.Broadcast
-import com.ufistudio.hotelmediabox.repository.data.InitialData
-import com.ufistudio.hotelmediabox.repository.data.StaticIpData
-import com.ufistudio.hotelmediabox.repository.data.WeatherInfo
+import com.ufistudio.hotelmediabox.repository.data.*
 import com.ufistudio.hotelmediabox.repository.remote.RemoteAPI.Companion.getOkHttpClient
 import io.reactivex.Single
 import okhttp3.MultipartBody
@@ -86,4 +83,6 @@ class ApiClient {
     fun getInitialData(url: String, mac: String): Single<InitialData> = mService.getInitialData(url, mac)
 
     fun getStaticIp(url: String, mac: String): Single<StaticIpData> = mService.getStaticIp(url, mac)
+
+    fun getGuestMessage(url: String, mac: String): Single<PMS> = mService.getGuestMessage(url, mac)
 }

@@ -90,6 +90,10 @@ class Repository(
         return ApiClient.getInstance()!!.getStaticIp(url, MiscUtils.getEthernetMacAddress())
     }
 
+    fun getGuestMessage(url: String): Single<PMS> {
+        return ApiClient.getInstance()!!.getGuestMessage(url, MiscUtils.getEthernetMacAddress())
+    }
+
     // local
 
     fun getChannelList(): Single<ArrayList<BaseChannel>>? {

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <android.support.constraint.ConstraintLayout
+            android:id="@+id/layout_index"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_30sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+                android:id="@+id/type2_view_side_arrow_left"
+                android:layout_width="@dimen/_8sdp"
+                android:layout_height="@dimen/_13sdp"
+                android:src="@drawable/ic_left_arrow"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+                android:id="@+id/type2_text_current_page"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:text="3"
+                style="@style/PageCurrent"
+                android:textColor="@color/colorWhite"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/type2_view_side_arrow_left"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+                android:id="@+id/type2_text_total_page"
+                style="@style/PageTotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="/213"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/type2_text_current_page" />
+
+        <ImageView
+                android:id="@+id/type2_view_side_arrow_right"
+                android:layout_width="@dimen/_8sdp"
+                android:layout_height="@dimen/_13sdp"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:src="@drawable/ic_right_arrow"
+                android:visibility="invisible"
+                app:layout_constraintStart_toEndOf="@+id/type2_text_total_page"
+                app:layout_constraintTop_toTopOf="@+id/type2_view_side_arrow_left" />
+    </android.support.constraint.ConstraintLayout>
+
+    <TextView
+            android:id="@+id/tv_content"
+            android:layout_width="@dimen/_353sdp"
+            android:layout_height="@dimen/_141sdp"
+            android:text="test"
+            android:gravity="center"
+            android:textSize="@dimen/_11ssp"
+            android:background="#4D00006b"
+            android:textColor="@color/colorWhite"
+            android:layout_marginTop="@dimen/_20sdp"
+            app:layout_constraintTop_toBottomOf="@+id/layout_index"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

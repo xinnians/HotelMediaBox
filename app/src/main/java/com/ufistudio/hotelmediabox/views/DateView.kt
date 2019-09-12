@@ -14,6 +14,8 @@ import android.view.View
 import android.widget.TextView
 import com.google.gson.Gson
 import com.ufistudio.hotelmediabox.R
+import com.ufistudio.hotelmediabox.constants.Cache.IsMessageHintShow
+import com.ufistudio.hotelmediabox.constants.Cache.IsMessageUpdate
 import com.ufistudio.hotelmediabox.constants.Key.IS_TIME_SET_SUCCESS
 import com.ufistudio.hotelmediabox.repository.data.Config
 import com.ufistudio.hotelmediabox.utils.MiscUtils
@@ -35,8 +37,12 @@ private val TAG = DateView::class.java.simpleName
 class DateView : ConstraintLayout {
     private var mDf: DateFormat = SimpleDateFormat(TAG_DEFAULT_FORMAT, Locale.getDefault())
     private var mDateDisposable: Disposable? = null
+    private var mMessageDisposable: Disposable? = null
+    private var mCheckMessageDisposable: Disposable? = null
     private var mIsTimeSet: Boolean = false
     private var mTextView: TextView? = null
+    private var mTvMessage: TextView? = null
+    private var mLayoutMessage: ConstraintLayout? = null
 
     val mGson = Gson()
 
@@ -47,6 +53,9 @@ class DateView : ConstraintLayout {
     init {
         LayoutInflater.from(context).inflate(R.layout.view_date, this)
         getTimeFormat()
+
+        mTvMessage = this.findViewById(R.id.tv_message) as TextView
+        mLayoutMessage = this.findViewById(R.id.layout_message) as ConstraintLayout
     }
 
     private fun getTime() {
@@ -58,6 +67,15 @@ class DateView : ConstraintLayout {
                     textView_date.text = mDf.format(System.currentTimeMillis())
                     checkTimeSet()
                 }
+        mCheckMessageDisposable = Observable.interval(5, TimeUnit.SECONDS)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                if(IsMessageUpdate){
+                    showMessageHint()
+                    IsMessageUpdate = false
+                }
+            }
     }
 
     /**
@@ -65,6 +83,8 @@ class DateView : ConstraintLayout {
      */
     fun stopRefreshTimer() {
         mDateDisposable?.dispose()
+        mMessageDisposable?.dispose()
+        mCheckMessageDisposable?.dispose()
     }
 
     /**
@@ -121,5 +141,22 @@ class DateView : ConstraintLayout {
         }
 
         mTextView?.visibility = if(mIsTimeSet) View.VISIBLE else View.INVISIBLE
+    }
+
+    fun showMessageHint(){
+        IsMessageHintShow = true
+        mLayoutMessage?.visibility = View.VISIBLE
+
+        mMessageDisposable = Observable.timer(10,TimeUnit.SECONDS)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                Log.e(TAG,"Update Time for message = $it")
+//                if(it == 5L){
+                    mLayoutMessage?.visibility = View.INVISIBLE
+                IsMessageHintShow = false
+                    mDateDisposable?.dispose()
+//                }
+            }
     }
 }

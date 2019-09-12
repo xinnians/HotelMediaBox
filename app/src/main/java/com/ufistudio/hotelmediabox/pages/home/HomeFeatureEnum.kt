@@ -13,7 +13,7 @@ enum class HomeFeatureEnum(id: Int, page: Int, focusedIcon: Int, icon: Int) {
     TOURIST_INFO(6, Page.TOURIST, R.drawable.ic_tourist_info_1, R.drawable.ic_tourist_info),
     FLIGHT_INFO(7, Page.FLIGHTS_INFO, R.drawable.ic_flight_info_1, R.drawable.ic_flight_info),
     WEATHER(8, Page.WEATHER, R.drawable.ic_weather_1, R.drawable.ic_weather),
-    GUEST(9, -100, R.drawable.ic_guest_services_1, R.drawable.ic_guest_services),
+    GUEST(9, Page.GUEST_SERVICE, R.drawable.ic_guest_services_1, R.drawable.ic_guest_services),
     SETTING(10, Page.SETTING, R.drawable.ic_settings_1, R.drawable.ic_settings);
 
 

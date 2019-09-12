@@ -23,6 +23,7 @@ import android.text.TextWatcher
 import android.widget.EditText
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.constants.Cache
+import com.ufistudio.hotelmediabox.constants.Cache.IsMessageUpdate
 import com.ufistudio.hotelmediabox.pages.factory.FactoryActivity
 import com.ufistudio.hotelmediabox.pages.fullScreen.FullScreenActivity
 import com.ufistudio.hotelmediabox.receivers.ACTION_UPDATE_APK
@@ -164,17 +165,33 @@ open class PaneViewActivity : BaseActivity(), OnPageInteractionListener.Pane {
                 mFactoryKeyInput.add(keyCode)
                 checkFactoryKey()
             }
-            TAG_KEY_HOME -> {
+            TAG_KEY_HOME,
+            KeyEvent.KEYCODE_W-> {
                 startActivity(Intent(this, MainActivity::class.java))
                 finish()
+                return true
+            }
+            KeyEvent.KEYCODE_R -> {
+                IsMessageUpdate = true
                 return true
             }
             TAG_kEY_TV -> {
                 startActivity(Intent(this, FullScreenActivity::class.java))
                 return true
             }
-            KeyEvent.KEYCODE_UNKNOWN ->{
+            KeyEvent.KEYCODE_UNKNOWN,
+            KeyEvent.KEYCODE_T->{
                 Log.e(TAG,"[onKeyDown] TAG_KEY_VOD call. Cache.IsVODEnable : ${Cache.IsVODEnable}")
+                if(Cache.IsMessageHintShow){
+                    val intent: Intent = Intent(this, MainActivity::class.java)
+                    val bundle: Bundle = Bundle()
+                    bundle.putBoolean(Page.ARG_BUNDLE, true)
+                    bundle.putInt(Page.ARG_PAGE,Page.GUEST_SERVICE)
+                    intent.putExtras(bundle)
+                    startActivity(intent)
+                    finish()
+                    return true
+                }
                 if(Cache.IsVODEnable){
                     val intent: Intent = Intent(this, MainActivity::class.java)
                     val bundle: Bundle = Bundle()
@@ -183,6 +200,7 @@ open class PaneViewActivity : BaseActivity(), OnPageInteractionListener.Pane {
                     intent.putExtras(bundle)
                     startActivity(intent)
                     finish()
+                    return true
                 }
                 return true
             }

@@ -7,6 +7,7 @@ import com.ufistudio.hotelmediabox.pages.home.HomeFragment
 import com.ufistudio.hotelmediabox.pages.channel.ChannelFragment
 import com.ufistudio.hotelmediabox.pages.facilies.HotelFacilitiesFragment
 import com.ufistudio.hotelmediabox.pages.flights.FlightsInfoFragment
+import com.ufistudio.hotelmediabox.pages.guestService.GuestServiceFragment
 import com.ufistudio.hotelmediabox.pages.nearby.NearbyMeFragment
 import com.ufistudio.hotelmediabox.pages.roomService.RoomServiceFragment
 import com.ufistudio.hotelmediabox.pages.setting.SettingFragment
@@ -39,6 +40,7 @@ object Page {
     const val WEATHER = 1016
     const val VOD = 1017
     const val TOURIST = 1018
+    const val GUEST_SERVICE = 1019
 
     /*--------------------------------------------------------------------------------------------*/
     /* Helpers */
@@ -62,6 +64,7 @@ object Page {
             WEATHER -> result = WeatherFragment.newInstance()
             VOD -> result = VodFragment.newInstance()
             TOURIST -> result = TouristFragment.newInstance()
+            GUEST_SERVICE -> result = GuestServiceFragment.newInstance()
             else -> throw IllegalArgumentException("No match view! page = $page")
         }
 

@@ -11,6 +11,8 @@ import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.ufistudio.hotelmediabox.constants.Cache
+import com.ufistudio.hotelmediabox.constants.Cache.IsMessageUpdate
+import com.ufistudio.hotelmediabox.constants.Cache.ServerIP
 import com.ufistudio.hotelmediabox.helper.DownloadHelper
 import com.ufistudio.hotelmediabox.helper.DownloadHelper.DATA_PATH
 import com.ufistudio.hotelmediabox.helper.DownloadHelper.TAR_PATH
@@ -59,6 +61,7 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
         private val TAG_RESOURCE_UPDATE = "resourceUpdate".hashCode()
         private val TAG_SET_STATIC_IP = "setStaticIp".hashCode()
         private val TAG_REBOOT_DEVICE = "rebootDevice".hashCode()
+        private val TAG_NEW_MESSAGE = "newMessages".hashCode()
 
         private val DWNLDR_NO_ERR = "0"
         private val DWNLDR_ERR_IN_PROGRESS = "1"
@@ -483,6 +486,10 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                     }
                     TAG_REBOOT_DEVICE -> {
                         MiscUtils.reboot(baseContext)
+                    }
+                    TAG_NEW_MESSAGE -> {
+                        ServerIP = myBroadcast.ip
+                        IsMessageUpdate = true
                     }
                 }
             } catch (e: JsonSyntaxException) {
