@@ -20,9 +20,9 @@ import io.reactivex.schedulers.Schedulers
 
 
 class HomeViewModel(
-        application: Application,
-        private val compositeDisposable: CompositeDisposable,
-        private val repository: Repository
+    application: Application,
+    private val compositeDisposable: CompositeDisposable,
+    private val repository: Repository
 ) : BaseViewModel(application, compositeDisposable) {
 
     val initHomeSuccess = MutableLiveData<Home>()
@@ -41,21 +41,21 @@ class HomeViewModel(
                 Cache.IsVODEnable = result.home.icons[1].enable == 1
                 return@map result
             }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe {
-                    initHomeProgress.value = true
-                }
-                .doFinally {
-                    initHomeProgress.value = false
-                }
-                .subscribe({ initHomeSuccess.value = it }
-                        , { initHomeError.value = it })
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe {
+                initHomeProgress.value = true
+            }
+            .doFinally {
+                initHomeProgress.value = false
+            }
+            .subscribe({ initHomeSuccess.value = it }
+                , { initHomeError.value = it })
         )
     }
 
     private fun getJsonObject(): Home? {
-        return mGson.fromJson(MiscUtils.getJsonLanguageAutoSwitch("home"), Home::class.java)
+        return mGson.fromJson(MiscUtils.getJsonLanguageAutoSwitch("home"), Home::class.java) ?: Home()
     }
 
     fun getTVHelper(): TVHelper {
@@ -63,19 +63,19 @@ class HomeViewModel(
     }
 
     private fun getConfig(): Config? {
-        return mGson.fromJson(MiscUtils.getJsonFromStorage("box_config.json"), Config::class.java)
+        return mGson.fromJson(MiscUtils.getJsonFromStorage("box_config.json"), Config::class.java) ?: Config()
     }
 
     fun getWeather(cityCode: String) {
         compositeDisposable.add(
-                Single.fromCallable { getConfig() }
-                        .map {
-                            repository.getWeatherInfo("http:${it.config.defaultServerIp}/api/weather", cityCode)
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .doFinally { getWeatherInfoProgress.value = false }
-                                    .subscribe({ getWeatherInfoSuccess.value = it }
-                                            , { getWeatherInfoError.value = it })
-                        }.subscribe()
+            Single.fromCallable { getConfig() }
+                .map {
+                    repository.getWeatherInfo("http:${it.config.defaultServerIp}/api/weather", cityCode)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doFinally { getWeatherInfoProgress.value = false }
+                        .subscribe({ getWeatherInfoSuccess.value = it }
+                            , { getWeatherInfoError.value = it })
+                }.subscribe()
         )
     }
 
@@ -83,8 +83,13 @@ class HomeViewModel(
     val initNoteButtonProgress = MutableLiveData<Boolean>()
     val initNoteButtonError = MutableLiveData<Throwable>()
 
-    fun initNoteButton(){
-        compositeDisposable.add(Single.fromCallable { mGson.fromJson(MiscUtils.getJsonLanguageAutoSwitch("bottom_note"), NoteButton::class.java) ?: NoteButton() }
+    fun initNoteButton() {
+        compositeDisposable.add(Single.fromCallable {
+            mGson.fromJson(
+                MiscUtils.getJsonLanguageAutoSwitch("bottom_note"),
+                NoteButton::class.java
+            ) ?: NoteButton()
+        }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe { initNoteButtonProgress.value = true }

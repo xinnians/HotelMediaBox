@@ -137,14 +137,19 @@ object MiscUtils {
 //        return ""
 //    }
     fun getJsonFromStorage(fileName: String, path: String = ""): String {
-        if (!TextUtils.isEmpty(path)) {
-            return FileUtils.getFileFromStorage(fileName, path)?.let { file ->
-                parseJsonFileByInputStream(FileInputStream(file))
-            } ?: ""
-        }else{
-            return FileUtils.getFileFromStorage(fileName)?.let { file ->
-                parseJsonFileByInputStream(FileInputStream(file))
-            } ?: ""
+        try{
+            if (!TextUtils.isEmpty(path)) {
+                return FileUtils.getFileFromStorage(fileName, path)?.let { file ->
+                    parseJsonFileByInputStream(FileInputStream(file))
+                } ?: ""
+            }else{
+                return FileUtils.getFileFromStorage(fileName)?.let { file ->
+                    parseJsonFileByInputStream(FileInputStream(file))
+                } ?: ""
+            }
+        }catch (e: Exception){
+            Log.e(TAG,"[getJsonFromStorage] exception : $e")
+            return ""
         }
 
 //        return parseJsonFileByInputStream(FileInputStream(FileUtils.getFileFromStorage(path, fileName)))
@@ -265,12 +270,14 @@ object MiscUtils {
 
         val runtime = Runtime.getRuntime()
         //        Process proc = runtime.exec(cmds);
-        val proc = runtime.exec(command)
+//        val proc = runtime.exec(command)
         //        DataOutputStream os = new DataOutputStream(proc.getOutputStream());
         //        os.writeBytes(command+"\n");
         //        os.writeBytes("exit\n");
         //        os.flush();
         try {
+            val proc = runtime.exec(command)
+
             val stdInput = BufferedReader(InputStreamReader(proc.inputStream))
 
             val stdError = BufferedReader(InputStreamReader(proc.errorStream))
@@ -295,7 +302,7 @@ object MiscUtils {
             if (proc.waitFor() != 0) {
                 System.err.println("exit value = " + proc.exitValue())
             }
-        } catch (e: InterruptedException) {
+        } catch (e: Exception) {
             System.err.println(e)
         }
     }
