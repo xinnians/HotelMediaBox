@@ -43,6 +43,7 @@ private const val TAG_IMAGE = "image"
 private const val TAG_VIDEO = "video"
 private const val TAG_TEMPLATE1 = 1
 private const val TAG_TEMPLATE2 = 4
+private const val TAG_TEMPLATE5 = 5
 
 class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>(), OnItemClickListener,
         OnItemFocusListener, ViewModelsCallback {
@@ -324,6 +325,7 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
         when (mCurrentContentType) {
             TAG_TEMPLATE1 -> renderTemplate1((mCurrentContent as ArrayList<RoomServiceContent>)[mCurrentContentSelectIndex?.get(mCurrentCategoryIndex)!!])
             TAG_TEMPLATE2 -> renderTemplate2(mCurrentContent)
+            TAG_TEMPLATE5 -> renderTemplate5((mCurrentContent as ArrayList<RoomServiceContent>)[mCurrentContentSelectIndex?.get(mCurrentCategoryIndex)!!])
         }
     }
 
@@ -333,6 +335,7 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
     private fun renderTemplate1(item: RoomServiceContent) {
         view_content_type1.visibility = View.VISIBLE
         view_content_type2.visibility = View.GONE
+        view_content_type5.visibility = View.GONE
         checkSideArrow()
         (view_content_type1?.findViewById(R.id.text_title) as TextView).text = item.title
         (view_content_type1?.findViewById(R.id.text_content) as TextView).text = item.content
@@ -373,6 +376,7 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
     private fun renderTemplate2(totalList: List<RoomServiceContent>?) {
         view_content_type1.visibility = View.GONE
         view_content_type2.visibility = View.VISIBLE
+        view_content_type5.visibility = View.GONE
 
         type2_text_total_page.text = mCurrentContent?.size?.let { listSize -> "/${listSize.div(3).plus( if(listSize.rem(3) >0) 1 else 0)}" }
         type2_text_current_page.text = (mCurrentContentSelectIndex?.get(mCurrentCategoryIndex)?.plus(1)).toString()
@@ -389,6 +393,45 @@ class RoomServiceFragment : InteractionView<OnPageInteractionListener.Primary>()
         recyclerView.adapter = mTemplate2Adapter
 
         (view?.findViewById(R.id.textview_bottom_note) as TextView).text = mTemplate2BottomNote
+    }
+
+    private fun renderTemplate5(item: RoomServiceContent){
+        view_content_type1.visibility = View.GONE
+        view_content_type2.visibility = View.GONE
+        view_content_type5.visibility = View.VISIBLE
+
+        checkSideArrow()
+//        (view_content_type5?.findViewById(R.id.text_title) as TextView)?.text = item.title
+        (view_content_type5?.findViewById(R.id.text_content) as TextView)?.text = item.content
+        (view_content_type5?.findViewById(R.id.text_current_page) as TextView)?.text = (mCurrentContentSelectIndex?.get(mCurrentCategoryIndex)!! + 1).toString()
+        (view_content_type5?.findViewById(R.id.text_total_page) as TextView)?.text = String.format("/%d", mTotalSize?.get(mCurrentCategoryIndex))
+        mVideoView = view_content_type5?.findViewById(R.id.videoView) as PlayerView
+        val imageView = view_content_type5?.findViewById(R.id.image_photo) as ImageView
+
+        if (TextUtils.isEmpty(item.file_type)) {
+            mVideoView!!.visibility = View.GONE
+            imageView?.visibility = View.INVISIBLE
+        } else {
+
+            if (item.file_type.hashCode() == TAG_IMAGE.hashCode()) {
+                mVideoView?.visibility = View.GONE
+                imageView?.visibility = View.VISIBLE
+                Glide.with(context!!)
+                    .load(FileUtils.getFileFromStorage(item.file_name))
+                    .skipMemoryCache(true)
+                    .into(imageView)
+            } else if (item.file_type.hashCode() == TAG_VIDEO.hashCode()) {
+                mContentPlaying = true
+                mExoPlayerHelper.initPlayer(getApplication(), mVideoView!!)
+                mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(item.file_name)?.absolutePath ?: ""))
+                mExoPlayerHelper.repeatMode()
+                mVideoView!!.visibility = View.VISIBLE
+                imageView?.visibility = View.INVISIBLE
+            } else {
+                mVideoView!!.visibility = View.GONE
+                imageView?.visibility = View.INVISIBLE
+            }
+        }
     }
 
     /**
