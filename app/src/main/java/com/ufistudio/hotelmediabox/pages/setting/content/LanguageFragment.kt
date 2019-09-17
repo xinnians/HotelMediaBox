@@ -168,6 +168,7 @@ class LanguageFragment : InteractionView<OnPageInteractionListener.Primary>(), O
      * 塞資料
      */
     private fun renderView() {
+        Log.e(TAG,"[renderView]")
         if (!mIsRendered) {
             if (mData?.content != null && mConfigData != null) {
                 mIsRendered = true
@@ -188,6 +189,7 @@ class LanguageFragment : InteractionView<OnPageInteractionListener.Primary>(), O
      * @languageCode: language code，第一次進入應該會放Config.json內的language code
      */
     private fun renderLanguage(languageCode: String) {
+        Log.e(TAG,"[renderLanguage] languageCode:$languageCode")
         if (mData?.content != null) {
             for (i in 0 until mData?.content!!.size) {
                 if (TextUtils.equals(languageCode, mData?.content!![i].code)) {
@@ -199,6 +201,8 @@ class LanguageFragment : InteractionView<OnPageInteractionListener.Primary>(), O
                     }else if(mData?.content?.size ?: 0 < 3){
                         mSwitchRange = 1
                     }
+
+                    Log.e(TAG,"[renderLanguage] mSwitchRange:$mSwitchRange")
 
                     when(mSwitchRange){
                         5 -> {
@@ -237,6 +241,7 @@ class LanguageFragment : InteractionView<OnPageInteractionListener.Primary>(), O
      * 滑動Language List
      */
     private fun scrollLanguage() {
+        Log.e(TAG,"[scrollLanguage] mSwitchRange:$mSwitchRange")
         if (mData?.content != null) {
             when(mSwitchRange){
                 5 -> {
@@ -248,12 +253,20 @@ class LanguageFragment : InteractionView<OnPageInteractionListener.Primary>(), O
                     textView5.text = mData?.content!![if (mCurrentIndex + 2 < mData?.content!!.size) mCurrentIndex + 2 else (mCurrentIndex + 2 - mData?.content!!.size)].title
                 }
                 3 -> {
+                    textView1.visibility = View.GONE
+                    textView5.visibility = View.GONE
+
                     textView2.text = mData?.content!![if (mCurrentIndex - 1 >= 0) mCurrentIndex - 1 else mData?.content!!.size + mCurrentIndex - 1].title
                     textView3.text = mData?.content!![mCurrentIndex].title
                     mCurrentLanguageCode = mData?.content!![mCurrentIndex].code
                     textView4.text = mData?.content!![if (mCurrentIndex + 1 < mData?.content!!.size) mCurrentIndex + 1 else (mCurrentIndex + 1 - mData?.content!!.size)].title
                 }
                 1 -> {
+                    textView1.visibility = View.GONE
+                    textView2.visibility = View.GONE
+                    textView5.visibility = View.GONE
+                    textView4.visibility = View.GONE
+
                     textView3.text = mData?.content!![mCurrentIndex].title
                     mCurrentLanguageCode = mData?.content!![mCurrentIndex].code
                 }
