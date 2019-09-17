@@ -179,19 +179,28 @@ open class PaneViewActivity : BaseActivity(), OnPageInteractionListener.Pane {
                 startActivity(Intent(this, FullScreenActivity::class.java))
                 return true
             }
+            KeyEvent.KEYCODE_PROG_GREEN -> {
+                val intent: Intent = Intent(this, MainActivity::class.java)
+                val bundle: Bundle = Bundle()
+                bundle.putBoolean(Page.ARG_BUNDLE, true)
+                bundle.putInt(Page.ARG_PAGE,Page.GUEST_SERVICE)
+                intent.putExtras(bundle)
+                startActivity(intent)
+                finish()
+            }
             KeyEvent.KEYCODE_UNKNOWN,
             KeyEvent.KEYCODE_T->{
                 Log.e(TAG,"[onKeyDown] TAG_KEY_VOD call. Cache.IsVODEnable : ${Cache.IsVODEnable}")
-                if(Cache.IsMessageHintShow){
-                    val intent: Intent = Intent(this, MainActivity::class.java)
-                    val bundle: Bundle = Bundle()
-                    bundle.putBoolean(Page.ARG_BUNDLE, true)
-                    bundle.putInt(Page.ARG_PAGE,Page.GUEST_SERVICE)
-                    intent.putExtras(bundle)
-                    startActivity(intent)
-                    finish()
-                    return true
-                }
+//                if(Cache.IsMessageHintShow){
+//                    val intent: Intent = Intent(this, MainActivity::class.java)
+//                    val bundle: Bundle = Bundle()
+//                    bundle.putBoolean(Page.ARG_BUNDLE, true)
+//                    bundle.putInt(Page.ARG_PAGE,Page.GUEST_SERVICE)
+//                    intent.putExtras(bundle)
+//                    startActivity(intent)
+//                    finish()
+//                    return true
+//                }
                 if(Cache.IsVODEnable){
                     val intent: Intent = Intent(this, MainActivity::class.java)
                     val bundle: Bundle = Bundle()
