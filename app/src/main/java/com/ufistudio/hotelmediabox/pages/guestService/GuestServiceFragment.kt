@@ -215,9 +215,19 @@ class GuestServiceFragment : InteractionView<OnPageInteractionListener.Primary>(
     }
 
     private fun renderViewContent() {
-        tv_content.text = mCurrentContent?.contents?.get(mCurrentContentIndex)?.content ?: ""
-        type2_text_current_page.text = (mCurrentContentIndex + 1).toString()
-        type2_text_total_page.text = "/" + mCurrentContent?.contents?.size.toString()
+        mCurrentContent?.contents?.let {
+            if(it.size >= mCurrentContentIndex && it.size != 0){
+                tv_content.text = mCurrentContent?.contents?.get(mCurrentContentIndex)?.content ?: ""
+                type2_text_current_page.text = (mCurrentContentIndex + 1).toString()
+                type2_text_total_page.text = "/" + mCurrentContent?.contents?.size.toString()
+                return
+            }
+        }
+
+        tv_content.text = "empty message"
+        type2_text_current_page.text = ""
+        type2_text_total_page.text = ""
+
     }
 
     private fun onInitProgress(b: Boolean) {
@@ -226,17 +236,20 @@ class GuestServiceFragment : InteractionView<OnPageInteractionListener.Primary>(
 
     private fun onInitSuccess(data: Pair<PMS?, NoteButton?>?) {
 
-        Log.e(TAG, "onInitSuccess")
+        Log.e(TAG, "onInitSuccess $data")
 
 //        for (i in 0 until (data?.first?.locationList?.size ?: 0)) {
 //            mTotalSize?.set(i, data?.first?.locationList?.get(i)?.attractionsList?.size ?: 0)
 //        }
 
-        mData = data?.first?.catagories
-        mAdapter.setData(data?.first?.catagories ?: ArrayList())
-
         textView_back.text = data?.second?.note?.back
         textView_home.text = data?.second?.note?.home
+
+        data?.first?.catagories?.let {
+            mData = it
+            mAdapter.setData(it)
+        }
+
     }
 
     private fun onInitError(t: Throwable?) {

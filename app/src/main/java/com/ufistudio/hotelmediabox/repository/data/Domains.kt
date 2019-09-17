@@ -531,20 +531,14 @@ data class GuestMessage(
 
 @Parcelize
 data class GuestCatagories(
-    var title: String = "testTitle",
-    var content_type: String = "testContentType",
+    var title: String = "",
+    var content_type: String = "",
     var total: Int = 0,
-    var contents: ArrayList<GuestMessage> = arrayListOf(GuestMessage("title1","content1","guest1"),
-        GuestMessage("title2","content2","guest2"),
-        GuestMessage("title3","content3","guest3"),
-        GuestMessage("title4","content4","guest4"),
-        GuestMessage("title5","content5","guest5"),
-        GuestMessage("title6","content6","guest6"),
-        GuestMessage("title7","content7","guest7"))
+    var contents: ArrayList<GuestMessage> = arrayListOf()
 ) : Parcelable
 
 @Parcelize
 data class PMS(
     var status: String = "",
-    var catagories: ArrayList<GuestCatagories> = arrayListOf(GuestCatagories(),GuestCatagories(title = "testTitle2"),GuestCatagories(title = "testTitle3"),GuestCatagories(title = "testTitle4"))
+    var catagories: ArrayList<GuestCatagories> = arrayListOf()
 ) : Parcelable
