@@ -7,13 +7,21 @@ import android.text.TextUtils
 import android.view.KeyEvent
 import android.view.View
 import com.bumptech.glide.Glide
+import com.google.android.exoplayer2.Player.STATE_ENDED
+import com.google.android.exoplayer2.Player.STATE_IDLE
+import com.google.android.exoplayer2.util.Log
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.constants.Cache
 import com.ufistudio.hotelmediabox.constants.Page
 import com.ufistudio.hotelmediabox.helper.ExoPlayerHelper
 import com.ufistudio.hotelmediabox.pages.base.PaneViewActivity
 import com.ufistudio.hotelmediabox.utils.FileUtils
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_full_screen_picture.*
+import java.util.concurrent.TimeUnit
 
 class FullScreenPictureActivity : PaneViewActivity() {
 
@@ -21,6 +29,8 @@ class FullScreenPictureActivity : PaneViewActivity() {
 
     private var isHotelFacilities: Boolean = true
     private var mFocusPosition: Int = 0
+    private var mDateDisposable: Disposable? = null
+    private var isAUTOPlayOn = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +39,9 @@ class FullScreenPictureActivity : PaneViewActivity() {
     }
 
     companion object {
+        private val TAG = FullScreenPictureActivity::class.java.simpleName
         const val TAG_TYPE = "type"
+        const val DEFAULT_WAIT_TIME = 5L
     }
 
     override fun onStart() {
@@ -70,6 +82,9 @@ class FullScreenPictureActivity : PaneViewActivity() {
     override fun onPause() {
         mExoPlayerHelper.stop()
         mExoPlayerHelper.release()
+        if (mDateDisposable != null && mDateDisposable?.isDisposed == false) {
+            mDateDisposable?.dispose()
+        }
         super.onPause()
     }
 
@@ -84,8 +99,10 @@ class FullScreenPictureActivity : PaneViewActivity() {
                 Cache.HotelFacilitiesContents?.let {
                     if (mFocusPosition + 1 <= it.size - 1) {
                         mFocusPosition += 1
-                        renderView(mFocusPosition)
+                    }else{
+                        mFocusPosition = 0
                     }
+                    renderView(mFocusPosition)
                 }
 
             }
@@ -97,6 +114,9 @@ class FullScreenPictureActivity : PaneViewActivity() {
                     }
                 }
 
+            }
+            KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> {
+                switchAutoPlay()
             }
             else -> {
 
@@ -127,6 +147,43 @@ class FullScreenPictureActivity : PaneViewActivity() {
                 videoView_full_screen?.visibility = View.VISIBLE
             }
         }
+    }
+
+    private fun switchAutoPlay() {
+
+        isAUTOPlayOn = !isAUTOPlayOn
+
+        Log.e(TAG,"[switchAutoPlay] isAUTOPlayOn:$isAUTOPlayOn")
+
+        if (mDateDisposable != null && mDateDisposable?.isDisposed == false) {
+            mDateDisposable?.dispose()
+        }
+
+        if(isAUTOPlayOn){
+            mExoPlayerHelper.singleMode()
+            mDateDisposable = Observable.interval(DEFAULT_WAIT_TIME, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    Log.e(TAG,"[switchAutoPlay] mFocusPosition:$mFocusPosition")
+                    Cache.HotelFacilitiesContents?.get(mFocusPosition)?.let{
+                        if(it.file_type == "image"){
+                            onKeyDown(KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent(KeyEvent.ACTION_DOWN,KeyEvent.KEYCODE_DPAD_RIGHT))
+                        }else{
+                            videoView_full_screen?.player?.playbackState.let { player ->
+                                Log.e(TAG,"[switchAutoPlay] playbackState:$player")
+                                if(player == STATE_ENDED || player == STATE_IDLE){
+                                    onKeyDown(KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent(KeyEvent.ACTION_DOWN,KeyEvent.KEYCODE_DPAD_RIGHT))
+                                }
+                            }
+                        }
+                    }
+                }
+        }else{
+            mExoPlayerHelper.repeatMode()
+        }
+
+
     }
 
 }

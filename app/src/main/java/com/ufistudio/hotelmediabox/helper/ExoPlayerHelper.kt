@@ -378,6 +378,10 @@ open class ExoPlayerHelper {
         mPlayer?.repeatMode = Player.REPEAT_MODE_ALL
     }
 
+    fun singleMode() {
+        mPlayer?.repeatMode = Player.REPEAT_MODE_OFF
+    }
+
     fun currentPosition(): Long{
         return mPlayer?.currentPosition ?: 0L
     }
