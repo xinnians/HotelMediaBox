@@ -159,7 +159,11 @@ class FullScreenPictureActivity : PaneViewActivity() {
                         FileUtils.getFileFromStorage(it.file_name)?.absolutePath ?: ""
                     )
                 )
-                mExoPlayerHelper.repeatMode()
+                if (isAUTOPlayOn) {
+                    mExoPlayerHelper.singleMode()
+                }else{
+                    mExoPlayerHelper.repeatMode()
+                }
                 videoView_full_screen?.visibility = View.VISIBLE
             }
         }
