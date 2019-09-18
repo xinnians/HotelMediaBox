@@ -62,7 +62,7 @@
             android:layout_width="@dimen/_353sdp"
             android:layout_height="@dimen/_141sdp"
             android:text="empty message"
-            android:gravity="center"
+            android:gravity="center|left"
             android:textSize="@dimen/_11ssp"
             android:background="#4D00006b"
             android:textColor="@color/colorWhite"
