@@ -30,6 +30,7 @@ class FullScreenPictureActivity : PaneViewActivity() {
     private var isHotelFacilities: Boolean = true
     private var mFocusPosition: Int = 0
     private var mDateDisposable: Disposable? = null
+    private var mShowHintDisposable: Disposable? = null
     private var isAUTOPlayOn = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,6 +52,7 @@ class FullScreenPictureActivity : PaneViewActivity() {
             isHotelFacilities = true
             mFocusPosition = intent.getIntExtra(Page.ARG_BUNDLE, 0)
             renderView(mFocusPosition)
+            showHint()
         } else {
             isHotelFacilities = false
             mExoPlayerHelper.initPlayer(applicationContext, videoView_full_screen)
@@ -85,7 +87,14 @@ class FullScreenPictureActivity : PaneViewActivity() {
         if (mDateDisposable != null && mDateDisposable?.isDisposed == false) {
             mDateDisposable?.dispose()
         }
+        closeShowHintDisposable()
         super.onPause()
+    }
+
+    private fun closeShowHintDisposable() {
+        if (mShowHintDisposable != null && mShowHintDisposable?.isDisposed == false) {
+            mShowHintDisposable?.dispose()
+        }
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
@@ -95,28 +104,35 @@ class FullScreenPictureActivity : PaneViewActivity() {
                 finish()
             }
             KeyEvent.KEYCODE_DPAD_RIGHT -> {
-
-                Cache.HotelFacilitiesContents?.let {
-                    if (mFocusPosition + 1 <= it.size - 1) {
-                        mFocusPosition += 1
-                    }else{
-                        mFocusPosition = 0
-                    }
-                    renderView(mFocusPosition)
-                }
-
-            }
-            KeyEvent.KEYCODE_DPAD_LEFT -> {
-                Cache.HotelFacilitiesContents?.let {
-                    if (mFocusPosition - 1 >= 0) {
-                        mFocusPosition -= 1
+                if(isHotelFacilities){
+                    showHint()
+                    Cache.HotelFacilitiesContents?.let {
+                        if (mFocusPosition + 1 <= it.size - 1) {
+                            mFocusPosition += 1
+                        } else {
+                            mFocusPosition = 0
+                        }
                         renderView(mFocusPosition)
                     }
-                }
 
+                }
+            }
+            KeyEvent.KEYCODE_DPAD_LEFT -> {
+                if(isHotelFacilities){
+                    showHint()
+                    Cache.HotelFacilitiesContents?.let {
+                        if (mFocusPosition - 1 >= 0) {
+                            mFocusPosition -= 1
+                            renderView(mFocusPosition)
+                        }
+                    }
+                }
             }
             KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> {
-                switchAutoPlay()
+                if(isHotelFacilities){
+                    showHint()
+                    switchAutoPlay()
+                }
             }
             else -> {
 
@@ -153,37 +169,57 @@ class FullScreenPictureActivity : PaneViewActivity() {
 
         isAUTOPlayOn = !isAUTOPlayOn
 
-        Log.e(TAG,"[switchAutoPlay] isAUTOPlayOn:$isAUTOPlayOn")
+        Log.e(TAG, "[switchAutoPlay] isAUTOPlayOn:$isAUTOPlayOn")
 
         if (mDateDisposable != null && mDateDisposable?.isDisposed == false) {
             mDateDisposable?.dispose()
         }
 
-        if(isAUTOPlayOn){
+        if (isAUTOPlayOn) {
             mExoPlayerHelper.singleMode()
             mDateDisposable = Observable.interval(DEFAULT_WAIT_TIME, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    Log.e(TAG,"[switchAutoPlay] mFocusPosition:$mFocusPosition")
-                    Cache.HotelFacilitiesContents?.get(mFocusPosition)?.let{
-                        if(it.file_type == "image"){
-                            onKeyDown(KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent(KeyEvent.ACTION_DOWN,KeyEvent.KEYCODE_DPAD_RIGHT))
-                        }else{
+                    Log.e(TAG, "[switchAutoPlay] mFocusPosition:$mFocusPosition")
+                    Cache.HotelFacilitiesContents?.get(mFocusPosition)?.let {
+                        if (it.file_type == "image") {
+                            onKeyDown(
+                                KeyEvent.KEYCODE_DPAD_RIGHT,
+                                KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_RIGHT)
+                            )
+                        } else {
                             videoView_full_screen?.player?.playbackState.let { player ->
-                                Log.e(TAG,"[switchAutoPlay] playbackState:$player")
-                                if(player == STATE_ENDED || player == STATE_IDLE){
-                                    onKeyDown(KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent(KeyEvent.ACTION_DOWN,KeyEvent.KEYCODE_DPAD_RIGHT))
+                                Log.e(TAG, "[switchAutoPlay] playbackState:$player")
+                                if (player == STATE_ENDED || player == STATE_IDLE) {
+                                    onKeyDown(
+                                        KeyEvent.KEYCODE_DPAD_RIGHT,
+                                        KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_RIGHT)
+                                    )
                                 }
                             }
                         }
                     }
                 }
-        }else{
+        } else {
             mExoPlayerHelper.repeatMode()
         }
+    }
 
+    private fun showHint(){
 
+        closeShowHintDisposable()
+
+        imageView_arrow_left.visibility = View.VISIBLE
+        imageView_arrow_right.visibility = View.VISIBLE
+
+        mShowHintDisposable = Observable.timer(5000, TimeUnit.MILLISECONDS)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({}, { onError -> Log.e(TAG, "error:$onError") }, {
+                imageView_arrow_left.visibility = View.INVISIBLE
+                imageView_arrow_right.visibility = View.INVISIBLE
+            })
     }
 
 }
