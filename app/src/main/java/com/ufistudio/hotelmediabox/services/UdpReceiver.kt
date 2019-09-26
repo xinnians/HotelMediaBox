@@ -52,6 +52,8 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
     var mDownloadDisposable: Disposable? = null
     var mDownloadAPKDisposable: Disposable? = null
 
+    var mIsDownloaderUsing: Boolean = false
+
     companion object {
         val TAG = UdpReceiver::class.simpleName
         private val TAG_CHECK_STATUS = "checkStatus".hashCode()
@@ -210,39 +212,10 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                                 .subscribe()
                     }
                     TAG_SOFTWARE_UPDATE -> {
-                        //將 更新的apk下載到/data/hotel資料夾內
-//                        Repository(application, SharedPreferencesProvider(application)).getSoftwareUpdate("http://${myBroadcast.ip}:${myBroadcast.port}${myBroadcast.url}")
-//                                .map {
-//                                    Log.d(TAG, "TAG_SOFTWARE_UPDATE response = $it")
-//                                    if (it.needUpdate == 0) {
-//                                        //TODO判斷apk_version是否為較小
-//                                        return@map
-//                                    }
-//                                    Repository(application, SharedPreferencesProvider(application)).downloadFileWithUrl("http://${it.ip}:${it.port}${it.url}")
-//                                            .flatMap {
-//                                                Single.fromCallable { FileUtils.writeResponseBodyToDisk(it, TAG_DEFAULT_APK_NAME) }
-//                                            }
-//                                            .subscribeOn(Schedulers.io())
-//                                            .observeOn(AndroidSchedulers.mainThread())
-//                                            .subscribe({
-//                                                if (FileUtils.fileIsExists(TAG_DEFAULT_APK_NAME)) {
-//                                                    Log.d(TAG, "TAG_SOFTWARE_UPDATE download success")
-//                                                    val intent = Intent()
-//                                                    val b = Bundle()
-//                                                    b.putString(TAG_FORCE, myBroadcast.force)
-//                                                    intent.putExtras(b)
-//                                                    intent.action = ACTION_UPDATE_APK
-//                                                    sendBroadcast(intent)
-//                                                } else {
-//                                                    Log.d(TAG, "TAG_SOFTWARE_UPDATE download finish, but can not find file")
-//                                                }
-//                                            }, {
-//                                                Log.d(TAG, "TAG_SOFTWARE_UPDATE download error $it")
-//                                            })
-//                                }
-//                                .subscribeOn(Schedulers.io())
-//                                .subscribe()
 
+                        if(mIsDownloaderUsing) return
+
+                        mIsDownloaderUsing = true
 
                         if (mDownloadAPKDisposable != null && !mDownloadAPKDisposable!!.isDisposed) {
                             mDownloadAPKDisposable?.dispose()
@@ -325,21 +298,29 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                                             sendBroadcast(intent)
                                         } else {
                                             Log.d(TAG, "TAG_SOFTWARE_UPDATE download finish, but can not find file")
+                                            mIsDownloaderUsing = false
                                         }
 
                                     }else{
                                         //TODO 下載完成但md5確認有異，所以刪除該檔案
                                         FileUtils.getFileFromStorage(VERIFY_FILE_NAME_APK,DATA_PATH)?.delete()
+                                        mIsDownloaderUsing = false
                                     }
                                 }else{
                                     Log.e(TAG,"[TAG_SOFTWARE_UPDATE] onSuccess not a KDownloadProgress : $onSuccess")
+                                    mIsDownloaderUsing = false
                                 }
                             },{onError ->
                                 Log.e(TAG,"[TAG_SOFTWARE_UPDATE] onError : $onError")
+                                mIsDownloaderUsing = false
                             })
 
                     }
                     TAG_RESOURCE_UPDATE -> {
+
+                        if(mIsDownloaderUsing) return
+
+                        mIsDownloaderUsing = true
 
                         if (mDownloadDisposable != null && !mDownloadDisposable!!.isDisposed) {
                             mDownloadDisposable?.dispose()
@@ -407,64 +388,16 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                                     }else{
                                         //TODO 下載完成但md5確認有異，所以刪除該檔案
                                         FileUtils.getFileFromStorage(VERIFY_FILE_NAME,TAR_PATH)?.delete()
+                                        mIsDownloaderUsing = false
                                     }
                                 }else{
                                     Log.e(TAG,"[TAG_RESOURCE_UPDATE] onSuccess not a KDownloadProgress : $onSuccess")
+                                    mIsDownloaderUsing = false
                                 }
                             },{onError ->
                                 Log.e(TAG,"[TAG_RESOURCE_UPDATE] onError : $onError")
+                                mIsDownloaderUsing = false
                             })
-
-
-//                        var retried: Boolean = false
-//
-//                        fun downloadResource() {
-//                            //將 hotel.tar下載到/data/correction資料夾內
-//                            Repository(application, SharedPreferencesProvider(application)).downloadFileWithUrl("http://${myBroadcast.ip}:${myBroadcast.port}${myBroadcast.url}")
-//                                    .flatMap { Single.fromCallable { FileUtils.writeResponseBodyToDisk(it, TAG_HOTEL_VERIFY_TAR_FILE_NAME, TAG_DEFAULT_CORRECTION_PATH) } }
-//                                    .retry(1)
-//                                    .subscribeOn(Schedulers.io())
-//                                    .subscribe({
-//                                        if (FileUtils.fileIsExists(TAG_HOTEL_VERIFY_TAR_FILE_NAME, TAG_DEFAULT_CORRECTION_PATH)) {
-//                                            FileUtils.getFileFromStorage(TAG_HOTEL_VERIFY_TAR_FILE_NAME, "/data$TAG_DEFAULT_CORRECTION_PATH")?.let {
-//                                                val checkSum = MD5Utils.getMD5CheckSum(it)
-//                                                Log.d(TAG, "TAG_RESOURCE_UPDATE resource check sum = $checkSum")
-//                                                if (TextUtils.equals(checkSum, myBroadcast.md5)) {
-//                                                    Log.d(TAG, "TAG_RESOURCE_UPDATE download success")
-//                                                    val fileHotelTar = File("/data$TAG_DEFAULT_CORRECTION_PATH", TAG_DEFAULT_HOTEL_TAR_FILE_NAME)
-//                                                    it.renameTo(fileHotelTar)
-//
-//                                                    FileUtils.getFileFromStorage("chkflag")?.delete()
-//                                                    MiscUtils.reboot(baseContext)
-//                                                } else {
-//                                                    Log.d(TAG, "TAG_RESOURCE_UPDATE CheckSum is not correct with server value : ${myBroadcast.md5}")
-//                                                    ApiClient.clear()
-//                                                    if (!retried)
-//                                                        downloadResource()
-//                                                    retried = true
-//                                                    Log.d(TAG, "TAG_RESOURCE_UPDATE retry download resource")
-//                                                }
-//                                            }
-//
-//                                        } else {
-//                                            Log.e(TAG, "TAG_RESOURCE_UPDATE download finish, but can not find file")
-//                                            ApiClient.clear()
-//                                            if (!retried)
-//                                                downloadResource()
-//                                            retried = true
-//                                            Log.d(TAG, "TAG_RESOURCE_UPDATE retry download resource")
-//                                        }
-//                                    }, {
-//                                        Log.e(TAG, "TAG_RESOURCE_UPDATE download error $it")
-//                                        ApiClient.clear()
-//                                        if (!retried) {
-//                                            downloadResource()
-//                                            Log.d(TAG, "TAG_RESOURCE_UPDATE retry download resource")
-//                                        }
-//                                        retried = true
-//                                    })
-//                        }
-//                        downloadResource()
                     }
                     TAG_SET_STATIC_IP -> {
                         Repository(application, SharedPreferencesProvider(application)).getStaticIp("http://${myBroadcast.ip}:${myBroadcast.port}${myBroadcast.url}")
