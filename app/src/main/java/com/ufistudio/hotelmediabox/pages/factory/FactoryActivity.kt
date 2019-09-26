@@ -29,6 +29,7 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
 
     private val mInfo1: StringBuilder = StringBuilder()
     private val mInfo2: StringBuilder = StringBuilder()
+    private var mBoxInfo: StringBuffer = StringBuffer()
 
     private var mTVListener: TVController.OnTVListener = object : TVController.OnTVListener {
         override fun onIPTVFinish() {
@@ -97,8 +98,17 @@ class FactoryActivity : AppCompatActivity(), OnItemClickListener, ViewModelsCall
         textView_info1.movementMethod = ScrollingMovementMethod()
         textView_info2.movementMethod = ScrollingMovementMethod()
 
-        var textVersionInfo = MiscUtils.getLocalVersionName(this) + "." + MiscUtils.getLocalVersion(this)
+        var textVersionInfo = "App version : "+MiscUtils.getLocalVersionName(this) + "." + MiscUtils.getLocalVersion(this)
         text_version.text = textVersionInfo
+
+        mBoxInfo.append("IP : "+XTNetWorkManager.getInstance().getEthernetInfo(this)?.ip+"\n")
+        mBoxInfo.append("NetMask : "+XTNetWorkManager.getInstance().getEthernetInfo(this)?.netmask+"\n")
+        mBoxInfo.append("Gateway : "+XTNetWorkManager.getInstance().getEthernetInfo(this)?.gateway+"\n")
+        mBoxInfo.append("網路線是否插上 : "+XTNetWorkManager.getInstance().isEthernetPlugin+"\n")
+        mBoxInfo.append("ethernet網路是否正常 : "+XTNetWorkManager.getInstance().isEthernetConnected(this)+"\n")
+        mBoxInfo.append("ethernet是否使用dhcp : "+XTNetWorkManager.getInstance().isEthernetUseDHCP(this)+"\n")
+
+        text_local_ip.text = mBoxInfo.toString()
 
     }
 
