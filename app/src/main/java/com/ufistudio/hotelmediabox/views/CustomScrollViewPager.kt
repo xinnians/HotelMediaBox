@@ -22,5 +22,7 @@ class CustomScrollViewPager(context: Context, attrs: AttributeSet?) : ViewPager(
         return false
     }
 
-
+    override fun isSoundEffectsEnabled(): Boolean {
+        return false
+    }
 }
