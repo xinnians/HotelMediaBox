@@ -5,10 +5,7 @@ import android.arch.lifecycle.MutableLiveData
 import android.util.Log
 import com.google.gson.Gson
 import com.ufistudio.hotelmediabox.repository.Repository
-import com.ufistudio.hotelmediabox.repository.data.Config
-import com.ufistudio.hotelmediabox.repository.data.InitialData
-import com.ufistudio.hotelmediabox.repository.data.NoteButton
-import com.ufistudio.hotelmediabox.repository.data.Welcome
+import com.ufistudio.hotelmediabox.repository.data.*
 import com.ufistudio.hotelmediabox.repository.remote.ApiClient
 import com.ufistudio.hotelmediabox.repository.viewModel.BaseViewModel
 import com.ufistudio.hotelmediabox.utils.MiscUtils
@@ -34,6 +31,9 @@ class WelcomeViewModel(
     val initNoteButtonSuccess = MutableLiveData<NoteButton>()
     val initNoteButtonProgress = MutableLiveData<Boolean>()
     val initNoteButtonError = MutableLiveData<Throwable>()
+
+    val getSlideShowDataSucess = MutableLiveData<HotelFacilitiesContentList>()
+    val getSlideShowDataError = MutableLiveData<Throwable>()
 
 
     val mGson: Gson = Gson()
@@ -69,11 +69,26 @@ class WelcomeViewModel(
                 .doOnSubscribe { getInitialDataProgress.value = true }
                 .doFinally { getInitialDataProgress.value = false }
                 .subscribe({
-                    Log.d("neo", "initial = $it")
+                    Log.d("WelcomeViewModel", "initial = $it")
                     getInitialDataSuccess.value = it
                 }, {
-                    Log.d("neo", "initial error = $it")
+                    Log.d("WelcomeViewModel", "initial error = $it")
                     getInitialDataError.value = it
+                })
+        )
+    }
+
+    fun getSlideShowData(){
+        compositeDisposable.add(
+            Single.fromCallable { mGson.fromJson(MiscUtils.getJsonFromStorage("box_slideshow.json"), HotelFacilitiesContentList::class.java) }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    Log.d("WelcomeViewModel", "initial = $it")
+                    getSlideShowDataSucess.value = it
+                }, {
+                    Log.d("WelcomeViewModel", "initial error = $it")
+                    getSlideShowDataError.value = it
                 })
         )
     }

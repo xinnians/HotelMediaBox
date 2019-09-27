@@ -18,9 +18,6 @@ import com.ufistudio.hotelmediabox.helper.TVController.updateJVersionAndAppVersi
 import com.ufistudio.hotelmediabox.interfaces.ViewModelsCallback
 import com.ufistudio.hotelmediabox.pages.MainActivity
 import com.ufistudio.hotelmediabox.pages.base.PaneViewActivity
-import com.ufistudio.hotelmediabox.repository.data.InitialData
-import com.ufistudio.hotelmediabox.repository.data.Welcome
-import com.ufistudio.hotelmediabox.repository.data.WelcomeContent
 import kotlinx.android.synthetic.main.activity_welcome.*
 import android.app.AlarmManager
 import android.content.Context
@@ -31,9 +28,11 @@ import com.ufistudio.hotelmediabox.constants.Cache.WifiId
 import com.ufistudio.hotelmediabox.constants.Cache.WifiPassword
 import com.ufistudio.hotelmediabox.constants.Key.IS_CONFIG_ALREADY_RESET
 import com.ufistudio.hotelmediabox.constants.Key.IS_TIME_SET_SUCCESS
+import com.ufistudio.hotelmediabox.constants.Page
 import com.ufistudio.hotelmediabox.helper.DownloadHelper.TAR_PATH
+import com.ufistudio.hotelmediabox.pages.facilies.FullScreenPictureActivity
 import com.ufistudio.hotelmediabox.pages.memo.MemoActivity
-import com.ufistudio.hotelmediabox.repository.data.NoteButton
+import com.ufistudio.hotelmediabox.repository.data.*
 import com.ufistudio.hotelmediabox.utils.*
 import kotlinx.android.synthetic.main.view_bottom_ok.*
 import java.net.NoRouteToHostException
@@ -69,6 +68,9 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
         mViewModel.initNoteButtonProgress.observe(this, Observer { onProgress() })
         mViewModel.initNoteButtonSuccess.observe(this, Observer { onSuccess(it) })
         mViewModel.initNoteButtonError.observe(this, Observer { onError(it) })
+
+        mViewModel.getSlideShowDataSucess.observe(this, Observer { onSuccess(it) })
+        mViewModel.getInitialDataError.observe(this, Observer { onError(it) })
     }
 
     override fun onStart() {
@@ -150,11 +152,25 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
                             mPlayer?.start()
                             mPlayer?.isLooping = true
                         }
+
+                        if(it.slideshow == 1){
+                            mViewModel.getSlideShowData()
+                        }
                     }
                     this.getSharedPreferences("HotelBoxData", Context.MODE_PRIVATE).edit().putBoolean(IS_CONFIG_ALREADY_RESET,false).apply()
                 }
                 is NoteButton -> {
                     textView_ok.text = it.note?.next
+                }
+                is HotelFacilitiesContentList -> {
+                    //TODO 塞資料進 cache.HotelFacilitiesContents 然後進FullScreenPictureActivity進行自動播放
+                    Cache.HotelFacilitiesContents = it.items
+
+                    val intent: Intent = Intent(this, FullScreenPictureActivity::class.java)
+                    intent.putExtra(Page.ARG_BUNDLE, 0)
+                    intent.putExtra(FullScreenPictureActivity.TAG_AUTOPLAY_ON,true)
+                    intent.putExtra(FullScreenPictureActivity.TAG_TYPE, "HotelFacilities")
+                    startActivity(intent)
                 }
                 else -> {
                     onError(Throwable("OnSuccess response is null"))

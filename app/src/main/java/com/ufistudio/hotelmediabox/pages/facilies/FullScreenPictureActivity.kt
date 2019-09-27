@@ -32,6 +32,7 @@ class FullScreenPictureActivity : PaneViewActivity() {
     private var mDateDisposable: Disposable? = null
     private var mShowHintDisposable: Disposable? = null
     private var isAUTOPlayOn = false
+    private var mCurrentItemWaitTime: Int = 5
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +43,8 @@ class FullScreenPictureActivity : PaneViewActivity() {
     companion object {
         private val TAG = FullScreenPictureActivity::class.java.simpleName
         const val TAG_TYPE = "type"
-        const val DEFAULT_WAIT_TIME = 5L
+        const val TAG_AUTOPLAY_ON = "tag_autoplay_on"
+        const val DEFAULT_WAIT_TIME = 1L
     }
 
     override fun onStart() {
@@ -53,6 +55,8 @@ class FullScreenPictureActivity : PaneViewActivity() {
             mFocusPosition = intent.getIntExtra(Page.ARG_BUNDLE, 0)
             renderView(mFocusPosition)
             showHint()
+            val needSwitchToAutoPlay = intent.getBooleanExtra(TAG_AUTOPLAY_ON,false)
+            if(needSwitchToAutoPlay) switchAutoPlay()
         } else {
             isHotelFacilities = false
             mExoPlayerHelper.initPlayer(applicationContext, videoView_full_screen)
@@ -147,6 +151,7 @@ class FullScreenPictureActivity : PaneViewActivity() {
         mExoPlayerHelper.stop()
         Cache.HotelFacilitiesContents?.get(position)?.let {
             if (it.file_type == "image") {
+                mCurrentItemWaitTime = it.wait_time
                 Glide.with(applicationContext)
                     .load(FileUtils.getFileFromStorage(it.file_name))
                     .skipMemoryCache(true)
@@ -188,10 +193,14 @@ class FullScreenPictureActivity : PaneViewActivity() {
                     Log.e(TAG, "[switchAutoPlay] mFocusPosition:$mFocusPosition")
                     Cache.HotelFacilitiesContents?.get(mFocusPosition)?.let {
                         if (it.file_type == "image") {
-                            onKeyDown(
-                                KeyEvent.KEYCODE_DPAD_RIGHT,
-                                KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_RIGHT)
-                            )
+                            if(mCurrentItemWaitTime != 0){
+                                mCurrentItemWaitTime--
+                            }else{
+                                onKeyDown(
+                                    KeyEvent.KEYCODE_DPAD_RIGHT,
+                                    KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_RIGHT)
+                                )
+                            }
                         } else {
                             videoView_full_screen?.player?.playbackState.let { player ->
                                 Log.e(TAG, "[switchAutoPlay] playbackState:$player")

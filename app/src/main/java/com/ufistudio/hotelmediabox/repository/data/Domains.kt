@@ -118,15 +118,21 @@ data class HomeVodMovie(
     val port: Int
 ) : Parcelable
 
+@Parcelize
+data class HotelFacilitiesContentList(
+    var items: ArrayList<HotelFacilitiesContent>?
+) : Parcelable
+
 /*
 Hotel Facilities
  */
 @Parcelize
 data class HotelFacilitiesContent(
-    var title: String,
+    var title: String = "",
     var file_type: String,
-    var content: String,
-    var file_name: String
+    var content: String = "",
+    var file_name: String,
+    var wait_time: Int = 5
 ) : Parcelable
 
 @Parcelize
@@ -192,7 +198,8 @@ data class WelcomeContent(
     var titleImage: String,
     var background: String,
     var music: String,
-    var entryButton: String
+    var entryButton: String,
+    var slideshow:Int = 0
 ) : Parcelable
 
 /*
@@ -542,3 +549,9 @@ data class PMS(
     var status: String = "",
     var catagories: ArrayList<GuestCatagories> = arrayListOf()
 ) : Parcelable
+
+data class slideItem(
+    var file_type: String = "",
+    var file_name: String = "",
+    var wait_time: Int = 0
+)
