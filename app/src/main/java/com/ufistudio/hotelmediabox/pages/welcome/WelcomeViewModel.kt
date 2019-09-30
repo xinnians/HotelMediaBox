@@ -84,10 +84,10 @@ class WelcomeViewModel(
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    Log.d("WelcomeViewModel", "initial = $it")
+                    Log.d("WelcomeViewModel", "getSlideShowData = $it")
                     getSlideShowDataSucess.value = it
                 }, {
-                    Log.d("WelcomeViewModel", "initial error = $it")
+                    Log.d("WelcomeViewModel", "getSlideShowData error = $it")
                     getSlideShowDataError.value = it
                 })
         )
