@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils
 import android.view.KeyEvent
 import android.view.View
+import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.google.android.exoplayer2.Player.STATE_ENDED
 import com.google.android.exoplayer2.Player.STATE_IDLE
@@ -54,9 +55,9 @@ class FullScreenPictureActivity : PaneViewActivity() {
             isHotelFacilities = true
             mFocusPosition = intent.getIntExtra(Page.ARG_BUNDLE, 0)
             renderView(mFocusPosition)
-            showHint()
             val needSwitchToAutoPlay = intent.getBooleanExtra(TAG_AUTOPLAY_ON,false)
             if(needSwitchToAutoPlay) switchAutoPlay()
+            showHint()
         } else {
             isHotelFacilities = false
             mExoPlayerHelper.initPlayer(applicationContext, videoView_full_screen)
@@ -149,27 +150,34 @@ class FullScreenPictureActivity : PaneViewActivity() {
         videoView_full_screen?.visibility = View.INVISIBLE
         imageView_full_screen.visibility = View.INVISIBLE
         mExoPlayerHelper.stop()
-        Cache.HotelFacilitiesContents?.get(position)?.let {
-            if (it.file_type == "image") {
-                mCurrentItemWaitTime = it.wait_time
-                Glide.with(applicationContext)
-                    .load(FileUtils.getFileFromStorage(it.file_name))
-                    .skipMemoryCache(true)
-                    .into(imageView_full_screen)
-                imageView_full_screen.visibility = View.VISIBLE
-            } else {
-                mExoPlayerHelper.initPlayer(applicationContext, videoView_full_screen)
-                mExoPlayerHelper.setFileSource(
-                    Uri.parse(
-                        FileUtils.getFileFromStorage(it.file_name)?.absolutePath ?: ""
-                    )
-                )
-                if (isAUTOPlayOn) {
-                    mExoPlayerHelper.singleMode()
-                }else{
-                    mExoPlayerHelper.repeatMode()
+
+        Cache.HotelFacilitiesContents?.let {list ->
+            if(list.size-1 >= position ){
+                list.get(position)?.let {
+                    if (it.file_type == "image") {
+                        mCurrentItemWaitTime = it.wait_time
+                        Glide.with(applicationContext)
+                            .load(FileUtils.getFileFromStorage(it.file_name))
+                            .skipMemoryCache(true)
+                            .into(imageView_full_screen)
+                        imageView_full_screen.visibility = View.VISIBLE
+                    } else {
+                        mExoPlayerHelper.initPlayer(applicationContext, videoView_full_screen)
+                        mExoPlayerHelper.setFileSource(
+                            Uri.parse(
+                                FileUtils.getFileFromStorage(it.file_name)?.absolutePath ?: ""
+                            )
+                        )
+                        if (isAUTOPlayOn) {
+                            mExoPlayerHelper.singleMode()
+                        }else{
+                            mExoPlayerHelper.repeatMode()
+                        }
+                        videoView_full_screen?.visibility = View.VISIBLE
+                    }
                 }
-                videoView_full_screen?.visibility = View.VISIBLE
+            }else{
+                Toast.makeText(this,"IndexOutOfBoundsException",Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -191,26 +199,32 @@ class FullScreenPictureActivity : PaneViewActivity() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     Log.e(TAG, "[switchAutoPlay] mFocusPosition:$mFocusPosition")
-                    Cache.HotelFacilitiesContents?.get(mFocusPosition)?.let {
-                        if (it.file_type == "image") {
-                            if(mCurrentItemWaitTime != 0){
-                                mCurrentItemWaitTime--
-                            }else{
-                                onKeyDown(
-                                    KeyEvent.KEYCODE_DPAD_RIGHT,
-                                    KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_RIGHT)
-                                )
-                            }
-                        } else {
-                            videoView_full_screen?.player?.playbackState.let { player ->
-                                Log.e(TAG, "[switchAutoPlay] playbackState:$player")
-                                if (player == STATE_ENDED || player == STATE_IDLE) {
-                                    onKeyDown(
-                                        KeyEvent.KEYCODE_DPAD_RIGHT,
-                                        KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_RIGHT)
-                                    )
+                    Cache.HotelFacilitiesContents?.let {list->
+                        if(list.size-1 >= mFocusPosition ){
+                            list.get(mFocusPosition)?.let {
+                                if (it.file_type == "image") {
+                                    if(mCurrentItemWaitTime != 0){
+                                        mCurrentItemWaitTime--
+                                    }else{
+                                        onKeyDown(
+                                            KeyEvent.KEYCODE_DPAD_RIGHT,
+                                            KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_RIGHT)
+                                        )
+                                    }
+                                } else {
+                                    videoView_full_screen?.player?.playbackState.let { player ->
+                                        Log.e(TAG, "[switchAutoPlay] playbackState:$player")
+                                        if (player == STATE_ENDED || player == STATE_IDLE) {
+                                            onKeyDown(
+                                                KeyEvent.KEYCODE_DPAD_RIGHT,
+                                                KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_RIGHT)
+                                            )
+                                        }
+                                    }
                                 }
                             }
+                        }else{
+                            Toast.makeText(this,"IndexOutOfBoundsException",Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
@@ -223,16 +237,21 @@ class FullScreenPictureActivity : PaneViewActivity() {
 
         closeShowHintDisposable()
 
-        imageView_arrow_left.visibility = View.VISIBLE
-        imageView_arrow_right.visibility = View.VISIBLE
+        if(isAUTOPlayOn){
+            imageView_arrow_left.visibility = View.INVISIBLE
+            imageView_arrow_right.visibility = View.INVISIBLE
+        }else{
+            imageView_arrow_left.visibility = View.VISIBLE
+            imageView_arrow_right.visibility = View.VISIBLE
 
-        mShowHintDisposable = Observable.timer(5000, TimeUnit.MILLISECONDS)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({}, { onError -> Log.e(TAG, "error:$onError") }, {
-                imageView_arrow_left.visibility = View.INVISIBLE
-                imageView_arrow_right.visibility = View.INVISIBLE
-            })
+            mShowHintDisposable = Observable.timer(5000, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({}, { onError -> Log.e(TAG, "error:$onError") }, {
+                    imageView_arrow_left.visibility = View.INVISIBLE
+                    imageView_arrow_right.visibility = View.INVISIBLE
+                })
+        }
     }
 
 }

@@ -70,7 +70,15 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
         mViewModel.initNoteButtonError.observe(this, Observer { onError(it) })
 
         mViewModel.getSlideShowDataSucess.observe(this, Observer { onSuccess(it) })
-        mViewModel.getInitialDataError.observe(this, Observer { onError(it) })
+        mViewModel.getSlideShowDataError.observe(this, Observer {
+            Log.e(TAG, "getSlideShowDataError : $it")
+            AlertDialog.Builder(this)
+                .setTitle("Error")
+                .setMessage("can't find necessary file for slideshow")
+                .setPositiveButton(android.R.string.ok) { dialog, which -> dialog.dismiss() }
+                .create()
+                .show()
+        })
     }
 
     override fun onStart() {
@@ -86,9 +94,13 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
     }
 
     override fun onStop() {
-        mPlayer?.stop()
-        mPlayer?.release()
-        dateView.stopRefreshTimer()
+        try{
+            mPlayer?.stop()
+            mPlayer?.release()
+            dateView.stopRefreshTimer()
+        }catch (e: Exception){
+            Log.e(TAG,"[onStop] exception : $e")
+        }
         super.onStop()
     }
 
@@ -133,27 +145,27 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
                 is Welcome -> {
                     mWelcomeContent = it.welcome
 
-                    mWelcomeContent.let {
+                    mWelcomeContent.let {mWelcomeContent ->
                         Glide.with(this)
-                            .load(FileUtils.getFileFromStorage(it?.titleImage!!))
+                            .load(FileUtils.getFileFromStorage(mWelcomeContent?.titleImage!!))
                             .skipMemoryCache(true)
                             .into(imageView_title)
 
                         view_frame.background =
-                            Drawable.createFromPath(FileUtils.getFileFromStorage(it.background)?.absolutePath)
+                            Drawable.createFromPath(FileUtils.getFileFromStorage(mWelcomeContent.background)?.absolutePath)
 
-                        button_ok.text = it.entryButton
-                        text_title.text = it.title
-                        text_description.text = it.description
+                        button_ok.text = mWelcomeContent.entryButton
+                        text_title.text = mWelcomeContent.title
+                        text_description.text = mWelcomeContent.description
 
-                        val file = FileUtils.getFileFromStorage(it.music)
+                        val file = FileUtils.getFileFromStorage(mWelcomeContent.music)
                         if (file != null) {
                             mPlayer = MediaPlayer.create(this, Uri.fromFile(file))
                             mPlayer?.start()
                             mPlayer?.isLooping = true
                         }
 
-                        if(it.slideshow == 1){
+                        if(mWelcomeContent.slideshow == 1){
                             mViewModel.getSlideShowData()
                         }
                     }
@@ -166,11 +178,20 @@ class WelcomeActivity : PaneViewActivity(), ViewModelsCallback, View.OnClickList
                     //TODO 塞資料進 cache.HotelFacilitiesContents 然後進FullScreenPictureActivity進行自動播放
                     Cache.HotelFacilitiesContents = it.items
 
-                    val intent: Intent = Intent(this, FullScreenPictureActivity::class.java)
-                    intent.putExtra(Page.ARG_BUNDLE, 0)
-                    intent.putExtra(FullScreenPictureActivity.TAG_AUTOPLAY_ON,true)
-                    intent.putExtra(FullScreenPictureActivity.TAG_TYPE, "HotelFacilities")
-                    startActivity(intent)
+                    if(Cache.HotelFacilitiesContents.isNullOrEmpty()){
+                        AlertDialog.Builder(this)
+                            .setTitle("Error")
+                            .setMessage("can't find necessary file for slideshow")
+                            .setPositiveButton(android.R.string.ok) { dialog, which -> dialog.dismiss() }
+                            .create()
+                            .show()
+                    }else{
+                        val intent: Intent = Intent(this, FullScreenPictureActivity::class.java)
+                        intent.putExtra(Page.ARG_BUNDLE, 0)
+                        intent.putExtra(FullScreenPictureActivity.TAG_AUTOPLAY_ON,true)
+                        intent.putExtra(FullScreenPictureActivity.TAG_TYPE, "HotelFacilities")
+                        startActivity(intent)
+                    }
                 }
                 else -> {
                     onError(Throwable("OnSuccess response is null"))
