@@ -8,8 +8,7 @@ import android.view.KeyEvent
 import android.view.View
 import android.widget.Toast
 import com.bumptech.glide.Glide
-import com.google.android.exoplayer2.Player.STATE_ENDED
-import com.google.android.exoplayer2.Player.STATE_IDLE
+import com.google.android.exoplayer2.Player.*
 import com.google.android.exoplayer2.util.Log
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.constants.Cache
@@ -34,6 +33,7 @@ class FullScreenPictureActivity : PaneViewActivity() {
     private var mShowHintDisposable: Disposable? = null
     private var isAUTOPlayOn = false
     private var mCurrentItemWaitTime: Int = 5
+    private var isLoadingCount: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -219,6 +219,15 @@ class FullScreenPictureActivity : PaneViewActivity() {
                                                 KeyEvent.KEYCODE_DPAD_RIGHT,
                                                 KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_RIGHT)
                                             )
+                                        }else if(player == STATE_BUFFERING){
+                                            if(isLoadingCount == 3){
+                                                isLoadingCount = 0
+                                                renderView(mFocusPosition)
+                                            }else{
+                                                isLoadingCount++
+                                            }
+                                        }else{
+
                                         }
                                     }
                                 }
