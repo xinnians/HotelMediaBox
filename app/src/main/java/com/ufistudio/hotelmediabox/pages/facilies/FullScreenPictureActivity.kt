@@ -66,24 +66,6 @@ class FullScreenPictureActivity : PaneViewActivity() {
             videoView_full_screen?.visibility = View.VISIBLE
         }
 
-
-//        if (TextUtils.equals(intent.getStringExtra(TAG_TYPE), "image")) {
-//            Glide.with(applicationContext)
-//                    .load(FileUtils.getFileFromStorage(intent.getStringExtra(Page.ARG_BUNDLE)))
-//                    .skipMemoryCache(true)
-//                    .into(imageView_full_screen)
-//            imageView_full_screen.visibility = View.VISIBLE
-//        } else if (TextUtils.equals(intent.getStringExtra(TAG_TYPE), "udp")) {
-//            mExoPlayerHelper.initPlayer(applicationContext, videoView_full_screen)
-//            mExoPlayerHelper.setSource(intent.getStringExtra(Page.ARG_BUNDLE))
-//            mExoPlayerHelper.repeatMode()
-//            videoView_full_screen?.visibility = View.VISIBLE
-//        } else {
-//            mExoPlayerHelper.initPlayer(applicationContext, videoView_full_screen)
-//            mExoPlayerHelper.setFileSource(Uri.parse(FileUtils.getFileFromStorage(intent.getStringExtra(Page.ARG_BUNDLE))?.absolutePath ?: ""))
-//            mExoPlayerHelper.repeatMode()
-//            videoView_full_screen?.visibility = View.VISIBLE
-//        }
     }
 
     override fun onPause() {
