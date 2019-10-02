@@ -15,7 +15,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
-    <com.google.android.exoplayer2.ui.PlayerView
+    <VideoView
             android:id="@+id/videoView_full_screen"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

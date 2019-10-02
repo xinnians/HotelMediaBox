@@ -4,12 +4,12 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils
+import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.google.android.exoplayer2.Player.*
-import com.google.android.exoplayer2.util.Log
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.constants.Cache
 import com.ufistudio.hotelmediabox.constants.Page
@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit
 
 class FullScreenPictureActivity : PaneViewActivity() {
 
-    private var mExoPlayerHelper: ExoPlayerHelper = ExoPlayerHelper()
+//    private var mExoPlayerHelper: ExoPlayerHelper = ExoPlayerHelper()
 
     private var isHotelFacilities: Boolean = true
     private var mFocusPosition: Int = 0
@@ -34,6 +34,7 @@ class FullScreenPictureActivity : PaneViewActivity() {
     private var isAUTOPlayOn = false
     private var mCurrentItemWaitTime: Int = 5
     private var isLoadingCount: Int = 0
+    private var mIsNeedRepeat: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,6 +52,16 @@ class FullScreenPictureActivity : PaneViewActivity() {
     override fun onStart() {
         super.onStart()
 
+        videoView_full_screen.setOnCompletionListener {
+            if(mIsNeedRepeat){
+                it.start()
+                it.isLooping = true
+            }else{
+                it.pause()
+                it.isLooping = false
+            }
+        }
+
         if (TextUtils.equals(intent.getStringExtra(TAG_TYPE), "HotelFacilities")) {
             isHotelFacilities = true
             mFocusPosition = intent.getIntExtra(Page.ARG_BUNDLE, 0)
@@ -60,17 +71,25 @@ class FullScreenPictureActivity : PaneViewActivity() {
             showHint()
         } else {
             isHotelFacilities = false
-            mExoPlayerHelper.initPlayer(applicationContext, videoView_full_screen)
-            mExoPlayerHelper.setSource(intent.getStringExtra(Page.ARG_BUNDLE))
-            mExoPlayerHelper.repeatMode()
+//            mExoPlayerHelper.initPlayer(applicationContext, videoView_full_screen)
+//            mExoPlayerHelper.setSource(intent.getStringExtra(Page.ARG_BUNDLE))
+//            mExoPlayerHelper.repeatMode()
+            mIsNeedRepeat = true
+            videoView_full_screen.setVideoPath(intent.getStringExtra(Page.ARG_BUNDLE))
+            videoView_full_screen.start()
             videoView_full_screen?.visibility = View.VISIBLE
         }
 
     }
 
+    override fun onResume() {
+        super.onResume()
+    }
+
     override fun onPause() {
-        mExoPlayerHelper.stop()
-        mExoPlayerHelper.release()
+        videoView_full_screen.pause()
+//        mExoPlayerHelper.stop()
+//        mExoPlayerHelper.release()
         if (mDateDisposable != null && mDateDisposable?.isDisposed == false) {
             mDateDisposable?.dispose()
         }
@@ -87,7 +106,8 @@ class FullScreenPictureActivity : PaneViewActivity() {
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         when (keyCode) {
             KeyEvent.KEYCODE_BACK -> {
-                mExoPlayerHelper.release()
+                videoView_full_screen.stopPlayback()
+//                mExoPlayerHelper.release()
                 finish()
             }
             KeyEvent.KEYCODE_DPAD_RIGHT -> {
@@ -131,7 +151,8 @@ class FullScreenPictureActivity : PaneViewActivity() {
     private fun renderView(position: Int) {
         videoView_full_screen?.visibility = View.INVISIBLE
         imageView_full_screen.visibility = View.INVISIBLE
-        mExoPlayerHelper.stop()
+//        mExoPlayerHelper.stop()
+        videoView_full_screen.pause()
 
         Cache.HotelFacilitiesContents?.let {list ->
             if(list.size-1 >= position ){
@@ -144,16 +165,20 @@ class FullScreenPictureActivity : PaneViewActivity() {
                             .into(imageView_full_screen)
                         imageView_full_screen.visibility = View.VISIBLE
                     } else {
-                        mExoPlayerHelper.initPlayer(applicationContext, videoView_full_screen)
-                        mExoPlayerHelper.setFileSource(
-                            Uri.parse(
-                                FileUtils.getFileFromStorage(it.file_name)?.absolutePath ?: ""
-                            )
-                        )
+                        videoView_full_screen.setVideoURI(Uri.parse(FileUtils.getFileFromStorage(it.file_name)?.absolutePath ?: ""))
+                        videoView_full_screen.start()
+//                        mExoPlayerHelper.initPlayer(applicationContext, videoView_full_screen)
+//                        mExoPlayerHelper.setFileSource(
+//                            Uri.parse(
+//                                FileUtils.getFileFromStorage(it.file_name)?.absolutePath ?: ""
+//                            )
+//                        )
                         if (isAUTOPlayOn) {
-                            mExoPlayerHelper.singleMode()
+                            mIsNeedRepeat = false
+//                            mExoPlayerHelper.singleMode()
                         }else{
-                            mExoPlayerHelper.repeatMode()
+                            mIsNeedRepeat = true
+//                            mExoPlayerHelper.repeatMode()
                         }
                         videoView_full_screen?.visibility = View.VISIBLE
                     }
@@ -175,7 +200,8 @@ class FullScreenPictureActivity : PaneViewActivity() {
         }
 
         if (isAUTOPlayOn) {
-            mExoPlayerHelper.singleMode()
+//            mExoPlayerHelper.singleMode()
+            mIsNeedRepeat = false
             mDateDisposable = Observable.interval(DEFAULT_WAIT_TIME, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -194,24 +220,32 @@ class FullScreenPictureActivity : PaneViewActivity() {
                                         )
                                     }
                                 } else {
-                                    videoView_full_screen?.player?.playbackState.let { player ->
-                                        Log.e(TAG, "[switchAutoPlay] playbackState:$player")
-                                        if (player == STATE_ENDED || player == STATE_IDLE) {
-                                            onKeyDown(
-                                                KeyEvent.KEYCODE_DPAD_RIGHT,
-                                                KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_RIGHT)
-                                            )
-                                        }else if(player == STATE_BUFFERING){
-                                            if(isLoadingCount == 3){
-                                                isLoadingCount = 0
-                                                renderView(mFocusPosition)
-                                            }else{
-                                                isLoadingCount++
-                                            }
-                                        }else{
+                                    if(videoView_full_screen.isPlaying){
 
-                                        }
+                                    }else{
+                                        onKeyDown(
+                                            KeyEvent.KEYCODE_DPAD_RIGHT,
+                                            KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_RIGHT)
+                                        )
                                     }
+//                                    videoView_full_screen?.player?.playbackState.let { player ->
+//                                        Log.e(TAG, "[switchAutoPlay] playbackState:$player")
+//                                        if (player == STATE_ENDED || player == STATE_IDLE) {
+//                                            onKeyDown(
+//                                                KeyEvent.KEYCODE_DPAD_RIGHT,
+//                                                KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_RIGHT)
+//                                            )
+//                                        }else if(player == STATE_BUFFERING){
+//                                            if(isLoadingCount == 3){
+//                                                isLoadingCount = 0
+//                                                renderView(mFocusPosition)
+//                                            }else{
+//                                                isLoadingCount++
+//                                            }
+//                                        }else{
+//
+//                                        }
+//                                    }
                                 }
                             }
                         }else{
@@ -220,7 +254,8 @@ class FullScreenPictureActivity : PaneViewActivity() {
                     }
                 }
         } else {
-            mExoPlayerHelper.repeatMode()
+//            mExoPlayerHelper.repeatMode()
+            mIsNeedRepeat = true
         }
     }
 
