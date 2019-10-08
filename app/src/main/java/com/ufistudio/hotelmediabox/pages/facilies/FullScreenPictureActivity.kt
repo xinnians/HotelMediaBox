@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils
 import android.util.Log
 import android.view.KeyEvent
+import android.view.SurfaceHolder
 import android.view.View
 import android.widget.Toast
 import com.bumptech.glide.Glide
@@ -14,6 +15,7 @@ import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.constants.Cache
 import com.ufistudio.hotelmediabox.constants.Page
 import com.ufistudio.hotelmediabox.helper.ExoPlayerHelper
+import com.ufistudio.hotelmediabox.helper.TVController
 import com.ufistudio.hotelmediabox.pages.base.PaneViewActivity
 import com.ufistudio.hotelmediabox.utils.FileUtils
 import io.reactivex.Observable
@@ -51,7 +53,7 @@ class FullScreenPictureActivity : PaneViewActivity() {
 
     override fun onStart() {
         super.onStart()
-
+        TVController.closeWin()
         videoView_full_screen.setOnCompletionListener {
             if(mIsNeedRepeat){
                 it.start()

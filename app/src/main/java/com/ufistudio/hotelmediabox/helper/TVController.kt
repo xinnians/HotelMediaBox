@@ -147,6 +147,18 @@ object TVController {
                 })
     }
 
+    fun closeWin(){
+        sendTCPRequestSingle("j_del_win")
+            .retry(1)
+            .subscribeOn(singelThreadScheduler)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ successResult ->
+                Log.e(TAG, "[closeWin] Result : $successResult")
+            }, { failResult ->
+                Log.e(TAG, "[closeWin] throwable : $failResult")
+            })
+    }
+
     /**
      * 因為切換頻道後不會立即播放的關係，所以才會長得像這樣奇耙
      */
