@@ -149,12 +149,14 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
             mPacket = null
             mPacket = DatagramPacket(recBuf, recBuf.size)
             try {
+                Log.e(TAG, "Packet receiveing")
                 socket?.receive(mPacket)
             } catch (e: IOException) {
                 Log.e(TAG, e.toString())
             }
             val receiverString = String(mPacket!!.data, mPacket!!.offset, mPacket!!.length)
             if (mPacket!!.address == null) {
+                Log.e(TAG,"mPacket!!.address == null")
                 continue
             }
             try {
@@ -213,191 +215,192 @@ class UdpReceiver : IntentService("UdpReceiver"), Runnable {
                     }
                     TAG_SOFTWARE_UPDATE -> {
 
-                        if(mIsDownloaderUsing) return
+                        if(!mIsDownloaderUsing) {
+                            mIsDownloaderUsing = true
 
-                        mIsDownloaderUsing = true
-
-                        if (mDownloadAPKDisposable != null && !mDownloadAPKDisposable!!.isDisposed) {
-                            mDownloadAPKDisposable?.dispose()
-                        }
-
-                        mDownloadAPKDisposable = DownloadHelper.checkVersion()
-                            .flatMap { checkVersionResult ->
-                                FileUtils.fileIsExist(TAG_DEFAULT_LOCAL_PATH)
-                                var versionInfo = Gson().fromJson(checkVersionResult, KDownloadVersion::class.java) ?: KDownloadVersion()
-                                Log.e(TAG,"[TAG_SOFTWARE_UPDATE] versionInfo : $versionInfo")
-//                                return@flatMap DownloadHelper.downloadHotelAPK("http://${myBroadcast.ip}:${myBroadcast.port}${myBroadcast.url}",fileMD5 = myBroadcast.md5)
-                                return@flatMap  Repository(application, SharedPreferencesProvider(application))
-                                    .getSoftwareUpdate("http://${myBroadcast.ip}:${myBroadcast.port}${myBroadcast.url}")}
-                            .flatMap {
-                                Log.d(TAG, "TAG_SOFTWARE_UPDATE response = $it")
-                                if (it.needUpdate == 0) {
-                                    //TODO判斷apk_version是否為較小
-                                    return@flatMap Single.just(Exception("apk don't need update."))
-                                }
-                                return@flatMap DownloadHelper.downloadHotelAPK("http://${it.ip}:${it.port}${it.url}",fileMD5 = myBroadcast.md5)
+                            if (mDownloadAPKDisposable != null && !mDownloadAPKDisposable!!.isDisposed) {
+                                mDownloadAPKDisposable?.dispose()
                             }
-                            .flatMap { downloadResult ->
-                                Log.e(TAG,"[TAG_SOFTWARE_UPDATE] call download result : $downloadResult")
-                                when(downloadResult){
-                                    "0", "1"->{
-                                        return@flatMap DownloadHelper.checkDownloadProgress("$DATA_PATH${DownloadHelper.VERIFY_FILE_NAME_APK}")
-                                            .delay(10,TimeUnit.SECONDS)
-                                            .flatMap { checkProgressResult ->
-                                                var progressInfo = Gson().fromJson(checkProgressResult, KDownloadProgress::class.java) ?: KDownloadProgress()
-                                                Log.e(TAG,"[TAG_SOFTWARE_UPDATE] progressInfo : $progressInfo")
-                                                if(progressInfo.dlinfo.flag != DWNLDR_DLINFO_MD5_COMPUTED){
-                                                    Log.e(TAG,"[TAG_SOFTWARE_UPDATE] progressInfo.dlinfo.flag != DWNLDR_DLINFO_MD5_COMPUTED($DWNLDR_DLINFO_MD5_COMPUTED)")
-                                                    Single.error<Exception>(Exception("download not finish."))
-                                                }else{
-                                                    Single.just(progressInfo)
+
+                            mDownloadAPKDisposable = DownloadHelper.checkVersion()
+                                .flatMap { checkVersionResult ->
+                                    FileUtils.fileIsExist(TAG_DEFAULT_LOCAL_PATH)
+                                    var versionInfo = Gson().fromJson(checkVersionResult, KDownloadVersion::class.java) ?: KDownloadVersion()
+                                    Log.e(TAG,"[TAG_SOFTWARE_UPDATE] versionInfo : $versionInfo")
+//                                return@flatMap DownloadHelper.downloadHotelAPK("http://${myBroadcast.ip}:${myBroadcast.port}${myBroadcast.url}",fileMD5 = myBroadcast.md5)
+                                    return@flatMap  Repository(application, SharedPreferencesProvider(application))
+                                        .getSoftwareUpdate("http://${myBroadcast.ip}:${myBroadcast.port}${myBroadcast.url}")}
+                                .flatMap {
+                                    Log.d(TAG, "TAG_SOFTWARE_UPDATE response = $it")
+                                    if (it.needUpdate == 0) {
+                                        //TODO判斷apk_version是否為較小
+                                        return@flatMap Single.just(Exception("apk don't need update."))
+                                    }
+                                    return@flatMap DownloadHelper.downloadHotelAPK("http://${it.ip}:${it.port}${it.url}",fileMD5 = myBroadcast.md5)
+                                }
+                                .flatMap { downloadResult ->
+                                    Log.e(TAG,"[TAG_SOFTWARE_UPDATE] call download result : $downloadResult")
+                                    when(downloadResult){
+                                        "0", "1"->{
+                                            return@flatMap DownloadHelper.checkDownloadProgress("$DATA_PATH${DownloadHelper.VERIFY_FILE_NAME_APK}")
+                                                .delay(10,TimeUnit.SECONDS)
+                                                .flatMap { checkProgressResult ->
+                                                    var progressInfo = Gson().fromJson(checkProgressResult, KDownloadProgress::class.java) ?: KDownloadProgress()
+                                                    Log.e(TAG,"[TAG_SOFTWARE_UPDATE] progressInfo : $progressInfo")
+                                                    if(progressInfo.dlinfo.flag != DWNLDR_DLINFO_MD5_COMPUTED){
+                                                        Log.e(TAG,"[TAG_SOFTWARE_UPDATE] progressInfo.dlinfo.flag != DWNLDR_DLINFO_MD5_COMPUTED($DWNLDR_DLINFO_MD5_COMPUTED)")
+                                                        Single.error<Exception>(Exception("download not finish."))
+                                                    }else{
+                                                        Single.just(progressInfo)
+                                                    }
                                                 }
-                                            }
-                                            .retry { count, erroMsg ->
-                                                Log.e(TAG,"[TAG_SOFTWARE_UPDATE] retry  count : $count, erroMsg : $erroMsg")
-                                                true }
+                                                .retry { count, erroMsg ->
+                                                    Log.e(TAG,"[TAG_SOFTWARE_UPDATE] retry  count : $count, erroMsg : $erroMsg")
+                                                    true }
 //                                            .retry { t ->
 //                                                Log.e(TAG,"[TAG_RESOURCE_UPDATE] retry msg : $t")
 //                                                t.message == "download not finish." }
-                                    }
-                                    else ->{
-                                        return@flatMap DownloadHelper.checkDownloadProgress()
-                                            .map { checkProgressResult ->
-                                                var progressInfo = Gson().fromJson(checkProgressResult, KDownloadProgress::class.java) ?: KDownloadProgress()
-                                                Log.e(TAG,"[TAG_SOFTWARE_UPDATE] progressInfo : $progressInfo")
-                                                if(progressInfo.dlinfo.flag != DWNLDR_DLINFO_MD5_COMPUTED){
-                                                    return@map Single.just(Exception("download not finish."))
-                                                }else{
-                                                    return@map Single.just(Exception("download fail = $downloadResult"))
+                                        }
+                                        else ->{
+                                            return@flatMap DownloadHelper.checkDownloadProgress()
+                                                .map { checkProgressResult ->
+                                                    var progressInfo = Gson().fromJson(checkProgressResult, KDownloadProgress::class.java) ?: KDownloadProgress()
+                                                    Log.e(TAG,"[TAG_SOFTWARE_UPDATE] progressInfo : $progressInfo")
+                                                    if(progressInfo.dlinfo.flag != DWNLDR_DLINFO_MD5_COMPUTED){
+                                                        return@map Single.just(Exception("download not finish."))
+                                                    }else{
+                                                        return@map Single.just(Exception("download fail = $downloadResult"))
+                                                    }
                                                 }
-                                            }
+                                        }
                                     }
                                 }
-                            }
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe({onSuccess ->
-                                Log.e(TAG,"[TAG_SOFTWARE_UPDATE] onSuccess")
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe({onSuccess ->
+                                    Log.e(TAG,"[TAG_SOFTWARE_UPDATE] onSuccess")
 
-                                if(onSuccess is KDownloadProgress){
-                                    Log.e(TAG,"[TAG_SOFTWARE_UPDATE] onSuccess is KDownloadProgress : $onSuccess")
-                                    if(onSuccess.md5result.cmp == "0"){
-                                        //TODO 下載成功且md5確認無誤，覆蓋到現有的hotel.tar上，然後刪除chkflag並重開機。
+                                    if(onSuccess is KDownloadProgress){
+                                        Log.e(TAG,"[TAG_SOFTWARE_UPDATE] onSuccess is KDownloadProgress : $onSuccess")
+                                        if(onSuccess.md5result.cmp == "0"){
+                                            //TODO 下載成功且md5確認無誤，覆蓋到現有的hotel.tar上，然後刪除chkflag並重開機。
 
-                                        FileUtils.getFileFromStorage(VERIFY_FILE_NAME_APK,DATA_PATH)?.let { verifyFile ->
-                                            val fileHotelTar = File("/data$TAG_DEFAULT_LOCAL_PATH", TAG_DEFAULT_APK_NAME)
-                                            verifyFile.renameTo(fileHotelTar)
-                                        }
-                                        if (FileUtils.fileIsExists(TAG_DEFAULT_APK_NAME)) {
-                                            Log.d(TAG, "TAG_SOFTWARE_UPDATE download success")
-                                            val intent = Intent()
-                                            val b = Bundle()
-                                            b.putString(TAG_FORCE, myBroadcast.force)
-                                            intent.putExtras(b)
-                                            intent.action = ACTION_UPDATE_APK
-                                            sendBroadcast(intent)
-                                        } else {
-                                            Log.d(TAG, "TAG_SOFTWARE_UPDATE download finish, but can not find file")
+                                            FileUtils.getFileFromStorage(VERIFY_FILE_NAME_APK,DATA_PATH)?.let { verifyFile ->
+                                                val fileHotelTar = File("/data$TAG_DEFAULT_LOCAL_PATH", TAG_DEFAULT_APK_NAME)
+                                                verifyFile.renameTo(fileHotelTar)
+                                            }
+                                            if (FileUtils.fileIsExists(TAG_DEFAULT_APK_NAME)) {
+                                                Log.d(TAG, "TAG_SOFTWARE_UPDATE download success")
+                                                val intent = Intent()
+                                                val b = Bundle()
+                                                b.putString(TAG_FORCE, myBroadcast.force)
+                                                intent.putExtras(b)
+                                                intent.action = ACTION_UPDATE_APK
+                                                sendBroadcast(intent)
+                                            } else {
+                                                Log.d(TAG, "TAG_SOFTWARE_UPDATE download finish, but can not find file")
+                                                mIsDownloaderUsing = false
+                                            }
+
+                                        }else{
+                                            //TODO 下載完成但md5確認有異，所以刪除該檔案
+                                            FileUtils.getFileFromStorage(VERIFY_FILE_NAME_APK,DATA_PATH)?.delete()
                                             mIsDownloaderUsing = false
                                         }
-
                                     }else{
-                                        //TODO 下載完成但md5確認有異，所以刪除該檔案
-                                        FileUtils.getFileFromStorage(VERIFY_FILE_NAME_APK,DATA_PATH)?.delete()
+                                        Log.e(TAG,"[TAG_SOFTWARE_UPDATE] onSuccess not a KDownloadProgress : $onSuccess")
                                         mIsDownloaderUsing = false
                                     }
-                                }else{
-                                    Log.e(TAG,"[TAG_SOFTWARE_UPDATE] onSuccess not a KDownloadProgress : $onSuccess")
+                                },{onError ->
+                                    Log.e(TAG,"[TAG_SOFTWARE_UPDATE] onError : $onError")
                                     mIsDownloaderUsing = false
-                                }
-                            },{onError ->
-                                Log.e(TAG,"[TAG_SOFTWARE_UPDATE] onError : $onError")
-                                mIsDownloaderUsing = false
-                            })
+                                })
+                        }
 
                     }
                     TAG_RESOURCE_UPDATE -> {
 
-                        if(mIsDownloaderUsing) return
+                        if(!mIsDownloaderUsing){
+                            mIsDownloaderUsing = true
 
-                        mIsDownloaderUsing = true
+                            if (mDownloadDisposable != null && !mDownloadDisposable!!.isDisposed) {
+                                mDownloadDisposable?.dispose()
+                            }
 
-                        if (mDownloadDisposable != null && !mDownloadDisposable!!.isDisposed) {
-                            mDownloadDisposable?.dispose()
-                        }
-
-                        mDownloadDisposable = DownloadHelper.checkVersion()
-                            .flatMap { checkVersionResult ->
-                                FileUtils.fileIsExist(TAG_DEFAULT_CORRECTION_PATH)
-                                var versionInfo = Gson().fromJson(checkVersionResult, KDownloadVersion::class.java) ?: KDownloadVersion()
-                                Log.e(TAG,"[TAG_RESOURCE_UPDATE] versionInfo : $versionInfo")
-                                return@flatMap DownloadHelper.downloadHotelTar("http://${myBroadcast.ip}:${myBroadcast.port}${myBroadcast.url}",fileMD5 = myBroadcast.md5) }
-                            .flatMap { downloadResult ->
-                                Log.e(TAG,"[TAG_RESOURCE_UPDATE] call download result : $downloadResult")
-                                when(downloadResult){
-                                    "0", "1"->{
-                                        return@flatMap DownloadHelper.checkDownloadProgress()
-                                            .delay(10,TimeUnit.SECONDS)
-                                            .flatMap { checkProgressResult ->
-                                                var progressInfo = Gson().fromJson(checkProgressResult, KDownloadProgress::class.java) ?: KDownloadProgress()
-                                                Log.e(TAG,"[TAG_RESOURCE_UPDATE] progressInfo : $progressInfo")
-                                                if(progressInfo.dlinfo.flag != DWNLDR_DLINFO_MD5_COMPUTED){
-                                                    Log.e(TAG,"[TAG_RESOURCE_UPDATE] progressInfo.dlinfo.flag != DWNLDR_DLINFO_MD5_COMPUTED($DWNLDR_DLINFO_MD5_COMPUTED)")
-                                                    Single.error<Exception>(Exception("download not finish."))
-                                                }else{
-                                                    Single.just(progressInfo)
+                            mDownloadDisposable = DownloadHelper.checkVersion()
+                                .flatMap { checkVersionResult ->
+                                    FileUtils.fileIsExist(TAG_DEFAULT_CORRECTION_PATH)
+                                    var versionInfo = Gson().fromJson(checkVersionResult, KDownloadVersion::class.java) ?: KDownloadVersion()
+                                    Log.e(TAG,"[TAG_RESOURCE_UPDATE] versionInfo : $versionInfo")
+                                    return@flatMap DownloadHelper.downloadHotelTar("http://${myBroadcast.ip}:${myBroadcast.port}${myBroadcast.url}",fileMD5 = myBroadcast.md5) }
+                                .flatMap { downloadResult ->
+                                    Log.e(TAG,"[TAG_RESOURCE_UPDATE] call download result : $downloadResult")
+                                    when(downloadResult){
+                                        "0", "1"->{
+                                            return@flatMap DownloadHelper.checkDownloadProgress()
+                                                .delay(10,TimeUnit.SECONDS)
+                                                .flatMap { checkProgressResult ->
+                                                    var progressInfo = Gson().fromJson(checkProgressResult, KDownloadProgress::class.java) ?: KDownloadProgress()
+                                                    Log.e(TAG,"[TAG_RESOURCE_UPDATE] progressInfo : $progressInfo")
+                                                    if(progressInfo.dlinfo.flag != DWNLDR_DLINFO_MD5_COMPUTED){
+                                                        Log.e(TAG,"[TAG_RESOURCE_UPDATE] progressInfo.dlinfo.flag != DWNLDR_DLINFO_MD5_COMPUTED($DWNLDR_DLINFO_MD5_COMPUTED)")
+                                                        Single.error<Exception>(Exception("download not finish."))
+                                                    }else{
+                                                        Single.just(progressInfo)
+                                                    }
                                                 }
-                                            }
-                                            .retry { count, erroMsg ->
-                                                Log.e(TAG,"[TAG_RESOURCE_UPDATE] retry  count : $count, erroMsg : $erroMsg")
-                                                true }
+                                                .retry { count, erroMsg ->
+                                                    Log.e(TAG,"[TAG_RESOURCE_UPDATE] retry  count : $count, erroMsg : $erroMsg")
+                                                    true }
 //                                            .retry { t ->
 //                                                Log.e(TAG,"[TAG_RESOURCE_UPDATE] retry msg : $t")
 //                                                t.message == "download not finish." }
-                                    }
-                                    else ->{
-                                        return@flatMap DownloadHelper.checkDownloadProgress()
-                                            .map { checkProgressResult ->
-                                                var progressInfo = Gson().fromJson(checkProgressResult, KDownloadProgress::class.java) ?: KDownloadProgress()
-                                                Log.e(TAG,"[TAG_RESOURCE_UPDATE] progressInfo : $progressInfo")
-                                                if(progressInfo.dlinfo.flag != DWNLDR_DLINFO_MD5_COMPUTED){
-                                                    return@map Single.just(Exception("download not finish."))
-                                                }else{
-                                                    return@map Single.just(Exception("download fail = $downloadResult"))
+                                        }
+                                        else ->{
+                                            return@flatMap DownloadHelper.checkDownloadProgress()
+                                                .map { checkProgressResult ->
+                                                    var progressInfo = Gson().fromJson(checkProgressResult, KDownloadProgress::class.java) ?: KDownloadProgress()
+                                                    Log.e(TAG,"[TAG_RESOURCE_UPDATE] progressInfo : $progressInfo")
+                                                    if(progressInfo.dlinfo.flag != DWNLDR_DLINFO_MD5_COMPUTED){
+                                                        return@map Single.just(Exception("download not finish."))
+                                                    }else{
+                                                        return@map Single.just(Exception("download fail = $downloadResult"))
+                                                    }
                                                 }
-                                            }
+                                        }
                                     }
                                 }
-                            }
-                            .subscribeOn(Schedulers.io())
-                            .subscribe({onSuccess ->
-                                Log.e(TAG,"[TAG_RESOURCE_UPDATE] onSuccess")
+                                .subscribeOn(Schedulers.io())
+                                .subscribe({onSuccess ->
+                                    Log.e(TAG,"[TAG_RESOURCE_UPDATE] onSuccess")
 
-                                if(onSuccess is KDownloadProgress){
-                                    Log.e(TAG,"[TAG_RESOURCE_UPDATE] onSuccess is KDownloadProgress : $onSuccess")
-                                    if(onSuccess.md5result.cmp == "0"){
-                                        //TODO 下載成功且md5確認無誤，覆蓋到現有的hotel.tar上，然後刪除chkflag並重開機。
+                                    if(onSuccess is KDownloadProgress){
+                                        Log.e(TAG,"[TAG_RESOURCE_UPDATE] onSuccess is KDownloadProgress : $onSuccess")
+                                        if(onSuccess.md5result.cmp == "0"){
+                                            //TODO 下載成功且md5確認無誤，覆蓋到現有的hotel.tar上，然後刪除chkflag並重開機。
 
-                                        FileUtils.getFileFromStorage(VERIFY_FILE_NAME,TAR_PATH)?.let { verifyFile ->
-                                            val fileHotelTar = File("/data$TAG_DEFAULT_CORRECTION_PATH", TAG_DEFAULT_HOTEL_TAR_FILE_NAME)
-                                            verifyFile.renameTo(fileHotelTar)
-                                            FileUtils.getFileFromStorage("chkflag")?.delete()
-                                            MiscUtils.reboot(baseContext)
+                                            FileUtils.getFileFromStorage(VERIFY_FILE_NAME,TAR_PATH)?.let { verifyFile ->
+                                                val fileHotelTar = File("/data$TAG_DEFAULT_CORRECTION_PATH", TAG_DEFAULT_HOTEL_TAR_FILE_NAME)
+                                                verifyFile.renameTo(fileHotelTar)
+                                                FileUtils.getFileFromStorage("chkflag")?.delete()
+                                                MiscUtils.reboot(baseContext)
+                                            }
+
+                                        }else{
+                                            //TODO 下載完成但md5確認有異，所以刪除該檔案
+                                            FileUtils.getFileFromStorage(VERIFY_FILE_NAME,TAR_PATH)?.delete()
+                                            mIsDownloaderUsing = false
                                         }
-
                                     }else{
-                                        //TODO 下載完成但md5確認有異，所以刪除該檔案
-                                        FileUtils.getFileFromStorage(VERIFY_FILE_NAME,TAR_PATH)?.delete()
+                                        Log.e(TAG,"[TAG_RESOURCE_UPDATE] onSuccess not a KDownloadProgress : $onSuccess")
                                         mIsDownloaderUsing = false
                                     }
-                                }else{
-                                    Log.e(TAG,"[TAG_RESOURCE_UPDATE] onSuccess not a KDownloadProgress : $onSuccess")
+                                },{onError ->
+                                    Log.e(TAG,"[TAG_RESOURCE_UPDATE] onError : $onError")
                                     mIsDownloaderUsing = false
-                                }
-                            },{onError ->
-                                Log.e(TAG,"[TAG_RESOURCE_UPDATE] onError : $onError")
-                                mIsDownloaderUsing = false
-                            })
+                                })
+                        }
+
                     }
                     TAG_SET_STATIC_IP -> {
                         Repository(application, SharedPreferencesProvider(application)).getStaticIp("http://${myBroadcast.ip}:${myBroadcast.port}${myBroadcast.url}")
