@@ -1,10 +1,12 @@
 package com.ufistudio.hotelmediabox.pages.vod
 
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
+import android.widget.MediaController
 import android.widget.Toast
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.constants.Cache
@@ -34,6 +36,8 @@ class VodFullScreenActivity : PaneViewActivity() {
 
     private var mIsResumeViewShow: Boolean = false
     private var mIsResumeButtonFocus: Boolean = true
+
+//    private var mController: MediaController? = null
 
 //    private var mTVListener: TVController.OnTVListener = object : TVController.OnTVListener{
 //        override fun onIPTVFinish() {
@@ -67,6 +71,9 @@ class VodFullScreenActivity : PaneViewActivity() {
 
     override fun onStart() {
         super.onStart()
+        TVController.closeWin()
+//        mController = MediaController(this)
+
 //        initPlayer()
 //        initTitle()
 //        initBottomText()
@@ -74,6 +81,11 @@ class VodFullScreenActivity : PaneViewActivity() {
 
     override fun onResume() {
         super.onResume()
+
+        mMediaURL?.let { videoView?.setVideoURI(Uri.parse(it)) }
+//        videoView?.setMediaController(mController)
+        videoView?.start()
+
 //        checkWatchHistory()
 //        TVController.registerListener(mTVListener)
 //        if(Cache.VodWatchHistory[mMediaURL?:""] != null){
@@ -187,21 +199,42 @@ class VodFullScreenActivity : PaneViewActivity() {
 
                         if(mIsPause){
                             iv_pause.visibility = View.VISIBLE
-                            mExoPlayerHelper?.pause()
+//                            mExoPlayerHelper?.pause()
+                            videoView?.pause()
                         }else{
                             iv_pause.visibility = View.INVISIBLE
-                            mExoPlayerHelper?.play()
+//                            mExoPlayerHelper?.play()
+                            videoView?.start()
                         }
                         mIsPause = !mIsPause
                         return true
                     }
-//                    KeyEvent.KEYCODE_MEDIA_FAST_FORWARD ->{
-//                        if(event.action == KeyEvent.ACTION_UP){
-//                            return true
-//                        }
-//                        Toast.makeText(applicationContext,"Speed ${mExoPlayerHelper?.speedUp()}x",Toast.LENGTH_SHORT).show()
-//                        return true
-//                    }
+                    KeyEvent.KEYCODE_MEDIA_FAST_FORWARD ->{
+                        if(event.action == KeyEvent.ACTION_UP){
+                            return true
+                        }
+                        var time = 0
+                        time = if(videoView.currentPosition+5000 < videoView.duration){
+                            videoView.currentPosition+5000
+                        }else{
+                            videoView.currentPosition
+                        }
+                        videoView?.seekTo(time)
+                        return true
+                    }
+                    KeyEvent.KEYCODE_MEDIA_REWIND ->{
+                        if(event.action == KeyEvent.ACTION_UP){
+                            return true
+                        }
+                        var time = 0
+                        time = if(videoView.currentPosition-5000 < 0){
+                            0
+                        }else{
+                            videoView.currentPosition-5000
+                        }
+                        videoView?.seekTo(time)
+                        return true
+                    }
                     else ->{
 
                     }
