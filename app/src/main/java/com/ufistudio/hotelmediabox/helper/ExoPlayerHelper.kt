@@ -65,15 +65,15 @@ open class ExoPlayerHelper {
         mContext = context
         val trackSelector = DefaultTrackSelector()
         val renderer: RenderersFactory = DefaultRenderersFactory(mContext,DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
-        var loadControl: LoadControl = DefaultLoadControl(
-            DefaultAllocator(true, C.DEFAULT_BUFFER_SEGMENT_SIZE),
-            30000,
-            600000,
-            10000,
-            15000,
-            DEFAULT_TARGET_BUFFER_BYTES,
-            DEFAULT_PRIORITIZE_TIME_OVER_SIZE_THRESHOLDS)
-        mPlayer = ExoPlayerFactory.newSimpleInstance(context,renderer, trackSelector,loadControl)
+//        var loadControl: LoadControl = DefaultLoadControl(
+//            DefaultAllocator(true, C.DEFAULT_BUFFER_SEGMENT_SIZE),
+//            30000,
+//            600000,
+//            10000,
+//            15000,
+//            DEFAULT_TARGET_BUFFER_BYTES,
+//            DEFAULT_PRIORITIZE_TIME_OVER_SIZE_THRESHOLDS)
+        mPlayer = ExoPlayerFactory.newSimpleInstance(context,renderer, trackSelector)
         mPlayer?.volume = 1f
         mCurrentSpeed = 1.0f
         mVideoView = videoView

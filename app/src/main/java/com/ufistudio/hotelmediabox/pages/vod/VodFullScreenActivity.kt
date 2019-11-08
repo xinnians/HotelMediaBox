@@ -28,6 +28,8 @@ class VodFullScreenActivity : PaneViewActivity() {
 
     private var mDisposableInfoView: Disposable? = null
 
+    private var mDisposablePlayCheck: Disposable? = null
+
     private var mMediaURL: String? = ""
     private var mMediaTitle: String? = ""
     private var mIsPause: Boolean = false
@@ -62,6 +64,8 @@ class VodFullScreenActivity : PaneViewActivity() {
         val b: NoteButton = intent.extras.get("bottom_note") as NoteButton
         mMediaURL = intent.extras.get(KEY_VOD_URL) as String
         mMediaTitle = intent.extras.get(KEY_VOD_TITLE) as String
+
+//        mMediaURL = "rtsp://13.229.222.179:1935/vod/mp4:barbershop_thenextcut.mp4"
         Log.d("neo", "${b.note?.home}")
     }
 
@@ -195,13 +199,32 @@ class VodFullScreenActivity : PaneViewActivity() {
                         mIsPause = !mIsPause
                         return true
                     }
-//                    KeyEvent.KEYCODE_MEDIA_FAST_FORWARD ->{
-//                        if(event.action == KeyEvent.ACTION_UP){
-//                            return true
-//                        }
+                    KeyEvent.KEYCODE_MEDIA_FAST_FORWARD ->{
+                        if(event.action == KeyEvent.ACTION_UP){
+                            return true
+                        }
+                        player_view?.player?.let {
+                            if(it.duration>it.currentPosition+5000)
+                                it.seekTo(it.currentPosition+5000)
+                        checkPlay()}
+
+                        Log.e(TAG,"[KEYCODE_MEDIA_FAST_FORWARD] call.")
 //                        Toast.makeText(applicationContext,"Speed ${mExoPlayerHelper?.speedUp()}x",Toast.LENGTH_SHORT).show()
-//                        return true
-//                    }
+                        return true
+                    }
+                    KeyEvent.KEYCODE_MEDIA_REWIND ->{
+                        if(event.action == KeyEvent.ACTION_UP){
+                            return true
+                        }
+                        player_view?.player?.let {
+                            if(0<it.currentPosition-5000)
+                                it.seekTo(it.currentPosition-5000)
+                            checkPlay()}
+
+                        Log.e(TAG,"[KEYCODE_MEDIA_REWIND] call.")
+//                        Toast.makeText(applicationContext,"Speed ${mExoPlayerHelper?.speedUp()}x",Toast.LENGTH_SHORT).show()
+                        return true
+                    }
                     else ->{
 
                     }
@@ -212,27 +235,27 @@ class VodFullScreenActivity : PaneViewActivity() {
         return super.dispatchKeyEvent(event)
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        Log.e(TAG,"[onKeyDown] keycode: $keyCode, KeyEvent: $event")
-        when (keyCode) {
-            KeyEvent.KEYCODE_MEDIA_STOP ->{
-                mExoPlayerHelper?.stop()
-            }
-            KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE ->{
-                mExoPlayerHelper?.getPositionInfo()
-                if(mIsPause){
-                    iv_pause.visibility = View.VISIBLE
-                    mExoPlayerHelper?.pause()
-                }else{
-                    iv_pause.visibility = View.INVISIBLE
-                    mExoPlayerHelper?.play()
-                }
-                mIsPause = !mIsPause
-                return true
-            }
-        }
-        return super.onKeyDown(keyCode, event)
-    }
+//    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+//        Log.e(TAG,"[onKeyDown] keycode: $keyCode, KeyEvent: $event")
+//        when (keyCode) {
+//            KeyEvent.KEYCODE_MEDIA_STOP ->{
+//                mExoPlayerHelper?.stop()
+//            }
+//            KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE ->{
+//                mExoPlayerHelper?.getPositionInfo()
+//                if(mIsPause){
+//                    iv_pause.visibility = View.VISIBLE
+//                    mExoPlayerHelper?.pause()
+//                }else{
+//                    iv_pause.visibility = View.INVISIBLE
+//                    mExoPlayerHelper?.play()
+//                }
+//                mIsPause = !mIsPause
+//                return true
+//            }
+//        }
+//        return super.onKeyDown(keyCode, event)
+//    }
 
     private fun initTitle(){
         Log.e(TAG,"[initTitle] mMediaTitle : $mMediaTitle")
@@ -276,6 +299,24 @@ class VodFullScreenActivity : PaneViewActivity() {
                     constraintLayout4.visibility = View.INVISIBLE
                     dateView.visibility = View.INVISIBLE
                     player_view.hideController()
+                })
+    }
+
+    private fun checkPlay(){
+        if (mDisposablePlayCheck != null && !mDisposablePlayCheck!!.isDisposed) {
+            mDisposablePlayCheck?.dispose()
+        }
+
+        mDisposablePlayCheck = Observable.timer(5, TimeUnit.SECONDS)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { Log.e(TAG, " checkPlay continus : $it") },
+                { onError -> Log.e(TAG, "error:$onError") },
+                {
+                    Log.e(TAG, " checkPlay call.")
+                    mExoPlayerHelper?.pause()
+                    mExoPlayerHelper?.play()
                 })
     }
 
