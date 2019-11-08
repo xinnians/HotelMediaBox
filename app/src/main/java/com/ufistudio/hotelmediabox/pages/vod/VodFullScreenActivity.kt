@@ -204,8 +204,8 @@ class VodFullScreenActivity : PaneViewActivity() {
                             return true
                         }
                         player_view?.player?.let {
-                            if(it.duration>it.currentPosition+5000)
-                                it.seekTo(it.currentPosition+5000)
+                            if(it.duration>it.currentPosition+300000)
+                                it.seekTo(it.currentPosition+300000)
                         checkPlay()}
 
                         Log.e(TAG,"[KEYCODE_MEDIA_FAST_FORWARD] call.")
@@ -217,12 +217,18 @@ class VodFullScreenActivity : PaneViewActivity() {
                             return true
                         }
                         player_view?.player?.let {
-                            if(0<it.currentPosition-5000)
-                                it.seekTo(it.currentPosition-5000)
+                            if(0<it.currentPosition-300000)
+                                it.seekTo(it.currentPosition-300000)
+                            else
+                                it.seekTo(0)
                             checkPlay()}
 
                         Log.e(TAG,"[KEYCODE_MEDIA_REWIND] call.")
 //                        Toast.makeText(applicationContext,"Speed ${mExoPlayerHelper?.speedUp()}x",Toast.LENGTH_SHORT).show()
+                        return true
+                    }
+                    KeyEvent.KEYCODE_DPAD_RIGHT,
+                    KeyEvent.KEYCODE_DPAD_LEFT-> {
                         return true
                     }
                     else ->{
@@ -307,7 +313,7 @@ class VodFullScreenActivity : PaneViewActivity() {
             mDisposablePlayCheck?.dispose()
         }
 
-        mDisposablePlayCheck = Observable.timer(5, TimeUnit.SECONDS)
+        mDisposablePlayCheck = Observable.timer(3, TimeUnit.SECONDS)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
