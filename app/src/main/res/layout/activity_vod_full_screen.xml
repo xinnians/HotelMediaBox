@@ -52,7 +52,8 @@
             android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="@+id/textView_subtitle"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:buffered_color="@android:color/transparent"/>
 
         <include
             android:id="@+id/view_note"
