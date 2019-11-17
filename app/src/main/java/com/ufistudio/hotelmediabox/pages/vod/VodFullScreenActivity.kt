@@ -30,6 +30,11 @@ class VodFullScreenActivity : PaneViewActivity() {
 
     private var mDisposablePlayCheck: Disposable? = null
 
+    private var mDisposableFastForward: Disposable? = null
+    private var mCurrentSpeedIndex:Int = 1
+
+    private var mIsFastForward: Boolean = false
+
     private var mMediaURL: String? = ""
     private var mMediaTitle: String? = ""
     private var mIsPause: Boolean = false
@@ -37,7 +42,7 @@ class VodFullScreenActivity : PaneViewActivity() {
     private var mIsResumeViewShow: Boolean = false
     private var mIsResumeButtonFocus: Boolean = true
 
-    private var mTVListener: TVController.OnTVListener = object : TVController.OnTVListener{
+    private var mTVListener: TVController.OnTVListener = object : TVController.OnTVListener {
         override fun onIPTVFinish() {
             finish()
         }
@@ -65,7 +70,7 @@ class VodFullScreenActivity : PaneViewActivity() {
         mMediaURL = intent.extras.get(KEY_VOD_URL) as String
         mMediaTitle = intent.extras.get(KEY_VOD_TITLE) as String
 
-//        mMediaURL = "rtsp://13.229.222.179:1935/vod/mp4:barbershop_thenextcut.mp4"
+        mMediaURL = "rtsp://13.229.222.179:1935/vod/mp4:2-geostorm_1080p_5m.mp4"
         Log.d("neo", "${b.note?.home}")
     }
 
@@ -80,22 +85,30 @@ class VodFullScreenActivity : PaneViewActivity() {
         super.onResume()
 //        checkWatchHistory()
         TVController.registerListener(mTVListener)
-        if(Cache.VodWatchHistory[mMediaURL?:""] != null){
+        if (Cache.VodWatchHistory[mMediaURL ?: ""] != null) {
             layout_resume.visibility = View.VISIBLE
             mIsResumeViewShow = true
 
-            mMediaURL?.let {mExoPlayerHelper?.setSource(it, false,true,Cache.VodWatchHistory[mMediaURL?:""]?:0L)}
+            mMediaURL?.let {
+                mExoPlayerHelper?.setSource(
+                    it,
+                    false,
+                    true,
+                    Cache.VodWatchHistory[mMediaURL ?: ""] ?: 0L
+                )
+            }
 
             //hide controller
             constraintLayout4.visibility = View.INVISIBLE
             dateView.visibility = View.INVISIBLE
             player_view.controllerAutoShow = false
             player_view.hideController()
-        }else{
+        } else {
             mIsResumeViewShow = false
 
             mMediaURL?.let {
-                mExoPlayerHelper?.setSource(it, true) }
+                mExoPlayerHelper?.setSource(it, true)
+            }
             showInfo()
         }
 
@@ -117,14 +130,14 @@ class VodFullScreenActivity : PaneViewActivity() {
     }
 
     override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
-        Log.e(TAG,"[dispatchKeyEvent] KeyEvent: $event")
+        Log.e(TAG, "[dispatchKeyEvent] KeyEvent: $event")
 
-        if(mIsResumeViewShow){
-            event?.keyCode?.let {keycode ->
-                when(keycode){
-                    KeyEvent.KEYCODE_DPAD_LEFT ->{
+        if (mIsResumeViewShow) {
+            event?.keyCode?.let { keycode ->
+                when (keycode) {
+                    KeyEvent.KEYCODE_DPAD_LEFT -> {
 
-                        if(event.action == KeyEvent.ACTION_UP){
+                        if (event.action == KeyEvent.ACTION_UP) {
                             return true
                         }
 
@@ -136,8 +149,8 @@ class VodFullScreenActivity : PaneViewActivity() {
 
                         return true
                     }
-                    KeyEvent.KEYCODE_DPAD_RIGHT ->{
-                        if(event.action == KeyEvent.ACTION_UP){
+                    KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                        if (event.action == KeyEvent.ACTION_UP) {
                             return true
                         }
 
@@ -149,89 +162,83 @@ class VodFullScreenActivity : PaneViewActivity() {
 
                         return true
                     }
-                    KeyEvent.KEYCODE_DPAD_CENTER ->{
-                        if(event.action == KeyEvent.ACTION_UP){
+                    KeyEvent.KEYCODE_DPAD_CENTER -> {
+                        if (event.action == KeyEvent.ACTION_UP) {
                             return true
                         }
 
                         layout_resume.visibility = View.INVISIBLE
                         mIsResumeViewShow = false
 
-                        if(mIsResumeButtonFocus){
+                        if (mIsResumeButtonFocus) {
                             mExoPlayerHelper?.play()
 //                            mMediaURL?.let {mExoPlayerHelper?.setSource(it, true,true,Cache.VodWatchHistory[mMediaURL?:""]?:0L) }
-                        }else{
-                            mMediaURL?.let {mExoPlayerHelper?.setSource(it, true) }
+                        } else {
+                            mMediaURL?.let { mExoPlayerHelper?.setSource(it, true) }
                         }
 
                         showInfo()
 
                         return true
                     }
-                    else ->{
+                    else -> {
 
                     }
                 }
             }
-        }else{
+        } else {
             showInfo()
-            event?.keyCode?.let {keycode ->
-                when(keycode){
-                    KeyEvent.KEYCODE_MEDIA_STOP ->{
-                        if(event.action == KeyEvent.ACTION_UP){
+            event?.keyCode?.let { keycode ->
+                when (keycode) {
+                    KeyEvent.KEYCODE_MEDIA_STOP -> {
+                        if (event.action == KeyEvent.ACTION_UP) {
                             return true
                         }
                         onBackPressed()
                     }
-                    KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE ->{
+                    KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> {
 
-                        if(event.action == KeyEvent.ACTION_UP){
+                        if (event.action == KeyEvent.ACTION_UP) {
                             return true
                         }
 
-                        if(mIsPause){
+                        if (mIsPause) {
                             iv_pause.visibility = View.VISIBLE
                             mExoPlayerHelper?.pause()
-                        }else{
+                        } else {
                             iv_pause.visibility = View.INVISIBLE
                             mExoPlayerHelper?.play()
                         }
                         mIsPause = !mIsPause
                         return true
                     }
-                    KeyEvent.KEYCODE_MEDIA_FAST_FORWARD ->{
-                        if(event.action == KeyEvent.ACTION_UP){
+                    KeyEvent.KEYCODE_MEDIA_FAST_FORWARD -> {
+                        if (event.action == KeyEvent.ACTION_UP) {
                             return true
                         }
-                        player_view?.player?.let {
-                            if(it.duration>it.currentPosition+300000)
-                                it.seekTo(it.currentPosition+300000)
-                        checkPlay()}
 
-                        Log.e(TAG,"[KEYCODE_MEDIA_FAST_FORWARD] call.")
+                        changeFrame(true)
+
+                        Log.e(TAG, "[KEYCODE_MEDIA_FAST_FORWARD] call.")
 //                        Toast.makeText(applicationContext,"Speed ${mExoPlayerHelper?.speedUp()}x",Toast.LENGTH_SHORT).show()
                         return true
                     }
-                    KeyEvent.KEYCODE_MEDIA_REWIND ->{
-                        if(event.action == KeyEvent.ACTION_UP){
+                    KeyEvent.KEYCODE_MEDIA_REWIND -> {
+                        if (event.action == KeyEvent.ACTION_UP) {
                             return true
                         }
-                        player_view?.player?.let {
-                            if(0<it.currentPosition-300000)
-                                it.seekTo(it.currentPosition-300000)
-                            else
-                                it.seekTo(0)
-                            checkPlay()}
 
-                        Log.e(TAG,"[KEYCODE_MEDIA_REWIND] call.")
+                        changeFrame(false)
+
+                        Log.e(TAG, "[KEYCODE_MEDIA_REWIND] call.")
 //                        Toast.makeText(applicationContext,"Speed ${mExoPlayerHelper?.speedUp()}x",Toast.LENGTH_SHORT).show()
                         return true
                     }
                     KeyEvent.KEYCODE_DPAD_RIGHT,
-                    KeyEvent.KEYCODE_DPAD_LEFT-> {
+                    KeyEvent.KEYCODE_DPAD_LEFT -> {
                         return true
                     }
-                    else ->{
+                    else -> {
 
                     }
                 }
@@ -263,23 +270,23 @@ class VodFullScreenActivity : PaneViewActivity() {
 //        return super.onKeyDown(keyCode, event)
 //    }
 
-    private fun initTitle(){
-        Log.e(TAG,"[initTitle] mMediaTitle : $mMediaTitle")
+    private fun initTitle() {
+        Log.e(TAG, "[initTitle] mMediaTitle : $mMediaTitle")
         textView_subtitle.text = mMediaTitle
     }
 
-    private fun initBottomText(){
+    private fun initBottomText() {
         textView_home.text = "Home"
         textView_back.text = "Back"
         textView_stop.text = "Stop"
         textView_fast_forward.text = "Fast Forward"
         textView_watch_movie.text = "Play/Pause"
-        textView_rewind.text ="Rewind"
+        textView_rewind.text = "Rewind"
 
     }
 
-    private fun initPlayer(){
-        if(mExoPlayerHelper == null){
+    private fun initPlayer() {
+        if (mExoPlayerHelper == null) {
             mExoPlayerHelper = ExoPlayerHelper()
         }
         mExoPlayerHelper?.initPlayer(application, player_view)
@@ -308,7 +315,7 @@ class VodFullScreenActivity : PaneViewActivity() {
                 })
     }
 
-    private fun checkPlay(){
+    private fun checkPlay() {
         if (mDisposablePlayCheck != null && !mDisposablePlayCheck!!.isDisposed) {
             mDisposablePlayCheck?.dispose()
         }
@@ -326,13 +333,70 @@ class VodFullScreenActivity : PaneViewActivity() {
                 })
     }
 
-    private fun saveWatchPosition(){
-        Log.e(TAG,"[saveWatchPosition] ${mExoPlayerHelper?.currentPosition()}/${mExoPlayerHelper?.totalContentDuration()}")
-        Cache.VodWatchHistory[mMediaURL?:""] = mExoPlayerHelper?.currentPosition()?:0L
+    private fun saveWatchPosition() {
+        Log.e(
+            TAG,
+            "[saveWatchPosition] ${mExoPlayerHelper?.currentPosition()}/${mExoPlayerHelper?.totalContentDuration()}"
+        )
+        Cache.VodWatchHistory[mMediaURL ?: ""] = mExoPlayerHelper?.currentPosition() ?: 0L
     }
 
-    private fun checkWatchHistory(){
-        Log.e(TAG,"[checkWatchHistory] Cache.VodWatchHistory[mMediaURL] ${Cache.VodWatchHistory[mMediaURL?:""]}")
+    private fun checkWatchHistory() {
+        Log.e(TAG, "[checkWatchHistory] Cache.VodWatchHistory[mMediaURL] ${Cache.VodWatchHistory[mMediaURL ?: ""]}")
         layout_resume.visibility = View.VISIBLE
+    }
+
+    private fun changeFrame(isFastforward: Boolean) {
+        if (mDisposableFastForward != null && !mDisposableFastForward!!.isDisposed) {
+            mDisposableFastForward?.dispose()
+        }
+
+        if(mIsFastForward != isFastforward){
+            mCurrentSpeedIndex = 1
+            mIsFastForward = isFastforward
+        }
+
+        if(mCurrentSpeedIndex != 8){
+            mCurrentSpeedIndex *= 2
+
+            if(mIsFastForward){
+                Toast.makeText(applicationContext,"FastForward Speed ${mCurrentSpeedIndex}x",Toast.LENGTH_SHORT).show()
+            }else{
+                Toast.makeText(applicationContext,"REWIND Speed ${mCurrentSpeedIndex}x",Toast.LENGTH_SHORT).show()
+            }
+
+        }else{
+            mCurrentSpeedIndex = 1
+            if(mIsFastForward){
+                Toast.makeText(applicationContext,"FastForward Speed ${mCurrentSpeedIndex}x",Toast.LENGTH_SHORT).show()
+            }else{
+                Toast.makeText(applicationContext,"REWIND Speed ${mCurrentSpeedIndex}x",Toast.LENGTH_SHORT).show()
+            }
+
+
+            return
+        }
+
+        mDisposableFastForward = Observable.interval(1000, TimeUnit.MILLISECONDS)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+//                showInfo()
+                if(mIsFastForward){
+                    player_view?.player?.let {
+                        if (it.duration > it.currentPosition + mCurrentSpeedIndex*5000)
+                            it.seekTo(it.currentPosition + mCurrentSpeedIndex*5000)
+                        checkPlay()
+                    }
+                }else{
+                    player_view?.player?.let {
+                        if (0 < it.currentPosition - mCurrentSpeedIndex*5000)
+                            it.seekTo(it.currentPosition - mCurrentSpeedIndex*5000)
+                        else
+                            it.seekTo(0)
+                        checkPlay()
+                    }
+                }
+            }
     }
 }

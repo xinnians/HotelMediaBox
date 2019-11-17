@@ -14,35 +14,22 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.DefaultLoadControl.*
-import com.google.android.exoplayer2.ext.ffmpeg.FfmpegAudioRenderer
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.extractor.ExtractorsFactory
-import com.google.android.exoplayer2.extractor.mp4.Mp4Extractor.FLAG_WORKAROUND_IGNORE_EDIT_LISTS
 import com.google.android.exoplayer2.extractor.ts.DefaultTsPayloadReaderFactory.FLAG_ALLOW_NON_IDR_KEYFRAMES
-import com.google.android.exoplayer2.extractor.ts.DefaultTsPayloadReaderFactory.FLAG_DETECT_ACCESS_UNITS
-import com.google.android.exoplayer2.offline.FilteringManifestParser
 import com.google.android.exoplayer2.source.ExtractorMediaSource
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.TrackGroupArray
-import com.google.android.exoplayer2.source.dash.DashMediaSource
-import com.google.android.exoplayer2.source.dash.manifest.DashManifestParser
-import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.source.rtsp.RtspDefaultClient
 import com.google.android.exoplayer2.source.rtsp.RtspMediaSource
-import com.google.android.exoplayer2.source.rtsp.core.Client
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.*
-import com.google.android.exoplayer2.upstream.cache.Cache
-import com.google.android.exoplayer2.upstream.cache.CacheDataSource
-import com.google.android.exoplayer2.upstream.cache.CacheDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import com.ufistudio.hotelmediabox.MyApplication
 import com.ufistudio.hotelmediabox.R
 import com.ufistudio.hotelmediabox.helper.TVController.onBroadcastAll
-import com.ufistudio.hotelmediabox.utils.FileUtils
-import java.io.File
 import java.lang.Exception
 
 open class ExoPlayerHelper {
@@ -65,15 +52,15 @@ open class ExoPlayerHelper {
         mContext = context
         val trackSelector = DefaultTrackSelector()
         val renderer: RenderersFactory = DefaultRenderersFactory(mContext,DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
-//        var loadControl: LoadControl = DefaultLoadControl(
-//            DefaultAllocator(true, C.DEFAULT_BUFFER_SEGMENT_SIZE),
-//            30000,
-//            600000,
-//            10000,
-//            15000,
-//            DEFAULT_TARGET_BUFFER_BYTES,
-//            DEFAULT_PRIORITIZE_TIME_OVER_SIZE_THRESHOLDS)
-        mPlayer = ExoPlayerFactory.newSimpleInstance(context,renderer, trackSelector)
+        var loadControl: LoadControl = DefaultLoadControl(
+            DefaultAllocator(true, C.DEFAULT_BUFFER_SEGMENT_SIZE),
+            60000,
+            600000,
+            1000,
+            10000,
+            DEFAULT_TARGET_BUFFER_BYTES,
+            DEFAULT_PRIORITIZE_TIME_OVER_SIZE_THRESHOLDS)
+        mPlayer = ExoPlayerFactory.newSimpleInstance(context,renderer, trackSelector,loadControl)
         mPlayer?.volume = 1f
         mCurrentSpeed = 1.0f
         mVideoView = videoView
