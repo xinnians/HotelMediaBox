@@ -237,6 +237,7 @@ class FullScreenActivity : PaneViewActivity() {
             }
             KeyEvent.KEYCODE_INFO ->{
                 showInfo()
+                return true
             }
             KeyEvent.KEYCODE_BACK -> {
                 startActivity(Intent(this, MainActivity::class.java))
@@ -304,8 +305,9 @@ class FullScreenActivity : PaneViewActivity() {
 
     private fun showInfo() {
         Log.e(TAG,"[showInfo] call.")
+        dateView.setVisiable(true)
         banner.visibility = View.VISIBLE
-        dateView.visibility = View.VISIBLE
+//        dateView.visibility = View.VISIBLE
 
         if (mDisposableInfoView != null && !mDisposableInfoView!!.isDisposed) {
             mDisposableInfoView?.dispose()
@@ -319,8 +321,10 @@ class FullScreenActivity : PaneViewActivity() {
                 { onError -> Log.e(TAG, "error:$onError") },
                 {
                     Log.e(TAG, " showInfo finish")
+                    dateView.setVisiable(false)
                     banner.visibility = View.INVISIBLE
-                    dateView.visibility = View.INVISIBLE
+//                    dateView.visibility = View.INVISIBLE
+
                 })
     }
 

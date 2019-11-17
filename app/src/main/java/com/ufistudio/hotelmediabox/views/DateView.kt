@@ -64,6 +64,7 @@ class DateView : ConstraintLayout {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     Log.d(TAG,"Update Time = ${System.currentTimeMillis()}")
+//                    if(this.visibility == View.VISIBLE)
                     textView_date.text = mDf.format(System.currentTimeMillis())
                     checkTimeSet()
                 }
@@ -158,5 +159,11 @@ class DateView : ConstraintLayout {
                     mDateDisposable?.dispose()
 //                }
             }
+    }
+
+    fun setVisiable(isVisiable: Boolean){
+        this.visibility = if(isVisiable) View.VISIBLE else View.INVISIBLE
+
+        textView_date.text = textView_date.text
     }
 }
