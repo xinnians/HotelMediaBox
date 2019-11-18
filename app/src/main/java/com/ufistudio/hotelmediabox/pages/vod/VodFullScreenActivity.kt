@@ -76,7 +76,7 @@ class VodFullScreenActivity : PaneViewActivity() {
         mMediaTitle = intent.extras.get(KEY_VOD_TITLE) as String
 
 //        mMediaURL = "rtsp://13.229.222.179:1935/vod/mp4:2-geostorm_1080p_5m.mp4"
-        Log.d("neo", "${b.note?.home}")
+        Log.d(TAG, "[onCreate] ${b.note?.home}")
     }
 
     override fun onStart() {
@@ -116,13 +116,10 @@ class VodFullScreenActivity : PaneViewActivity() {
             }
             showInfo()
         }
-
-//        mExoPlayerHelper?.seekTo(20000L)
     }
 
     override fun onPause() {
         super.onPause()
-//        Log.e(TAG,"[onPause] ${mExoPlayerHelper?.currentPosition()}/${mExoPlayerHelper?.totalContentDuration()}")
         saveWatchPosition()
         mExoPlayerHelper?.stop()
         TVController.releaseListener(mTVListener)
@@ -177,7 +174,6 @@ class VodFullScreenActivity : PaneViewActivity() {
 
                         if (mIsResumeButtonFocus) {
                             mExoPlayerHelper?.play()
-//                            mMediaURL?.let {mExoPlayerHelper?.setSource(it, true,true,Cache.VodWatchHistory[mMediaURL?:""]?:0L) }
                         } else {
                             mMediaURL?.let { mExoPlayerHelper?.setSource(it, true) }
                         }
@@ -227,22 +223,16 @@ class VodFullScreenActivity : PaneViewActivity() {
                         if (event.action == KeyEvent.ACTION_UP) {
                             return true
                         }
-
                         changeFrame(true)
-
                         Log.e(TAG, "[KEYCODE_MEDIA_FAST_FORWARD] call.")
-//                        Toast.makeText(applicationContext,"Speed ${mExoPlayerHelper?.speedUp()}x",Toast.LENGTH_SHORT).show()
                         return true
                     }
                     KeyEvent.KEYCODE_MEDIA_REWIND -> {
                         if (event.action == KeyEvent.ACTION_UP) {
                             return true
                         }
-
                         changeFrame(false)
-
                         Log.e(TAG, "[KEYCODE_MEDIA_REWIND] call.")
-//                        Toast.makeText(applicationContext,"Speed ${mExoPlayerHelper?.speedUp()}x",Toast.LENGTH_SHORT).show()
                         return true
                     }
                     KeyEvent.KEYCODE_DPAD_RIGHT,
@@ -258,28 +248,6 @@ class VodFullScreenActivity : PaneViewActivity() {
 
         return super.dispatchKeyEvent(event)
     }
-
-//    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-//        Log.e(TAG,"[onKeyDown] keycode: $keyCode, KeyEvent: $event")
-//        when (keyCode) {
-//            KeyEvent.KEYCODE_MEDIA_STOP ->{
-//                mExoPlayerHelper?.stop()
-//            }
-//            KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE ->{
-//                mExoPlayerHelper?.getPositionInfo()
-//                if(mIsPause){
-//                    iv_pause.visibility = View.VISIBLE
-//                    mExoPlayerHelper?.pause()
-//                }else{
-//                    iv_pause.visibility = View.INVISIBLE
-//                    mExoPlayerHelper?.play()
-//                }
-//                mIsPause = !mIsPause
-//                return true
-//            }
-//        }
-//        return super.onKeyDown(keyCode, event)
-//    }
 
     private fun initTitle() {
         Log.e(TAG, "[initTitle] mMediaTitle : $mMediaTitle")
