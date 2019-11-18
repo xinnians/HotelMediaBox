@@ -202,6 +202,8 @@ class VodFullScreenActivity : PaneViewActivity() {
                             return true
                         }
 
+                        closeChangeFrame()
+
                         if (mIsPause) {
                             iv_pause.visibility = View.VISIBLE
                             mExoPlayerHelper?.pause()
@@ -344,6 +346,13 @@ class VodFullScreenActivity : PaneViewActivity() {
     private fun checkWatchHistory() {
         Log.e(TAG, "[checkWatchHistory] Cache.VodWatchHistory[mMediaURL] ${Cache.VodWatchHistory[mMediaURL ?: ""]}")
         layout_resume.visibility = View.VISIBLE
+    }
+
+    private fun closeChangeFrame(){
+        mCurrentSpeedIndex = 1
+        if (mDisposableFastForward != null && !mDisposableFastForward!!.isDisposed) {
+            mDisposableFastForward?.dispose()
+        }
     }
 
     private fun changeFrame(isFastforward: Boolean) {
