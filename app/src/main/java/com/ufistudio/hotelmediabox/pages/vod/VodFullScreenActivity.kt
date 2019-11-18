@@ -70,7 +70,7 @@ class VodFullScreenActivity : PaneViewActivity() {
         mMediaURL = intent.extras.get(KEY_VOD_URL) as String
         mMediaTitle = intent.extras.get(KEY_VOD_TITLE) as String
 
-        mMediaURL = "rtsp://13.229.222.179:1935/vod/mp4:2-geostorm_1080p_5m.mp4"
+//        mMediaURL = "rtsp://13.229.222.179:1935/vod/mp4:2-geostorm_1080p_5m.mp4"
         Log.d("neo", "${b.note?.home}")
     }
 
