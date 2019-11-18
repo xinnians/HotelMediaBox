@@ -3,6 +3,7 @@ package com.ufistudio.hotelmediabox.pages.vod
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.util.Log
+import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
 import android.widget.Toast
@@ -41,6 +42,10 @@ class VodFullScreenActivity : PaneViewActivity() {
 
     private var mIsResumeViewShow: Boolean = false
     private var mIsResumeButtonFocus: Boolean = true
+
+    private var mIsChangeFrameOn = false
+
+    private var mToast: Toast? = null
 
     private var mTVListener: TVController.OnTVListener = object : TVController.OnTVListener {
         override fun onIPTVFinish() {
@@ -202,7 +207,11 @@ class VodFullScreenActivity : PaneViewActivity() {
                             return true
                         }
 
-                        closeChangeFrame()
+                        if(mIsChangeFrameOn){
+                            mIsPause = false
+                            mIsChangeFrameOn = false
+                            closeChangeFrame()
+                        }
 
                         if (mIsPause) {
                             iv_pause.visibility = View.VISIBLE
@@ -360,6 +369,8 @@ class VodFullScreenActivity : PaneViewActivity() {
             mDisposableFastForward?.dispose()
         }
 
+        mToast?.cancel()
+
         if(mIsFastForward != isFastforward){
             mCurrentSpeedIndex = 1
             mIsFastForward = isFastforward
@@ -369,22 +380,31 @@ class VodFullScreenActivity : PaneViewActivity() {
             mCurrentSpeedIndex *= 2
 
             if(mIsFastForward){
-                Toast.makeText(applicationContext,"FastForward Speed ${mCurrentSpeedIndex}x",Toast.LENGTH_SHORT).show()
+                mToast = Toast.makeText(applicationContext,"FastForward Speed ${mCurrentSpeedIndex}x",Toast.LENGTH_SHORT)
+                mToast?.setGravity(Gravity.CENTER, 0, 0)
+                mToast?.show()
             }else{
-                Toast.makeText(applicationContext,"REWIND Speed ${mCurrentSpeedIndex}x",Toast.LENGTH_SHORT).show()
+                mToast = Toast.makeText(applicationContext,"REWIND Speed ${mCurrentSpeedIndex}x",Toast.LENGTH_SHORT)
+                mToast?.setGravity(Gravity.CENTER, 0, 0)
+                mToast?.show()
             }
-
+            mIsChangeFrameOn = true
         }else{
             mCurrentSpeedIndex = 1
             if(mIsFastForward){
-                Toast.makeText(applicationContext,"FastForward Speed ${mCurrentSpeedIndex}x",Toast.LENGTH_SHORT).show()
+                mToast = Toast.makeText(applicationContext,"FastForward Speed ${mCurrentSpeedIndex}x",Toast.LENGTH_SHORT)
+                mToast?.setGravity(Gravity.CENTER, 0, 0)
+                mToast?.show()
             }else{
-                Toast.makeText(applicationContext,"REWIND Speed ${mCurrentSpeedIndex}x",Toast.LENGTH_SHORT).show()
+                mToast = Toast.makeText(applicationContext,"REWIND Speed ${mCurrentSpeedIndex}x",Toast.LENGTH_SHORT)
+                mToast?.setGravity(Gravity.CENTER, 0, 0)
+                mToast?.show()
             }
 
-
+            mIsChangeFrameOn = false
             return
         }
+
 
         mDisposableFastForward = Observable.interval(1000, TimeUnit.MILLISECONDS)
             .subscribeOn(Schedulers.io())
